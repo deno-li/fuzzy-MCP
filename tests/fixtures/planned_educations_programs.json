@@ -1,0 +1,38 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": {
+  "gy": [
+   {
+    "code": "BF",
+    "name": "Barn- och fritidsprogrammet",
+    "studyPaths": [
+     {
+      "code": "BFFRH",
+      "name": "Fritid och hälsa"
+     },
+     {
+      "code": "BFFRI",
+      "name": "Fritid och hälsa"
+     },
+     {
+      "code": "BFFRI0L",
+      "name": "Fritid och hälsa, lärling"
+     },
+     {
+      "code": "BFPES",
+      "name": "Pedagogiskt och socialt arbete"
+     },
+     {
+      "code": "BFPEA",
+      "name": "Pedagogiskt och socialt arbete"
+     },
+     {
+      "code": "BFPEA0L",
+      "name": "Pedagogiskt och socialt arbete, lärling"
+     }
+    ]
+   }
+  ]
+ }
+}

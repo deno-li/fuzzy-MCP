@@ -1,0 +1,210 @@
+{
+ "id": "anpassad_gymnasieskola_program",
+ "titel": "Program i anpassad gymnasieskola",
+ "beskrivning": "Nationella program i anpassad gymnasieskola (tidigare gymnasiesärskola) och de individuella programmen IAIND och IPIP0.",
+ "kalla": "Skolverkets Syllabus-API (valuestore/studypathcodes).",
+ "licens": "CC0 1.0",
+ "koder": [
+  {
+   "kod": "AH",
+   "namn": "Programmet för administration, handel och varuhantering",
+   "laroplan": "GYAN13",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolform enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Läroplansvärdet GYAN13 är en egen etikett för det som Skolverket kallar Gyan13."
+  },
+  {
+   "kod": "EV",
+   "namn": "Programmet för estetiska verksamheter",
+   "laroplan": "GYAN13",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolform enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Läroplansvärdet GYAN13 är en egen etikett för det som Skolverket kallar Gyan13."
+  },
+  {
+   "kod": "EV25",
+   "namn": "Programmet för estetiska verksamheter",
+   "laroplan": "GY25",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolform enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Programnamnen stöds också av en webbsökningssammanfattning av Skolverkets sida om programmen i anpassade gymnasieskolan."
+  },
+  {
+   "kod": "FA",
+   "namn": "Programmet för fastighet, anläggning och byggnation",
+   "laroplan": "GYAN13",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolform enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Läroplansvärdet GYAN13 är en egen etikett för det som Skolverket kallar Gyan13."
+  },
+  {
+   "kod": "FB25",
+   "namn": "Programmet för fastighet och byggnation",
+   "laroplan": "GY25",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolform enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Programnamnen stöds också av en webbsökningssammanfattning av Skolverkets sida om programmen i anpassade gymnasieskolan."
+  },
+  {
+   "kod": "FG",
+   "namn": "Programmet för fordonsvård och godshantering",
+   "laroplan": "GYAN13",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolform enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Läroplansvärdet GYAN13 är en egen etikett för det som Skolverket kallar Gyan13."
+  },
+  {
+   "kod": "FG25",
+   "namn": "Programmet för fordonsvård och godshantering",
+   "laroplan": "GY25",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolform enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Programnamnen stöds också av en webbsökningssammanfattning av Skolverkets sida om programmen i anpassade gymnasieskolan."
+  },
+  {
+   "kod": "HO",
+   "namn": "Programmet för hälsa, vård och omsorg",
+   "laroplan": "GYAN13",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolform enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Läroplansvärdet GYAN13 är en egen etikett för det som Skolverket kallar Gyan13."
+  },
+  {
+   "kod": "HO25",
+   "namn": "Programmet för hälsa, vård och omsorg",
+   "laroplan": "GY25",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolform enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Programnamnen stöds också av en webbsökningssammanfattning av Skolverkets sida om programmen i anpassade gymnasieskolan."
+  },
+  {
+   "kod": "HP",
+   "namn": "Programmet för hantverk och produktion",
+   "laroplan": "GYAN13",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolform enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Läroplansvärdet GYAN13 är en egen etikett för det som Skolverket kallar Gyan13."
+  },
+  {
+   "kod": "HP25",
+   "namn": "Programmet för hantverk och produktion",
+   "laroplan": "GY25",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolform enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Programnamnen stöds också av en webbsökningssammanfattning av Skolverkets sida om programmen i anpassade gymnasieskolan."
+  },
+  {
+   "kod": "HR",
+   "namn": "Programmet för hotell, restaurang och bageri",
+   "laroplan": "GYAN13",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolform enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Läroplansvärdet GYAN13 är en egen etikett för det som Skolverket kallar Gyan13."
+  },
+  {
+   "kod": "HR25",
+   "namn": "Programmet för hotell, restaurang och bageri",
+   "laroplan": "GY25",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolform enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Programnamnen stöds också av en webbsökningssammanfattning av Skolverkets sida om programmen i anpassade gymnasieskolan."
+  },
+  {
+   "kod": "HS25",
+   "namn": "Programmet för handel och service",
+   "laroplan": "GY25",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolform enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Programnamnen stöds också av en webbsökningssammanfattning av Skolverkets sida om programmen i anpassade gymnasieskolan."
+  },
+  {
+   "kod": "IAIND",
+   "namn": "Individuella program",
+   "laroplan": null,
+   "skolformer": [
+    "GYS",
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolformer enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "SK",
+   "namn": "Programmet för skog, mark och djur",
+   "laroplan": "GYAN13",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolform enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Läroplansvärdet GYAN13 är en egen etikett för det som Skolverket kallar Gyan13."
+  },
+  {
+   "kod": "SK25",
+   "namn": "Programmet för skog, mark och djur",
+   "laroplan": "GY25",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolform enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Programnamnen stöds också av en webbsökningssammanfattning av Skolverkets sida om programmen i anpassade gymnasieskolan."
+  },
+  {
+   "kod": "SN",
+   "namn": "Programmet för samhälle, natur och språk",
+   "laroplan": "GYAN13",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolform enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Läroplansvärdet GYAN13 är en egen etikett för det som Skolverket kallar Gyan13."
+  },
+  {
+   "kod": "SN25",
+   "namn": "Programmet för samhälle, natur och språk",
+   "laroplan": "GY25",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolform enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Programnamnen stöds också av en webbsökningssammanfattning av Skolverkets sida om programmen i anpassade gymnasieskolan."
+  },
+  {
+   "kod": "IPIP0",
+   "namn": "Individuella program",
+   "laroplan": "GY25",
+   "skolformer": [
+    "GYAN"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn och skolformer enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  }
+ ]
+}

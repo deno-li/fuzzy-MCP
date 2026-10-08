@@ -1,0 +1,190 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": {
+  "programCode": "EK",
+  "averageResultNationalTestsSubjectSVE": [
+   {
+    "value": "13,2",
+    "valueType": "EXISTS",
+    "timePeriod": "VT24"
+   }
+  ],
+  "sveSubjectTest": "Svenska 3",
+  "averageResultNationalTestsSubjectSVA": [
+   {
+    "value": "11,3",
+    "valueType": "EXISTS",
+    "timePeriod": "VT24"
+   }
+  ],
+  "svaSubjectTest": "Svenska som andraspråk 3",
+  "averageResultNationalTestsSubjectMA1": [
+   {
+    "value": "8,0",
+    "valueType": "EXISTS",
+    "timePeriod": "VT24"
+   }
+  ],
+  "ma1SubjectTest": "Matematik 2B",
+  "averageResultNationalTestsSubjectMA2": [
+   {
+    "value": "7,8",
+    "valueType": "EXISTS",
+    "timePeriod": "VT24"
+   }
+  ],
+  "ma2SubjectTest": "Matematik 3B",
+  "averageResultNationalTestsSubjectENG": [
+   {
+    "value": "14,3",
+    "valueType": "EXISTS",
+    "timePeriod": "VT24"
+   }
+  ],
+  "engSubjectTest": "Engelska 6",
+  "specialTeacherPositions": [
+   {
+    "value": "347,9",
+    "valueType": "EXISTS",
+    "timePeriod": "2023/24"
+   }
+  ],
+  "studentsPerTeacherQuota": [
+   {
+    "value": "12,3",
+    "valueType": "EXISTS",
+    "timePeriod": "2023/24"
+   }
+  ],
+  "certifiedTeachersQuota": [
+   {
+    "value": "84,2",
+    "valueType": "EXISTS",
+    "timePeriod": "2023/24"
+   }
+  ],
+  "totalNumberOfPupils": null,
+  "ratioOfStudentsEligibleForUndergraduateEducation": [
+   {
+    "value": "92,3",
+    "valueType": "EXISTS",
+    "timePeriod": "2022/23"
+   },
+   {
+    "value": "93,1",
+    "valueType": "EXISTS",
+    "timePeriod": "2021/22"
+   },
+   {
+    "value": "93,4",
+    "valueType": "EXISTS",
+    "timePeriod": "2020/21"
+   },
+   {
+    "value": "92,5",
+    "valueType": "EXISTS",
+    "timePeriod": "2019/20"
+   },
+   {
+    "value": "91,8",
+    "valueType": "EXISTS",
+    "timePeriod": "2018/19"
+   }
+  ],
+  "gradesPointsForStudents": [
+   {
+    "value": "14,8",
+    "valueType": "EXISTS",
+    "timePeriod": "2022/23"
+   },
+   {
+    "value": "14,9",
+    "valueType": "EXISTS",
+    "timePeriod": "2021/22"
+   },
+   {
+    "value": "14,9",
+    "valueType": "EXISTS",
+    "timePeriod": "2020/21"
+   },
+   {
+    "value": "14,8",
+    "valueType": "EXISTS",
+    "timePeriod": "2019/20"
+   },
+   {
+    "value": "14,7",
+    "valueType": "EXISTS",
+    "timePeriod": "2018/19"
+   }
+  ],
+  "gradesPointsForStudentsWithExam": [
+   {
+    "value": "15,3",
+    "valueType": "EXISTS",
+    "timePeriod": "2022/23"
+   },
+   {
+    "value": "15,3",
+    "valueType": "EXISTS",
+    "timePeriod": "2021/22"
+   },
+   {
+    "value": "15,3",
+    "valueType": "EXISTS",
+    "timePeriod": "2020/21"
+   },
+   {
+    "value": "15,2",
+    "valueType": "EXISTS",
+    "timePeriod": "2019/20"
+   },
+   {
+    "value": "15,1",
+    "valueType": "EXISTS",
+    "timePeriod": "2018/19"
+   }
+  ],
+  "ratioOfPupilsWithExamWithin3Years": [
+   {
+    "value": "84,6",
+    "valueType": "EXISTS",
+    "timePeriod": "2020/21"
+   },
+   {
+    "value": "84,6",
+    "valueType": "EXISTS",
+    "timePeriod": "2019/20"
+   },
+   {
+    "value": "84,8",
+    "valueType": "EXISTS",
+    "timePeriod": "2018/19"
+   },
+   {
+    "value": "83,0",
+    "valueType": "EXISTS",
+    "timePeriod": "2017/18"
+   },
+   {
+    "value": "82,5",
+    "valueType": "EXISTS",
+    "timePeriod": "2016/17"
+   }
+  ],
+  "admissionPointsSemester": null,
+  "specialEducatorsQuota": [
+   {
+    "value": "3,8",
+    "valueType": "EXISTS",
+    "timePeriod": "2023/24"
+   }
+  ],
+  "_links": {
+   "self": {
+    "href": "https://api.skolverket.se/planned-educations/v3/statistics/national-values/gy/EK"
+   }
+  }
+ }
+}

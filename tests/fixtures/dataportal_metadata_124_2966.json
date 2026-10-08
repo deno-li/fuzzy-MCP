@@ -1,0 +1,98 @@
+{
+  "https://admin.dataportal.se/store/124/resource/2966": {
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+      {"type": "uri", "value": "http://www.w3.org/ns/dcat#Dataset"}
+    ],
+    "http://purl.org/dc/terms/title": [
+      {"type": "literal", "value": "Skolenhetsregistret", "lang": "sv"}
+    ],
+    "http://purl.org/dc/terms/description": [
+      {"type": "literal", "value": "Register över skolenheter och huvudmän.", "lang": "sv"}
+    ],
+    "http://purl.org/dc/terms/publisher": [
+      {"type": "uri", "value": "http://dataportal.se/organisation/SE2021004185"}
+    ],
+    "http://purl.org/dc/terms/license": [
+      {"type": "uri", "value": "http://creativecommons.org/publicdomain/zero/1.0/"}
+    ],
+    "http://purl.org/dc/terms/accessRights": [
+      {"type": "uri", "value": "http://publications.europa.eu/resource/authority/access-right/PUBLIC"}
+    ],
+    "http://www.w3.org/ns/dcat#distribution": [
+      {"type": "uri", "value": "https://admin.dataportal.se/store/124/resource/2970"}
+    ]
+  },
+  "https://admin.dataportal.se/store/124/resource/2970": {
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+      {"type": "uri", "value": "http://www.w3.org/ns/dcat#Distribution"}
+    ],
+    "http://www.w3.org/ns/dcat#accessURL": [
+      {"type": "uri", "value": "https://api.skolverket.se/skolenhetsregistret"}
+    ],
+    "http://purl.org/dc/terms/format": [
+      {"type": "literal", "value": "application/json"}
+    ],
+    "http://www.w3.org/ns/dcat#accessService": [
+      {"type": "uri", "value": "https://admin.dataportal.se/store/124/resource/2971"}
+    ]
+  },
+  "https://admin.dataportal.se/store/124/resource/2971": {
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+      {"type": "uri", "value": "http://www.w3.org/ns/dcat#DataService"}
+    ],
+    "http://purl.org/dc/terms/title": [
+      {"type": "literal", "value": "Skolverkets öppna API:er", "lang": "sv"}
+    ],
+    "http://www.w3.org/ns/dcat#endpointURL": [
+      {"type": "uri", "value": "https://api.skolverket.se/"}
+    ],
+    "http://www.w3.org/ns/dcat#servesDataset": [
+      {"type": "uri", "value": "https://admin.dataportal.se/store/124/resource/2966"},
+      {"type": "uri", "value": "https://admin.dataportal.se/store/124/resource/2967"}
+    ]
+  },
+  "https://admin.dataportal.se/store/124/resource/2967": {
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+      {"type": "uri", "value": "http://www.w3.org/ns/dcat#Dataset"}
+    ],
+    "http://purl.org/dc/terms/title": [
+      {"type": "literal", "value": "Syllabus API", "lang": "sv"}
+    ],
+    "http://purl.org/dc/terms/description": [
+      {"type": "literal", "value": "Läroplaner, ämnes- och kursplaner.", "lang": "sv"}
+    ],
+    "http://purl.org/dc/terms/publisher": [
+      {"type": "uri", "value": "http://dataportal.se/organisation/SE2021004185"}
+    ],
+    "http://purl.org/dc/terms/license": [
+      {"type": "uri", "value": "http://creativecommons.org/publicdomain/zero/1.0/"}
+    ],
+    "http://purl.org/dc/terms/accessRights": [
+      {"type": "uri", "value": "http://publications.europa.eu/resource/authority/access-right/PUBLIC"}
+    ],
+    "http://www.w3.org/ns/dcat#theme": [
+      {"type": "uri", "value": "http://publications.europa.eu/resource/authority/data-theme/EDUC"}
+    ],
+    "http://www.w3.org/ns/dcat#keyword": [
+      {"type": "literal", "value": "kursplaner", "lang": "sv"},
+      {"type": "literal", "value": "ämnesplaner", "lang": "sv"}
+    ],
+    "http://www.w3.org/ns/dcat#landingPage": [
+      {"type": "uri", "value": "https://www.skolverket.se/"}
+    ],
+    "http://purl.org/dc/terms/language": [
+      {"type": "uri", "value": "http://publications.europa.eu/resource/authority/language/SWE"}
+    ]
+  },
+  "http://dataportal.se/organisation/SE2021004185": {
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+      {"type": "uri", "value": "http://xmlns.com/foaf/0.1/Agent"}
+    ],
+    "http://xmlns.com/foaf/0.1/name": [
+      {"type": "literal", "value": "Skolverket", "lang": "sv"}
+    ],
+    "http://purl.org/dc/terms/type": [
+      {"type": "uri", "value": "http://purl.org/adms/publishertype/NationalAuthority"}
+    ]
+  }
+}

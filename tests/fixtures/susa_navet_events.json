@@ -1,0 +1,78 @@
+{
+  "links": [
+    {"rel": "self", "href": "https://api.skolverket.se/susa-navet/emil3/educationEvents?page=0&size=4"}
+  ],
+  "educationEvents": [
+    {
+      "id": "e.uoh.kth.dd1420.60090.20251",
+      "status": "ACTIVE",
+      "content": {
+        "identifier": "e.uoh.kth.dd1420.60090.20251",
+        "education": "i.uoh.kth.dd1420.60090.20251",
+        "providers": ["p.uoh.kth"],
+        "lastEdited": "2025-10-01T08:12:44",
+        "expires": "2025-08-31T00:00:00",
+        "title": {"strings": [
+          {"lang": "eng", "value": "Fundamentals of Computer Science"},
+          {"lang": "swe", "value": "Grundläggande datalogi"}
+        ]},
+        "url": {"urls": [{"lang": "swe", "value": "https://www.kth.se/student/kurser/kurs/DD1420"}]},
+        "locations": [{"town": "Stockholm", "areaCode": "0180", "country": "SE"}],
+        "languageOfInstructions": ["swe"],
+        "execution": {"condition": {"type": "C_ExecutionCondition", "code": "1"}, "start": "2025-01-20", "end": "2025-06-08"},
+        "isCancelled": false,
+        "timeOfStudy": {"type": "C_TimeOfStudy", "code": "dag"},
+        "paceOfStudy": {"percentage": 50.0},
+        "application": {"code": "KTH-60090", "first": "2024-09-16", "last": "2024-10-15",
+                        "url": {"urls": [{"lang": "swe", "value": "https://www.antagning.se"}]}},
+        "extensions": [{"type": "UHEventExtension", "id": "0",
+                        "startPeriod": {"week": 4, "period": {"year": "2025", "periodNumber": 3, "semester": "vt"}},
+                        "tuitionFee": {"value": true, "first": 32500, "total": 65000},
+                        "itdistance": false, "courseRound": 60090}]
+      }
+    },
+    {
+      "id": "e.sv.yh.ytpl.2281.20252",
+      "status": "ACTIVE",
+      "content": {
+        "identifier": "e.sv.yh.ytpl.2281.20252",
+        "education": "i.sv.yh.ytpl.20252",
+        "providers": ["p.sv.68897220"],
+        "lastEdited": "2026-03-18T14:47:37",
+        "expires": "2027-06-30T00:00:00",
+        "title": {"strings": [{"lang": "swe", "value": "Yrkesteknisk produktionsledare – distans"}]},
+        "keywords": {"strings": [{"lang": "swe", "value": "logistik"}, {"lang": "swe", "value": "industri"}]},
+        "url": {"urls": [{"lang": "swe", "value": "www.exempel-yh.se/ytpl"}]},
+        "locations": [{"town": "Sundsvall", "areaCode": "2281"}],
+        "languageOfInstructions": ["swe"],
+        "execution": {"condition": {"type": "C_ExecutionCondition", "code": "1"}, "start": "2025-08-25", "end": "2027-06-04"},
+        "paceOfStudy": {"percentage": 100.0},
+        "distance": {"noOfMandatorySessions": 4, "noOfOptionalSessions": 0},
+        "application": {"first": "2025-02-01", "last": "2025-04-15"}
+      }
+    },
+    {
+      "id": "e.sv.fhs.allm.2262.20252",
+      "status": "ACTIVE",
+      "content": {
+        "identifier": "e.sv.fhs.allm.2262.20252",
+        "education": "i.sv.fhs.allm",
+        "providers": ["p.sv.fhs.timra"],
+        "lastEdited": "2026-01-10T09:00:00",
+        "expires": "2027-06-30T00:00:00",
+        "title": {"strings": [{"lang": "swe", "value": "Allmän kurs, Göteborg-inriktning"}]},
+        "locations": [{"town": "Timrå", "areaCode": "2262"}],
+        "languageOfInstructions": ["eng"],
+        "execution": {"condition": {"type": "C_ExecutionCondition", "code": "1"}, "start": "2025-09-01"},
+        "isCancelled": true,
+        "paceOfStudy": {"percentage": 75.0}
+      }
+    },
+    {
+      "id": "e.sv.deleted.1",
+      "status": "DELETED",
+      "content": null
+    }
+  ],
+  "page": {"size": 4, "totalElements": 10, "totalPages": 3, "pageNumber": 0}
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Mobbning i skolan efter region, kön, ålder och år. Andel (procent).",
+  "variables": [
+    {"code": "Region", "text": "region", "values": ["00", "01", "21"], "valueTexts": ["00 Riket", "01 Stockholms län", "21 Gävleborgs län"], "elimination": true},
+    {"code": "Kategori", "text": "kategori", "values": ["Mobbad i skolan senaste månaderna"], "valueTexts": ["Mobbad i skolan senaste månaderna"]},
+    {"code": "Hur ofta", "text": "hur ofta", "values": ["2-3 ggr/månad", "Minst 1 gång/vecka"], "valueTexts": ["2-3 ggr/månad", "Minst 1 gång/vecka"]},
+    {"code": "Ålder", "text": "ålder", "values": ["11", "13", "15"], "valueTexts": ["11 år", "13 år", "15 år"]},
+    {"code": "Kön", "text": "kön", "values": ["1", "2"], "valueTexts": ["Pojkar", "Flickor"], "elimination": true},
+    {"code": "År", "text": "år", "values": ["2017-2018", "2021-2022"], "valueTexts": ["2017-2018", "2021-2022"], "time": true}
+  ]
+}

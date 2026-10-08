@@ -1,0 +1,69 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": {
+  "_embedded": {
+   "compactEducationEvents": [
+    {
+     "schoolUnitCode": "77364720",
+     "schoolUnitName": "ABF Stockholms gymnasium",
+     "educationEventTypeOfSchooling": "gy",
+     "coordinateSystemType": null,
+     "wgs84Latitude": "0",
+     "wgs84Longitude": "0",
+     "sweref99Latitude": "0",
+     "sweref99Longitude": "0",
+     "studyPathName": "Ekonomiprogrammet",
+     "_links": {
+      "school-unit": {
+       "href": "https://api.skolverket.se/planned-educations/v3/school-units/77364720"
+      }
+     }
+    },
+    {
+     "schoolUnitCode": "77364720",
+     "schoolUnitName": "ABF Stockholms gymnasium",
+     "educationEventTypeOfSchooling": "gy",
+     "coordinateSystemType": null,
+     "wgs84Latitude": "0",
+     "wgs84Longitude": "0",
+     "sweref99Latitude": "0",
+     "sweref99Longitude": "0",
+     "studyPathName": "Naturvetenskapsprogrammet",
+     "_links": {
+      "school-unit": {
+       "href": "https://api.skolverket.se/planned-educations/v3/school-units/77364720"
+      }
+     }
+    },
+    {
+     "schoolUnitCode": "77364720",
+     "schoolUnitName": "ABF Stockholms gymnasium",
+     "educationEventTypeOfSchooling": "gy",
+     "coordinateSystemType": null,
+     "wgs84Latitude": "0",
+     "wgs84Longitude": "0",
+     "sweref99Latitude": "0",
+     "sweref99Longitude": "0",
+     "studyPathName": "Samhällsvetenskapsprogrammet",
+     "_links": {
+      "school-unit": {
+       "href": "https://api.skolverket.se/planned-educations/v3/school-units/77364720"
+      }
+     }
+    }
+   ]
+  },
+  "_links": {
+   "self": {
+    "href": "https://api.skolverket.se/planned-educations/v3/school-units/77364720/compact-education-events?coordinateSystemType=WGS84&page=0&size=20&sort=schoolUnitName,studyPathName,asc"
+   }
+  },
+  "page": {
+   "size": 20,
+   "totalElements": 3,
+   "totalPages": 1,
+   "number": 0
+  }
+ }
+}

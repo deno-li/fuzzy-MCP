@@ -1,0 +1,79 @@
+# SPDX-FileCopyrightText: 2026 Deniz Özer
+#
+# SPDX-License-Identifier: MIT
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "fuzzy-mcp"
+version = "0.1.2"
+description = "MCP-server för svensk öppen data: SCB (PxWebApi 2), Skolverket, Folkhälsomyndigheten och Sveriges dataportal."
+readme = "README.md"
+license = "MIT AND CC0-1.0"
+license-files = ["LICENSE", "LICENSES/*.txt"]
+requires-python = ">=3.11"
+authors = [{ name = "Deniz Özer" }]
+keywords = ["mcp", "model-context-protocol", "scb", "pxweb", "skolverket", "folkhalsomyndigheten", "open-data", "dataportal"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Natural Language :: Swedish",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+  # MCP Python SDK v2 (MCPServer). httpx2 och pydantic följer med som beroenden.
+  "mcp>=2.2,<3",
+  "httpx2>=2.13",
+  "pydantic>=2.11",
+  # /healthz på HTTP-transporterna (följer redan med mcp).
+  "starlette>=0.27",
+  # HTTP-transporten (__main__.serve_http) använder dem direkt; deklareras så att de inte hänger på mcp:s val.
+  "anyio>=4",
+  "uvicorn>=0.31",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "anyio>=4", "ruff>=0.15"]
+
+[project.scripts]
+fuzzy-mcp = "fuzzy_mcp.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/deno-li/fuzzy-MCP"
+Source = "https://github.com/deno-li/fuzzy-MCP"
+Issues = "https://github.com/deno-li/fuzzy-MCP/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/fuzzy_mcp"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/fuzzy_mcp", "tests", "README.md", "LICENSE", "LICENSES", "REUSE.toml", "CHANGELOG.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = [
+  "live: anropar riktiga myndighets-API:er (kör med FUZZY_MCP_LIVE_TESTS=1)",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "ASYNC"]
+ignore = [
+  "RUF001", # svenska tecken i strängar är avsiktliga
+  "RUF002",
+  "RUF003",
+]

@@ -1,0 +1,11 @@
+{
+  "status": "OK",
+  "message": "",
+  "body": {
+    "_links": {
+      "gr-statistics": {"href": "https://api.skolverket.se/planned-educations/v4/school-units/85014247/statistics/gr"},
+      "gy-statistics": {"href": "https://api.skolverket.se/planned-educations/v4/school-units/85014247/statistics/gy"},
+      "self": {"href": "https://api.skolverket.se/planned-educations/v4/school-units/85014247/statistics"}
+    }
+  }
+}

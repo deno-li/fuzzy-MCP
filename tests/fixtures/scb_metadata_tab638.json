@@ -1,0 +1,35 @@
+{
+  "version": "2.0", "class": "dataset",
+  "label": "Folkmängden efter region, civilstånd, ålder och kön. År 1968 - 2024",
+  "source": "Statistikmyndigheten SCB", "updated": "2025-02-21T07:00:00Z",
+  "note": ["Uppgifterna avser förhållandena den 31 december för resp. år."],
+  "role": {"time": ["Tid"], "metric": ["ContentsCode"]},
+  "id": ["Region", "Civilstand", "Alder", "Kon", "ContentsCode", "Tid"],
+  "size": [4, 4, 3, 2, 2, 4],
+  "dimension": {
+    "Region": {"label": "region", "category": {"index": {"00": 0, "01": 1, "0180": 2, "1480": 3},
+      "label": {"00": "Riket", "01": "Stockholms län", "0180": "Stockholm", "1480": "Göteborg"}},
+      "extension": {"elimination": true, "show": "value", "codelists": [
+        {"id": "vs_RegionLän07", "label": "Län", "type": "Valueset", "links": []},
+        {"id": "vs_RegionKommun07", "label": "Kommuner", "type": "Valueset", "links": []}]}},
+    "Civilstand": {"label": "civilstånd", "category": {"index": {"OG": 0, "G": 1, "SK": 2, "ÄNKL": 3},
+      "label": {"OG": "ogifta", "G": "gifta", "SK": "skilda", "ÄNKL": "änkor/änklingar"}},
+      "extension": {"elimination": true}},
+    "Alder": {"label": "ålder", "category": {"index": {"0": 0, "1": 1, "100+": 2},
+      "label": {"0": "0 år", "1": "1 år", "100+": "100+ år"}},
+      "extension": {"elimination": true, "codeLists": [{"id": "agg_Ålder5år", "label": "5-årsklasser", "type": "Aggregation"}]}},
+    "Kon": {"label": "kön", "category": {"index": {"1": 0, "2": 1}, "label": {"1": "män", "2": "kvinnor"}},
+      "extension": {"elimination": true}},
+    "ContentsCode": {"label": "tabellinnehåll", "category": {"index": {"BE0101N1": 0, "BE0101N2": 1},
+      "label": {"BE0101N1": "Folkmängd", "BE0101N2": "Folkökning"},
+      "unit": {"BE0101N1": {"base": "antal", "decimals": 0}, "BE0101N2": {"base": "antal", "decimals": 0}}},
+      "extension": {"elimination": false}},
+    "Tid": {"label": "år", "category": {"index": {"2021": 0, "2022": 1, "2023": 2, "2024": 3},
+      "label": {"2021": "2021", "2022": "2022", "2023": "2023", "2024": "2024"}},
+      "extension": {"elimination": false}}
+  },
+  "extension": {"px": {"tableid": "TAB638", "official-statistics": true, "subject-code": "BE", "subject-area": "Befolkning",
+                       "matrix": "BefolkningNy"},
+                "contact": [{"name": "Förnamn Efternamn", "organization": "SCB", "raw": "Förnamn Efternamn, SCB#010-000 00 00"}]},
+  "value": []
+}

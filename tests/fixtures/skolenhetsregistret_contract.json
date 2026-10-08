@@ -1,0 +1,28 @@
+{
+  "meta": { "extractDate": "2025-05-08T00:06:10.19+02:00", "created": "2020-08-01", "modified": "2024-07-01" },
+  "links": { "href": "https://api.skolverket.se/skolenhetsregistret/v2/contracts/2120000126/87654321", "rel": "self", "method": "GET" },
+  "data": {
+    "type": "contract",
+    "organizationNumber": "2120000126",
+    "educationProviderCode": "87654321",
+    "attributes": {
+      "organizerName": "EKERÖ KOMMUN",
+      "educationProviderOrganizationNumber": "5560001111",
+      "educationProviderName": "Lärande i Sverige AB",
+      "folkHighschoolName": null,
+      "status": "aktiv",
+      "schoolTypeParts": [
+        { "schoolTypePart": "VUXSFI", "validFrom": "2023-12-12", "validTo": "2025-12-12" },
+        { "schoolTypePart": "VUXGY", "validFrom": "2024-01-01", "validTo": null }
+      ]
+    },
+    "relationships": {
+      "schoolUnit": {
+        "links": { "related": [ { "href": "https://api.skolverket.se/skolenhetsregistret/v2/school-units/56789012", "rel": "related", "method": "GET" } ] },
+        "data": [ { "type": "schoolunit", "schoolUnitCode": "56789012" } ]
+      },
+      "organizer": { "links": { "related": { "href": "https://api.skolverket.se/skolenhetsregistret/v2/organizers/2120000126", "rel": "related", "method": "GET" } } },
+      "educationProvider": { "links": { "related": { "href": "https://api.skolverket.se/skolenhetsregistret/v2/education-providers/87654321", "rel": "related", "method": "GET" } } }
+    }
+  }
+}

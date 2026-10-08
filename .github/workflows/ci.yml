@@ -1,0 +1,86 @@
+# SPDX-FileCopyrightText: 2026 Deniz Özer
+#
+# SPDX-License-Identifier: CC0-1.0
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Lint och tester (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Installera
+        run: python -m pip install -e ".[dev]"
+      - name: Formatering (ruff format)
+        run: ruff format --check src tests scripts
+      - name: Lint (ruff check)
+        run: ruff check src tests scripts
+      - name: Tester (pytest, mockade API:er)
+        run: python -m pytest -q
+      - name: README:s verktygstabell är uppdaterad
+        run: python scripts/generate_tool_docs.py --check
+
+  package:
+    name: Paket, installation och röktest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Bygg sdist och wheel
+        run: python -m pip install build && python -m build --outdir dist
+      - name: REUSE-licensinformation i sdist
+        run: |
+          mkdir /tmp/sdist && tar xzf dist/*.tar.gz -C /tmp/sdist
+          python -m pip install "reuse==6.2.0"
+          reuse --root /tmp/sdist/fuzzy_mcp-* lint
+      - name: Installera i en ren miljö
+        run: python -m venv /tmp/venv && /tmp/venv/bin/python -m pip install dist/*.whl
+      - name: Röktest över stdio
+        run: /tmp/venv/bin/python scripts/smoke_test.py --stdio -- --sources reference
+      - name: Röktest över HTTP och /healthz (utan token startar servern inte)
+        run: |
+          if /tmp/venv/bin/fuzzy-mcp --transport streamable-http --port 8000 --sources reference; then exit 1; fi
+          python -c "import secrets; print(secrets.token_urlsafe(48))" > /tmp/token-http.txt
+          FUZZY_MCP_AUTH_TOKEN_FILE=/tmp/token-http.txt \
+            /tmp/venv/bin/fuzzy-mcp --transport streamable-http --port 8000 --sources reference &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:8000/healthz && break; sleep 1; done
+          /tmp/venv/bin/python scripts/smoke_test.py --url http://127.0.0.1:8000/mcp --token-file /tmp/token-http.txt
+      - name: Eneo-kompatibilitet (Eneos klient, MCP SDK 1.28.1, med token och storleksgräns)
+        run: |
+          python -c "import secrets; print(secrets.token_urlsafe(48))" > /tmp/token.txt
+          FUZZY_MCP_AUTH_TOKEN_FILE=/tmp/token.txt FUZZY_MCP_MAX_OUTPUT_CHARS=30000 \
+            /tmp/venv/bin/fuzzy-mcp --transport streamable-http --port 8001 --stateless &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:8001/healthz && break; sleep 1; done
+          python -m venv /tmp/eneo && /tmp/eneo/bin/python -m pip install "mcp==1.28.1" "httpx==0.28.1"
+          /tmp/eneo/bin/python scripts/eneo_check.py --url http://127.0.0.1:8001/mcp --token-file - < /tmp/token.txt
+
+  reuse:
+    name: REUSE-licensinformation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: fsfe/reuse-action@v6

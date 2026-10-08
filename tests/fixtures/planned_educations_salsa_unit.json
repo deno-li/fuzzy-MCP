@@ -1,0 +1,55 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": {
+  "compulsorySchoolUnitSalsaMetricList": [
+   {
+    "schoolUnitCode": "99648792",
+    "name": "Adolf Fredriks musikklasser",
+    "geographicalAreaCode": "0180",
+    "salsaAverageGradesIn9thGradeActual": {
+     "value": "284",
+     "valueType": "EXISTS"
+    },
+    "salsaAverageGradesIn9thGradeDeviation": {
+     "value": "15",
+     "valueType": "EXISTS"
+    },
+    "salsaRequirementsReachedActual": {
+     "value": "92",
+     "valueType": "EXISTS"
+    },
+    "salsaRequirementsReachedDeviation": {
+     "value": "1",
+     "valueType": "EXISTS"
+    },
+    "salsaNewlyImmigratedQuota": {
+     "value": "5",
+     "valueType": "EXISTS"
+    },
+    "salsaBoysQuota": {
+     "value": "36",
+     "valueType": "EXISTS"
+    },
+    "salsaParentsEducation": {
+     "value": "2,8",
+     "valueType": "EXISTS"
+    },
+    "salsaAverageCalculated": {
+     "value": "268",
+     "valueType": "EXISTS"
+    },
+    "salsaRequirementsReachedCalculated": {
+     "value": "91",
+     "valueType": "EXISTS"
+    },
+    "_links": {
+     "self": {
+      "href": "https://api.skolverket.se/planned-educations/v3/statistics/all-schools/salsa/99648792"
+     }
+    }
+   }
+  ],
+  "timePeriod": "2022/23"
+ }
+}

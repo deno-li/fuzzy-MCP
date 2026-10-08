@@ -1,0 +1,84 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": {
+  "_embedded": {
+   "compactSchoolUnits": [
+    {
+     "schoolUnitCode": "11317587",
+     "schoolUnitName": "AG International School Gothenburg",
+     "schoolUnitStartDate": "2025-07-01",
+     "resursSkola": "false",
+     "educationEventTypeOfSchooling": "gy,gr",
+     "coordinateSystemType": null,
+     "wgs84Latitude": "57.709076312329756",
+     "wgs84Longitude": "11.936591906236451",
+     "sweref99Latitude": "6400447.417",
+     "sweref99Longitude": "317495.449",
+     "abroadSchool": false,
+     "_links": {
+      "school-unit": {
+       "href": "https://api.skolverket.se/planned-educations/v4/school-units/11317587"
+      }
+     }
+    },
+    {
+     "schoolUnitCode": "76938456",
+     "schoolUnitName": "AG International School Uppsala",
+     "schoolUnitStartDate": "2021-08-15",
+     "resursSkola": "false",
+     "educationEventTypeOfSchooling": "gr,fsk,gy",
+     "coordinateSystemType": null,
+     "wgs84Latitude": "59.86502285237153",
+     "wgs84Longitude": "17.620580670342353",
+     "sweref99Latitude": "6639282.231",
+     "sweref99Longitude": "646739.557",
+     "abroadSchool": false,
+     "_links": {
+      "school-unit": {
+       "href": "https://api.skolverket.se/planned-educations/v4/school-units/76938456"
+      }
+     }
+    },
+    {
+     "schoolUnitCode": "29031023",
+     "schoolUnitName": "AG Lyckeskolan",
+     "schoolUnitStartDate": "2019-12-06",
+     "resursSkola": "false",
+     "educationEventTypeOfSchooling": "gran",
+     "coordinateSystemType": null,
+     "wgs84Latitude": "57.50568134415143",
+     "wgs84Longitude": "12.688806803826443",
+     "sweref99Latitude": "6376034.44",
+     "sweref99Longitude": "361525.605",
+     "abroadSchool": false,
+     "_links": {
+      "school-unit": {
+       "href": "https://api.skolverket.se/planned-educations/v4/school-units/29031023"
+      }
+     }
+    }
+   ]
+  },
+  "_links": {
+   "first": {
+    "href": "https://api.skolverket.se/planned-educations/v4/compact-school-units?coordinateSystemType=WGS84&page=0&size=3"
+   },
+   "self": {
+    "href": "https://api.skolverket.se/planned-educations/v4/compact-school-units?coordinateSystemType=WGS84&page=0&size=3"
+   },
+   "next": {
+    "href": "https://api.skolverket.se/planned-educations/v4/compact-school-units?coordinateSystemType=WGS84&page=1&size=3"
+   },
+   "last": {
+    "href": "https://api.skolverket.se/planned-educations/v4/compact-school-units?coordinateSystemType=WGS84&page=2188&size=3"
+   }
+  },
+  "page": {
+   "size": 3,
+   "totalElements": 6566,
+   "totalPages": 2189,
+   "number": 0
+  }
+ }
+}

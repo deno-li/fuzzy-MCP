@@ -1,0 +1,30 @@
+{
+  "status": "OK",
+  "message": "",
+  "body": {
+    "semester": "VT26",
+    "noOfAnswers": "292",
+    "satisfactionMetrics": {
+      "average": "8,1",
+      "ratioCorrespondsFully": "52%",
+      "ratioCorrespondsWell": "38%",
+      "ratioCorrespondsPoorly": "6%",
+      "ratioCorrespondsNotAtAll": "-",
+      "ratioDoNotKnow": "1%",
+      "ratioNoAnswer": "2%",
+      "questionDescription": "Jag är nöjd med verksamheten i mitt barns skola.",
+      "questionSubject": "Övergripande nöjdhet"
+    },
+    "securityMetrics": {
+      "average": "8,8",
+      "ratioCorrespondsFully": "66%",
+      "ratioCorrespondsWell": "29%",
+      "ratioCorrespondsPoorly": "-",
+      "ratioCorrespondsNotAtAll": "-",
+      "ratioDoNotKnow": "1%",
+      "ratioNoAnswer": "2%",
+      "questionDescription": "Mitt barn känner sig tryggt i skolan.",
+      "questionSubject": "Trygghet"
+    }
+  }
+}

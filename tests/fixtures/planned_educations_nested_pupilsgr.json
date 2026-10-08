@@ -1,0 +1,89 @@
+{
+  "status": "OK",
+  "message": "",
+  "body": {
+    "schoolYearMetrics": [
+      {
+        "schoolUnitCode": "44673074",
+        "semester": "VT26",
+        "noOfAnswers": "45",
+        "schoolYear": "ak5",
+        "noInGroup": "50",
+        "answeringFrequency": "90%",
+        "satisfactionMetrics": {
+          "average": "7,6",
+          "ratioCorrespondsFully": "44%",
+          "ratioCorrespondsWell": "36%",
+          "ratioCorrespondsPoorly": "13%",
+          "ratioCorrespondsNotAtAll": "-",
+          "ratioDoNotKnow": "-",
+          "ratioNoAnswer": "7%",
+          "questionDescription": "Hur nöjd är du med din skola?",
+          "questionSubject": "Övergripande nöjdhet"
+        },
+        "securityMetrics": {
+          "average": "8,6",
+          "ratioCorrespondsFully": "60%",
+          "ratioCorrespondsWell": "31%",
+          "ratioCorrespondsPoorly": "-",
+          "ratioCorrespondsNotAtAll": "0%",
+          "ratioDoNotKnow": "-",
+          "ratioNoAnswer": "9%",
+          "questionDescription": "Känner du dig trygg i skolan?",
+          "questionSubject": "Trygghet"
+        },
+        "workingEnvironmentMetrics": {
+          "average": "6,0",
+          "ratioCorrespondsFully": null,
+          "ratioCorrespondsWell": null,
+          "ratioCorrespondsPoorly": null,
+          "ratioCorrespondsNotAtAll": null,
+          "ratioDoNotKnow": "-",
+          "ratioNoAnswer": "14%",
+          "questionDescription": "Hur ofta är det arbetsro på lektionerna?",
+          "questionSubject": "Studiero",
+          "ratioAlways": "-",
+          "ratioOften": "44%",
+          "ratioSometimes": "42%",
+          "ratioSeldom": "-",
+          "ratioNever": "0%"
+        }
+      },
+      {
+        "schoolUnitCode": "44673074",
+        "semester": "VT26",
+        "noOfAnswers": "61",
+        "schoolYear": "ak8",
+        "noInGroup": "70",
+        "answeringFrequency": "87%",
+        "recommendMetrics": {
+          "average": null,
+          "ratioCorrespondsFully": null,
+          "ratioCorrespondsWell": null,
+          "ratioCorrespondsPoorly": null,
+          "ratioCorrespondsNotAtAll": null,
+          "ratioDoNotKnow": null,
+          "ratioNoAnswer": null,
+          "questionDescription": null,
+          "questionSubject": null
+        },
+        "inspirationMetrics": {
+          "average": "6,3",
+          "ratioCorrespondsFully": null,
+          "ratioCorrespondsWell": null,
+          "ratioCorrespondsPoorly": null,
+          "ratioCorrespondsNotAtAll": null,
+          "ratioDoNotKnow": "-",
+          "ratioNoAnswer": "9%",
+          "questionDescription": "Hur ofta får lärarna dig att bli intresserad av skolarbetet?",
+          "questionSubject": "Stimulans",
+          "ratioAlways": "18%",
+          "ratioOften": "38%",
+          "ratioSometimes": "22%",
+          "ratioSeldom": "13%",
+          "ratioNever": "-"
+        }
+      }
+    ]
+  }
+}

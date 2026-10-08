@@ -1,0 +1,8 @@
+{"elementFormDefault": "qualified", "targetNamespace": "https://geodata.scb.se/stat", "targetPrefix": "stat",
+ "featureTypes": [{"typeName": "DeSO_2025", "properties": [
+   {"name": "desokod", "maxOccurs": 1, "minOccurs": 0, "nillable": true, "type": "xsd:string", "localType": "string"},
+   {"name": "regsokod", "maxOccurs": 1, "minOccurs": 0, "nillable": true, "type": "xsd:string", "localType": "string"},
+   {"name": "kommunkod", "maxOccurs": 1, "minOccurs": 0, "nillable": true, "type": "xsd:string", "localType": "string"},
+   {"name": "kommunnamn", "maxOccurs": 1, "minOccurs": 0, "nillable": true, "type": "xsd:string", "localType": "string"},
+   {"name": "geom", "maxOccurs": 1, "minOccurs": 0, "nillable": true, "type": "gml:MultiSurface", "localType": "MultiSurface"}
+ ]}]}

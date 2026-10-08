@@ -1,0 +1,154 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": {
+  "_embedded": {
+   "educationEvents": [
+    {
+     "id": "edu-event-79033948-VI25",
+     "schoolUnitCode": "79033948",
+     "schoolUnitName": "NTI Gymnasiet Helsingborg",
+     "studyPathCode": "VI25",
+     "studyPathName": "Vidareutbildning i form av ett fjärde tekniskt år",
+     "schoolOrientation": "ALLMAN",
+     "studyPathCategory": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+     "startDate": "2026-07-31 00:00:00",
+     "endDate": "2027-07-30 22:00:00",
+     "typeOfSchooling": {
+      "code": "gy",
+      "displayName": "Gymnasieskolan"
+     },
+     "visitingAddressCity": "Helsingborg",
+     "resursSkola": "false",
+     "geographicalAreaCode": "1283",
+     "studyPaths": [
+      {
+       "id": null,
+       "schoolUnitCode": "79033948",
+       "schoolUnitName": "NTI Gymnasiet Helsingborg",
+       "studyPathCode": "VIINO",
+       "studyPathName": "Informationsteknik",
+       "schoolOrientation": "ALLMAN",
+       "startDate": "2026-07-31 22:00:00",
+       "endDate": "2027-07-30 22:00:00",
+       "typeOfSchooling": {
+        "code": "gy",
+        "displayName": "Gymnasieskolan"
+       },
+       "visitingAddressCity": "Helsingborg",
+       "visitingAddressStreet": "Carl Krooks gata 9",
+       "resursSkola": "false",
+       "principalOrganizerType": "ENSKILD",
+       "programVarianter": "",
+       "programVariantList": [],
+       "documentType": null,
+       "_links": {
+        "self": {
+         "href": "https://api.skolverket.se/planned-educations/v4/school-units/79033948/education-events/VIINO"
+        },
+        "school-unit": {
+         "href": "https://api.skolverket.se/planned-educations/v4/school-units/79033948"
+        },
+        "program": {
+         "href": "https://api.skolverket.se/planned-educations/v4/school-units/79033948/education-events/VI25"
+        }
+       }
+      }
+     ],
+     "studyPathsVariants": [],
+     "principalOrganizerType": "ENSKILD",
+     "programVarianter": "",
+     "programVariantList": [],
+     "documentType": "EDUCATION_EVENT",
+     "_links": {
+      "school-unit": {
+       "href": "https://api.skolverket.se/planned-educations/v4/school-units/79033948"
+      }
+     }
+    },
+    {
+     "id": "edu-event-79094701-VI25",
+     "schoolUnitCode": "79094701",
+     "schoolUnitName": "NTI Gymnasiet Johanneberg",
+     "studyPathCode": "VI25",
+     "studyPathName": "Vidareutbildning i form av ett fjärde tekniskt år",
+     "schoolOrientation": "ALLMAN",
+     "studyPathCategory": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+     "startDate": "2026-07-31 00:00:00",
+     "endDate": "2027-07-30 22:00:00",
+     "typeOfSchooling": {
+      "code": "gy",
+      "displayName": "Gymnasieskolan"
+     },
+     "visitingAddressCity": "Göteborg",
+     "resursSkola": "false",
+     "geographicalAreaCode": "1480",
+     "studyPaths": [
+      {
+       "id": null,
+       "schoolUnitCode": "79094701",
+       "schoolUnitName": "NTI Gymnasiet Johanneberg",
+       "studyPathCode": "VIINO",
+       "studyPathName": "Informationsteknik",
+       "schoolOrientation": "ALLMAN",
+       "startDate": "2026-07-31 22:00:00",
+       "endDate": "2027-07-30 22:00:00",
+       "typeOfSchooling": {
+        "code": "gy",
+        "displayName": "Gymnasieskolan"
+       },
+       "visitingAddressCity": "Göteborg",
+       "visitingAddressStreet": "Origovägen 4",
+       "resursSkola": "false",
+       "principalOrganizerType": "ENSKILD",
+       "programVarianter": "",
+       "programVariantList": [],
+       "documentType": null,
+       "_links": {
+        "self": {
+         "href": "https://api.skolverket.se/planned-educations/v4/school-units/79094701/education-events/VIINO"
+        },
+        "school-unit": {
+         "href": "https://api.skolverket.se/planned-educations/v4/school-units/79094701"
+        },
+        "program": {
+         "href": "https://api.skolverket.se/planned-educations/v4/school-units/79094701/education-events/VI25"
+        }
+       }
+      }
+     ],
+     "studyPathsVariants": [],
+     "principalOrganizerType": "ENSKILD",
+     "programVarianter": "",
+     "programVariantList": [],
+     "documentType": "EDUCATION_EVENT",
+     "_links": {
+      "school-unit": {
+       "href": "https://api.skolverket.se/planned-educations/v4/school-units/79094701"
+      }
+     }
+    }
+   ]
+  },
+  "_links": {
+   "first": {
+    "href": "https://api.skolverket.se/planned-educations/v4/education-events-new?page=0&size=2"
+   },
+   "self": {
+    "href": "https://api.skolverket.se/planned-educations/v4/education-events-new?page=0&size=2"
+   },
+   "next": {
+    "href": "https://api.skolverket.se/planned-educations/v4/education-events-new?page=1&size=2"
+   },
+   "last": {
+    "href": "https://api.skolverket.se/planned-educations/v4/education-events-new?page=3557&size=2"
+   }
+  },
+  "page": {
+   "size": 2,
+   "totalElements": 7116,
+   "totalPages": 3558,
+   "number": 0
+  }
+ }
+}

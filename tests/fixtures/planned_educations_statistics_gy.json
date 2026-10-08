@@ -1,0 +1,976 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": {
+  "programMetrics": [
+   {
+    "programCode": "EK",
+    "averageResultNationalTestsSubjectSVE": [
+     {
+      "value": "11,3",
+      "valueType": "EXISTS",
+      "timePeriod": "VT24"
+     }
+    ],
+    "sveSubjectTest": "Svenska 3",
+    "averageResultNationalTestsSubjectSVA": [
+     {
+      "value": "12,8",
+      "valueType": "EXISTS",
+      "timePeriod": "VT24"
+     }
+    ],
+    "svaSubjectTest": "Svenska som andraspråk 3",
+    "averageResultNationalTestsSubjectMA1": [
+     {
+      "value": "5,2",
+      "valueType": "EXISTS",
+      "timePeriod": "VT24"
+     }
+    ],
+    "ma1SubjectTest": "Matematik 2B",
+    "averageResultNationalTestsSubjectMA2": [
+     {
+      "value": "6,1",
+      "valueType": "EXISTS",
+      "timePeriod": "VT24"
+     }
+    ],
+    "ma2SubjectTest": "Matematik 3B",
+    "averageResultNationalTestsSubjectENG": [
+     {
+      "value": "13,1",
+      "valueType": "EXISTS",
+      "timePeriod": "VT24"
+     }
+    ],
+    "engSubjectTest": "Engelska 6",
+    "schoolUnit": "49862313",
+    "specialTeacherPositions": [
+     {
+      "value": "0,9",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "studentsPerTeacherQuota": [
+     {
+      "value": "18,3",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "certifiedTeachersQuota": [
+     {
+      "value": "96,6",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "docLinks": null,
+    "totalNumberOfPupils": [
+     {
+      "value": "cirka 270",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "ratioOfStudentsEligibleForUndergraduateEducation": [],
+    "gradesPointsForStudents": [],
+    "gradesPointsForStudentsWithExam": [],
+    "ratioOfPupilsWithExamWithin3Years": [
+     {
+      "value": "72,9",
+      "valueType": "EXISTS",
+      "timePeriod": "2021/22"
+     },
+     {
+      "value": "76,6",
+      "valueType": "EXISTS",
+      "timePeriod": "2020/21"
+     },
+     {
+      "value": "55,6",
+      "valueType": "EXISTS",
+      "timePeriod": "2019/20"
+     },
+     {
+      "value": "71,1",
+      "valueType": "EXISTS",
+      "timePeriod": "2018/19"
+     },
+     {
+      "value": "73,9",
+      "valueType": "EXISTS",
+      "timePeriod": "2017/18"
+     }
+    ],
+    "admissionPointsMin": [
+     {
+      "value": "230,0",
+      "valueType": "EXISTS",
+      "timePeriod": "2024"
+     }
+    ],
+    "admissionPointsAverage": [
+     {
+      "value": "259,3",
+      "valueType": "EXISTS",
+      "timePeriod": "2024"
+     }
+    ],
+    "admissionPointsSemester": null,
+    "specialEducatorsQuota": [
+     {
+      "value": "8,3",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "_links": {
+     "self": {
+      "href": "http://localhost:9001/planned-educations/v4/school-units/49862313/statistics/gy"
+     }
+    }
+   },
+   {
+    "programCode": "IMA",
+    "averageResultNationalTestsSubjectSVE": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "sveSubjectTest": null,
+    "averageResultNationalTestsSubjectSVA": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "svaSubjectTest": null,
+    "averageResultNationalTestsSubjectMA1": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "ma1SubjectTest": null,
+    "averageResultNationalTestsSubjectMA2": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "ma2SubjectTest": null,
+    "averageResultNationalTestsSubjectENG": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "engSubjectTest": null,
+    "schoolUnit": "49862313",
+    "specialTeacherPositions": [
+     {
+      "value": "0,9",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "studentsPerTeacherQuota": [
+     {
+      "value": "18,3",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "certifiedTeachersQuota": [
+     {
+      "value": "96,6",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "docLinks": null,
+    "totalNumberOfPupils": [
+     {
+      "value": "cirka 10",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "ratioOfStudentsEligibleForUndergraduateEducation": [],
+    "gradesPointsForStudents": [],
+    "gradesPointsForStudentsWithExam": [],
+    "ratioOfPupilsWithExamWithin3Years": [],
+    "admissionPointsMin": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "admissionPointsAverage": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "admissionPointsSemester": null,
+    "specialEducatorsQuota": [
+     {
+      "value": "8,3",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "_links": {
+     "self": {
+      "href": "http://localhost:9001/planned-educations/v4/school-units/49862313/statistics/gy"
+     }
+    }
+   },
+   {
+    "programCode": "IMS",
+    "averageResultNationalTestsSubjectSVE": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "sveSubjectTest": null,
+    "averageResultNationalTestsSubjectSVA": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "svaSubjectTest": null,
+    "averageResultNationalTestsSubjectMA1": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "ma1SubjectTest": null,
+    "averageResultNationalTestsSubjectMA2": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "ma2SubjectTest": null,
+    "averageResultNationalTestsSubjectENG": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "engSubjectTest": null,
+    "schoolUnit": "49862313",
+    "specialTeacherPositions": [
+     {
+      "value": "0,9",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "studentsPerTeacherQuota": [
+     {
+      "value": "18,3",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "certifiedTeachersQuota": [
+     {
+      "value": "96,6",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "docLinks": null,
+    "totalNumberOfPupils": [
+     {
+      "value": "cirka 60",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "ratioOfStudentsEligibleForUndergraduateEducation": [],
+    "gradesPointsForStudents": [],
+    "gradesPointsForStudentsWithExam": [],
+    "ratioOfPupilsWithExamWithin3Years": [
+     {
+      "value": ".",
+      "valueType": "MISSING",
+      "timePeriod": "2021/22"
+     },
+     {
+      "value": ".",
+      "valueType": "MISSING",
+      "timePeriod": "2020/21"
+     },
+     {
+      "value": ".",
+      "valueType": "MISSING",
+      "timePeriod": "2019/20"
+     },
+     {
+      "value": ".",
+      "valueType": "MISSING",
+      "timePeriod": "2018/19"
+     }
+    ],
+    "admissionPointsMin": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "admissionPointsAverage": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "admissionPointsSemester": null,
+    "specialEducatorsQuota": [
+     {
+      "value": "8,3",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "_links": {
+     "self": {
+      "href": "http://localhost:9001/planned-educations/v4/school-units/49862313/statistics/gy"
+     }
+    }
+   },
+   {
+    "programCode": "IMV",
+    "averageResultNationalTestsSubjectSVE": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "sveSubjectTest": null,
+    "averageResultNationalTestsSubjectSVA": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "svaSubjectTest": null,
+    "averageResultNationalTestsSubjectMA1": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "ma1SubjectTest": null,
+    "averageResultNationalTestsSubjectMA2": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "ma2SubjectTest": null,
+    "averageResultNationalTestsSubjectENG": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "engSubjectTest": null,
+    "schoolUnit": "49862313",
+    "specialTeacherPositions": [
+     {
+      "value": "0,9",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "studentsPerTeacherQuota": [
+     {
+      "value": "18,3",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "certifiedTeachersQuota": [
+     {
+      "value": "96,6",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "docLinks": null,
+    "totalNumberOfPupils": [
+     {
+      "value": "cirka 10",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "ratioOfStudentsEligibleForUndergraduateEducation": [],
+    "gradesPointsForStudents": [],
+    "gradesPointsForStudentsWithExam": [],
+    "ratioOfPupilsWithExamWithin3Years": [],
+    "admissionPointsMin": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "admissionPointsAverage": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "admissionPointsSemester": null,
+    "specialEducatorsQuota": [
+     {
+      "value": "8,3",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "_links": {
+     "self": {
+      "href": "http://localhost:9001/planned-educations/v4/school-units/49862313/statistics/gy"
+     }
+    }
+   },
+   {
+    "programCode": "NA",
+    "averageResultNationalTestsSubjectSVE": [
+     {
+      "value": "15,5",
+      "valueType": "EXISTS",
+      "timePeriod": "VT24"
+     }
+    ],
+    "sveSubjectTest": "Svenska 3",
+    "averageResultNationalTestsSubjectSVA": [
+     {
+      "value": "13,5",
+      "valueType": "EXISTS",
+      "timePeriod": "VT24"
+     }
+    ],
+    "svaSubjectTest": "Svenska som andraspråk 3",
+    "averageResultNationalTestsSubjectMA1": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "ma1SubjectTest": null,
+    "averageResultNationalTestsSubjectMA2": [
+     {
+      "value": "11,3",
+      "valueType": "EXISTS",
+      "timePeriod": "HT24"
+     }
+    ],
+    "ma2SubjectTest": "Matematik 4",
+    "averageResultNationalTestsSubjectENG": [
+     {
+      "value": "16,1",
+      "valueType": "EXISTS",
+      "timePeriod": "VT24"
+     }
+    ],
+    "engSubjectTest": "Engelska 6",
+    "schoolUnit": "49862313",
+    "specialTeacherPositions": [
+     {
+      "value": "0,9",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "studentsPerTeacherQuota": [
+     {
+      "value": "18,3",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "certifiedTeachersQuota": [
+     {
+      "value": "96,6",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "docLinks": null,
+    "totalNumberOfPupils": [
+     {
+      "value": "cirka 80",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "ratioOfStudentsEligibleForUndergraduateEducation": [],
+    "gradesPointsForStudents": [],
+    "gradesPointsForStudentsWithExam": [],
+    "ratioOfPupilsWithExamWithin3Years": [
+     {
+      "value": "81,3",
+      "valueType": "EXISTS",
+      "timePeriod": "2021/22"
+     },
+     {
+      "value": "62,5",
+      "valueType": "EXISTS",
+      "timePeriod": "2020/21"
+     },
+     {
+      "value": "74,2",
+      "valueType": "EXISTS",
+      "timePeriod": "2019/20"
+     },
+     {
+      "value": "67,7",
+      "valueType": "EXISTS",
+      "timePeriod": "2018/19"
+     },
+     {
+      "value": "75,0",
+      "valueType": "EXISTS",
+      "timePeriod": "2017/18"
+     }
+    ],
+    "admissionPointsMin": [
+     {
+      "value": "265,0",
+      "valueType": "EXISTS",
+      "timePeriod": "2024"
+     }
+    ],
+    "admissionPointsAverage": [
+     {
+      "value": "290,9",
+      "valueType": "EXISTS",
+      "timePeriod": "2024"
+     }
+    ],
+    "admissionPointsSemester": null,
+    "specialEducatorsQuota": [
+     {
+      "value": "8,3",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "_links": {
+     "self": {
+      "href": "http://localhost:9001/planned-educations/v4/school-units/49862313/statistics/gy"
+     }
+    }
+   },
+   {
+    "programCode": "SA",
+    "averageResultNationalTestsSubjectSVE": [
+     {
+      "value": "12,8",
+      "valueType": "EXISTS",
+      "timePeriod": "VT24"
+     }
+    ],
+    "sveSubjectTest": "Svenska 3",
+    "averageResultNationalTestsSubjectSVA": [
+     {
+      "value": "5,5",
+      "valueType": "EXISTS",
+      "timePeriod": "VT24"
+     }
+    ],
+    "svaSubjectTest": "Svenska som andraspråk 3",
+    "averageResultNationalTestsSubjectMA1": [
+     {
+      "value": "2,6",
+      "valueType": "EXISTS",
+      "timePeriod": "VT24"
+     }
+    ],
+    "ma1SubjectTest": "Matematik 2B",
+    "averageResultNationalTestsSubjectMA2": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "ma2SubjectTest": null,
+    "averageResultNationalTestsSubjectENG": [
+     {
+      "value": "11,1",
+      "valueType": "EXISTS",
+      "timePeriod": "VT24"
+     }
+    ],
+    "engSubjectTest": "Engelska 6",
+    "schoolUnit": "49862313",
+    "specialTeacherPositions": [
+     {
+      "value": "0,9",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "studentsPerTeacherQuota": [
+     {
+      "value": "18,3",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "certifiedTeachersQuota": [
+     {
+      "value": "96,6",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "docLinks": null,
+    "totalNumberOfPupils": [
+     {
+      "value": "cirka 190",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "ratioOfStudentsEligibleForUndergraduateEducation": [],
+    "gradesPointsForStudents": [],
+    "gradesPointsForStudentsWithExam": [],
+    "ratioOfPupilsWithExamWithin3Years": [
+     {
+      "value": "74,6",
+      "valueType": "EXISTS",
+      "timePeriod": "2021/22"
+     },
+     {
+      "value": "66,1",
+      "valueType": "EXISTS",
+      "timePeriod": "2020/21"
+     },
+     {
+      "value": "69,1",
+      "valueType": "EXISTS",
+      "timePeriod": "2019/20"
+     },
+     {
+      "value": "71,6",
+      "valueType": "EXISTS",
+      "timePeriod": "2018/19"
+     },
+     {
+      "value": "64,5",
+      "valueType": "EXISTS",
+      "timePeriod": "2017/18"
+     }
+    ],
+    "admissionPointsMin": [
+     {
+      "value": "210,0",
+      "valueType": "EXISTS",
+      "timePeriod": "2024"
+     }
+    ],
+    "admissionPointsAverage": [
+     {
+      "value": "242,0",
+      "valueType": "EXISTS",
+      "timePeriod": "2024"
+     }
+    ],
+    "admissionPointsSemester": null,
+    "specialEducatorsQuota": [
+     {
+      "value": "8,3",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "_links": {
+     "self": {
+      "href": "http://localhost:9001/planned-educations/v4/school-units/49862313/statistics/gy"
+     }
+    }
+   },
+   {
+    "programCode": "TE",
+    "averageResultNationalTestsSubjectSVE": [
+     {
+      "value": "11,3",
+      "valueType": "EXISTS",
+      "timePeriod": "VT24"
+     }
+    ],
+    "sveSubjectTest": "Svenska 3",
+    "averageResultNationalTestsSubjectSVA": [
+     {
+      "value": "..",
+      "valueType": "OMITTED_DUE_TO_BASED_ON_FEW_PUPILS",
+      "timePeriod": "VT24"
+     }
+    ],
+    "svaSubjectTest": "Svenska som andraspråk 3",
+    "averageResultNationalTestsSubjectMA1": [
+     {
+      "value": "9,4",
+      "valueType": "EXISTS",
+      "timePeriod": "VT24"
+     }
+    ],
+    "ma1SubjectTest": "Matematik 3C",
+    "averageResultNationalTestsSubjectMA2": [
+     {
+      "value": null,
+      "valueType": "MISSING",
+      "timePeriod": null
+     }
+    ],
+    "ma2SubjectTest": null,
+    "averageResultNationalTestsSubjectENG": [
+     {
+      "value": "17,0",
+      "valueType": "EXISTS",
+      "timePeriod": "VT24"
+     }
+    ],
+    "engSubjectTest": "Engelska 6",
+    "schoolUnit": "49862313",
+    "specialTeacherPositions": [
+     {
+      "value": "0,9",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "studentsPerTeacherQuota": [
+     {
+      "value": "18,3",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "certifiedTeachersQuota": [
+     {
+      "value": "96,6",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "docLinks": null,
+    "totalNumberOfPupils": [
+     {
+      "value": "cirka 60",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "ratioOfStudentsEligibleForUndergraduateEducation": [],
+    "gradesPointsForStudents": [],
+    "gradesPointsForStudentsWithExam": [],
+    "ratioOfPupilsWithExamWithin3Years": [
+     {
+      "value": "62,5",
+      "valueType": "EXISTS",
+      "timePeriod": "2021/22"
+     },
+     {
+      "value": "..",
+      "valueType": "OMITTED_DUE_TO_BASED_ON_FEW_PUPILS",
+      "timePeriod": "2020/21"
+     },
+     {
+      "value": "100,0",
+      "valueType": "EXISTS",
+      "timePeriod": "2019/20"
+     },
+     {
+      "value": "73,7",
+      "valueType": "EXISTS",
+      "timePeriod": "2018/19"
+     },
+     {
+      "value": "..",
+      "valueType": "OMITTED_DUE_TO_BASED_ON_FEW_PUPILS",
+      "timePeriod": "2017/18"
+     }
+    ],
+    "admissionPointsMin": [
+     {
+      "value": "237,5",
+      "valueType": "EXISTS",
+      "timePeriod": "2024"
+     }
+    ],
+    "admissionPointsAverage": [
+     {
+      "value": "259,4",
+      "valueType": "EXISTS",
+      "timePeriod": "2024"
+     }
+    ],
+    "admissionPointsSemester": null,
+    "specialEducatorsQuota": [
+     {
+      "value": "8,3",
+      "valueType": "EXISTS",
+      "timePeriod": "2024/25"
+     }
+    ],
+    "_links": {
+     "self": {
+      "href": "http://localhost:9001/planned-educations/v4/school-units/49862313/statistics/gy"
+     }
+    }
+   }
+  ],
+  "specialTeacherPositions": [
+   {
+    "value": "0,9",
+    "valueType": "EXISTS",
+    "timePeriod": "2024/25"
+   },
+   {
+    "value": "0,9",
+    "valueType": "EXISTS",
+    "timePeriod": "2023/24"
+   },
+   {
+    "value": "0,9",
+    "valueType": "EXISTS",
+    "timePeriod": "2022/23"
+   },
+   {
+    "value": "1,0",
+    "valueType": "EXISTS",
+    "timePeriod": "2021/22"
+   },
+   {
+    "value": "1,0",
+    "valueType": "EXISTS",
+    "timePeriod": "2020/21"
+   }
+  ],
+  "studentsPerTeacherQuota": [
+   {
+    "value": "18,3",
+    "valueType": "EXISTS",
+    "timePeriod": "2024/25"
+   },
+   {
+    "value": "17,5",
+    "valueType": "EXISTS",
+    "timePeriod": "2023/24"
+   },
+   {
+    "value": "14,3",
+    "valueType": "EXISTS",
+    "timePeriod": "2022/23"
+   },
+   {
+    "value": "15,3",
+    "valueType": "EXISTS",
+    "timePeriod": "2021/22"
+   },
+   {
+    "value": "14,0",
+    "valueType": "EXISTS",
+    "timePeriod": "2020/21"
+   }
+  ],
+  "certifiedTeachersQuota": [
+   {
+    "value": "96,6",
+    "valueType": "EXISTS",
+    "timePeriod": "2024/25"
+   },
+   {
+    "value": "94,5",
+    "valueType": "EXISTS",
+    "timePeriod": "2023/24"
+   },
+   {
+    "value": "92,7",
+    "valueType": "EXISTS",
+    "timePeriod": "2022/23"
+   },
+   {
+    "value": "82,9",
+    "valueType": "EXISTS",
+    "timePeriod": "2021/22"
+   },
+   {
+    "value": "83,0",
+    "valueType": "EXISTS",
+    "timePeriod": "2020/21"
+   }
+  ],
+  "specialEducatorsQuota": [
+   {
+    "value": "8,3",
+    "valueType": "EXISTS",
+    "timePeriod": "2024/25"
+   },
+   {
+    "value": "5,6",
+    "valueType": "EXISTS",
+    "timePeriod": "2023/24"
+   },
+   {
+    "value": "5,0",
+    "valueType": "EXISTS",
+    "timePeriod": "2022/23"
+   },
+   {
+    "value": "5,5",
+    "valueType": "EXISTS",
+    "timePeriod": "2021/22"
+   },
+   {
+    "value": "5,1",
+    "valueType": "EXISTS",
+    "timePeriod": "2020/21"
+   }
+  ],
+  "totalNumberOfPupils": [
+   {
+    "value": "cirka 660",
+    "valueType": "EXISTS",
+    "timePeriod": "2024/25"
+   }
+  ]
+ }
+}

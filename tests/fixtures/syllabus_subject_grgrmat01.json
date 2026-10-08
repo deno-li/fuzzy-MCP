@@ -1,0 +1,65 @@
+{
+ "apiPublisher": "Skolverket",
+ "apiName": "Syllabus API",
+ "apiVersion": "1.16.2-SNAPSHOT",
+ "apiReleased": "2026-05-08",
+ "apiStatus": "active",
+ "apiDocumentation": "https://www.skolverket.se/om-oss/oppna-data/api-for-laroplaner-kurs--och-amnesplaner-syllabus",
+ "dataOrigin": "Syllabus API - Skolverket - 1.16.2-SNAPSHOT",
+ "calledMethod": "ReadSubject",
+ "totalElements": 1,
+ "processingTime": "CACHED 1 min, until 2026-10-06T10:20:45.912404400",
+ "startedCaching": "2026-10-06T10:19:45.912404400",
+ "codeParam": "GRGRMAT01",
+ "dateParam": "2026-10-06",
+ "subject": {
+  "code": "GRGRMAT01",
+  "nameHeading": "<h2>Matematik</h2>",
+  "name": "Matematik",
+  "typeOfSyllabus": "COURSE_SYLLABUS",
+  "startDate": "2022-07-01",
+  "modifiedDate": "2024-02-09",
+  "version": 14,
+  "description": "<p>Matematiken har en flertusenårig historia med bidrag från många kulturer.</p>",
+  "purposeHeading": "<h3>Syfte</h3>",
+  "purpose": "<p>Undervisningen i ämnet matematik ska syfta till att eleverna utvecklar kunskaper om matematik och matematikens användning i vardagen och inom olika ämnesområden.</p><p>Genom undervisningen i ämnet matematik ska eleverna sammanfattningsvis ges förutsättningar att utveckla sin </p><ul><li>förmåga att använda och beskriva matematiska begrepp och samband mellan begrepp,</li><li>förmåga att välja och använda lämpliga matematiska metoder för att göra beräkningar och lösa rutinuppgifter,</li><li>förmåga att formulera och lösa problem med hjälp av matematik och värdera valda strategier,</li><li>förmåga att föra och följa matematiska resonemang,</li><li>förmåga att använda matematikens uttrycksformer för att samtala om och redogöra för frågeställningar, beräkningar och slutsatser,</li></ul>",
+  "schoolTypes": [
+   "GR",
+   "SAM"
+  ],
+  "centralCntHeading": "<h3>Centralt innehåll</h3>",
+  "centralContents": [
+   {
+    "text": "<h4>Taluppfattning och tals användning</h4><ul><li>Naturliga tal och deras egenskaper samt hur talen delas upp och används för att ange antal och ordning.</li><li>Positionssystemet och hur det används för att beskriva naturliga tal.</li><li>Symboler för tal och symbolernas utveckling i några olika kulturer genom historien.</li></ul><h4>Algebra</h4><ul><li>Matematiska likheter och likhetstecknets betydelse.</li><li>Obekanta tal och hur de kan betecknas med en symbol.</li><li>Enkla mönster i talföljder och enkla geometriska mönster samt hur de konstrueras, beskrivs och uttrycks.</li></ul>",
+    "year": "1-3"
+   },
+   {
+    "text": "<h4>Taluppfattning och tals användning</h4><ul><li>Reella tal och deras egenskaper samt talens användning i matematiska situationer.</li><li>Talsystemets utveckling från naturliga tal till reella tal.</li><li>Tal i potensform. Grundpotensform för att uttrycka små och stora tal samt användning av prefix.</li></ul><h4>Algebra</h4><ul><li>Matematiska likheter samt hur likhetstecknet används för att teckna ekvationer och funktioner.</li><li>Variablers användning i algebraiska uttryck, formler, ekvationer och funktioner.</li><li>Metoder för att lösa linjära ekvationer och enkla andragradsekvationer.</li></ul>",
+    "year": "7-9"
+   }
+  ],
+  "knowledgeReqsHeading": "<h3>Betygskriterier</h3>",
+  "knowledgeRequirements": [
+   {
+    "text": "<h4>Betygskriterier för betyget E i slutet av årskurs 6</h4><p>Eleven visar grundläggande kunskaper om matematiska begrepp samt använder och beskriver begrepp och samband mellan begrepp inom områdena taluppfattning och tals användning, algebra, geometri, sannolikhet och statistik samt samband och förändring med tillfredsställande säkerhet. Eleven väljer och använder i huvudsak fungerande matematiska metoder för att göra beräkningar och lösa rutinuppgifter inom områdena taluppfattning och tals användning, algebra, geometri, sannolikhet och statistik samt samband och förändring med tillfredsställande säkerhet. Eleven löser enkla problem. Eleven bidrar till något förslag på alternativt tillvägagångssätt och värderar resultatens rimlighet. Eleven för och följer matematiska resonemang genom att framföra och bemöta påståenden med enkla matematiska argument. Eleven redogör för och samtalar om tillvägagångssätt på ett i huvudsak fungerande sätt och använder då symboler och andra matematiska uttrycksformer.</p>",
+    "year": "6",
+    "gradeStep": "E"
+   },
+   {
+    "text": "<h4>Betygskriterier för betyget D i slutet av årskurs 6</h4><p>Elevens kunskaper bedöms sammantaget vara mellan C och E.</p>",
+    "year": "6",
+    "gradeStep": "D"
+   },
+   {
+    "text": "<h4>Betygskriterier för betyget E i slutet av årskurs 9</h4><p>Eleven visar grundläggande kunskaper om matematiska begrepp samt använder och beskriver begrepp och samband mellan begrepp inom områdena taluppfattning och tals användning, algebra, geometri, sannolikhet och statistik samt samband och förändring med tillfredsställande säkerhet. Eleven väljer och använder i huvudsak fungerande matematiska metoder för att göra beräkningar och lösa rutinuppgifter inom områdena taluppfattning och tals användning, algebra, geometri, sannolikhet och statistik samt samband och förändring med tillfredsställande säkerhet. Eleven löser enkla problem. Eleven bidrar till något förslag på alternativt tillvägagångssätt. I samband med problemlösning bidrar eleven till att formulera enkla matematiska modeller som kan tillämpas i sammanhanget. Eleven värderar strategier och resultatens rimlighet på ett enkelt sätt. Eleven för och följer matematiska resonemang genom att framföra och bemöta påståenden med enkla matematiska argument. Eleven redogör för och samtalar om tillvägagångssätt på ett i huvudsak fungerande sätt och använder då symboler och andra matematiska uttrycksformer.</p>",
+    "year": "9",
+    "gradeStep": "E"
+   },
+   {
+    "text": "<h4>Betygskriterier för betyget D i slutet av årskurs 9</h4><p>Elevens kunskaper bedöms sammantaget vara mellan C och E.</p>",
+    "year": "9",
+    "gradeStep": "D"
+   }
+  ]
+ }
+}

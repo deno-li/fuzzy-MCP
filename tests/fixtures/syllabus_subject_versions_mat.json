@@ -1,0 +1,57 @@
+{
+ "apiPublisher": "Skolverket",
+ "apiName": "Syllabus API",
+ "apiVersion": "1.16.2-SNAPSHOT",
+ "apiReleased": "2026-05-08",
+ "apiStatus": "active",
+ "apiDocumentation": "https://www.skolverket.se/om-oss/oppna-data/api-for-laroplaner-kurs--och-amnesplaner-syllabus",
+ "dataOrigin": "Syllabus API - Skolverket - 1.16.2-SNAPSHOT",
+ "calledMethod": "ListSubjectVersions",
+ "totalElements": 2,
+ "processingTime": "75 ms",
+ "startedCaching": "2026-10-06T12:06:39.8861591",
+ "codeParam": "MAT",
+ "dateParam": "2026-10-06",
+ "subjects": [
+  {
+   "code": "MAT",
+   "name": "Matematik",
+   "version": 10,
+   "startDate": "2021-07-01",
+   "modifiedDate": "2023-07-13",
+   "skolfsGrund": "2010:261",
+   "skolfsAndring": "2020:94",
+   "typeOfSyllabus": "SUBJECT_SYLLABUS",
+   "schoolTypes": [
+    "GY",
+    "VUXGY"
+   ],
+   "categories": [
+    {
+     "name": "Bilaga4-ämnen",
+     "code": "COMMON"
+    }
+   ]
+  },
+  {
+   "code": "MAT",
+   "name": "Matematik",
+   "version": 11,
+   "startDate": "2022-07-01",
+   "modifiedDate": "2023-04-14",
+   "skolfsGrund": "2010:261",
+   "skolfsAndring": "2022:12",
+   "typeOfSyllabus": "SUBJECT_SYLLABUS",
+   "schoolTypes": [
+    "GY",
+    "VUXGY"
+   ],
+   "categories": [
+    {
+     "name": "Kapitel 4-ämne",
+     "code": "COMMON2"
+    }
+   ]
+  }
+ ]
+}

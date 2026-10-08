@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: 2026 Deniz Özer
+#
+# SPDX-License-Identifier: CC0-1.0
+
+name: Fråga
+description: Ställ en fråga om installation eller användning
+labels: ["question"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Fråga
+    validations:
+      required: true

@@ -1,0 +1,41 @@
+{
+ "id": "kodstrukturer",
+ "titel": "Struktur för ämnesnivåkoder (Gy25) och gymnasiearbete",
+ "beskrivning": "Reguljära uttryck för att känna igen och validera koder i betygsdokumentation.",
+ "kalla": "Skolverket 'Skolverkets koder vid dokumentation av utbildning'; kontrollerat mot 1 113 nivåkoder i Syllabus-API:t.",
+ "licens": "CC0 1.0",
+ "koder": [
+  {
+   "kod": "GY25_AMNESNIVA",
+   "namn": "Ämnesnivåkod Gy25 i gymnasieskolan (9 tecken, t.ex. MATE1A00X)",
+   "monster": "^[A-ZÅÄÖ]{4}[1-9][0A-C][0-2][0PSTVDI]X$",
+   "verifiering": "referenskod",
+   "verifiering_not": "Strukturen med nio positioner kommer från Skolverkets sida Koder för gymnasieskolan och anpassade gymnasieskolan (via webbsökning); teckenuppsättningen, bl.a. D och I på position 8, är observerad i community-uttag av Skolverkets Syllabus-API, där bara nivå 1–5 förekommer fast mönstret tillåter 1–9. Mönstret gäller gymnasieskolans nivåkoder, inte anpassad gymnasieskolas (t.ex. ADMN1N0).",
+   "not": "Nivåkoder i anpassad gymnasieskola (Gyan25) har 7–8 tecken utan X, t.ex. ADMN1N0, och fångas inte av mönstret."
+  },
+  {
+   "kod": "GYMNASIEARBETE_GY11",
+   "namn": "Gymnasiearbete GY11",
+   "monster": "^GYAR[A-Z]{2}$",
+   "exempel": "GYARNA",
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "Mönster och exempel (GYARNA) bygger på Skolverkets sida Förklaring till Skolverkets kodsystem, via en webbsökningssammanfattning."
+  },
+  {
+   "kod": "GYMNASIEARBETE_GY25",
+   "namn": "Gymnasiearbete GY25",
+   "monster": "^GYAR[A-Z]{2}25$",
+   "exempel": "GYARBA25",
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "Mönster och exempel (GYARBA25) bygger på Skolverkets kodsida för gymnasieskolan (utbildning påbörjad efter 1 juli 2025), via en webbsökningssammanfattning."
+  },
+  {
+   "kod": "GYMNASIEARBETE_GY25_ANPASSAD",
+   "namn": "Gymnasiearbete GY25 anpassad gymnasieskola",
+   "monster": "^GYAN[A-Z]{2}25$",
+   "exempel": "GYANSN25",
+   "verifiering": "okänd",
+   "verifiering_not": "Mönster och exempel (GYANSN25) bygger bara på en webbsökningssammanfattning där källsidan inte anges."
+  }
+ ]
+}

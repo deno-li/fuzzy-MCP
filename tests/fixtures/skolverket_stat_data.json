@@ -1,0 +1,17 @@
+{
+  "version": "2.0", "class": "dataset",
+  "label": "Kommunala jämförelsetal för grundskola: Skolor och elever",
+  "source": "Skolverket", "updated": "2026-09-24T06:00:00Z",
+  "note": ["'.' = uppgift saknas, '..' = sekretess (färre än tio elever)"],
+  "role": {"time": ["time"]},
+  "id": ["variable", "level", "time"],
+  "size": [1, 2, 2],
+  "dimension": {
+    "variable": {"label": "Mått", "category": {"index": {"2": 0}, "label": {"2": "Elever, antal i huvudmannens skolor"}}},
+    "level": {"label": "Kommun [kommunkod] / indelning", "category": {"index": {"2180": 0, "00": 1}, "label": {"2180": "Gävle [2180]", "00": "Riket totalt"}}},
+    "time": {"label": "Läsår", "category": {"index": {"2024": 0, "2025": 1}, "label": {"2024": "2024/25", "2025": "2025/26"}}},
+    "ContentsCode": {"label": "tabellinnehåll", "category": {"index": {"Elever": 0}, "label": {"Elever": "Elever"}}}
+  },
+  "value": [10101, 10202, 1110000, 1120000],
+  "extension": {"px": {"official-statistics": false}}
+}

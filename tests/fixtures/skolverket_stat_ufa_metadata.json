@@ -1,0 +1,8 @@
+{
+  "title": "Underlag för analys för grundskola efter mått, huvudman och läsår",
+  "variables": [
+    {"code": "variable", "text": "mått", "values": ["0", "1"], "valueTexts": ["Elever, antal", "Andel elever med lägst E i samtliga ämnen åk 9"]},
+    {"code": "level", "text": "huvudman/skolenhet"},
+    {"code": "time", "text": "läsår", "values": ["2022", "2023", "2024", "2025"], "valueTexts": ["2022/23", "2023/24", "2024/25", "2025/26"], "time": true}
+  ]
+}

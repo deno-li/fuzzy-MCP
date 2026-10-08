@@ -1,0 +1,18 @@
+{
+  "version": "2.0", "class": "dataset",
+  "label": "Mobbning i skolan efter region, kön, ålder och år",
+  "source": "Folkhälsomyndigheten", "updated": "2023-05-30T06:00:00Z",
+  "role": {"time": ["År"], "metric": ["ContentsCode"]},
+  "id": ["Region", "Kategori", "Hur ofta", "Ålder", "Kön", "År", "ContentsCode"],
+  "size": [2, 1, 1, 1, 1, 1, 1],
+  "dimension": {
+    "Region": {"label": "region", "category": {"index": {"00": 0, "21": 1}, "label": {"00": "00 Riket", "21": "21 Gävleborgs län"}}},
+    "Kategori": {"label": "kategori", "category": {"index": {"Mobbad i skolan senaste månaderna": 0}, "label": {"Mobbad i skolan senaste månaderna": "Mobbad i skolan senaste månaderna"}}},
+    "Hur ofta": {"label": "hur ofta", "category": {"index": {"2-3 ggr/månad": 0}, "label": {"2-3 ggr/månad": "2-3 ggr/månad"}}},
+    "Ålder": {"label": "ålder", "category": {"index": {"13": 0}, "label": {"13": "13 år"}}},
+    "Kön": {"label": "kön", "category": {"index": {"1": 0}, "label": {"1": "Pojkar"}}},
+    "År": {"label": "år", "category": {"index": {"2021-2022": 0}, "label": {"2021-2022": "2021-2022"}}},
+    "ContentsCode": {"label": "EliminatedContents", "category": {"index": {"EliminatedValue": 0}, "label": {"EliminatedValue": "Andel (procent)"}, "unit": {"EliminatedValue": {"base": "procent", "decimals": 0}}}}
+  },
+  "value": [4, 5]
+}

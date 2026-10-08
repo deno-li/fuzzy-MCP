@@ -1,0 +1,10 @@
+{
+  "title": "Kommunala jämförelsetal för grundskola: Skolor och elever efter Mått, Kommun [kommunkod] / indelning och Läsår",
+  "variables": [
+    {"code": "variable", "text": "Mått", "values": ["0", "2", "3"],
+     "valueTexts": ["Skolenheter, antal", "Elever, antal i huvudmannens skolor", "Elever, andel (%) folkbokförda i kommunen i annan kommuns grundskola"]},
+    {"code": "level", "text": "Kommun [kommunkod] / indelning", "values": ["00", "21", "2180", "A1"],
+     "valueTexts": ["Riket totalt", "Gävleborgs län", "Gävle [2180]", "Storstäder (A1)"]},
+    {"code": "time", "text": "Läsår", "values": ["2023", "2024", "2025"], "valueTexts": ["2023/24", "2024/25", "2025/26"], "time": true}
+  ]
+}

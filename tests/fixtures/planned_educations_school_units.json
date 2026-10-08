@@ -1,0 +1,35 @@
+{
+  "status": "OK",
+  "message": "",
+  "body": {
+    "_embedded": {
+      "listedSchoolUnits": [
+        {
+          "code": "44673074",
+          "name": "Abrahamsbergsskolan",
+          "principalOrganizerType": "Kommunal",
+          "geographicalAreaCode": "0180",
+          "postCodeDistrict": "Bromma",
+          "abroadSchool": false,
+          "typeOfSchooling": [{"code": "gr", "schoolYears": ["7", "8", "9"]}],
+          "_links": {"self": {"href": "https://api.skolverket.se/planned-educations/v4/school-units/44673074"}}
+        },
+        {
+          "code": "84411355",
+          "name": "Kunskapsskolan Tumba",
+          "principalOrganizerType": "Fristående",
+          "geographicalAreaCode": "0127",
+          "postCodeDistrict": "Tumba",
+          "abroadSchool": false,
+          "typeOfSchooling": [{"code": "gr", "schoolYears": [4, 5, 6, 7, 8, 9]}],
+          "_links": {"self": {"href": "https://api.skolverket.se/planned-educations/v4/school-units/84411355"}}
+        }
+      ]
+    },
+    "_links": {
+      "self": {"href": "https://api.skolverket.se/planned-educations/v4/school-units?typeOfSchooling=gr&page=0&size=2"},
+      "next": {"href": "https://api.skolverket.se/planned-educations/v4/school-units?typeOfSchooling=gr&page=1&size=2"}
+    },
+    "page": {"size": 2, "totalElements": 4749, "totalPages": 2375, "number": 0}
+  }
+}

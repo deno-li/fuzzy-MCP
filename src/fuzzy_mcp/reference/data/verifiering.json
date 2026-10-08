@@ -1,0 +1,58 @@
+{
+ "id": "verifiering",
+ "titel": "Verifiering av kodlisteposter",
+ "beskrivning": "Styrda värden för fältet verifiering, som anger hur en post i kodlistorna är kontrollerad. Ordningen går från starkast till svagast underlag. Regler: 'okänd' betyder att postens ursprung inte är dokumenterat och ersätts aldrig med ett antaget värde (kodlistans kalla anger varifrån listan som helhet kommer). Bygger en post på flera uppgifter med olika underlag avgör det svagaste, och verifiering_not förklarar delarna. Objekt inuti en post (t.ex. inriktningar i ett program) ärver postens värde om de inte har ett eget. Uppslagstabeller som inte är poster får ett värde i verifiering_samlingar. Valfria följefält: verifiering_not (fritext), verifierad_datum (datum för ett verifierat uttag, ÅÅÅÅ-MM-DD) och kalla_url.",
+ "kalla": "fuzzy-mcp (projektets egen vokabulär)",
+ "licens": "CC0 1.0",
+ "koder": [
+  {
+   "kod": "författning",
+   "namn": "Författning",
+   "beskrivning": "Kontrollerat mot lagrum (t.ex. skollagen SL, skolförordningen SF, gymnasieförordningen GyF, förordningen om vuxenutbildning VuxF).",
+   "ordning": 1,
+   "verifiering": "härlett"
+  },
+  {
+   "kod": "officiell_spec",
+   "namn": "Officiell specifikation",
+   "beskrivning": "Myndighetens eller standardägarens OpenAPI eller specifikation.",
+   "ordning": 2,
+   "verifiering": "härlett"
+  },
+  {
+   "kod": "verifierat_uttag",
+   "namn": "Verifierat uttag",
+   "beskrivning": "Sett i ett verkligt API-svar; verifierad_datum anger när.",
+   "ordning": 3,
+   "verifiering": "härlett"
+  },
+  {
+   "kod": "myndighetswebb",
+   "namn": "Myndighetens webbplats",
+   "beskrivning": "Myndighetens webbplats. verifiering_not anger om sidan bara lästs via en sökmotorsammanfattning.",
+   "ordning": 4,
+   "verifiering": "härlett"
+  },
+  {
+   "kod": "referenskod",
+   "namn": "Referenskod",
+   "beskrivning": "Community- eller referensimplementation.",
+   "ordning": 5,
+   "verifiering": "härlett"
+  },
+  {
+   "kod": "härlett",
+   "namn": "Härlett",
+   "beskrivning": "Egen slutsats eller sammanställning i projektet.",
+   "ordning": 6,
+   "verifiering": "härlett"
+  },
+  {
+   "kod": "okänd",
+   "namn": "Okänd",
+   "beskrivning": "Postens ursprung är inte dokumenterat (se kodlistans kalla för listan som helhet). Kontrollera mot källan innan posten används som facit.",
+   "ordning": 7,
+   "verifiering": "härlett"
+  }
+ ]
+}

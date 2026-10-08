@@ -1,0 +1,102 @@
+{
+ "apiPublisher": "Skolverket",
+ "apiName": "Syllabus API",
+ "apiVersion": "1.16.2-SNAPSHOT",
+ "apiReleased": "2026-05-08",
+ "apiStatus": "active",
+ "apiDocumentation": "https://www.skolverket.se/om-oss/oppna-data/api-for-laroplaner-kurs--och-amnesplaner-syllabus",
+ "dataOrigin": "Syllabus API - Skolverket - 1.16.2-SNAPSHOT",
+ "calledMethod": "ReadProgram",
+ "totalElements": 1,
+ "processingTime": "75 ms",
+ "startedCaching": "2026-10-06T12:06:39.8861591",
+ "codeParam": "NA25",
+ "dateParam": "2026-10-06",
+ "program": {
+  "code": "NA25",
+  "name": "Naturvetenskapsprogrammet",
+  "studyPathType": "PROGRAM25",
+  "category": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+  "schoolTypes": [
+   "GY"
+  ],
+  "startDate": "2025-07-01",
+  "modifiedDate": "2026-02-13",
+  "description": "<p>Naturvetenskaps­programmet är ett högskoleförberedande program.</p>",
+  "foundationSubjects": {
+   "subjects": [
+    {
+     "code": "ENGE",
+     "name": "Engelska"
+    },
+    {
+     "code": "HIST",
+     "name": "Historia"
+    },
+    {
+     "code": "IDRO",
+     "name": "Idrott och hälsa"
+    },
+    {
+     "code": "MATE",
+     "name": "Matematik"
+    },
+    {
+     "code": "RELI",
+     "name": "Religionskunskap"
+    },
+    {
+     "code": "SAMH",
+     "name": "Samhällskunskap"
+    },
+    {
+     "code": "SVEN",
+     "name": "Svenska"
+    },
+    {
+     "code": "SVEA",
+     "name": "Svenska som andraspråk"
+    }
+   ]
+  },
+  "programmeSpecificSubjects": {
+   "subjects": [
+    {
+     "code": "BIOG",
+     "name": "Biologi"
+    },
+    {
+     "code": "FYSK",
+     "name": "Fysik"
+    },
+    {
+     "code": "KEMI",
+     "name": "Kemi"
+    },
+    {
+     "code": "MATO",
+     "name": "Matematik"
+    }
+   ]
+  },
+  "specialization": {
+   "name": "Fördjupningsämnen",
+   "subjects": [
+    {
+     "code": "ASTR",
+     "name": "Astronomi"
+    }
+   ]
+  },
+  "orientations": [
+   {
+    "code": "NANAP",
+    "name": "Naturvetenskap"
+   },
+   {
+    "code": "NANAA",
+    "name": "Naturvetenskap och samhälle"
+   }
+  ]
+ }
+}

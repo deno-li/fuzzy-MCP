@@ -1,0 +1,143 @@
+{
+ "apiPublisher": "Skolverket",
+ "apiName": "Syllabus API",
+ "apiVersion": "1.11.0",
+ "apiReleased": "2024-05-13",
+ "apiStatus": "active",
+ "apiDocumentation": "https://www.skolverket.se/om-oss/oppna-data/api-for-laroplaner-kurs--och-amnesplaner-syllabus",
+ "dataOrigin": "Syllabus API - Skolverket - 1.11.0",
+ "calledMethod": "ListSubjects",
+ "totalElements": 8,
+ "processingTime": "836 ms",
+ "startedCaching": "2024-06-14T14:05:47.985218385",
+ "dateParam": "2024-06-14",
+ "timeSpanParam": "LATEST",
+ "typeOfSyllabusParam": "ALL",
+ "subjects": [
+  {
+   "code": "ADM",
+   "name": "Administration",
+   "version": 3,
+   "startDate": "2022-07-01",
+   "modifiedDate": "2022-06-14",
+   "typeOfSyllabus": "SUBJECT_SYLLABUS",
+   "categories": [
+    {
+     "name": "Yrkesämne",
+     "code": "VOCATIONAL"
+    }
+   ],
+   "schoolTypes": [
+    "GY",
+    "VUXGY"
+   ]
+  },
+  {
+   "code": "DAN",
+   "name": "Dansgestaltning",
+   "version": 4,
+   "startDate": "2022-07-01",
+   "modifiedDate": "2023-04-14",
+   "typeOfSyllabus": "SUBJECT_SYLLABUS",
+   "categories": [
+    {
+     "name": "Kapitel 4-ämne",
+     "code": "COMMON2"
+    }
+   ],
+   "schoolTypes": [
+    "GY",
+    "VUXGY"
+   ]
+  },
+  {
+   "code": "ENG",
+   "name": "Engelska",
+   "version": 6,
+   "startDate": "2022-07-01",
+   "modifiedDate": "2023-04-13",
+   "typeOfSyllabus": "SUBJECT_SYLLABUS",
+   "categories": [
+    {
+     "name": "Kapitel 4-ämne",
+     "code": "COMMON2"
+    }
+   ],
+   "schoolTypes": [
+    "GY",
+    "VUXGY"
+   ]
+  },
+  {
+   "code": "GRGRMAT01",
+   "name": "Matematik",
+   "version": 14,
+   "startDate": "2022-07-01",
+   "modifiedDate": "2024-02-09",
+   "typeOfSyllabus": "COURSE_SYLLABUS",
+   "schoolTypes": [
+    "GR",
+    "SAM"
+   ]
+  },
+  {
+   "code": "GRNENG2",
+   "name": "Engelska",
+   "version": 7,
+   "startDate": "2022-07-01",
+   "points": "600",
+   "modifiedDate": "2022-06-03",
+   "typeOfSyllabus": "GRVUX_COURSE",
+   "schoolTypes": [
+    "VUXGR"
+   ]
+  },
+  {
+   "code": "MAT",
+   "name": "Matematik",
+   "version": 11,
+   "startDate": "2022-07-01",
+   "modifiedDate": "2023-04-14",
+   "typeOfSyllabus": "SUBJECT_SYLLABUS",
+   "categories": [
+    {
+     "name": "Kapitel 4-ämne",
+     "code": "COMMON2"
+    }
+   ],
+   "schoolTypes": [
+    "GY",
+    "VUXGY"
+   ]
+  },
+  {
+   "code": "SFI",
+   "name": "Kursplan för kommunal vuxenutbildning i svenska för invandrare",
+   "version": 11,
+   "startDate": "2022-07-01",
+   "modifiedDate": "2023-04-21",
+   "typeOfSyllabus": "SFI_SUBJECT_SYLLABUS",
+   "schoolTypes": [
+    "VUXSFI"
+   ]
+  },
+  {
+   "code": "SVE",
+   "name": "Svenska",
+   "version": 8,
+   "startDate": "2022-07-01",
+   "modifiedDate": "2023-04-13",
+   "typeOfSyllabus": "SUBJECT_SYLLABUS",
+   "categories": [
+    {
+     "name": "Kapitel 4-ämne",
+     "code": "COMMON2"
+    }
+   ],
+   "schoolTypes": [
+    "GY",
+    "VUXGY"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,37 @@
+{
+  "links": [{"rel": "self", "href": "https://api.skolverket.se/susa-navet/emil3/educationInfos?schoolType=YH&page=0&size=500"}],
+  "educationInfos": [
+    {
+      "id": "i.sv.yh.ytpl.20252",
+      "status": "ACTIVE",
+      "content": {
+        "identifier": "i.sv.yh.ytpl.20252",
+        "code": "YH00123",
+        "lastEdited": "2026-03-18T14:47:37",
+        "title": {"strings": [{"lang": "swe", "value": "Yrkesteknisk produktionsledare"}]},
+        "type": {"type": "C_SchoolType", "code": "YH"},
+        "configuration": {"type": "C_Configuration", "code": "program"},
+        "educationLevels": [{"type": "C_EducationLevel", "code": "ISCED_5"}],
+        "isVocational": true,
+        "resultIsDegree": true,
+        "credits": {"system": {"type": "C_Credits", "code": "yh"}, "credits": 400.0},
+        "url": {"urls": [{"lang": "swe", "value": "https://www.exempel-yh.se/ytpl"}]}
+      }
+    },
+    {
+      "id": "i.uoh.uu.1te686.14483.20242",
+      "status": "ACTIVE",
+      "content": {
+        "identifier": "i.uoh.uu.1te686.14483.20242",
+        "code": "1TE686",
+        "lastEdited": "2026-01-02T10:00:00",
+        "title": {"strings": [{"lang": "swe", "value": "Elektronik för ingenjörer"}]},
+        "type": {"type": "C_SchoolType", "code": "HS"},
+        "configuration": {"type": "C_Configuration", "code": "kurs"},
+        "resultIsDegree": false,
+        "credits": {"system": {"type": "C_Credits", "code": "hp"}, "credits": 7.5}
+      }
+    }
+  ],
+  "page": {"size": 500, "totalElements": 2, "totalPages": 1, "pageNumber": 0}
+}

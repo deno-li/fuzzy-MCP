@@ -1,0 +1,11 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": {
+  "schoolUnitCode": "76026322",
+  "schoolUnitName": "Abisko skola",
+  "requestLatitude": "59.3293",
+  "requestLongitude": "18.0686",
+  "kilometersToSchoolUnit": "1003,795"
+ }
+}

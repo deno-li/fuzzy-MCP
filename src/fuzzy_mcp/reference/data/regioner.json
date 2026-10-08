@@ -1,0 +1,2194 @@
+{
+ "id": "regioner",
+ "titel": "Län och kommuner (SCB:s regionala indelning)",
+ "beskrivning": "Riket (00), 21 län (2 siffror) och 290 kommuner (4 siffror: länskod + löpnummer). Samma koder används av SCB (variabeln Region), Skolverket (kommunkod) och Folkhälsomyndigheten.",
+ "kalla": "SCB:s regionkoder. Kod och namn stämmer i tre oberoende underlag: exempelmetadata för TAB638 i PxTools specifikation för PxWebApi 2, SCB:s metadata för TAB5444 (via pxwebpy) och regionlistan i scb-mcp (läget 2024). Kontrollera mot tabellens metadata vid uttag.",
+ "licens": "CC0 1.0",
+ "riket": {
+  "kod": "00",
+  "namn": "Riket",
+  "verifiering": "officiell_spec",
+  "verifiering_not": "Kod 00 och namnet Riket finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och stämmer med SCB:s metadata för TAB5444 i pxwebpy-uttaget och med scb-mcp:s regionlista."
+ },
+ "lan": [
+  {
+   "kod": "01",
+   "namn": "Stockholms län",
+   "lansbokstav": "AB",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "03",
+   "namn": "Uppsala län",
+   "lansbokstav": "C",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "04",
+   "namn": "Södermanlands län",
+   "lansbokstav": "D",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "05",
+   "namn": "Östergötlands län",
+   "lansbokstav": "E",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "06",
+   "namn": "Jönköpings län",
+   "lansbokstav": "F",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "07",
+   "namn": "Kronobergs län",
+   "lansbokstav": "G",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "08",
+   "namn": "Kalmar län",
+   "lansbokstav": "H",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "09",
+   "namn": "Gotlands län",
+   "lansbokstav": "I",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "10",
+   "namn": "Blekinge län",
+   "lansbokstav": "K",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "12",
+   "namn": "Skåne län",
+   "lansbokstav": "M",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "13",
+   "namn": "Hallands län",
+   "lansbokstav": "N",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "14",
+   "namn": "Västra Götalands län",
+   "lansbokstav": "O",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "17",
+   "namn": "Värmlands län",
+   "lansbokstav": "S",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "18",
+   "namn": "Örebro län",
+   "lansbokstav": "T",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "19",
+   "namn": "Västmanlands län",
+   "lansbokstav": "U",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "20",
+   "namn": "Dalarnas län",
+   "lansbokstav": "W",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "21",
+   "namn": "Gävleborgs län",
+   "lansbokstav": "X",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "22",
+   "namn": "Västernorrlands län",
+   "lansbokstav": "Y",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "23",
+   "namn": "Jämtlands län",
+   "lansbokstav": "Z",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "24",
+   "namn": "Västerbottens län",
+   "lansbokstav": "AC",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  },
+  {
+   "kod": "25",
+   "namn": "Norrbottens län",
+   "lansbokstav": "BD",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget. Fältet lansbokstav saknar dokumenterad källa, därför okänd."
+  }
+ ],
+ "kommuner": [
+  {
+   "kod": "0114",
+   "namn": "Upplands Väsby",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0115",
+   "namn": "Vallentuna",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0117",
+   "namn": "Österåker",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0120",
+   "namn": "Värmdö",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0123",
+   "namn": "Järfälla",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0125",
+   "namn": "Ekerö",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0126",
+   "namn": "Huddinge",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0127",
+   "namn": "Botkyrka",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0128",
+   "namn": "Salem",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0136",
+   "namn": "Haninge",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0138",
+   "namn": "Tyresö",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0139",
+   "namn": "Upplands-Bro",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0140",
+   "namn": "Nykvarn",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0160",
+   "namn": "Täby",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0162",
+   "namn": "Danderyd",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0163",
+   "namn": "Sollentuna",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0180",
+   "namn": "Stockholm",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0181",
+   "namn": "Södertälje",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0182",
+   "namn": "Nacka",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0183",
+   "namn": "Sundbyberg",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0184",
+   "namn": "Solna",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0186",
+   "namn": "Lidingö",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0187",
+   "namn": "Vaxholm",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0188",
+   "namn": "Norrtälje",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0191",
+   "namn": "Sigtuna",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0192",
+   "namn": "Nynäshamn",
+   "lanskod": "01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0305",
+   "namn": "Håbo",
+   "lanskod": "03",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0319",
+   "namn": "Älvkarleby",
+   "lanskod": "03",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0330",
+   "namn": "Knivsta",
+   "lanskod": "03",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0331",
+   "namn": "Heby",
+   "lanskod": "03",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0360",
+   "namn": "Tierp",
+   "lanskod": "03",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0380",
+   "namn": "Uppsala",
+   "lanskod": "03",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0381",
+   "namn": "Enköping",
+   "lanskod": "03",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0382",
+   "namn": "Östhammar",
+   "lanskod": "03",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0428",
+   "namn": "Vingåker",
+   "lanskod": "04",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0461",
+   "namn": "Gnesta",
+   "lanskod": "04",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0480",
+   "namn": "Nyköping",
+   "lanskod": "04",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0481",
+   "namn": "Oxelösund",
+   "lanskod": "04",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0482",
+   "namn": "Flen",
+   "lanskod": "04",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0483",
+   "namn": "Katrineholm",
+   "lanskod": "04",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0484",
+   "namn": "Eskilstuna",
+   "lanskod": "04",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0486",
+   "namn": "Strängnäs",
+   "lanskod": "04",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0488",
+   "namn": "Trosa",
+   "lanskod": "04",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0509",
+   "namn": "Ödeshög",
+   "lanskod": "05",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0512",
+   "namn": "Ydre",
+   "lanskod": "05",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0513",
+   "namn": "Kinda",
+   "lanskod": "05",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0560",
+   "namn": "Boxholm",
+   "lanskod": "05",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0561",
+   "namn": "Åtvidaberg",
+   "lanskod": "05",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0562",
+   "namn": "Finspång",
+   "lanskod": "05",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0563",
+   "namn": "Valdemarsvik",
+   "lanskod": "05",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0580",
+   "namn": "Linköping",
+   "lanskod": "05",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0581",
+   "namn": "Norrköping",
+   "lanskod": "05",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0582",
+   "namn": "Söderköping",
+   "lanskod": "05",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0583",
+   "namn": "Motala",
+   "lanskod": "05",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0584",
+   "namn": "Vadstena",
+   "lanskod": "05",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0586",
+   "namn": "Mjölby",
+   "lanskod": "05",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0604",
+   "namn": "Aneby",
+   "lanskod": "06",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0617",
+   "namn": "Gnosjö",
+   "lanskod": "06",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0642",
+   "namn": "Mullsjö",
+   "lanskod": "06",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0643",
+   "namn": "Habo",
+   "lanskod": "06",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0662",
+   "namn": "Gislaved",
+   "lanskod": "06",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0665",
+   "namn": "Vaggeryd",
+   "lanskod": "06",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0680",
+   "namn": "Jönköping",
+   "lanskod": "06",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0682",
+   "namn": "Nässjö",
+   "lanskod": "06",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0683",
+   "namn": "Värnamo",
+   "lanskod": "06",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0684",
+   "namn": "Sävsjö",
+   "lanskod": "06",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0685",
+   "namn": "Vetlanda",
+   "lanskod": "06",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0686",
+   "namn": "Eksjö",
+   "lanskod": "06",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0687",
+   "namn": "Tranås",
+   "lanskod": "06",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0760",
+   "namn": "Uppvidinge",
+   "lanskod": "07",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0761",
+   "namn": "Lessebo",
+   "lanskod": "07",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0763",
+   "namn": "Tingsryd",
+   "lanskod": "07",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0764",
+   "namn": "Alvesta",
+   "lanskod": "07",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0765",
+   "namn": "Älmhult",
+   "lanskod": "07",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0767",
+   "namn": "Markaryd",
+   "lanskod": "07",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0780",
+   "namn": "Växjö",
+   "lanskod": "07",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0781",
+   "namn": "Ljungby",
+   "lanskod": "07",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0821",
+   "namn": "Högsby",
+   "lanskod": "08",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0834",
+   "namn": "Torsås",
+   "lanskod": "08",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0840",
+   "namn": "Mörbylånga",
+   "lanskod": "08",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0860",
+   "namn": "Hultsfred",
+   "lanskod": "08",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0861",
+   "namn": "Mönsterås",
+   "lanskod": "08",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0862",
+   "namn": "Emmaboda",
+   "lanskod": "08",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0880",
+   "namn": "Kalmar",
+   "lanskod": "08",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0881",
+   "namn": "Nybro",
+   "lanskod": "08",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0882",
+   "namn": "Oskarshamn",
+   "lanskod": "08",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0883",
+   "namn": "Västervik",
+   "lanskod": "08",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0884",
+   "namn": "Vimmerby",
+   "lanskod": "08",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0885",
+   "namn": "Borgholm",
+   "lanskod": "08",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "0980",
+   "namn": "Gotland",
+   "lanskod": "09",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1060",
+   "namn": "Olofström",
+   "lanskod": "10",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1080",
+   "namn": "Karlskrona",
+   "lanskod": "10",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1081",
+   "namn": "Ronneby",
+   "lanskod": "10",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1082",
+   "namn": "Karlshamn",
+   "lanskod": "10",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1083",
+   "namn": "Sölvesborg",
+   "lanskod": "10",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1214",
+   "namn": "Svalöv",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1230",
+   "namn": "Staffanstorp",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1231",
+   "namn": "Burlöv",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1233",
+   "namn": "Vellinge",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1256",
+   "namn": "Östra Göinge",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1257",
+   "namn": "Örkelljunga",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1260",
+   "namn": "Bjuv",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1261",
+   "namn": "Kävlinge",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1262",
+   "namn": "Lomma",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1263",
+   "namn": "Svedala",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1264",
+   "namn": "Skurup",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1265",
+   "namn": "Sjöbo",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1266",
+   "namn": "Hörby",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1267",
+   "namn": "Höör",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1270",
+   "namn": "Tomelilla",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1272",
+   "namn": "Bromölla",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1273",
+   "namn": "Osby",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1275",
+   "namn": "Perstorp",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1276",
+   "namn": "Klippan",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1277",
+   "namn": "Åstorp",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1278",
+   "namn": "Båstad",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1280",
+   "namn": "Malmö",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1281",
+   "namn": "Lund",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1282",
+   "namn": "Landskrona",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1283",
+   "namn": "Helsingborg",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1284",
+   "namn": "Höganäs",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1285",
+   "namn": "Eslöv",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1286",
+   "namn": "Ystad",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1287",
+   "namn": "Trelleborg",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1290",
+   "namn": "Kristianstad",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1291",
+   "namn": "Simrishamn",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1292",
+   "namn": "Ängelholm",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1293",
+   "namn": "Hässleholm",
+   "lanskod": "12",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1315",
+   "namn": "Hylte",
+   "lanskod": "13",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1380",
+   "namn": "Halmstad",
+   "lanskod": "13",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1381",
+   "namn": "Laholm",
+   "lanskod": "13",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1382",
+   "namn": "Falkenberg",
+   "lanskod": "13",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1383",
+   "namn": "Varberg",
+   "lanskod": "13",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1384",
+   "namn": "Kungsbacka",
+   "lanskod": "13",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1401",
+   "namn": "Härryda",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1402",
+   "namn": "Partille",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1407",
+   "namn": "Öckerö",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1415",
+   "namn": "Stenungsund",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1419",
+   "namn": "Tjörn",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1421",
+   "namn": "Orust",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1427",
+   "namn": "Sotenäs",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1430",
+   "namn": "Munkedal",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1435",
+   "namn": "Tanum",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1438",
+   "namn": "Dals-Ed",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1439",
+   "namn": "Färgelanda",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1440",
+   "namn": "Ale",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1441",
+   "namn": "Lerum",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1442",
+   "namn": "Vårgårda",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1443",
+   "namn": "Bollebygd",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1444",
+   "namn": "Grästorp",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1445",
+   "namn": "Essunga",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1446",
+   "namn": "Karlsborg",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1447",
+   "namn": "Gullspång",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1452",
+   "namn": "Tranemo",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1460",
+   "namn": "Bengtsfors",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1461",
+   "namn": "Mellerud",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1462",
+   "namn": "Lilla Edet",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1463",
+   "namn": "Mark",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1465",
+   "namn": "Svenljunga",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1466",
+   "namn": "Herrljunga",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1470",
+   "namn": "Vara",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1471",
+   "namn": "Götene",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1472",
+   "namn": "Tibro",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1473",
+   "namn": "Töreboda",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1480",
+   "namn": "Göteborg",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1481",
+   "namn": "Mölndal",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1482",
+   "namn": "Kungälv",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1484",
+   "namn": "Lysekil",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1485",
+   "namn": "Uddevalla",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1486",
+   "namn": "Strömstad",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1487",
+   "namn": "Vänersborg",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1488",
+   "namn": "Trollhättan",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1489",
+   "namn": "Alingsås",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1490",
+   "namn": "Borås",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1491",
+   "namn": "Ulricehamn",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1492",
+   "namn": "Åmål",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1493",
+   "namn": "Mariestad",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1494",
+   "namn": "Lidköping",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1495",
+   "namn": "Skara",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1496",
+   "namn": "Skövde",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1497",
+   "namn": "Hjo",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1498",
+   "namn": "Tidaholm",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1499",
+   "namn": "Falköping",
+   "lanskod": "14",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1715",
+   "namn": "Kil",
+   "lanskod": "17",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1730",
+   "namn": "Eda",
+   "lanskod": "17",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1737",
+   "namn": "Torsby",
+   "lanskod": "17",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1760",
+   "namn": "Storfors",
+   "lanskod": "17",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1761",
+   "namn": "Hammarö",
+   "lanskod": "17",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1762",
+   "namn": "Munkfors",
+   "lanskod": "17",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1763",
+   "namn": "Forshaga",
+   "lanskod": "17",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1764",
+   "namn": "Grums",
+   "lanskod": "17",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1765",
+   "namn": "Årjäng",
+   "lanskod": "17",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1766",
+   "namn": "Sunne",
+   "lanskod": "17",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1780",
+   "namn": "Karlstad",
+   "lanskod": "17",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1781",
+   "namn": "Kristinehamn",
+   "lanskod": "17",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1782",
+   "namn": "Filipstad",
+   "lanskod": "17",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1783",
+   "namn": "Hagfors",
+   "lanskod": "17",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1784",
+   "namn": "Arvika",
+   "lanskod": "17",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1785",
+   "namn": "Säffle",
+   "lanskod": "17",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1814",
+   "namn": "Lekeberg",
+   "lanskod": "18",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1860",
+   "namn": "Laxå",
+   "lanskod": "18",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1861",
+   "namn": "Hallsberg",
+   "lanskod": "18",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1862",
+   "namn": "Degerfors",
+   "lanskod": "18",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1863",
+   "namn": "Hällefors",
+   "lanskod": "18",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1864",
+   "namn": "Ljusnarsberg",
+   "lanskod": "18",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1880",
+   "namn": "Örebro",
+   "lanskod": "18",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1881",
+   "namn": "Kumla",
+   "lanskod": "18",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1882",
+   "namn": "Askersund",
+   "lanskod": "18",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1883",
+   "namn": "Karlskoga",
+   "lanskod": "18",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1884",
+   "namn": "Nora",
+   "lanskod": "18",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1885",
+   "namn": "Lindesberg",
+   "lanskod": "18",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1904",
+   "namn": "Skinnskatteberg",
+   "lanskod": "19",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1907",
+   "namn": "Surahammar",
+   "lanskod": "19",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1960",
+   "namn": "Kungsör",
+   "lanskod": "19",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1961",
+   "namn": "Hallstahammar",
+   "lanskod": "19",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1962",
+   "namn": "Norberg",
+   "lanskod": "19",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1980",
+   "namn": "Västerås",
+   "lanskod": "19",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1981",
+   "namn": "Sala",
+   "lanskod": "19",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1982",
+   "namn": "Fagersta",
+   "lanskod": "19",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1983",
+   "namn": "Köping",
+   "lanskod": "19",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "1984",
+   "namn": "Arboga",
+   "lanskod": "19",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2021",
+   "namn": "Vansbro",
+   "lanskod": "20",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2023",
+   "namn": "Malung-Sälen",
+   "lanskod": "20",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2026",
+   "namn": "Gagnef",
+   "lanskod": "20",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2029",
+   "namn": "Leksand",
+   "lanskod": "20",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2031",
+   "namn": "Rättvik",
+   "lanskod": "20",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2034",
+   "namn": "Orsa",
+   "lanskod": "20",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2039",
+   "namn": "Älvdalen",
+   "lanskod": "20",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2061",
+   "namn": "Smedjebacken",
+   "lanskod": "20",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2062",
+   "namn": "Mora",
+   "lanskod": "20",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2080",
+   "namn": "Falun",
+   "lanskod": "20",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2081",
+   "namn": "Borlänge",
+   "lanskod": "20",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2082",
+   "namn": "Säter",
+   "lanskod": "20",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2083",
+   "namn": "Hedemora",
+   "lanskod": "20",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2084",
+   "namn": "Avesta",
+   "lanskod": "20",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2085",
+   "namn": "Ludvika",
+   "lanskod": "20",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2101",
+   "namn": "Ockelbo",
+   "lanskod": "21",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2104",
+   "namn": "Hofors",
+   "lanskod": "21",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2121",
+   "namn": "Ovanåker",
+   "lanskod": "21",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2132",
+   "namn": "Nordanstig",
+   "lanskod": "21",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2161",
+   "namn": "Ljusdal",
+   "lanskod": "21",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2180",
+   "namn": "Gävle",
+   "lanskod": "21",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2181",
+   "namn": "Sandviken",
+   "lanskod": "21",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2182",
+   "namn": "Söderhamn",
+   "lanskod": "21",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2183",
+   "namn": "Bollnäs",
+   "lanskod": "21",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2184",
+   "namn": "Hudiksvall",
+   "lanskod": "21",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2260",
+   "namn": "Ånge",
+   "lanskod": "22",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2262",
+   "namn": "Timrå",
+   "lanskod": "22",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2280",
+   "namn": "Härnösand",
+   "lanskod": "22",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2281",
+   "namn": "Sundsvall",
+   "lanskod": "22",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2282",
+   "namn": "Kramfors",
+   "lanskod": "22",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2283",
+   "namn": "Sollefteå",
+   "lanskod": "22",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2284",
+   "namn": "Örnsköldsvik",
+   "lanskod": "22",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2303",
+   "namn": "Ragunda",
+   "lanskod": "23",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2305",
+   "namn": "Bräcke",
+   "lanskod": "23",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2309",
+   "namn": "Krokom",
+   "lanskod": "23",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2313",
+   "namn": "Strömsund",
+   "lanskod": "23",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2321",
+   "namn": "Åre",
+   "lanskod": "23",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2326",
+   "namn": "Berg",
+   "lanskod": "23",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2361",
+   "namn": "Härjedalen",
+   "lanskod": "23",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2380",
+   "namn": "Östersund",
+   "lanskod": "23",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2401",
+   "namn": "Nordmaling",
+   "lanskod": "24",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2403",
+   "namn": "Bjurholm",
+   "lanskod": "24",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2404",
+   "namn": "Vindeln",
+   "lanskod": "24",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2409",
+   "namn": "Robertsfors",
+   "lanskod": "24",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2417",
+   "namn": "Norsjö",
+   "lanskod": "24",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2418",
+   "namn": "Malå",
+   "lanskod": "24",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2421",
+   "namn": "Storuman",
+   "lanskod": "24",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2422",
+   "namn": "Sorsele",
+   "lanskod": "24",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2425",
+   "namn": "Dorotea",
+   "lanskod": "24",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2460",
+   "namn": "Vännäs",
+   "lanskod": "24",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2462",
+   "namn": "Vilhelmina",
+   "lanskod": "24",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2463",
+   "namn": "Åsele",
+   "lanskod": "24",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2480",
+   "namn": "Umeå",
+   "lanskod": "24",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2481",
+   "namn": "Lycksele",
+   "lanskod": "24",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2482",
+   "namn": "Skellefteå",
+   "lanskod": "24",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2505",
+   "namn": "Arvidsjaur",
+   "lanskod": "25",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2506",
+   "namn": "Arjeplog",
+   "lanskod": "25",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2510",
+   "namn": "Jokkmokk",
+   "lanskod": "25",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2513",
+   "namn": "Överkalix",
+   "lanskod": "25",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2514",
+   "namn": "Kalix",
+   "lanskod": "25",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2518",
+   "namn": "Övertorneå",
+   "lanskod": "25",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2521",
+   "namn": "Pajala",
+   "lanskod": "25",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2523",
+   "namn": "Gällivare",
+   "lanskod": "25",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2560",
+   "namn": "Älvsbyn",
+   "lanskod": "25",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2580",
+   "namn": "Luleå",
+   "lanskod": "25",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2581",
+   "namn": "Piteå",
+   "lanskod": "25",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2582",
+   "namn": "Boden",
+   "lanskod": "25",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2583",
+   "namn": "Haparanda",
+   "lanskod": "25",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  },
+  {
+   "kod": "2584",
+   "namn": "Kiruna",
+   "lanskod": "25",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn finns i exempelmetadata för tabell TAB638 i PxWebApi 2-specifikationen (PxTools, specs.md) och i SCB:s metadata för TAB5444 i pxwebpy-uttaget; fältet lanskod bygger på scb-mcp:s regionlista och regeln att kommunkodens två första siffror är länskoden."
+  }
+ ]
+}

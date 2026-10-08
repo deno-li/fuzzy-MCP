@@ -1,0 +1,68 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": [
+  {
+   "typeOfSchoolingCode": "fsk",
+   "documents": [
+    {
+     "type": "Skolenkäten (Ansvarig myndighet - Skolinspektionen)",
+     "fileName": "S_76026322_Abisko skola.pdf",
+     "mimeType": "application/pdf",
+     "size": "305935",
+     "title": "Förskoleklass, Skolenkäten, Skolenhetsrapport, Kiruna, Abisko skola, VT22 (pdf, 299 kB)",
+     "url": "https://testsiris.skolverket.se/siris/ris.openfile?docID=671068",
+     "typeId": "SCHOOL_SURVEY"
+    },
+    {
+     "type": "Skolenkäten (Ansvarig myndighet - Skolinspektionen)",
+     "fileName": "S_76026322_Abisko skola.pdf",
+     "mimeType": "application/pdf",
+     "size": "333753",
+     "title": "Förskoleklass, Skolenkäten, Skolenhetsrapport, Kiruna, Abisko skola, VT24 (pdf, 326 kB)",
+     "url": "https://testsiris.skolverket.se/siris/ris.openfile?docID=688385",
+     "typeId": "SCHOOL_SURVEY"
+    }
+   ],
+   "_links": {
+    "self": {
+     "href": "https://api.skolverket.se/planned-educations/v3/school-units/76026322/documents/fsk"
+    },
+    "school-unit": {
+     "href": "https://api.skolverket.se/planned-educations/v3/school-units/76026322"
+    }
+   }
+  },
+  {
+   "typeOfSchoolingCode": "gr",
+   "documents": [
+    {
+     "type": "Skolenkäten (Ansvarig myndighet - Skolinspektionen)",
+     "fileName": "S_76026322_Abisko skola.pdf",
+     "mimeType": "application/pdf",
+     "size": "305935",
+     "title": "Grundskolan, Skolenkäten, Skolenhetsrapport, Kiruna, Abisko skola, VT22 (pdf, 299 kB)",
+     "url": "https://testsiris.skolverket.se/siris/ris.openfile?docID=671069",
+     "typeId": "SCHOOL_SURVEY"
+    },
+    {
+     "type": "Skolenkäten (Ansvarig myndighet - Skolinspektionen)",
+     "fileName": "S_76026322_Abisko skola.pdf",
+     "mimeType": "application/pdf",
+     "size": "333753",
+     "title": "Grundskola, Skolenkäten, Skolenhetsrapport, Kiruna, Abisko skola, VT24 (pdf, 326 kB)",
+     "url": "https://testsiris.skolverket.se/siris/ris.openfile?docID=688387",
+     "typeId": "SCHOOL_SURVEY"
+    }
+   ],
+   "_links": {
+    "self": {
+     "href": "https://api.skolverket.se/planned-educations/v3/school-units/76026322/documents/gr"
+    },
+    "school-unit": {
+     "href": "https://api.skolverket.se/planned-educations/v3/school-units/76026322"
+    }
+   }
+  }
+ ]
+}

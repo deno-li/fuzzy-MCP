@@ -1,0 +1,363 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": {
+  "gy": [
+   {
+    "id": "edu-event-30530571-BF25",
+    "schoolUnitCode": "30530571",
+    "schoolUnitName": "af Chapmangymnasiet",
+    "studyPathCode": "BF25",
+    "studyPathName": "Barn- och fritidsprogrammet",
+    "schoolOrientation": "Ej relevant",
+    "studyPathCategory": "VOCATIONAL_PROGRAM",
+    "startDate": "2026-07-31 00:00:00",
+    "endDate": "2027-07-30 22:00:00",
+    "typeOfSchooling": {
+     "code": "gy",
+     "displayName": "Gymnasieskolan"
+    },
+    "visitingAddressCity": "Karlskrona",
+    "resursSkola": "false",
+    "geographicalAreaCode": "1080",
+    "studyPaths": [],
+    "studyPathsVariants": [],
+    "admissionPointsMin": "105,0",
+    "admissionPointsAverage": "165,8",
+    "admissionPointsSemester": "2025",
+    "principalOrganizerType": "Kommun",
+    "programVarianter": "",
+    "programVariantList": [],
+    "documentType": "EDUCATION_EVENT",
+    "_links": {
+     "school-unit": {
+      "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571"
+     }
+    }
+   },
+   {
+    "id": "edu-event-30530571-EK25",
+    "schoolUnitCode": "30530571",
+    "schoolUnitName": "af Chapmangymnasiet",
+    "studyPathCode": "EK25",
+    "studyPathName": "Ekonomiprogrammet",
+    "schoolOrientation": "Ej relevant",
+    "studyPathCategory": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+    "startDate": "2026-07-31 00:00:00",
+    "endDate": "2027-07-30 22:00:00",
+    "typeOfSchooling": {
+     "code": "gy",
+     "displayName": "Gymnasieskolan"
+    },
+    "visitingAddressCity": "Karlskrona",
+    "resursSkola": "false",
+    "geographicalAreaCode": "1080",
+    "studyPaths": [],
+    "studyPathsVariants": [],
+    "admissionPointsMin": "215,0",
+    "admissionPointsAverage": "257,1",
+    "admissionPointsSemester": "2025",
+    "principalOrganizerType": "Kommun",
+    "programVarianter": "",
+    "programVariantList": [],
+    "documentType": "EDUCATION_EVENT",
+    "_links": {
+     "school-unit": {
+      "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571"
+     }
+    }
+   },
+   {
+    "id": "edu-event-30530571-FS25",
+    "schoolUnitCode": "30530571",
+    "schoolUnitName": "af Chapmangymnasiet",
+    "studyPathCode": "FS25",
+    "studyPathName": "Försäljnings- och serviceprogrammet",
+    "schoolOrientation": "Ej relevant",
+    "studyPathCategory": "VOCATIONAL_PROGRAM",
+    "startDate": "2026-07-31 00:00:00",
+    "endDate": "2027-07-30 22:00:00",
+    "typeOfSchooling": {
+     "code": "gy",
+     "displayName": "Gymnasieskolan"
+    },
+    "visitingAddressCity": "Karlskrona",
+    "resursSkola": "false",
+    "geographicalAreaCode": "1080",
+    "studyPaths": [
+     {
+      "id": null,
+      "schoolUnitCode": "30530571",
+      "schoolUnitName": "af Chapmangymnasiet",
+      "studyPathCode": "FS25SKOLFORLAGD",
+      "studyPathName": "Försäljnings- och serviceprogrammet",
+      "schoolOrientation": "Ej relevant",
+      "studyPathCategory": "VOCATIONAL_PROGRAM",
+      "startDate": "2026-07-31 22:00:00",
+      "endDate": "2027-07-30 22:00:00",
+      "typeOfSchooling": {
+       "code": "gy",
+       "displayName": "Gymnasieskolan"
+      },
+      "visitingAddressCity": "Karlskrona",
+      "visitingAddressStreet": "Drottninggatan 49",
+      "resursSkola": "false",
+      "principalOrganizerType": "Kommun",
+      "programVarianter": "",
+      "programVariantList": [],
+      "documentType": null,
+      "_links": {
+       "self": {
+        "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571/education-events/FS25SKOLFORLAGD"
+       },
+       "school-unit": {
+        "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571"
+       },
+       "program": {
+        "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571/education-events/FS25"
+       }
+      }
+     }
+    ],
+    "studyPathsVariants": [],
+    "principalOrganizerType": "Kommun",
+    "programVarianter": "",
+    "programVariantList": [],
+    "documentType": "EDUCATION_EVENT",
+    "_links": {
+     "school-unit": {
+      "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571"
+     }
+    }
+   },
+   {
+    "id": "edu-event-30530571-HT25",
+    "schoolUnitCode": "30530571",
+    "schoolUnitName": "af Chapmangymnasiet",
+    "studyPathCode": "HT25",
+    "studyPathName": "Hotell- och turismprogrammet",
+    "schoolOrientation": "Ej relevant",
+    "studyPathCategory": "VOCATIONAL_PROGRAM",
+    "startDate": "2026-07-31 00:00:00",
+    "endDate": "2027-07-30 22:00:00",
+    "typeOfSchooling": {
+     "code": "gy",
+     "displayName": "Gymnasieskolan"
+    },
+    "visitingAddressCity": "Karlskrona",
+    "resursSkola": "false",
+    "geographicalAreaCode": "1080",
+    "studyPaths": [
+     {
+      "id": null,
+      "schoolUnitCode": "30530571",
+      "schoolUnitName": "af Chapmangymnasiet",
+      "studyPathCode": "HT25SKOLFORLAGD",
+      "studyPathName": "Hotell- och turismprogrammet",
+      "schoolOrientation": "Ej relevant",
+      "studyPathCategory": "VOCATIONAL_PROGRAM",
+      "startDate": "2026-07-31 22:00:00",
+      "endDate": "2027-07-30 22:00:00",
+      "typeOfSchooling": {
+       "code": "gy",
+       "displayName": "Gymnasieskolan"
+      },
+      "visitingAddressCity": "Karlskrona",
+      "visitingAddressStreet": "Drottninggatan 49",
+      "resursSkola": "false",
+      "principalOrganizerType": "Kommun",
+      "programVarianter": "",
+      "programVariantList": [],
+      "documentType": null,
+      "_links": {
+       "self": {
+        "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571/education-events/HT25SKOLFORLAGD"
+       },
+       "school-unit": {
+        "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571"
+       },
+       "program": {
+        "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571/education-events/HT25"
+       }
+      }
+     }
+    ],
+    "studyPathsVariants": [],
+    "admissionPointsMin": "182,5",
+    "admissionPointsAverage": "237,9",
+    "admissionPointsSemester": "2025",
+    "principalOrganizerType": "Kommun",
+    "programVarianter": "",
+    "programVariantList": [],
+    "documentType": "EDUCATION_EVENT",
+    "_links": {
+     "school-unit": {
+      "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571"
+     }
+    }
+   },
+   {
+    "id": "edu-event-30530571-IN25",
+    "schoolUnitCode": "30530571",
+    "schoolUnitName": "af Chapmangymnasiet",
+    "studyPathCode": "IN25",
+    "studyPathName": "Industritekniska programmet",
+    "schoolOrientation": "Ej relevant",
+    "studyPathCategory": "VOCATIONAL_PROGRAM",
+    "startDate": "2026-07-31 00:00:00",
+    "endDate": "2027-07-30 22:00:00",
+    "typeOfSchooling": {
+     "code": "gy",
+     "displayName": "Gymnasieskolan"
+    },
+    "visitingAddressCity": "Karlskrona",
+    "resursSkola": "false",
+    "geographicalAreaCode": "1080",
+    "studyPaths": [],
+    "studyPathsVariants": [],
+    "admissionPointsMin": "185,0",
+    "admissionPointsAverage": "209,6",
+    "admissionPointsSemester": "2025",
+    "principalOrganizerType": "Kommun",
+    "programVarianter": "",
+    "programVariantList": [],
+    "documentType": "EDUCATION_EVENT",
+    "_links": {
+     "school-unit": {
+      "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571"
+     }
+    }
+   },
+   {
+    "id": "edu-event-30530571-RL25",
+    "schoolUnitCode": "30530571",
+    "schoolUnitName": "af Chapmangymnasiet",
+    "studyPathCode": "RL25",
+    "studyPathName": "Restaurang- och livsmedelsprogrammet",
+    "schoolOrientation": "Ej relevant",
+    "studyPathCategory": "VOCATIONAL_PROGRAM",
+    "startDate": "2026-07-31 00:00:00",
+    "endDate": "2027-07-30 22:00:00",
+    "typeOfSchooling": {
+     "code": "gy",
+     "displayName": "Gymnasieskolan"
+    },
+    "visitingAddressCity": "Karlskrona",
+    "resursSkola": "false",
+    "geographicalAreaCode": "1080",
+    "studyPaths": [],
+    "studyPathsVariants": [],
+    "admissionPointsMin": "190,0",
+    "admissionPointsAverage": "217,1",
+    "admissionPointsSemester": "2025",
+    "principalOrganizerType": "Kommun",
+    "programVarianter": "",
+    "programVariantList": [],
+    "documentType": "EDUCATION_EVENT",
+    "_links": {
+     "school-unit": {
+      "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571"
+     }
+    }
+   },
+   {
+    "id": "edu-event-30530571-SA25",
+    "schoolUnitCode": "30530571",
+    "schoolUnitName": "af Chapmangymnasiet",
+    "studyPathCode": "SA25",
+    "studyPathName": "Samhällsvetenskapsprogrammet",
+    "schoolOrientation": "Ej relevant",
+    "studyPathCategory": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+    "startDate": "2026-07-31 00:00:00",
+    "endDate": "2027-07-30 22:00:00",
+    "typeOfSchooling": {
+     "code": "gy",
+     "displayName": "Gymnasieskolan"
+    },
+    "visitingAddressCity": "Karlskrona",
+    "resursSkola": "false",
+    "geographicalAreaCode": "1080",
+    "studyPaths": [],
+    "studyPathsVariants": [],
+    "admissionPointsMin": "195,0",
+    "admissionPointsAverage": "246,4",
+    "admissionPointsSemester": "2025",
+    "principalOrganizerType": "Kommun",
+    "programVarianter": "",
+    "programVariantList": [],
+    "documentType": "EDUCATION_EVENT",
+    "_links": {
+     "school-unit": {
+      "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571"
+     }
+    }
+   },
+   {
+    "id": "edu-event-30530571-VO25",
+    "schoolUnitCode": "30530571",
+    "schoolUnitName": "af Chapmangymnasiet",
+    "studyPathCode": "VO25",
+    "studyPathName": "Vård- och omsorgsprogrammet",
+    "schoolOrientation": "Ej relevant",
+    "studyPathCategory": "VOCATIONAL_PROGRAM",
+    "startDate": "2026-07-31 00:00:00",
+    "endDate": "2027-07-30 22:00:00",
+    "typeOfSchooling": {
+     "code": "gy",
+     "displayName": "Gymnasieskolan"
+    },
+    "visitingAddressCity": "Karlskrona",
+    "resursSkola": "false",
+    "geographicalAreaCode": "1080",
+    "studyPaths": [
+     {
+      "id": null,
+      "schoolUnitCode": "30530571",
+      "schoolUnitName": "af Chapmangymnasiet",
+      "studyPathCode": "VO25SKOLFORLAGD",
+      "studyPathName": "Vård- och omsorgsprogrammet",
+      "schoolOrientation": "Ej relevant",
+      "studyPathCategory": "VOCATIONAL_PROGRAM",
+      "startDate": "2026-07-31 22:00:00",
+      "endDate": "2027-07-30 22:00:00",
+      "typeOfSchooling": {
+       "code": "gy",
+       "displayName": "Gymnasieskolan"
+      },
+      "visitingAddressCity": "Karlskrona",
+      "visitingAddressStreet": "Drottninggatan 49",
+      "resursSkola": "false",
+      "principalOrganizerType": "Kommun",
+      "programVarianter": "",
+      "programVariantList": [],
+      "documentType": null,
+      "_links": {
+       "self": {
+        "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571/education-events/VO25SKOLFORLAGD"
+       },
+       "school-unit": {
+        "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571"
+       },
+       "program": {
+        "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571/education-events/VO25"
+       }
+      }
+     }
+    ],
+    "studyPathsVariants": [],
+    "admissionPointsMin": "160,0",
+    "admissionPointsAverage": "180,0",
+    "admissionPointsSemester": "2025",
+    "principalOrganizerType": "Kommun",
+    "programVarianter": "",
+    "programVariantList": [],
+    "documentType": "EDUCATION_EVENT",
+    "_links": {
+     "school-unit": {
+      "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571"
+     }
+    }
+   }
+  ]
+ }
+}

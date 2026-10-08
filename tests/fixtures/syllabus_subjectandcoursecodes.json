@@ -1,0 +1,90 @@
+{
+ "apiPublisher": "Skolverket",
+ "apiName": "Syllabus API",
+ "apiVersion": "1.16.2-SNAPSHOT",
+ "apiReleased": "2026-05-08",
+ "apiStatus": "active",
+ "apiDocumentation": "https://www.skolverket.se/om-oss/oppna-data/api-for-laroplaner-kurs--och-amnesplaner-syllabus",
+ "dataOrigin": "Syllabus API - Skolverket - 1.16.2-SNAPSHOT",
+ "calledMethod": "ListSubjectAndCourseCodes",
+ "totalElements": 15,
+ "processingTime": "75 ms",
+ "startedCaching": "2026-10-06T12:06:39.8861591",
+ "codes": [
+  {
+   "code": "ADM2000GY",
+   "name": "Administration",
+   "typeOfSyllabus": "UNKNOWN"
+  },
+  {
+   "code": "ADMI",
+   "name": "Administration",
+   "typeOfSyllabus": "GRADE_SUBJECT_SYLLABUS"
+  },
+  {
+   "code": "ADMI1000X",
+   "name": "Nivå 1",
+   "typeOfSyllabus": "LEVEL_IN_GRADE_SUBJECT_SYLLABUS"
+  },
+  {
+   "code": "GRGRMAT01",
+   "name": "Matematik",
+   "typeOfSyllabus": "COURSE_SYLLABUS"
+  },
+  {
+   "code": "MAT",
+   "name": "Matematik",
+   "typeOfSyllabus": "SUBJECT_SYLLABUS"
+  },
+  {
+   "code": "MATE",
+   "name": "Matematik",
+   "typeOfSyllabus": "GRADE_SUBJECT_SYLLABUS"
+  },
+  {
+   "code": "MATE1A00X",
+   "name": "Nivå 1a",
+   "typeOfSyllabus": "LEVEL_IN_GRADE_SUBJECT_SYLLABUS"
+  },
+  {
+   "code": "MATE1B00X",
+   "name": "Nivå 1b",
+   "typeOfSyllabus": "LEVEL_IN_GRADE_SUBJECT_SYLLABUS"
+  },
+  {
+   "code": "MATMAT01a",
+   "name": "Matematik 1a",
+   "typeOfSyllabus": "COURSE_IN_SUBJECT_SYLLABUS"
+  },
+  {
+   "code": "MATMAT01c",
+   "name": "Matematik 1c",
+   "typeOfSyllabus": "COURSE_IN_SUBJECT_SYLLABUS"
+  },
+  {
+   "code": "MATT",
+   "name": "Matematik spets",
+   "typeOfSyllabus": "GRADE_SUBJECT_SYLLABUS"
+  },
+  {
+   "code": "MATT100PX",
+   "name": "Nivå 1",
+   "typeOfSyllabus": "LEVEL_IN_GRADE_SUBJECT_SYLLABUS"
+  },
+  {
+   "code": "SFIKUA9",
+   "name": "Kurs A",
+   "typeOfSyllabus": "COURSE_IN_SFI_SUBJECT_SYLLABUS"
+  },
+  {
+   "code": "SVE",
+   "name": "Svenska",
+   "typeOfSyllabus": "SUBJECT_SYLLABUS"
+  },
+  {
+   "code": "SVEN",
+   "name": "Svenska",
+   "typeOfSyllabus": "GRADE_SUBJECT_SYLLABUS"
+  }
+ ]
+}

@@ -1,0 +1,1155 @@
+{
+ "id": "gymnasieprogram",
+ "titel": "Nationella program och riksrekryterande utbildningar i gymnasieskolan (Gy11 och Gy25) med inriktningar",
+ "beskrivning": "Programkoder enligt Skolverkets Syllabus-API: Gy11 (t.ex. NA) och Gy25 (t.ex. NA25, API:ts identifierare) med kategori och inriktningskoder, inklusive riksrekryterande utbildningar och det fjärde tekniska året (VI, VI25). I studievägskoder har programkoden två bokstäver (t.ex. NANAP). Gy25 gäller utbildning påbörjad fr.o.m. 2025-07-01.",
+ "kalla": "Skolverkets Syllabus-API via community-uttag: programlistan (ögonblicksbild 2026-08-23) och studievägskoderna (valuestore/studypathcodes). Verifiera mot skolverket_list_programs.",
+ "licens": "CC0 1.0",
+ "koder": [
+  {
+   "kod": "BA",
+   "namn": "Bygg- och anläggningsprogrammet",
+   "laroplan": "GY11",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": false,
+   "inriktningar": [
+    {
+     "kod": "BAANL",
+     "namn": "Anläggningsfordon"
+    },
+    {
+     "kod": "BAHUS",
+     "namn": "Husbyggnad"
+    },
+    {
+     "kod": "BAMAR",
+     "namn": "Mark och anläggning"
+    },
+    {
+     "kod": "BAMAL",
+     "namn": "Måleri"
+    },
+    {
+     "kod": "BAPLA",
+     "namn": "Plåtslageri"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "BA25",
+   "namn": "Bygg- och anläggningsprogrammet",
+   "laroplan": "GY25",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": true,
+   "inriktningar": [
+    {
+     "kod": "BABYI",
+     "namn": "Byggnadsplåtslageri"
+    },
+    {
+     "kod": "BAHUD",
+     "namn": "Husbyggnad"
+    },
+    {
+     "kod": "BAMAA",
+     "namn": "Mark och anläggning"
+    },
+    {
+     "kod": "BAMAI",
+     "namn": "Måleri"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "BF",
+   "namn": "Barn- och fritidsprogrammet",
+   "laroplan": "GY11",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": false,
+   "inriktningar": [
+    {
+     "kod": "BFFRI",
+     "namn": "Fritid och hälsa"
+    },
+    {
+     "kod": "BFPEA",
+     "namn": "Pedagogiskt och socialt arbete"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "BF25",
+   "namn": "Barn- och fritidsprogrammet",
+   "laroplan": "GY25",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": true,
+   "inriktningar": [
+    {
+     "kod": "BFFRH",
+     "namn": "Fritid och hälsa"
+    },
+    {
+     "kod": "BFPES",
+     "namn": "Pedagogiskt och socialt arbete"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "DS25",
+   "namn": "Design och sömnadstekniska utbildningen",
+   "laroplan": "GY25",
+   "kategori": "NATIONAL_RECRUITMENT_FOR_LOCAL_SPECIALIZATION",
+   "aktiv": true,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "EE",
+   "namn": "El- och energiprogrammet",
+   "laroplan": "GY11",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": false,
+   "inriktningar": [
+    {
+     "kod": "EEAUT",
+     "namn": "Automation"
+    },
+    {
+     "kod": "EEDAT",
+     "namn": "Dator- och kommunikationsteknik"
+    },
+    {
+     "kod": "EEELT",
+     "namn": "Elteknik"
+    },
+    {
+     "kod": "EEENE",
+     "namn": "Energiteknik"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "EE25",
+   "namn": "El- och energiprogrammet",
+   "laroplan": "GY25",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": true,
+   "inriktningar": [
+    {
+     "kod": "EEAUK",
+     "namn": "Automationsteknik"
+    },
+    {
+     "kod": "EEDAK",
+     "namn": "Dator- och kommunikationsteknik"
+    },
+    {
+     "kod": "EEELK",
+     "namn": "Elteknik"
+    },
+    {
+     "kod": "EEENK",
+     "namn": "Energiteknik"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "EK",
+   "namn": "Ekonomiprogrammet",
+   "laroplan": "GY11",
+   "kategori": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+   "aktiv": false,
+   "inriktningar": [
+    {
+     "kod": "EKEKO",
+     "namn": "Ekonomi"
+    },
+    {
+     "kod": "EKJUR",
+     "namn": "Juridik"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "EK25",
+   "namn": "Ekonomiprogrammet",
+   "laroplan": "GY25",
+   "kategori": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+   "aktiv": true,
+   "inriktningar": [
+    {
+     "kod": "EKEKI",
+     "namn": "Ekonomi"
+    },
+    {
+     "kod": "EKJUK",
+     "namn": "Juridik"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "ES",
+   "namn": "Estetiska programmet",
+   "laroplan": "GY11",
+   "kategori": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+   "aktiv": false,
+   "inriktningar": [
+    {
+     "kod": "ESBIL",
+     "namn": "Bild och formgivning"
+    },
+    {
+     "kod": "ESDAN",
+     "namn": "Dans"
+    },
+    {
+     "kod": "ESEST",
+     "namn": "Estetik och media"
+    },
+    {
+     "kod": "ESMUS",
+     "namn": "Musik"
+    },
+    {
+     "kod": "ESTEA",
+     "namn": "Teater"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "ES25",
+   "namn": "Estetiska programmet",
+   "laroplan": "GY25",
+   "kategori": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+   "aktiv": true,
+   "inriktningar": [
+    {
+     "kod": "ESMON",
+     "namn": "Modedesign"
+    },
+    {
+     "kod": "ESMUK",
+     "namn": "Musik"
+    },
+    {
+     "kod": "ESTER",
+     "namn": "Teater"
+    },
+    {
+     "kod": "ESBIF",
+     "namn": "Bild och formgivning"
+    },
+    {
+     "kod": "ESDAS",
+     "namn": "Dans"
+    },
+    {
+     "kod": "ESESM",
+     "namn": "Estetik och media"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "FI25",
+   "namn": "Finsnickeriutbildningen",
+   "laroplan": "GY25",
+   "kategori": "NATIONAL_RECRUITMENT_FOR_LOCAL_SPECIALIZATION",
+   "aktiv": true,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "FL25",
+   "namn": "Flygteknikutbildningen",
+   "laroplan": "GY25",
+   "kategori": "NATIONAL_RECRUITMENT_FOR_LOCAL_SPECIALIZATION",
+   "aktiv": true,
+   "inriktningar": [
+    {
+     "kod": "FLFLN",
+     "namn": "Flygplan"
+    },
+    {
+     "kod": "FLHER",
+     "namn": "Helikopter"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "FO25",
+   "namn": "Floristutbildningen",
+   "laroplan": "GY25",
+   "kategori": "NATIONAL_RECRUITMENT_FOR_LOCAL_SPECIALIZATION",
+   "aktiv": true,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "FR25",
+   "namn": "Frisör- och stylistprogrammet",
+   "laroplan": "GY25",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": true,
+   "inriktningar": [
+    {
+     "kod": "FRBAE",
+     "namn": "Barberare"
+    },
+    {
+     "kod": "FRFRR",
+     "namn": "Frisör"
+    },
+    {
+     "kod": "FRHAM",
+     "namn": "Hår- och makeupstylist"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "FS",
+   "namn": "Försäljnings- och serviceprogrammet",
+   "laroplan": "GY11",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": false,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "FS25",
+   "namn": "Försäljnings- och serviceprogrammet",
+   "laroplan": "GY25",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": true,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "FT",
+   "namn": "Fordons- och transportprogrammet",
+   "laroplan": "GY11",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": false,
+   "inriktningar": [
+    {
+     "kod": "FTKAR",
+     "namn": "Karosseri och lackering"
+    },
+    {
+     "kod": "FTLAS",
+     "namn": "Lastbil och mobila maskiner"
+    },
+    {
+     "kod": "FTPER",
+     "namn": "Personbil"
+    },
+    {
+     "kod": "FTTRA",
+     "namn": "Transport"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "FT25",
+   "namn": "Fordons- och transportprogrammet",
+   "laroplan": "GY25",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": true,
+   "inriktningar": [
+    {
+     "kod": "FTFOL",
+     "namn": "Fordonsskadeteknik och lackering"
+    },
+    {
+     "kod": "FTLAM",
+     "namn": "Lastbil och mobila maskiner"
+    },
+    {
+     "kod": "FTPEL",
+     "namn": "Personbil"
+    },
+    {
+     "kod": "FTTRT",
+     "namn": "Transport"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "FX",
+   "namn": "Flygteknikutbildningen",
+   "laroplan": "GY11",
+   "kategori": "NATIONAL_RECRUITMENT_FOR_LOCAL_SPECIALIZATION",
+   "aktiv": false,
+   "inriktningar": [
+    {
+     "kod": "FXFLY",
+     "namn": "Flygplan"
+    },
+    {
+     "kod": "FXHEL",
+     "namn": "Helikopter"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "GL25",
+   "namn": "Glashantverksutbildningen",
+   "laroplan": "GY25",
+   "kategori": "NATIONAL_RECRUITMENT_FOR_LOCAL_SPECIALIZATION",
+   "aktiv": true,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "GU25",
+   "namn": "Guldsmedsutbildningen",
+   "laroplan": "GY25",
+   "kategori": "NATIONAL_RECRUITMENT_FOR_LOCAL_SPECIALIZATION",
+   "aktiv": true,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "HT",
+   "namn": "Hotell- och turismprogrammet",
+   "laroplan": "GY11",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": false,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "HT25",
+   "namn": "Hotell- och turismprogrammet",
+   "laroplan": "GY25",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": true,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "HU",
+   "namn": "Humanistiska programmet",
+   "laroplan": "GY11",
+   "kategori": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+   "aktiv": false,
+   "inriktningar": [
+    {
+     "kod": "HUKUL",
+     "namn": "Kultur"
+    },
+    {
+     "kod": "HUSPR",
+     "namn": "Språk"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "HU25",
+   "namn": "Humanistiska programmet",
+   "laroplan": "GY25",
+   "kategori": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+   "aktiv": true,
+   "inriktningar": [
+    {
+     "kod": "HUKUR",
+     "namn": "Kultur"
+    },
+    {
+     "kod": "HUSPK",
+     "namn": "Språk"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "HV",
+   "namn": "Hantverksprogrammet",
+   "laroplan": "GY11",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": false,
+   "inriktningar": [
+    {
+     "kod": "HVFIN",
+     "namn": "Finsnickeri"
+    },
+    {
+     "kod": "HVFLO",
+     "namn": "Florist"
+    },
+    {
+     "kod": "HVFRS",
+     "namn": "Frisör, barberare, hår- och makeupstylist"
+    },
+    {
+     "kod": "HVTEX",
+     "namn": "Textil design"
+    },
+    {
+     "kod": "HVXXX",
+     "namn": "Övriga hantverk"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "IN",
+   "namn": "Industritekniska programmet",
+   "laroplan": "GY11",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": false,
+   "inriktningar": [
+    {
+     "kod": "INDRI",
+     "namn": "Driftsäkerhet och underhåll"
+    },
+    {
+     "kod": "INPRO",
+     "namn": "Processteknik"
+    },
+    {
+     "kod": "INPRK",
+     "namn": "Produkt och maskinteknik"
+    },
+    {
+     "kod": "INSVE",
+     "namn": "Svetsteknik"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "IN25",
+   "namn": "Industritekniska programmet",
+   "laroplan": "GY25",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": true,
+   "inriktningar": [
+    {
+     "kod": "INDRU",
+     "namn": "Driftsäkerhet och underhåll"
+    },
+    {
+     "kod": "INPRI",
+     "namn": "Processteknik"
+    },
+    {
+     "kod": "INPRM",
+     "namn": "Produkt och maskinteknik"
+    },
+    {
+     "kod": "INSVK",
+     "namn": "Svetsteknik"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "MA25",
+   "namn": "Marinteknikutbildningen",
+   "laroplan": "GY25",
+   "kategori": "NATIONAL_RECRUITMENT_FOR_LOCAL_SPECIALIZATION",
+   "aktiv": true,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "MX",
+   "namn": "Marinteknikutbildningen",
+   "laroplan": "GY11",
+   "kategori": "NATIONAL_RECRUITMENT_FOR_LOCAL_SPECIALIZATION",
+   "aktiv": false,
+   "inriktningar": [
+    {
+     "kod": "MXELO",
+     "namn": "El och elektronik"
+    },
+    {
+     "kod": "MXSER",
+     "namn": "Service och reparation"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "NA",
+   "namn": "Naturvetenskapsprogrammet",
+   "laroplan": "GY11",
+   "kategori": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+   "aktiv": false,
+   "inriktningar": [
+    {
+     "kod": "NANAT",
+     "namn": "Naturvetenskap"
+    },
+    {
+     "kod": "NANAS",
+     "namn": "Naturvetenskap och samhälle"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "NA25",
+   "namn": "Naturvetenskapsprogrammet",
+   "laroplan": "GY25",
+   "kategori": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+   "aktiv": true,
+   "inriktningar": [
+    {
+     "kod": "NANAP",
+     "namn": "Naturvetenskap"
+    },
+    {
+     "kod": "NANAA",
+     "namn": "Naturvetenskap och samhälle"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "NB",
+   "namn": "Naturbruksprogrammet",
+   "laroplan": "GY11",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": false,
+   "inriktningar": [
+    {
+     "kod": "NBDJR",
+     "namn": "Djurvård"
+    },
+    {
+     "kod": "NBHAT",
+     "namn": "Hästhållning"
+    },
+    {
+     "kod": "NBLAN",
+     "namn": "Lantbruk"
+    },
+    {
+     "kod": "NBNAT",
+     "namn": "Naturturism"
+    },
+    {
+     "kod": "NBSKG",
+     "namn": "Skogsbruk"
+    },
+    {
+     "kod": "NBTRA",
+     "namn": "Trädgård"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "NB25",
+   "namn": "Naturbruksprogrammet",
+   "laroplan": "GY25",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": true,
+   "inriktningar": [
+    {
+     "kod": "NBDJD",
+     "namn": "Djurvård"
+    },
+    {
+     "kod": "NBHAG",
+     "namn": "Hästhållning"
+    },
+    {
+     "kod": "NBLAK",
+     "namn": "Lantbruk"
+    },
+    {
+     "kod": "NBNAM",
+     "namn": "Naturturism"
+    },
+    {
+     "kod": "NBSKK",
+     "namn": "Skogsbruk"
+    },
+    {
+     "kod": "NBTRD",
+     "namn": "Trädgård"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "RL",
+   "namn": "Restaurang- och livsmedelsprogrammet",
+   "laroplan": "GY11",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": false,
+   "inriktningar": [
+    {
+     "kod": "RLBAG",
+     "namn": "Bageri och konditori"
+    },
+    {
+     "kod": "RLKOK",
+     "namn": "Kök och servering"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "RL25",
+   "namn": "Restaurang- och livsmedelsprogrammet",
+   "laroplan": "GY25",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": true,
+   "inriktningar": [
+    {
+     "kod": "RLBAK",
+     "namn": "Bageri och konditori"
+    },
+    {
+     "kod": "RLKOS",
+     "namn": "Kök och servering"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "RX006",
+   "namn": "Utbildningen samiska näringar",
+   "laroplan": "GY11",
+   "kategori": "NATIONAL_RECRUITMENT_FOR_LOCAL_SPECIALIZATION",
+   "aktiv": true,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "SA",
+   "namn": "Samhällsvetenskapsprogrammet",
+   "laroplan": "GY11",
+   "kategori": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+   "aktiv": false,
+   "inriktningar": [
+    {
+     "kod": "SASAM",
+     "namn": "Samhällsvetenskap"
+    },
+    {
+     "kod": "SABET",
+     "namn": "Beteendevetenskap"
+    },
+    {
+     "kod": "SAMED",
+     "namn": "Medier, information och kommunikation"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "SA25",
+   "namn": "Samhällsvetenskapsprogrammet",
+   "laroplan": "GY25",
+   "kategori": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+   "aktiv": true,
+   "inriktningar": [
+    {
+     "kod": "SABEP",
+     "namn": "Beteendevetenskap"
+    },
+    {
+     "kod": "SAMJK",
+     "namn": "Medier, journalistik och kommunikation"
+    },
+    {
+     "kod": "SASAP",
+     "namn": "Samhällsvetenskap"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "SJ25",
+   "namn": "Sjöfartsutbildningen",
+   "laroplan": "GY25",
+   "kategori": "NATIONAL_RECRUITMENT_FOR_LOCAL_SPECIALIZATION",
+   "aktiv": true,
+   "inriktningar": [
+    {
+     "kod": "SJDAK",
+     "namn": "Däck"
+    },
+    {
+     "kod": "SJMAN",
+     "namn": "Maskin"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "SM25",
+   "namn": "Utbildningen samiska näringar",
+   "laroplan": "GY25",
+   "kategori": "NATIONAL_RECRUITMENT_FOR_LOCAL_SPECIALIZATION",
+   "aktiv": true,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "SX",
+   "namn": "Sjöfartsutbildningen",
+   "laroplan": "GY11",
+   "kategori": "NATIONAL_RECRUITMENT_FOR_LOCAL_SPECIALIZATION",
+   "aktiv": false,
+   "inriktningar": [
+    {
+     "kod": "SXDAC",
+     "namn": "Däck"
+    },
+    {
+     "kod": "SXMAS",
+     "namn": "Maskin"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "TA25",
+   "namn": "Tågteknikutbildningen",
+   "laroplan": "GY25",
+   "kategori": "NATIONAL_RECRUITMENT_FOR_LOCAL_SPECIALIZATION",
+   "aktiv": true,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "TE",
+   "namn": "Teknikprogrammet",
+   "laroplan": "GY11",
+   "kategori": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+   "aktiv": false,
+   "inriktningar": [
+    {
+     "kod": "TEDES",
+     "namn": "Design och produktutveckling"
+    },
+    {
+     "kod": "TEINF",
+     "namn": "Informations- och medieteknik"
+    },
+    {
+     "kod": "TEPRO",
+     "namn": "Produktionsteknik"
+    },
+    {
+     "kod": "TESAM",
+     "namn": "Samhällsbyggande och miljö"
+    },
+    {
+     "kod": "TETEK",
+     "namn": "Teknikvetenskap"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "TE25",
+   "namn": "Teknikprogrammet",
+   "laroplan": "GY25",
+   "kategori": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+   "aktiv": true,
+   "inriktningar": [
+    {
+     "kod": "TEDEP",
+     "namn": "Design och produktutveckling"
+    },
+    {
+     "kod": "TEINM",
+     "namn": "Informations- och medieteknik"
+    },
+    {
+     "kod": "TEPRK",
+     "namn": "Produktionsteknik"
+    },
+    {
+     "kod": "TESAI",
+     "namn": "Samhällsbyggande och miljö"
+    },
+    {
+     "kod": "TETEP",
+     "namn": "Teknikvetenskap"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "TX",
+   "namn": "Tågteknikutbildningen",
+   "laroplan": "GY11",
+   "kategori": "NATIONAL_RECRUITMENT_FOR_LOCAL_SPECIALIZATION",
+   "aktiv": false,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "UX",
+   "namn": "Utbildningen samiska näringar",
+   "laroplan": "GY11",
+   "kategori": "NATIONAL_RECRUITMENT_FOR_LOCAL_SPECIALIZATION",
+   "aktiv": false,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "VF",
+   "namn": "VVS- och fastighetsprogrammet",
+   "laroplan": "GY11",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": false,
+   "inriktningar": [
+    {
+     "kod": "VFFAS",
+     "namn": "Fastighet"
+    },
+    {
+     "kod": "VFKYL",
+     "namn": "Kyl- och värmepumpsteknik"
+    },
+    {
+     "kod": "VFVET",
+     "namn": "Ventilation"
+    },
+    {
+     "kod": "VFVVS",
+     "namn": "VVS"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "VF25",
+   "namn": "VVS- och fastighetsprogrammet",
+   "laroplan": "GY25",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": true,
+   "inriktningar": [
+    {
+     "kod": "VFFAT",
+     "namn": "Fastighet"
+    },
+    {
+     "kod": "VFKYV",
+     "namn": "Kyl- och värmepumpsteknik"
+    },
+    {
+     "kod": "VFVEO",
+     "namn": "Ventilation"
+    },
+    {
+     "kod": "VFVVP",
+     "namn": "VVS"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "VI",
+   "namn": "Gymnasieingenjör - vidareutbildning i form av ett fjärde tekniskt år",
+   "laroplan": "GY11",
+   "kategori": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+   "aktiv": false,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "VI25",
+   "namn": "Vidareutbildning i form av ett fjärde tekniskt år",
+   "laroplan": "GY25",
+   "kategori": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+   "aktiv": true,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "VO",
+   "namn": "Vård- och omsorgsprogrammet",
+   "laroplan": "GY11",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": false,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "VO25",
+   "namn": "Vård- och omsorgsprogrammet",
+   "laroplan": "GY25",
+   "kategori": "VOCATIONAL_PROGRAM",
+   "aktiv": true,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "YR25",
+   "namn": "Yrkesdansarutbildningen",
+   "laroplan": "GY25",
+   "kategori": "NATIONAL_RECRUITMENT_FOR_LOCAL_SPECIALIZATION",
+   "aktiv": true,
+   "inriktningar": [
+    {
+     "kod": "YRKLB",
+     "namn": "Profil klassisk balett"
+    },
+    {
+     "kod": "YRMND",
+     "namn": "Profil samtida dans"
+    }
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "YX",
+   "namn": "Yrkesdansarutbildningen",
+   "laroplan": "GY11",
+   "kategori": "NATIONAL_RECRUITMENT_FOR_LOCAL_SPECIALIZATION",
+   "aktiv": false,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, läroplan, kategori, aktiv-status och inriktningar enligt en community-ögonblicksbild av Skolverkets Syllabus-API (programlistan, 2026-08-23). Aktiv-status avser läget vid ögonblicksbilden."
+  },
+  {
+   "kod": "HA",
+   "namn": "Handels- och administrationsprogrammet",
+   "laroplan": "GY11",
+   "kategori": null,
+   "aktiv": null,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Läroplanen GY11 följer av programtypen där (PROGRAM, inte PROGRAM25). Kategori och aktiv-status saknas eftersom programmet inte finns i ögonblicksbilden av programlistan."
+  },
+  {
+   "kod": "RX",
+   "namn": "Utbildningen samiska näringar",
+   "laroplan": "GY11",
+   "kategori": null,
+   "aktiv": null,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Läroplanen GY11 följer av programtypen där (PROGRAM, inte PROGRAM25). Kategori och aktiv-status saknas eftersom programmet inte finns i ögonblicksbilden av programlistan."
+  },
+  {
+   "kod": "RX001",
+   "namn": "Yrkesdansarutbildningen",
+   "laroplan": "GY11",
+   "kategori": null,
+   "aktiv": null,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Läroplanen GY11 följer av programtypen där (PROGRAM, inte PROGRAM25). Kategori och aktiv-status saknas eftersom programmet inte finns i ögonblicksbilden av programlistan."
+  },
+  {
+   "kod": "RX002",
+   "namn": "Marinteknikutbildningen",
+   "laroplan": "GY11",
+   "kategori": null,
+   "aktiv": null,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Läroplanen GY11 följer av programtypen där (PROGRAM, inte PROGRAM25). Kategori och aktiv-status saknas eftersom programmet inte finns i ögonblicksbilden av programlistan."
+  },
+  {
+   "kod": "RX003",
+   "namn": "Sjöfartsutbildningen",
+   "laroplan": "GY11",
+   "kategori": null,
+   "aktiv": null,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Läroplanen GY11 följer av programtypen där (PROGRAM, inte PROGRAM25). Kategori och aktiv-status saknas eftersom programmet inte finns i ögonblicksbilden av programlistan."
+  },
+  {
+   "kod": "RX004",
+   "namn": "Flygteknikutbildningen",
+   "laroplan": "GY11",
+   "kategori": null,
+   "aktiv": null,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Läroplanen GY11 följer av programtypen där (PROGRAM, inte PROGRAM25). Kategori och aktiv-status saknas eftersom programmet inte finns i ögonblicksbilden av programlistan."
+  },
+  {
+   "kod": "RX005",
+   "namn": "Tågteknikutbildningen",
+   "laroplan": "GY11",
+   "kategori": null,
+   "aktiv": null,
+   "inriktningar": [],
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod och namn enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Läroplanen GY11 följer av programtypen där (PROGRAM, inte PROGRAM25). Kategori och aktiv-status saknas eftersom programmet inte finns i ögonblicksbilden av programlistan."
+  }
+ ]
+}

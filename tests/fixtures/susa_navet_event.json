@@ -1,0 +1,43 @@
+{
+  "id": "e.uoh.kth.dd1420.60090.20251",
+  "status": "ACTIVE",
+  "content": {
+    "identifier": "e.uoh.kth.dd1420.60090.20251",
+    "education": "i.uoh.kth.dd1420.60090.20251",
+    "providers": ["p.uoh.kth"],
+    "examiningBodies": ["p.uoh.kth"],
+    "lastEdited": "2025-10-01T08:12:44",
+    "expires": "2025-08-31T00:00:00",
+    "title": {"strings": [
+      {"lang": "swe", "value": "Grundläggande datalogi"},
+      {"lang": "eng", "value": "Fundamentals of Computer Science"}
+    ]},
+    "description": {"strings": [
+      {"lang": "swe", "content": "HTML", "value": "<p>Kursen ger <strong>grunderna</strong> i datalogi.</p><ul><li>Algoritmer</li><li>Datastrukturer &amp; komplexitet</li></ul>"}
+    ]},
+    "url": {"urls": [{"lang": "swe", "value": "www.kth.se/student/kurser/kurs/DD1420"}]},
+    "locations": [{"town": "Stockholm", "areaCode": "0180", "country": "SE", "streetAddress": "Brinellvägen 8",
+                   "studyLocation": {"strings": [{"lang": "swe", "value": "KTH Campus"}]}}],
+    "languageOfInstructions": ["swe", "eng"],
+    "execution": {"condition": {"type": "C_ExecutionCondition", "code": "1"}, "start": "2025-01-20", "end": "2025-06-08"},
+    "isCancelled": false,
+    "fees": [{"totalAmount": 65000.0, "currency": "SEK", "firstInstallment": 32500.0,
+              "condition": {"strings": [{"lang": "swe", "value": "Gäller studenter utanför EU/EES"}]}}],
+    "places": 120,
+    "timeOfStudy": {"type": "C_TimeOfStudy", "code": "dag"},
+    "paceOfStudy": {"percentage": 50.0, "individual": null},
+    "isApprenticeship": false,
+    "distance": {"noOfMandatorySessions": 2, "noOfOptionalSessions": 1,
+                 "description": {"strings": [{"lang": "swe", "value": "Två obligatoriska träffar på campus"}]}},
+    "application": {"code": "KTH-60090", "first": "2024-09-16", "last": "2024-10-15", "continuous": false,
+                    "email": "antagning@kth.se",
+                    "url": {"urls": [{"lang": "swe", "value": "https://www.antagning.se"}]}},
+    "keywords": {"strings": [{"lang": "swe", "value": "programmering"}, {"lang": "swe", "value": "algoritmer"},
+                             {"lang": "eng", "value": "programming"}]},
+    "extensions": [{"type": "UHEventExtension", "id": "0",
+                    "startPeriod": {"week": 4, "period": {"year": "2025", "periodNumber": 3, "semester": "vt"}},
+                    "tuitionFee": {"value": true, "first": 32500, "total": 65000},
+                    "textualDescription": {"strings": [{"lang": "swe", "value": "Undervisning dagtid"}]},
+                    "itdistance": false, "courseRound": 60090, "department": null}]
+  }
+}

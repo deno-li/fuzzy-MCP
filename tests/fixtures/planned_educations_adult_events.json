@@ -1,0 +1,570 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": {
+  "_embedded": {
+   "listedAdultEducationEvents": [
+    {
+     "educationEventId": "e.myh.27538",
+     "providerName": "IT-Högskolan Sverige AB",
+     "county": "Västra Götalands län",
+     "municipality": "Göteborg",
+     "geographicalAreaCode": "1480",
+     "credits": "400",
+     "creditsSystem": "yh",
+     "contractor": null,
+     "location": null,
+     "town": "Göteborg",
+     "contactInfoAddressCity": "Göteborg",
+     "typeOfSchool": "Yrkeshögskoleutbildning",
+     "semesterStartFrom": "2025-08-01",
+     "paceOfStudy": "100.0",
+     "titleSv": ".NET Cloud Developer",
+     "extent": null,
+     "distance": false,
+     "recommendedPriorKnowledge": null,
+     "lastApplicationDate": null,
+     "executionCondition": 1,
+     "_links": {
+      "e.myh.27538": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.myh.27538"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.myh.27539",
+     "providerName": "IT-Högskolan Sverige AB",
+     "county": "Västra Götalands län",
+     "municipality": "Göteborg",
+     "geographicalAreaCode": "1480",
+     "credits": "400",
+     "creditsSystem": "yh",
+     "contractor": null,
+     "location": null,
+     "town": "Göteborg",
+     "contactInfoAddressCity": "Göteborg",
+     "typeOfSchool": "Yrkeshögskoleutbildning",
+     "semesterStartFrom": "2026-08-01",
+     "paceOfStudy": "100.0",
+     "titleSv": ".NET Cloud Developer",
+     "extent": null,
+     "distance": false,
+     "recommendedPriorKnowledge": null,
+     "lastApplicationDate": null,
+     "executionCondition": 1,
+     "_links": {
+      "e.myh.27539": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.myh.27539"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.myh.24641",
+     "providerName": "Plushögskolan AB - Teknikhögskolan",
+     "county": "Gävleborgs län",
+     "municipality": "Gävle",
+     "geographicalAreaCode": "2180",
+     "credits": "400",
+     "creditsSystem": "yh",
+     "contractor": null,
+     "location": null,
+     "town": "Gävle",
+     "contactInfoAddressCity": "Göteborg",
+     "typeOfSchool": "Yrkeshögskoleutbildning",
+     "semesterStartFrom": "2025-08-01",
+     "paceOfStudy": "100.0",
+     "titleSv": ".NET Utvecklare",
+     "extent": null,
+     "distance": false,
+     "recommendedPriorKnowledge": null,
+     "lastApplicationDate": null,
+     "executionCondition": 1,
+     "_links": {
+      "e.myh.24641": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.myh.24641"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.myh.27535",
+     "providerName": "IT-Högskolan Sverige AB",
+     "county": "Västra Götalands län",
+     "municipality": "Göteborg",
+     "geographicalAreaCode": "1480",
+     "credits": "400",
+     "creditsSystem": "yh",
+     "contractor": null,
+     "location": null,
+     "town": "Göteborg",
+     "contactInfoAddressCity": "Göteborg",
+     "typeOfSchool": "Yrkeshögskoleutbildning",
+     "semesterStartFrom": "2025-08-01",
+     "paceOfStudy": "100.0",
+     "titleSv": ".NET-utvecklare",
+     "extent": null,
+     "distance": false,
+     "recommendedPriorKnowledge": null,
+     "lastApplicationDate": null,
+     "executionCondition": 1,
+     "_links": {
+      "e.myh.27535": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.myh.27535"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.myh.27536",
+     "providerName": "IT-Högskolan Sverige AB",
+     "county": "Västra Götalands län",
+     "municipality": "Göteborg",
+     "geographicalAreaCode": "1480",
+     "credits": "400",
+     "creditsSystem": "yh",
+     "contractor": null,
+     "location": null,
+     "town": "Göteborg",
+     "contactInfoAddressCity": "Göteborg",
+     "typeOfSchool": "Yrkeshögskoleutbildning",
+     "semesterStartFrom": "2026-08-01",
+     "paceOfStudy": "100.0",
+     "titleSv": ".NET-utvecklare",
+     "extent": null,
+     "distance": false,
+     "recommendedPriorKnowledge": null,
+     "lastApplicationDate": null,
+     "executionCondition": 1,
+     "_links": {
+      "e.myh.27536": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.myh.27536"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.uoh.uu.5rg414.09542.20251",
+     "providerName": "Uppsala universitet",
+     "county": "Uppsala län",
+     "municipality": "Uppsala",
+     "geographicalAreaCode": "0380",
+     "credits": "7.5",
+     "creditsSystem": "hp",
+     "contractor": null,
+     "location": null,
+     "town": "Uppsala",
+     "contactInfoAddressCity": "Uppsala",
+     "typeOfSchool": "Högskoleutbildning",
+     "semesterStartFrom": "2025-03-31",
+     "paceOfStudy": "50.0",
+     "titleSv": "\"och lär dem\" - kyrkans undervisning",
+     "extent": null,
+     "distance": true,
+     "recommendedPriorKnowledge": "uh",
+     "lastApplicationDate": "2024-10-15T00:00:00.000+02:00",
+     "executionCondition": 1,
+     "_links": {
+      "e.uoh.uu.5rg414.09542.20251": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.uoh.uu.5rg414.09542.20251"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.uoh.hj.lgrg14.12887.20252",
+     "providerName": "Jönköping University",
+     "county": "Jönköpings län",
+     "municipality": "Jönköping",
+     "geographicalAreaCode": "0680",
+     "credits": "7.5",
+     "creditsSystem": "hp",
+     "contractor": null,
+     "location": null,
+     "town": "JÖNKÖPING",
+     "contactInfoAddressCity": "JÖNKÖPING",
+     "typeOfSchool": "Högskoleutbildning",
+     "semesterStartFrom": "2025-08-18",
+     "paceOfStudy": "50.0",
+     "titleSv": "(Mörk)grön religion. Ekologi, klimat och religionens förutsättningar",
+     "extent": null,
+     "distance": true,
+     "recommendedPriorKnowledge": "grundlaggande",
+     "lastApplicationDate": "2025-04-15T00:00:00.000+02:00",
+     "executionCondition": 1,
+     "_links": {
+      "e.uoh.hj.lgrg14.12887.20252": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.uoh.hj.lgrg14.12887.20252"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.IST.33006RLXACNVUXY251BAG",
+     "providerName": "Klippans kommun",
+     "county": "Skåne län",
+     "municipality": "Klippan",
+     "geographicalAreaCode": "1276",
+     "credits": "1400",
+     "creditsSystem": "gy",
+     "contractor": "Vuxenutbildningen Klippan R",
+     "location": null,
+     "town": "Klippan",
+     "contactInfoAddressCity": "Klippan",
+     "typeOfSchool": "Gymnasial vuxenutbildning",
+     "semesterStartFrom": "2025-01-06",
+     "paceOfStudy": "100.0",
+     "titleSv": "<![CDATA[Bagare och konditor]]>",
+     "extent": null,
+     "distance": false,
+     "recommendedPriorKnowledge": null,
+     "lastApplicationDate": "2024-11-28T23:59:59",
+     "executionCondition": 1,
+     "_links": {
+      "e.IST.33006RLXACNVUXY251BAG": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.IST.33006RLXACNVUXY251BAG"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.IST.518107VUXFLEXENG05",
+     "providerName": "Klippans kommun",
+     "county": "Skåne län",
+     "municipality": "Klippan",
+     "geographicalAreaCode": "1276",
+     "credits": "100",
+     "creditsSystem": "gy",
+     "contractor": "Vuxenutbildningen Klippan S",
+     "location": null,
+     "town": "Klippan",
+     "contactInfoAddressCity": "Klippan",
+     "typeOfSchool": "Gymnasial vuxenutbildning",
+     "semesterStartFrom": null,
+     "paceOfStudy": "null",
+     "titleSv": "<![CDATA[Engelska 5]]>",
+     "extent": null,
+     "distance": false,
+     "recommendedPriorKnowledge": null,
+     "lastApplicationDate": "2099-12-31T00:00:00",
+     "executionCondition": 2,
+     "_links": {
+      "e.IST.518107VUXFLEXENG05": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.IST.518107VUXFLEXENG05"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.IST.518108VUXFLEXENG06",
+     "providerName": "Klippans kommun",
+     "county": "Skåne län",
+     "municipality": "Klippan",
+     "geographicalAreaCode": "1276",
+     "credits": "100",
+     "creditsSystem": "gy",
+     "contractor": "Vuxenutbildningen Klippan S",
+     "location": null,
+     "town": "Klippan",
+     "contactInfoAddressCity": "Klippan",
+     "typeOfSchool": "Gymnasial vuxenutbildning",
+     "semesterStartFrom": null,
+     "paceOfStudy": "null",
+     "titleSv": "<![CDATA[Engelska 6]]>",
+     "extent": null,
+     "distance": false,
+     "recommendedPriorKnowledge": null,
+     "lastApplicationDate": "2099-12-31T00:00:00",
+     "executionCondition": 2,
+     "_links": {
+      "e.IST.518108VUXFLEXENG06": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.IST.518108VUXFLEXENG06"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.IST.514232VUXFLEXGRNENGA",
+     "providerName": "Klippans kommun",
+     "county": "Skåne län",
+     "municipality": "Klippan",
+     "geographicalAreaCode": "1276",
+     "credits": "100",
+     "creditsSystem": "gy",
+     "contractor": "Vuxenutbildningen Klippan S",
+     "location": null,
+     "town": "Klippan",
+     "contactInfoAddressCity": "Klippan",
+     "typeOfSchool": "Grundläggande vuxenutbildning",
+     "semesterStartFrom": null,
+     "paceOfStudy": "null",
+     "titleSv": "<![CDATA[Engelska, nationell delkurs 1]]>",
+     "extent": null,
+     "distance": false,
+     "recommendedPriorKnowledge": null,
+     "lastApplicationDate": "2099-12-31T00:00:00",
+     "executionCondition": 2,
+     "_links": {
+      "e.IST.514232VUXFLEXGRNENGA": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.IST.514232VUXFLEXGRNENGA"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.IST.514234VUXFLEXGRNENGB",
+     "providerName": "Klippans kommun",
+     "county": "Skåne län",
+     "municipality": "Klippan",
+     "geographicalAreaCode": "1276",
+     "credits": "100",
+     "creditsSystem": "gy",
+     "contractor": "Vuxenutbildningen Klippan S",
+     "location": null,
+     "town": "Klippan",
+     "contactInfoAddressCity": "Klippan",
+     "typeOfSchool": "Grundläggande vuxenutbildning",
+     "semesterStartFrom": null,
+     "paceOfStudy": "null",
+     "titleSv": "<![CDATA[Engelska, nationell delkurs 2]]>",
+     "extent": null,
+     "distance": false,
+     "recommendedPriorKnowledge": null,
+     "lastApplicationDate": "2099-12-31T00:00:00",
+     "executionCondition": 2,
+     "_links": {
+      "e.IST.514234VUXFLEXGRNENGB": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.IST.514234VUXFLEXGRNENGB"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.IST.514237VUXFLEXGRNENGC",
+     "providerName": "Klippans kommun",
+     "county": "Skåne län",
+     "municipality": "Klippan",
+     "geographicalAreaCode": "1276",
+     "credits": "200",
+     "creditsSystem": "gy",
+     "contractor": "Vuxenutbildningen Klippan S",
+     "location": null,
+     "town": "Klippan",
+     "contactInfoAddressCity": "Klippan",
+     "typeOfSchool": "Grundläggande vuxenutbildning",
+     "semesterStartFrom": null,
+     "paceOfStudy": "null",
+     "titleSv": "<![CDATA[Engelska, nationell delkurs 3]]>",
+     "extent": null,
+     "distance": false,
+     "recommendedPriorKnowledge": null,
+     "lastApplicationDate": "2099-12-31T00:00:00",
+     "executionCondition": 2,
+     "_links": {
+      "e.IST.514237VUXFLEXGRNENGC": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.IST.514237VUXFLEXGRNENGC"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.IST.514240VUXFLEXGRNENGD",
+     "providerName": "Klippans kommun",
+     "county": "Skåne län",
+     "municipality": "Klippan",
+     "geographicalAreaCode": "1276",
+     "credits": "200",
+     "creditsSystem": "gy",
+     "contractor": "Vuxenutbildningen Klippan S",
+     "location": null,
+     "town": "Klippan",
+     "contactInfoAddressCity": "Klippan",
+     "typeOfSchool": "Grundläggande vuxenutbildning",
+     "semesterStartFrom": null,
+     "paceOfStudy": "null",
+     "titleSv": "<![CDATA[Engelska, nationell delkurs 4]]>",
+     "extent": null,
+     "distance": false,
+     "recommendedPriorKnowledge": null,
+     "lastApplicationDate": "2099-12-31T00:00:00",
+     "executionCondition": 2,
+     "_links": {
+      "e.IST.514240VUXFLEXGRNENGD": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.IST.514240VUXFLEXGRNENGD"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.IST.33017RLXAARVUXY254KOCL",
+     "providerName": "Klippans kommun",
+     "county": "Skåne län",
+     "municipality": "Klippan",
+     "geographicalAreaCode": "1276",
+     "credits": "1400",
+     "creditsSystem": "gy",
+     "contractor": "Vuxenutbildningen Klippan R",
+     "location": null,
+     "town": "Klippan",
+     "contactInfoAddressCity": "Klippan",
+     "typeOfSchool": "Gymnasial vuxenutbildning",
+     "semesterStartFrom": "2025-01-13",
+     "paceOfStudy": "100.0",
+     "titleSv": "<![CDATA[Kock - storkök, lärlingsutbildning]]>",
+     "extent": null,
+     "distance": false,
+     "recommendedPriorKnowledge": null,
+     "lastApplicationDate": "2024-12-01T00:00:00",
+     "executionCondition": 1,
+     "_links": {
+      "e.IST.33017RLXAARVUXY254KOCL": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.IST.33017RLXAARVUXY254KOCL"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.IST.33046FTXAFRVUXY256MAS",
+     "providerName": "Klippans kommun",
+     "county": "Skåne län",
+     "municipality": "Klippan",
+     "geographicalAreaCode": "1276",
+     "credits": "1200",
+     "creditsSystem": "gy",
+     "contractor": "Vuxenutbildningen Klippan R",
+     "location": null,
+     "town": "Klippan",
+     "contactInfoAddressCity": "Klippan",
+     "typeOfSchool": "Gymnasial vuxenutbildning",
+     "semesterStartFrom": "2025-01-27",
+     "paceOfStudy": "100.0",
+     "titleSv": "<![CDATA[Maskinmekaniker]]>",
+     "extent": null,
+     "distance": false,
+     "recommendedPriorKnowledge": null,
+     "lastApplicationDate": "2024-12-13T00:00:00",
+     "executionCondition": 1,
+     "_links": {
+      "e.IST.33046FTXAFRVUXY256MAS": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.IST.33046FTXAFRVUXY256MAS"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.IST.516052VUXFLEXMAT001A",
+     "providerName": "Klippans kommun",
+     "county": "Skåne län",
+     "municipality": "Klippan",
+     "geographicalAreaCode": "1276",
+     "credits": "100",
+     "creditsSystem": "gy",
+     "contractor": "Vuxenutbildningen Klippan S",
+     "location": null,
+     "town": "Klippan",
+     "contactInfoAddressCity": "Klippan",
+     "typeOfSchool": "Gymnasial vuxenutbildning",
+     "semesterStartFrom": null,
+     "paceOfStudy": "null",
+     "titleSv": "<![CDATA[Matematik 1a]]>",
+     "extent": null,
+     "distance": false,
+     "recommendedPriorKnowledge": null,
+     "lastApplicationDate": "2099-12-31T00:00:00",
+     "executionCondition": 2,
+     "_links": {
+      "e.IST.516052VUXFLEXMAT001A": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.IST.516052VUXFLEXMAT001A"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.IST.518112VUXFLEXMAT01B",
+     "providerName": "Klippans kommun",
+     "county": "Skåne län",
+     "municipality": "Klippan",
+     "geographicalAreaCode": "1276",
+     "credits": "100",
+     "creditsSystem": "gy",
+     "contractor": "Vuxenutbildningen Klippan S",
+     "location": null,
+     "town": "Klippan",
+     "contactInfoAddressCity": "Klippan",
+     "typeOfSchool": "Gymnasial vuxenutbildning",
+     "semesterStartFrom": null,
+     "paceOfStudy": "null",
+     "titleSv": "<![CDATA[Matematik 1b]]>",
+     "extent": null,
+     "distance": false,
+     "recommendedPriorKnowledge": null,
+     "lastApplicationDate": "2099-12-31T00:00:00",
+     "executionCondition": 2,
+     "_links": {
+      "e.IST.518112VUXFLEXMAT01B": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.IST.518112VUXFLEXMAT01B"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.IST.518113VUXFLEXMAT01C",
+     "providerName": "Klippans kommun",
+     "county": "Skåne län",
+     "municipality": "Klippan",
+     "geographicalAreaCode": "1276",
+     "credits": "100",
+     "creditsSystem": "gy",
+     "contractor": "Vuxenutbildningen Klippan S",
+     "location": null,
+     "town": "Klippan",
+     "contactInfoAddressCity": "Klippan",
+     "typeOfSchool": "Gymnasial vuxenutbildning",
+     "semesterStartFrom": null,
+     "paceOfStudy": "null",
+     "titleSv": "<![CDATA[Matematik 1c]]>",
+     "extent": null,
+     "distance": false,
+     "recommendedPriorKnowledge": null,
+     "lastApplicationDate": "2099-12-31T00:00:00",
+     "executionCondition": 2,
+     "_links": {
+      "e.IST.518113VUXFLEXMAT01C": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.IST.518113VUXFLEXMAT01C"
+      }
+     }
+    },
+    {
+     "educationEventId": "e.IST.518114VUXFLEXMAT02A",
+     "providerName": "Klippans kommun",
+     "county": "Skåne län",
+     "municipality": "Klippan",
+     "geographicalAreaCode": "1276",
+     "credits": "100",
+     "creditsSystem": "gy",
+     "contractor": "Vuxenutbildningen Klippan S",
+     "location": null,
+     "town": "Klippan",
+     "contactInfoAddressCity": "Klippan",
+     "typeOfSchool": "Gymnasial vuxenutbildning",
+     "semesterStartFrom": null,
+     "paceOfStudy": "null",
+     "titleSv": "<![CDATA[Matematik 2a]]>",
+     "extent": null,
+     "distance": false,
+     "recommendedPriorKnowledge": null,
+     "lastApplicationDate": "2099-12-31T00:00:00",
+     "executionCondition": 2,
+     "_links": {
+      "e.IST.518114VUXFLEXMAT02A": {
+       "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.IST.518114VUXFLEXMAT02A"
+      }
+     }
+    }
+   ]
+  },
+  "_links": {
+   "first": {
+    "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events?page=0&size=20&sort=titleSort_sv,orgnameSort,asc"
+   },
+   "self": {
+    "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events?page=0&size=20&sort=titleSort_sv,orgnameSort,asc"
+   },
+   "next": {
+    "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events?page=1&size=20&sort=titleSort_sv,orgnameSort,asc"
+   },
+   "last": {
+    "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events?page=16856&size=20&sort=titleSort_sv,orgnameSort,asc"
+   }
+  },
+  "page": {
+   "size": 20,
+   "totalElements": 337133,
+   "totalPages": 16857,
+   "number": 0
+  }
+ }
+}

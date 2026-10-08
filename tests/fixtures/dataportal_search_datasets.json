@@ -1,0 +1,86 @@
+{
+  "resource": {
+    "children": [
+      {
+        "entryId": "71946",
+        "contextId": "66",
+        "rights": ["readmetadata", "readresource"],
+        "info": {
+          "https://admin.dataportal.se/store/66/entry/71946": {
+            "http://entrystore.org/terms/resource": [
+              {"type": "uri", "value": "https://statistikdatabasen.scb.se/dataset/tab6296"}
+            ]
+          }
+        },
+        "metadata": {
+          "https://statistikdatabasen.scb.se/dataset/tab6296": {
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+              {"type": "uri", "value": "http://www.w3.org/ns/dcat#Dataset"}
+            ],
+            "http://purl.org/dc/terms/title": [
+              {"type": "literal", "value": "Population by region and sex", "lang": "en"},
+              {"type": "literal", "value": "Folkmängd efter region och kön", "lang": "sv"}
+            ],
+            "http://purl.org/dc/terms/description": [
+              {"type": "literal", "lang": "en", "value": "Population by region and sex. Year 1968 - 2025."},
+              {"type": "literal", "lang": "sv", "value": "Folkmängden efter region och kön. År 1968 - 2025. Statistiken avser folkbokförda personer den 31 december respektive år. Uppgifterna kommer från Registret över totalbefolkningen (RTB) som förs av SCB med uppgifter från Skatteverket. Indelningen i regioner följer den regionala indelningen vid respektive årsskifte. Tabellen uppdateras årligen i februari när den nya årgången publiceras och äldre uppgifter revideras inte."}
+            ],
+            "http://purl.org/dc/terms/publisher": [
+              {"type": "uri", "value": "http://dataportal.se/organisation/SE2021000837"}
+            ],
+            "http://www.w3.org/ns/dcat#theme": [
+              {"type": "uri", "value": "http://publications.europa.eu/resource/authority/data-theme/SOCI"},
+              {"type": "uri", "value": "http://publications.europa.eu/resource/authority/data-theme/EDUC"}
+            ],
+            "http://www.w3.org/ns/dcat#keyword": [
+              {"type": "literal", "value": "befolkning", "lang": "sv"},
+              {"type": "literal", "value": "population", "lang": "en"},
+              {"type": "literal", "value": "skola", "lang": "sv"}
+            ],
+            "http://purl.org/dc/terms/modified": [
+              {"type": "literal", "value": "2026-02-21T08:00:00Z", "datatype": "http://www.w3.org/2001/XMLSchema#dateTime"}
+            ],
+            "http://purl.org/dc/terms/license": [
+              {"type": "uri", "value": "http://creativecommons.org/publicdomain/zero/1.0/"}
+            ],
+            "http://purl.org/dc/terms/format": [
+              {"type": "literal", "value": "text/csv"},
+              {"type": "literal", "value": "application/json"}
+            ],
+            "http://www.w3.org/ns/dcat#distribution": [
+              {"type": "uri", "value": "https://statistikdatabasen.scb.se/dataset/tab6296/csv"},
+              {"type": "uri", "value": "https://statistikdatabasen.scb.se/dataset/tab6296/json"}
+            ]
+          }
+        }
+      },
+      {
+        "entryId": "69395",
+        "contextId": "43",
+        "info": {
+          "https://admin.dataportal.se/store/43/entry/69395": {
+            "http://entrystore.org/terms/resource": [
+              {"type": "uri", "value": "https://opendata.umea.se/api/v2/catalog/datasets/luftkvalitetsmaetningar-vaestra-esplanaden"}
+            ]
+          }
+        },
+        "metadata": {
+          "https://opendata.umea.se/api/v2/catalog/datasets/luftkvalitetsmaetningar-vaestra-esplanaden": {
+            "http://purl.org/dc/terms/title": [
+              {"type": "literal", "lang": "sv", "value": "Luftkvalitetsmätningar Västra esplanaden"}
+            ],
+            "http://purl.org/dc/terms/description": [
+              {"type": "literal", "lang": "sv", "value": "Mätdata från kontinuerliga luftmätningar i centrala Umeå."}
+            ],
+            "http://purl.org/dc/terms/publisher": [
+              {"type": "literal", "value": "Umeå kommun"}
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "results": 57,
+  "limit": 10,
+  "offset": 20
+}

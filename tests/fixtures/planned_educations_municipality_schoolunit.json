@@ -1,0 +1,40 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": {
+  "schoolUnits": [
+   {
+    "code": "77364720",
+    "name": "ABF Stockholms gymnasium",
+    "typeOfSchooling": "UPPER_SECONDARY_EDUCATION"
+   },
+   {
+    "code": "20446679",
+    "name": "AG Marks gymnasieskola",
+    "typeOfSchooling": "GYAN"
+   },
+   {
+    "code": "33572033",
+    "name": "Academy of Music and Business Tingsryd",
+    "typeOfSchooling": "UPPER_SECONDARY_EDUCATION"
+   }
+  ],
+  "geographicalAreas": [
+   {
+    "code": "1440",
+    "name": "Ale",
+    "areaType": "MUNICIPALITY"
+   },
+   {
+    "code": "1489",
+    "name": "Alingsås",
+    "areaType": "MUNICIPALITY"
+   },
+   {
+    "code": "0764",
+    "name": "Alvesta",
+    "areaType": "MUNICIPALITY"
+   }
+  ]
+ }
+}

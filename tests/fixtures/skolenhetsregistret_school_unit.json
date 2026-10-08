@@ -1,0 +1,66 @@
+{
+  "meta": { "extractDate": "2025-05-08T00:06:10.19+02:00", "created": "2015-12-12", "modified": "2024-08-30" },
+  "links": { "href": "https://api.skolverket.se/skolenhetsregistret/v2/school-units/12345678", "rel": "self", "method": "GET" },
+  "data": {
+    "type": "schoolunit",
+    "schoolUnitCode": "12345678",
+    "attributes": {
+      "displayName": "Storskolan",
+      "status": "AKTIV",
+      "url": "https://www.skolverket.se",
+      "email": "storskolan@skolverket.se",
+      "phoneNumber": "12345678",
+      "headMaster": "Förnamn Efternamn",
+      "addresses": [
+        {
+          "type": "POSTADRESS",
+          "careOfAddress": "Rektorsexpeditionen",
+          "streetAddress": "Box 123",
+          "postalCode": "50110",
+          "locality": "Borås",
+          "geoCoordinates": { "coordinateSweRefN": null, "coordinateSweRefE": null, "latitude": null, "longitude": null },
+          "country": null,
+          "continent": "Europa"
+        },
+        {
+          "type": "BESOKSADRESS",
+          "careOfAddress": null,
+          "streetAddress": "Agatan 1",
+          "postalCode": "234 67",
+          "locality": "Borås",
+          "geoCoordinates": {
+            "coordinateSweRefN": "6562397,097",
+            "coordinateSweRefE": "679180,062",
+            "latitude": "59.16286545184274",
+            "longitude": "18.134313905557242"
+          },
+          "country": null,
+          "continent": "Europa"
+        }
+      ],
+      "orientationType": "ALLMAN",
+      "schoolUnitType": "SKOLENHET",
+      "schoolName": "Storskolan",
+      "municipalityCode": "0180",
+      "schoolTypes": ["GR", "FKLASS", "FTH", "GY", "VUX"],
+      "schoolTypeProperties": {
+        "gr": { "grades": ["1", "2", "3", "4", "5", "6", "7", "8", "9"] },
+        "gy": { "programmes": ["BA", "NA"], "csnCode": "21" },
+        "vux": { "schoolTypeParts": ["VUXGR", "VUXSFI"] }
+      },
+      "specialSupportSchool": false,
+      "hospitalSchool": false,
+      "reportsStudents": "NEJ",
+      "reportsPersonell": "NEJ",
+      "startdate": "2022-11-08",
+      "endDate": null,
+      "municipalAdultEducationProvidedInternally": false
+    }
+  },
+  "included": {
+    "type": "organization",
+    "organizationNumber": "1234567890",
+    "attributes": { "displayName": "Enskilda gymnasiet", "organizerType": "ENSKILD" },
+    "links": { "href": "https://api.skolverket.se/skolenhetsregistret/v2/organizers/1234567890", "rel": "related", "method": "GET" }
+  }
+}

@@ -1,0 +1,39 @@
+# SPDX-FileCopyrightText: 2026 Deniz Özer
+#
+# SPDX-License-Identifier: CC0-1.0
+
+name: Felrapport
+description: Rapportera ett fel i servern eller ett verktyg
+labels: ["bug"]
+body:
+  - type: input
+    id: tool
+    attributes:
+      label: Verktyg
+      description: Vilket verktyg (t.ex. scb_get_table_data) eller vilken resurs gäller felet?
+    validations:
+      required: true
+  - type: textarea
+    id: args
+    attributes:
+      label: Argument
+      description: Argumenten som skickades till verktyget (JSON).
+      render: json
+  - type: textarea
+    id: expected
+    attributes:
+      label: Förväntat resultat
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Faktiskt resultat
+      description: Klistra in felmeddelandet eller svaret.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Utdata från `fuzzy-mcp --version` och MCP-klient (t.ex. Claude Desktop, Claude Code, VS Code).

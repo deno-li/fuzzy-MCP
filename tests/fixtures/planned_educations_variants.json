@@ -1,0 +1,13 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": [
+  "Spetsutbildning, SP",
+  "Lärlingsutbildning, LU",
+  "Särskild variant estetisk, VE",
+  "Anställd Lärling, AL",
+  "Särskild variant, SV",
+  "Nationell idrottsutbildning, NIU",
+  "Riksrekrytering, NR"
+ ]
+}

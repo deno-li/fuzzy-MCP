@@ -1,0 +1,159 @@
+{
+  "https://catalog.skara.se/store/1/resource/9": {
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+      {"type": "uri", "value": "http://www.w3.org/ns/dcat#Dataset"},
+      {"type": "uri", "value": "http://entryscape.com/terms/ServedByDataService"}
+    ],
+    "http://purl.org/dc/terms/title": [
+      {"type": "literal", "value": "Bathing sites", "lang": "en"},
+      {"type": "literal", "value": "Badplatser", "lang": "sv"}
+    ],
+    "http://purl.org/dc/terms/description": [
+      {"type": "literal", "value": "Kommunala badplatser i Skara med läge och faciliteter.", "lang": "sv"}
+    ],
+    "http://purl.org/dc/terms/publisher": [
+      {"type": "uri", "value": "http://dataportal.se/organisation/SE2120001702"}
+    ],
+    "http://www.w3.org/ns/dcat#contactPoint": [
+      {"type": "uri", "value": "https://catalog.skara.se/store/1/resource/3"}
+    ],
+    "http://www.w3.org/ns/dcat#distribution": [
+      {"type": "uri", "value": "https://catalog.skara.se/store/1/resource/11"},
+      {"type": "uri", "value": "https://catalog.skara.se/store/1/resource/12"}
+    ],
+    "http://www.w3.org/ns/dcat#theme": [
+      {"type": "uri", "value": "http://publications.europa.eu/resource/authority/data-theme/ENVI"}
+    ],
+    "http://www.w3.org/ns/dcat#keyword": [
+      {"type": "literal", "value": "bad", "lang": "sv"},
+      {"type": "literal", "value": "swimming", "lang": "en"},
+      {"type": "literal", "value": "friluftsliv", "lang": "sv"}
+    ],
+    "http://purl.org/dc/terms/accrualPeriodicity": [
+      {"type": "uri", "value": "http://publications.europa.eu/resource/authority/frequency/ANNUAL"}
+    ],
+    "http://purl.org/dc/terms/accessRights": [
+      {"type": "uri", "value": "http://publications.europa.eu/resource/authority/access-right/PUBLIC"}
+    ],
+    "http://purl.org/dc/terms/license": [
+      {"type": "uri", "value": "http://creativecommons.org/publicdomain/zero/1.0/"}
+    ],
+    "http://purl.org/dc/terms/issued": [
+      {"type": "literal", "value": "2021-06-18", "datatype": "http://www.w3.org/2001/XMLSchema#date"}
+    ],
+    "http://purl.org/dc/terms/modified": [
+      {"type": "literal", "value": "2026-05-02", "datatype": "http://www.w3.org/2001/XMLSchema#date"}
+    ],
+    "http://purl.org/dc/terms/language": [
+      {"type": "uri", "value": "http://publications.europa.eu/resource/authority/language/SWE"}
+    ],
+    "http://www.w3.org/ns/dcat#landingPage": [
+      {"type": "uri", "value": "https://example.org/badplatser"}
+    ],
+    "http://data.europa.eu/r5r/hvdCategory": [
+      {"type": "uri", "value": "http://data.europa.eu/bna/c_ac64a52d"}
+    ],
+    "http://purl.org/dc/terms/temporal": [
+      {"type": "bnode", "value": "_:b0"}
+    ],
+    "http://purl.org/dc/terms/spatial": [
+      {"type": "uri", "value": "http://sws.geonames.org/2675397/"},
+      {"type": "bnode", "value": "_:b1"}
+    ]
+  },
+  "_:b0": {
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+      {"type": "uri", "value": "http://purl.org/dc/terms/PeriodOfTime"}
+    ],
+    "http://www.w3.org/ns/dcat#startDate": [
+      {"type": "literal", "value": "2021-06-18", "datatype": "http://www.w3.org/2001/XMLSchema#date"}
+    ]
+  },
+  "_:b1": {
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+      {"type": "uri", "value": "http://purl.org/dc/terms/Location"}
+    ],
+    "http://www.w3.org/ns/dcat#bbox": [
+      {"type": "literal", "value": "POLYGON((13.30 58.30,13.50 58.30,13.50 58.45,13.30 58.45,13.30 58.30))", "datatype": "http://www.opengis.net/ont/geosparql#wktLiteral"}
+    ]
+  },
+  "https://catalog.skara.se/store/1/resource/11": {
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+      {"type": "uri", "value": "http://www.w3.org/ns/dcat#Distribution"}
+    ],
+    "http://purl.org/dc/terms/title": [
+      {"type": "literal", "value": "Badplatser (CSV)", "lang": "sv"}
+    ],
+    "http://www.w3.org/ns/dcat#accessURL": [
+      {"type": "uri", "value": "https://catalog.skara.se/store/1/resource/11"}
+    ],
+    "http://www.w3.org/ns/dcat#downloadURL": [
+      {"type": "uri", "value": "https://catalog.skara.se/store/1/resource/11/badplatser.csv"}
+    ],
+    "http://purl.org/dc/terms/format": [
+      {"type": "literal", "value": "text/csv"}
+    ],
+    "http://purl.org/dc/terms/license": [
+      {"type": "uri", "value": "http://creativecommons.org/publicdomain/zero/1.0/"}
+    ],
+    "http://purl.org/dc/terms/conformsTo": [
+      {"type": "uri", "value": "https://www.dataportal.se/specifications/badplatser/1.0"}
+    ]
+  },
+  "https://catalog.skara.se/store/1/resource/12": {
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+      {"type": "uri", "value": "http://www.w3.org/ns/dcat#Distribution"}
+    ],
+    "http://purl.org/dc/terms/title": [
+      {"type": "literal", "value": "Badplatser (API)", "lang": "sv"}
+    ],
+    "http://www.w3.org/ns/dcat#accessURL": [
+      {"type": "uri", "value": "https://api.example.org/badplatser"}
+    ],
+    "http://purl.org/dc/terms/format": [
+      {"type": "literal", "value": "application/json"}
+    ],
+    "http://www.w3.org/ns/dcat#accessService": [
+      {"type": "uri", "value": "https://catalog.skara.se/store/1/resource/20"}
+    ]
+  },
+  "https://catalog.skara.se/store/1/resource/20": {
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+      {"type": "uri", "value": "http://www.w3.org/ns/dcat#DataService"}
+    ],
+    "http://purl.org/dc/terms/title": [
+      {"type": "literal", "value": "Badplats-API", "lang": "sv"}
+    ],
+    "http://www.w3.org/ns/dcat#endpointURL": [
+      {"type": "uri", "value": "https://api.example.org/badplatser"}
+    ],
+    "http://www.w3.org/ns/dcat#endpointDescription": [
+      {"type": "uri", "value": "https://api.example.org/badplatser/openapi.json"}
+    ],
+    "http://www.w3.org/ns/dcat#servesDataset": [
+      {"type": "uri", "value": "https://catalog.skara.se/store/1/resource/9"}
+    ]
+  },
+  "http://dataportal.se/organisation/SE2120001702": {
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+      {"type": "uri", "value": "http://xmlns.com/foaf/0.1/Agent"}
+    ],
+    "http://xmlns.com/foaf/0.1/name": [
+      {"type": "literal", "value": "Skara kommun", "lang": "sv"}
+    ],
+    "http://purl.org/dc/terms/type": [
+      {"type": "uri", "value": "http://purl.org/adms/publishertype/LocalAuthority"}
+    ]
+  },
+  "https://catalog.skara.se/store/1/resource/3": {
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+      {"type": "uri", "value": "http://www.w3.org/2006/vcard/ns#Organization"}
+    ],
+    "http://www.w3.org/2006/vcard/ns#fn": [
+      {"type": "literal", "value": "Skara kommun, kontaktcenter"}
+    ],
+    "http://www.w3.org/2006/vcard/ns#hasEmail": [
+      {"type": "uri", "value": "mailto:kontakt@example.org"}
+    ]
+  }
+}
