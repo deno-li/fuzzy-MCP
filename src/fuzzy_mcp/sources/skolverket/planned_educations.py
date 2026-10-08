@@ -749,9 +749,10 @@ def _fold(text: str) -> str:
     return re.sub(r"[\s_\-]+", " ", stripped.lower()).strip()
 
 
+# ASCII digits only ([0-9], not \d): full-width or Arabic-Indic digits would reach the URL path and give a 404.
 def normalize_school_unit_code(value: str) -> str:
     text = re.sub(r"\s+", "", str(value))
-    if not re.fullmatch(r"\d{8}", text):
+    if not re.fullmatch(r"[0-9]{8}", text):
         raise InvalidInputError(f"Skolenhetskoden måste vara 8 siffror (t.ex. '44673074'), fick {value!r}")
     return text
 
@@ -760,7 +761,7 @@ def normalize_area_code(value: str) -> str:
     text = re.sub(r"\s+", "", str(value))
     if text.isdigit() and len(text) in (1, 3):
         text = text.zfill(len(text) + 1)
-    if not re.fullmatch(r"\d{2}|\d{4}", text):
+    if not re.fullmatch(r"[0-9]{2}|[0-9]{4}", text):
         raise InvalidInputError(
             f"Ogiltig geografisk kod {value!r}: ange kommunkod (4 siffror, t.ex. '0180') eller länskod (2 siffror)"
         )

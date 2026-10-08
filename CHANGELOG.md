@@ -23,6 +23,11 @@ och utgåvorna 0.1.0 och 0.1.1 finns bara där. Servern fungerar som i 0.1.1.
 - Resursen `fuzzy://crosswalk/informationsmodell` använder neutrala, beskrivande begrepp (t.ex. "Indikatorvärde",
   "Kodöversättning") i stället för namn i tabellform, och uppgifter om enskilda beskrivs i allmänna ordalag.
 
+### Rättat
+
+- Planerad utbildning: skolenhetskod och kommun- eller länskod godtar bara ASCII-siffror. Helbreddssiffror och
+  arabisk-indiska siffror skickades tidigare vidare och gav 404 från API:t i stället för ett tydligt fel.
+
 ## [0.1.1] - 2026-10-08
 
 ### Tillagt

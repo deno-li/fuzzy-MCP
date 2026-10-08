@@ -14,6 +14,8 @@ from fuzzy_mcp.sources.skolverket.planned_educations import (
     PERSONAL_DATA_NOTE,
     PERSONAL_DATA_OFF_NOTE,
     colon_sort,
+    normalize_area_code,
+    normalize_school_unit_code,
     normalize_semester_start,
     normalize_type_of_schooling,
     parse_number,
@@ -119,6 +121,27 @@ def test_sort_rejects_garbage(raw):
 )
 def test_semester_start_format(raw, expected):
     assert normalize_semester_start(raw) == expected
+
+
+@pytest.mark.parametrize(
+    ("func", "value"),
+    [
+        (normalize_school_unit_code, "４４６７３０７４"),  # full-width digits
+        (normalize_school_unit_code, "٤٤٦٧٣٠٧٤"),  # Arabic-Indic digits
+        (normalize_area_code, "０１８０"),
+        (normalize_area_code, "１８０"),
+        (normalize_area_code, "٠١"),
+    ],
+)
+def test_codes_accept_only_ascii_digits(func, value):
+    with pytest.raises(InvalidInputError):
+        func(value)
+
+
+def test_codes_accept_ascii_digits():
+    assert normalize_school_unit_code(" 4467 3074 ") == "44673074"
+    assert normalize_area_code("180") == "0180"
+    assert normalize_area_code("1") == "01"
 
 
 @pytest.mark.parametrize("raw", ["hösten 2026", "2026-13-01", "2026-12-31TO2026-08-01", "2026-08-01 - 2026-12-31"])
