@@ -21,10 +21,10 @@ jobs:
       matrix:
         python-version: ["3.11", "3.12", "3.13", "3.14"]
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ matrix.python-version }}
       - name: Installera
@@ -42,10 +42,10 @@ jobs:
     name: Paket, installation och röktest
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       - name: Bygg sdist och wheel
@@ -65,14 +65,14 @@ jobs:
           python -c "import secrets; print(secrets.token_urlsafe(48))" > /tmp/token-http.txt
           FUZZY_MCP_AUTH_TOKEN_FILE=/tmp/token-http.txt \
             /tmp/venv/bin/fuzzy-mcp --transport streamable-http --port 8000 --sources reference &
-          for i in $(seq 1 30); do curl -sf http://127.0.0.1:8000/healthz && break; sleep 1; done
+          for _ in $(seq 1 30); do curl -sf http://127.0.0.1:8000/healthz && break; sleep 1; done
           /tmp/venv/bin/python scripts/smoke_test.py --url http://127.0.0.1:8000/mcp --token-file /tmp/token-http.txt
       - name: Eneo-kompatibilitet (Eneos klient, MCP SDK 1.28.1, med token och storleksgräns)
         run: |
           python -c "import secrets; print(secrets.token_urlsafe(48))" > /tmp/token.txt
           FUZZY_MCP_AUTH_TOKEN_FILE=/tmp/token.txt FUZZY_MCP_MAX_OUTPUT_CHARS=30000 \
             /tmp/venv/bin/fuzzy-mcp --transport streamable-http --port 8001 --stateless &
-          for i in $(seq 1 30); do curl -sf http://127.0.0.1:8001/healthz && break; sleep 1; done
+          for _ in $(seq 1 30); do curl -sf http://127.0.0.1:8001/healthz && break; sleep 1; done
           python -m venv /tmp/eneo && /tmp/eneo/bin/python -m pip install "mcp==1.28.1" "httpx==0.28.1"
           /tmp/eneo/bin/python scripts/eneo_check.py --url http://127.0.0.1:8001/mcp --token-file - < /tmp/token.txt
 
@@ -80,7 +80,7 @@ jobs:
     name: REUSE-licensinformation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: fsfe/reuse-action@v6
+      - uses: fsfe/reuse-action@772649cfa03a64a08c458c7cca9a6a473d74e7f9 # v6

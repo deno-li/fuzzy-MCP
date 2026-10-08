@@ -119,16 +119,16 @@ Låsningen görs för målplattformen: på Windows kräver MCP-SDK:n även `pywi
    `publiccode.yml`, versionen i exemplen i `Dockerfile`, `docs/DRIFT.md`, `docs/ENEO.md` och
    `docs/eneo/docker-compose.fuzzy-mcp.yml`, och flytta posterna under `[Unreleased]` i CHANGELOG.md.
 2. Kör kontrollerna ovan, inklusive livetesterna, och merga till main.
-3. Kör arbetsflödet **Release** från main (Actions → Release → Run workflow; `ref` är `main`, eller en fullständig
-   commit-SHA på main vars `.github/workflows/` är desamma som nu – annars kan GitHub-token inte skapa releasen). Det
-   kör lint och tester och bygger sedan Windows- och Linux-paketen (med container-image) från exakt den testade
-   commiten, även om main har flyttats under tiden. Paketen kontrolleras: kontrollsummor, installation utan nät (Linux
-   på riktigt, Windows med `pip --dry-run` för win_amd64), att `fuzzy-mcp --version` stämmer, röktest och containern med
-   och utan token. Sedan skapar det ett release-**utkast** `vX.Y.Z` med paketen, deras `.sha256`-filer och en
-   releasetext från CHANGELOG-avsnittet med kontrollsummor och spårbarhet (`scripts/release_notes.py`). Flödet stoppar
-   om commiten inte finns på main, om taggen eller releasen redan finns, om CHANGELOG saknar versionen eller om ett
-   paket inte är byggt från rätt commit. Ett ofullständigt utkast tas bort automatiskt; finns ett kvar ändå, ta bort det
-   (`gh release delete vX.Y.Z`) innan du kör igen.
+3. Kör arbetsflödet **Release** från main (Actions → Release → Run workflow, *Use workflow from* `main`). Det bygger den
+   commit som är senaste på main när flödet startar (`GITHUB_SHA`) och ingen annan, även om main flyttas under tiden; en
+   äldre commit släpps med den manuella vägen nedan. Flödet kör lint och tester och bygger sedan Windows- och
+   Linux-paketen (med container-image). Paketen kontrolleras: kontrollsummor, installation utan nät (Linux på riktigt,
+   Windows med `pip --dry-run` för win_amd64), att `fuzzy-mcp --version` stämmer, röktest och containern med och utan
+   token. Sedan skapar det ett release-**utkast** `vX.Y.Z` med paketen, deras `.sha256`-filer och en releasetext från
+   CHANGELOG-avsnittet med kontrollsummor och spårbarhet (`scripts/release_notes.py`). Flödet stoppar om det inte
+   startas från main, om taggen eller releasen redan finns, om CHANGELOG saknar versionen eller om ett paket inte är
+   byggt från rätt commit. Ett ofullständigt utkast tas bort automatiskt; finns ett kvar ändå, ta bort det (`gh release
+   delete vX.Y.Z`) innan du kör igen.
 4. Granska utkastet under Releases. Kontrollera precis före publicering att taggen `vX.Y.Z` inte finns (Tags-listan,
    eller `gh api repos/deno-li/fuzzy-MCP/git/ref/tags/vX.Y.Z` ger 404 Not Found) och publicera sedan. Taggen skapas då
    av GitHub på den byggda commiten, som en lättviktig tagg utan signatur; spårbarheten bygger på raden `Commit` och

@@ -4,6 +4,7 @@
 
 import copy
 import json
+from urllib.parse import urlsplit
 
 import httpx2
 import pytest
@@ -858,7 +859,7 @@ async def test_adult_event_detail_and_areas(router, make_client):
     assert detail["eligible_for_student_aid"] is True and detail["execution_condition"] == 0
     assert detail["credits"] == "400" and detail["credits_system"] == "yh"
     assert detail["contact"]["addresses"][0]["zip_code"] == "41265"
-    assert detail["contact"]["web"].startswith("https://www.iths.se")
+    assert urlsplit(detail["contact"]["web"])[:2] == ("https", "www.iths.se")
     assert "email" not in detail["contact"] and any("personuppgift" in n for n in detail["notes"])
     assert detail["description"].startswith("Cloud development")
     assert "other" not in detail
@@ -885,7 +886,7 @@ async def test_personal_data_off_notes_do_not_suggest_opt_in(router, make_client
         assert detail["notes"] == [PERSONAL_DATA_OFF_NOTE]
         assert "include_personal_data" not in json.dumps(detail, ensure_ascii=False)
     assert "email" not in unit and "contactInfo" not in unit["raw"] and "efternamn" not in json.dumps(unit)
-    assert "email" not in event["contact"] and event["contact"]["web"].startswith("https://www.iths.se")
+    assert "email" not in event["contact"] and urlsplit(event["contact"]["web"])[:2] == ("https", "www.iths.se")
     # Default installation: the note keeps pointing to the opt-in.
     async with make_client("skolverket") as client:
         default = await call(client, "skolverket_pe_get_adult_education_event", {"education_event_id": "e.myh.27538"})
