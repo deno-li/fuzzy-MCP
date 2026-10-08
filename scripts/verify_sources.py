@@ -8,11 +8,12 @@
 
 Runs from the GitHub Actions workflow "Källkontroll" (or any machine with network access) and uses only the standard
 library. Only GET, only the hosts in ALLOWED_HOSTS, redirects only within them, no input from the outside apart from
-the group name. Every output line starts with a tag:
+the group name. Every record is one physical line that starts with a tag, so no text from a source can start a line
+of its own (or a GitHub workflow command, "::…"):
 
     VERIFY {json}               one request: check, url, status, content type, size, sha256 and a summary
     BODY <check> {json}         the whole response body (small JSON responses only)
-    TEXT <check> <i>/<n> <text> a web page as plain text, in chunks
+    TEXT <check> <i>/<n> "json" a web page as plain text, in chunks; each chunk is a JSON string
     B64 <name> <i>/<n> <data>   a downloaded file in base64 chunks (its sha256 is in the VERIFY line)
 
 Exit code 1 only if no request got an HTTP response (e.g. no network); HTTP errors are results, not failures.
@@ -108,7 +109,9 @@ _outcomes: list[tuple[str, str]] = []  # (check, status or error) for the job su
 
 
 def emit(tag: str, *parts: str) -> None:
-    print(tag, *parts, flush=True)
+    """Print one record as exactly one log line; line breaks are escaped as a last guard."""
+    line = " ".join((tag, *parts))
+    print(line.replace("\r", "\\r").replace("\n", "\\n"), flush=True)
 
 
 def emit_json(tag: str, obj: Any) -> None:
@@ -119,10 +122,10 @@ def chunks(text: str, size: int = CHUNK) -> list[str]:
     return [text[i : i + size] for i in range(0, len(text), size)] or [""]
 
 
-def emit_chunks(tag: str, name: str, text: str) -> None:
+def emit_chunks(tag: str, name: str, text: str, as_json: bool = False) -> None:
     parts = chunks(text)
     for i, part in enumerate(parts, 1):
-        emit(tag, name, f"{i}/{len(parts)}", part)
+        emit(tag, name, f"{i}/{len(parts)}", json.dumps(part, ensure_ascii=False) if as_json else part)
 
 
 # ----------------------------------------------------------------------------- HTTP
@@ -635,7 +638,7 @@ def check_scb_keys() -> None:
         ]
         name = page_url.rstrip("/").rsplit("/", 1)[-1]
         record(f"scb.sida.{name}", got, {"tecken": len(text), "fillankar": [list(link) for link in file_links][:60]})
-        emit_chunks("TEXT", f"scb.sida.{name}", text[:TEXT_MAX_CHARS])
+        emit_chunks("TEXT", f"scb.sida.{name}", text[:TEXT_MAX_CHARS], as_json=True)
         for url, label in file_links:
             if is_key_file(url, label):
                 files.setdefault(url, label)
@@ -665,7 +668,7 @@ def check_socialstyrelsen() -> None:
         got,
         {"tecken": len(text), "lankar": [list(link) for link in links if allowed(link[0])][:80]},
     )
-    emit_chunks("TEXT", "sdb.dokumentation", text[:TEXT_MAX_CHARS])
+    emit_chunks("TEXT", "sdb.dokumentation", text[:TEXT_MAX_CHARS], as_json=True)
 
     subjects: list[Any] = []
     for path in ("/api", "/api/v1", "/api/v1/sv", "/api/v1/en"):
@@ -747,7 +750,9 @@ def write_job_summary(group: str, path: str | None) -> None:
     """A table of checks and HTTP status for the Actions run page; the details stay in the job log."""
     if not path:
         return
-    rows = "".join(f"| `{check}` | {outcome.replace('|', '/')[:120]} |\n" for check, outcome in _outcomes)
+    rows = "".join(
+        f"| `{check}` | {' '.join(outcome.split()).replace('|', '/')[:120]} |\n" for check, outcome in _outcomes
+    )
     with open(path, "a", encoding="utf-8") as summary:
         summary.write(f"### Källkontroll: {group}\n\n{len(_outcomes)} anrop, {_responses} svar.\n\n")
         summary.write(f"| Kontroll | Status |\n| --- | --- |\n{rows}\n")

@@ -284,3 +284,14 @@ def test_job_summary_lists_each_check(monkeypatch: pytest.MonkeyPatch, tmp_path:
     assert "| `ok` | 200 |" in text
     assert "| `fel` | URLError: a/b |" in text
     vs.write_job_summary("scb-nycklar", None)  # outside Actions: nothing is written
+
+
+def test_every_record_is_one_line_and_text_round_trips(capsys: pytest.CaptureFixture[str]) -> None:
+    text = "Rubrik\n::error::inte ett kommando\r\nslut" + "x" * vs.CHUNK
+    vs.emit_chunks("TEXT", "sida", text, as_json=True)
+    vs.emit("BODY", "prov", "rad1\nrad2")
+    out = capsys.readouterr().out.splitlines()
+    assert len(out) == 3
+    assert all(line.startswith(("TEXT sida ", "BODY prov ")) for line in out)
+    assert "".join(json.loads(line.split(" ", 3)[3]) for line in out[:2]) == text
+    assert out[2] == "BODY prov rad1\\nrad2"

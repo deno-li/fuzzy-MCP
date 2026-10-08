@@ -71,8 +71,10 @@ Kör så här:
 2. Varje grupp är ett eget jobb. Sammanfattningen visar status per anrop, och jobbloggen innehåller detaljerna.
 
 Raderna i loggen börjar med `VERIFY` (ett anrop: status, storlek, sha256 och sammanfattning), `BODY` (hela små
-JSON-svar), `TEXT` (en webbsida som text i delar) eller `B64` (en nedladdad fil i base64-delar). En fil återskapas
-genom att delarna slås ihop i ordning och avkodas; kontrollera sha256 mot `VERIFY`-raden. Lokalt körs samma sak med:
+JSON-svar), `TEXT` (en webbsida som text i delar, varje del som JSON-sträng) eller `B64` (en nedladdad fil i
+base64-delar). Varje post är exakt en rad i loggen, så text från en källa kan inte bli ett eget arbetsflödeskommando.
+En fil återskapas genom att delarna slås ihop i ordning och avkodas; kontrollera sha256 mot `VERIFY`-raden. Lokalt
+körs samma sak med:
 
 ```sh
 python scripts/verify_sources.py --group scb-geodata
