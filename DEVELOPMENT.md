@@ -51,6 +51,36 @@ FUZZY_MCP_LIVE_TESTS=1 python -m pytest -q -m live
 
 Kör dem när en myndighet har ändrat sitt API, före en utgåva och när du lagt till ett nytt verktyg.
 
+### Källkontroll i GitHub Actions
+
+`scripts/verify_sources.py` gör en fast lista med läsande GET-anrop och skriver svaren som rader i loggen. Det
+används för att kontrollera API-kontrakt innan ett verktyg byggs eller ändras, och för att hämta SCB:s nyckelfiler
+när den egna miljön saknar nätåtkomst till källorna. Skriptet använder bara standardbiblioteket, anropar bara värdarna
+i `ALLOWED_HOSTS` och följer bara omdirigeringar inom dem.
+
+| Grupp | Vad som kontrolleras |
+| --- | --- |
+| `scb-geodata` | WFS för DeSO/RegSO 2018–2025: lager, attribut, antal, kommunfilter, sidning, koordinatsystem, punktsökning och format |
+| `scb-pxweb` | PxWebApi 2: tabeller med DeSO/RegSO, regionkoder (med och utan versionssuffix), kodlistor och ett litet datauttag |
+| `scb-nycklar` | SCB:s DeSO- och RegSO-sidor som text, länkade filer och nyckelfilerna (kopplingar, historiska förändringar) |
+| `socialstyrelsen` | Statistikdatabasens API v1: dokumentation, ämnen, variabler, värden, ett litet resultat och sidning |
+
+Kör så här:
+
+1. Actions → **Källkontroll** → **Run workflow** (från main eller en gren).
+2. Varje grupp är ett eget jobb. Sammanfattningen visar status per anrop, och jobbloggen innehåller detaljerna.
+
+Raderna i loggen börjar med `VERIFY` (ett anrop: status, storlek, sha256 och sammanfattning), `BODY` (hela små
+JSON-svar), `TEXT` (en webbsida som text i delar) eller `B64` (en nedladdad fil i base64-delar). En fil återskapas
+genom att delarna slås ihop i ordning och avkodas; kontrollera sha256 mot `VERIFY`-raden. Lokalt körs samma sak med:
+
+```sh
+python scripts/verify_sources.py --group scb-geodata
+```
+
+HTTP-fel och tomma svar är resultat, inte bevis för att data saknas. Skriptet avslutas med fel bara om inget anrop
+fick något svar alls.
+
 ## Arkitektur
 
 ```text
