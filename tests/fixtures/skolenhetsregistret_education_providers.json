@@ -1,0 +1,11 @@
+{
+  "meta": { "extractDate": "2025-05-08T00:06:10.19+02:00" },
+  "data": {
+    "type": "educationProvider",
+    "attributes": [
+      { "organizationNumber": "5560001111", "educationProviderCode": "87654321", "displayName": "Lärande i Sverige AB", "folkHighschoolName": null, "gradingRight": true },
+      { "organizationNumber": "8020002222", "educationProviderCode": "76543210", "displayName": "Föreningen Mälardalens folkhögskola", "folkHighschoolName": "Mälardalens folkhögskola", "gradingRight": true },
+      { "organizationNumber": "5560003333", "educationProviderCode": "65432109", "displayName": "Vuxenskolan Syd AB", "folkHighschoolName": null, "gradingRight": false }
+    ]
+  }
+}

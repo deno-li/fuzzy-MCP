@@ -1,0 +1,28 @@
+{
+  "id": "i.uoh.uu.1te686.14483.20242",
+  "status": "ACTIVE",
+  "content": {
+    "identifier": "i.uoh.uu.1te686.14483.20242",
+    "educationBase": "i.uoh.uu.1te686",
+    "code": "1TE686",
+    "lastEdited": "2026-01-02T10:00:00",
+    "expires": "2027-01-31T00:00:00",
+    "title": {"strings": [{"lang": "eng", "value": "Electronics for Engineers"}, {"lang": "swe", "value": "Elektronik för ingenjörer"}]},
+    "description": {"strings": [{"lang": "swe", "value": "Kursen behandlar analog och digital elektronik."}]},
+    "url": {"urls": [{"lang": "eng", "value": "https://www.uu.se/en/1TE686"}, {"lang": "swe", "value": "https://www.uu.se/1TE686"}]},
+    "type": {"type": "C_SchoolType", "code": "HS"},
+    "educationLevels": [{"type": "C_EducationLevel", "code": "ISCED_6"}, {"type": "UH_EducationLevel", "code": "G1N"}],
+    "orientation": {"type": "C_Orientation", "code": "2"},
+    "configuration": {"type": "C_Configuration", "code": "kurs"},
+    "subjects": [{"type": "UH_Subject", "code": "EL1"}, {"type": "C_Subject_ISCED2013", "code": "0714"}],
+    "isVocational": null,
+    "resultIsDegree": false,
+    "degrees": {"strings": [{"lang": "swe", "value": "Ingen examen"}, {"lang": "eng", "value": "No degree"}]},
+    "qualificationLevel": {"type": "C_Qualification", "code": "6"},
+    "credits": {"system": {"type": "C_Credits", "code": "hp"}, "credits": 7.5},
+    "extent": {"length": 10, "unit": {"type": "C_TimeType", "code": "weeks"}},
+    "eligibility": {"strings": [{"lang": "swe", "value": "Grundläggande behörighet samt Matematik 3c"}]},
+    "eligibleForStudentAid": {"type": "C_StudentAid", "code": "ja"},
+    "extensions": [{"type": "UHInfoExtension", "id": "1", "focusIdentifier": "EL"}]
+  }
+}

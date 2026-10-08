@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:WFS_Capabilities version="1.1.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ows="http://www.opengis.net/ows" xmlns:stat="https://geodata.scb.se/stat">
+  <wfs:FeatureTypeList>
+    <wfs:FeatureType><wfs:Name>stat:DeSO_2025</wfs:Name><wfs:Title>DeSO_2025</wfs:Title><wfs:Abstract>Demografiska statistikområden, version 2025</wfs:Abstract></wfs:FeatureType>
+    <wfs:FeatureType><wfs:Name>stat:RegSO_2025</wfs:Name><wfs:Title>RegSO_2025</wfs:Title></wfs:FeatureType>
+    <wfs:FeatureType><wfs:Name>stat:Tatorter_2023</wfs:Name><wfs:Title>Tätorter_2023</wfs:Title></wfs:FeatureType>
+  </wfs:FeatureTypeList>
+</wfs:WFS_Capabilities>

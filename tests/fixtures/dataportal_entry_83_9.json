@@ -1,0 +1,10 @@
+{
+  "entryId": "9",
+  "info": {
+    "https://admin.dataportal.se/store/83/entry/9": {
+      "http://entrystore.org/terms/resource": [
+        {"type": "uri", "value": "https://catalog.skara.se/store/1/resource/9"}
+      ]
+    }
+  }
+}

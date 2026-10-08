@@ -1,0 +1,145 @@
+{
+ "apiPublisher": "Skolverket",
+ "apiName": "Syllabus API",
+ "apiVersion": "1.16.2-SNAPSHOT",
+ "apiReleased": "2026-05-08",
+ "apiStatus": "active",
+ "apiDocumentation": "https://www.skolverket.se/om-oss/oppna-data/api-for-laroplaner-kurs--och-amnesplaner-syllabus",
+ "dataOrigin": "Syllabus API - Skolverket - 1.16.2-SNAPSHOT",
+ "calledMethod": "ListStudyPathCodes",
+ "totalElements": 13,
+ "processingTime": "75 ms",
+ "startedCaching": "2026-10-06T12:06:39.8861591",
+ "codes": [
+  {
+   "code": "AHADM",
+   "name": "Administration, handel och varuhantering",
+   "type": "PARTICULAR_STUDY_PATH",
+   "startDate": "2013-07-01",
+   "modifiedDate": "2023-06-16",
+   "schoolTypes": [
+    "GYS",
+    "GYAN"
+   ]
+  },
+  {
+   "code": "BABA00L",
+   "name": "Bygg- och anläggningsprogrammet, lärling",
+   "type": "PARTICULAR_STUDY_PATH25",
+   "startDate": "2025-07-01",
+   "modifiedDate": "2024-11-11",
+   "schoolTypes": [
+    "GY"
+   ]
+  },
+  {
+   "code": "BABYI",
+   "name": "Byggnadsplåtslageri",
+   "type": "ORIENTATIONS",
+   "startDate": "2025-07-01",
+   "modifiedDate": "2026-03-17",
+   "schoolTypes": [
+    "GY"
+   ]
+  },
+  {
+   "code": "EK25",
+   "name": "Ekonomiprogrammet",
+   "type": "PROGRAM25",
+   "startDate": "2025-07-01",
+   "modifiedDate": "2026-02-13",
+   "schoolTypes": [
+    "GY"
+   ]
+  },
+  {
+   "code": "GRGRLAR01",
+   "name": "Grundskola",
+   "type": "COMPULSORY_PLAN",
+   "startDate": "2016-11-11",
+   "schoolTypes": [
+    "GR"
+   ]
+  },
+  {
+   "code": "IMA00J",
+   "name": "Introduktionsprogram, individuellt alternativ, mot jobb",
+   "type": "PARTICULAR_STUDY_PATH25",
+   "startDate": "2025-07-01",
+   "modifiedDate": "2024-07-05",
+   "schoolTypes": [
+    "GY"
+   ]
+  },
+  {
+   "code": "NA",
+   "name": "Naturvetenskapsprogrammet",
+   "type": "PROGRAM",
+   "startDate": "2024-07-01",
+   "modifiedDate": "2026-02-13",
+   "schoolTypes": [
+    "GY"
+   ]
+  },
+  {
+   "code": "NA25",
+   "name": "Naturvetenskapsprogrammet",
+   "type": "PROGRAM25",
+   "startDate": "2025-07-01",
+   "modifiedDate": "2026-02-13",
+   "schoolTypes": [
+    "GY"
+   ]
+  },
+  {
+   "code": "NANAA",
+   "name": "Naturvetenskap och samhälle",
+   "type": "ORIENTATIONS",
+   "startDate": "2025-07-01",
+   "modifiedDate": "2026-02-13",
+   "schoolTypes": [
+    "GY"
+   ]
+  },
+  {
+   "code": "NANAP",
+   "name": "Naturvetenskap",
+   "type": "ORIENTATIONS",
+   "startDate": "2025-07-01",
+   "modifiedDate": "2026-02-13",
+   "schoolTypes": [
+    "GY"
+   ]
+  },
+  {
+   "code": "NANAT",
+   "name": "Naturvetenskap",
+   "type": "ORIENTATIONS",
+   "startDate": "2024-07-01",
+   "modifiedDate": "2026-02-13",
+   "schoolTypes": [
+    "GY"
+   ]
+  },
+  {
+   "code": "VI25",
+   "name": "Vidareutbildning i form av ett fjärde tekniskt år",
+   "type": "FOURTH_TECHNICAL_YEAR25",
+   "startDate": "2025-07-01",
+   "modifiedDate": "2026-02-13",
+   "schoolTypes": [
+    "GY"
+   ]
+  },
+  {
+   "code": "VIINO",
+   "name": "Informationsteknik",
+   "type": "PROFILE",
+   "startDate": "2025-07-01",
+   "modifiedDate": "2026-02-13",
+   "schoolTypes": [
+    "GY"
+   ]
+  }
+ ]
+}

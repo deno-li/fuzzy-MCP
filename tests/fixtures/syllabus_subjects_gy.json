@@ -1,0 +1,228 @@
+{
+ "apiPublisher": "Skolverket",
+ "apiName": "Syllabus API",
+ "apiVersion": "1.16.2-SNAPSHOT",
+ "apiReleased": "2026-05-08",
+ "apiStatus": "active",
+ "apiDocumentation": "https://www.skolverket.se/om-oss/oppna-data/api-for-laroplaner-kurs--och-amnesplaner-syllabus",
+ "dataOrigin": "Syllabus API - Skolverket - 1.16.2-SNAPSHOT",
+ "calledMethod": "ListSubjects",
+ "totalElements": 4,
+ "processingTime": "CACHED 1 min, until 2026-10-06T10:20:45.912404400",
+ "startedCaching": "2026-10-06T10:19:45.912404400",
+ "dateParam": "2026-10-06",
+ "timeSpanParam": "LATEST",
+ "schoolTypeParam": "GY",
+ "typeOfSyllabusParam": "ALL",
+ "subjects": [
+  {
+   "code": "MAT",
+   "name": "Matematik",
+   "version": 11,
+   "startDate": "2022-07-01",
+   "endDate": "2030-06-30",
+   "modifiedDate": "2026-01-16",
+   "canceledDate": "2025-07-01",
+   "canceledSkolfs": "2023:130",
+   "typeOfSyllabus": "SUBJECT_SYLLABUS",
+   "categories": [
+    {
+     "name": "Kapitel 4-ämne",
+     "code": "COMMON2"
+    }
+   ],
+   "schoolTypes": [
+    "GY",
+    "VUXGY"
+   ],
+   "courses": [
+    {
+     "code": "MATMAT01a",
+     "name": "Matematik 1a",
+     "points": "100",
+     "sortOrder": 1,
+     "point": "100"
+    },
+    {
+     "code": "MATMAT01b",
+     "name": "Matematik 1b",
+     "points": "100",
+     "sortOrder": 2
+    },
+    {
+     "code": "MATMAT01c",
+     "name": "Matematik 1c",
+     "points": "100",
+     "sortOrder": 3
+    },
+    {
+     "code": "MATMAT02a",
+     "name": "Matematik 2a",
+     "points": "100",
+     "sortOrder": 4
+    },
+    {
+     "code": "MATMAT02b",
+     "name": "Matematik 2b",
+     "points": "100",
+     "sortOrder": 5
+    },
+    {
+     "code": "MATMAT02c",
+     "name": "Matematik 2c",
+     "points": "100",
+     "sortOrder": 6
+    },
+    {
+     "code": "MATMAT03b",
+     "name": "Matematik 3b",
+     "points": "100",
+     "sortOrder": 7
+    },
+    {
+     "code": "MATMAT03c",
+     "name": "Matematik 3c",
+     "points": "100",
+     "sortOrder": 8
+    },
+    {
+     "code": "MATMAT04",
+     "name": "Matematik 4",
+     "points": "100",
+     "sortOrder": 9
+    },
+    {
+     "code": "MATMAT05",
+     "name": "Matematik 5",
+     "points": "100",
+     "sortOrder": 10
+    },
+    {
+     "code": "MATMAT00S",
+     "name": "Matematik – specialisering",
+     "points": "100",
+     "sortOrder": 11
+    }
+   ]
+  },
+  {
+   "code": "MATE",
+   "name": "Matematik",
+   "version": 1,
+   "startDate": "2025-07-01",
+   "modifiedDate": "2025-12-19",
+   "typeOfSyllabus": "GRADE_SUBJECT_SYLLABUS",
+   "categories": [
+    {
+     "name": "Kapitel 4-ämne",
+     "code": "COMMON2"
+    }
+   ],
+   "schoolTypes": [
+    "GY",
+    "VUXGY"
+   ],
+   "courses": [
+    {
+     "code": "MATE1A00X",
+     "name": "Nivå 1a",
+     "points": "100",
+     "sortOrder": 1
+    },
+    {
+     "code": "MATE1B00X",
+     "name": "Nivå 1b",
+     "points": "100",
+     "sortOrder": 2
+    },
+    {
+     "code": "MATE1C00X",
+     "name": "Nivå 1c",
+     "points": "100",
+     "sortOrder": 3
+    },
+    {
+     "code": "MATE2A00X",
+     "name": "Nivå 2a",
+     "points": "100",
+     "sortOrder": 4
+    },
+    {
+     "code": "MATE2B00X",
+     "name": "Nivå 2b",
+     "points": "100",
+     "sortOrder": 5
+    },
+    {
+     "code": "MATE2C00X",
+     "name": "Nivå 2c",
+     "points": "100",
+     "sortOrder": 6
+    }
+   ]
+  },
+  {
+   "code": "MATT",
+   "name": "Matematik spets",
+   "version": 1,
+   "startDate": "2025-07-01",
+   "modifiedDate": "2025-12-19",
+   "typeOfSyllabus": "GRADE_SUBJECT_SYLLABUS",
+   "categories": [
+    {
+     "name": "Kapitel 4-ämne",
+     "code": "COMMON2"
+    }
+   ],
+   "schoolTypes": [
+    "GY"
+   ],
+   "courses": [
+    {
+     "code": "MATT100PX",
+     "name": "Nivå 1",
+     "points": "100",
+     "sortOrder": 1
+    }
+   ]
+  },
+  {
+   "code": "SVEN",
+   "name": "Svenska",
+   "version": 1,
+   "startDate": "2025-07-01",
+   "modifiedDate": "2025-12-19",
+   "typeOfSyllabus": "GRADE_SUBJECT_SYLLABUS",
+   "categories": [
+    {
+     "name": "Kapitel 4-ämne",
+     "code": "COMMON2"
+    }
+   ],
+   "schoolTypes": [
+    "GY",
+    "VUXGY"
+   ],
+   "courses": [
+    {
+     "code": "SVEN1000X",
+     "name": "Nivå 1",
+     "points": "100",
+     "sortOrder": 1
+    },
+    {
+     "code": "SVEN2000X",
+     "name": "Nivå 2",
+     "points": "100",
+     "sortOrder": 2
+    },
+    {
+     "code": "SVEN3000X",
+     "name": "Nivå 3",
+     "points": "100",
+     "sortOrder": 3
+    }
+   ]
+  }
+ ]
+}

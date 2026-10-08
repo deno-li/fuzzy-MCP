@@ -1,0 +1,12 @@
+{
+  "meta": { "extractDate": "2025-05-08T00:06:10.19+02:00" },
+  "data": {
+    "type": "organizer",
+    "attributes": [
+      { "organizationNumber": "1234567890", "displayName": "Enskilda gymnasiet", "organizerType": "ENSKILD" },
+      { "organizationNumber": "2120000126", "displayName": "EKERÖ KOMMUN", "organizerType": "KOMMUN" },
+      { "organizationNumber": "5565661815", "displayName": "Kunskapsskolan i Sverige Aktiebolag", "organizerType": "ENSKILD" },
+      { "organizationNumber": "2321000016", "displayName": "Region Stockholm", "organizerType": "REGION" }
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "status": "OK",
+  "message": "",
+  "body": {
+    "schoolYearMetrics": [
+      {
+        "schoolUnitCode": "44673074",
+        "semester": "VT26",
+        "schoolYear": "ak5",
+        "satisfactionAverage": "7,6",
+        "satisfactionQuestionDescription": "Hur nöjd är du med din skola?",
+        "securityAverage": "8,6",
+        "securityQuestionDescription": "Känner du dig trygg i skolan?",
+        "workingEnvironmentAverage": "6,0",
+        "workingEnvironmentQuestionDescription": "Hur ofta är det arbetsro på lektionerna?",
+        "recommendAverage": null,
+        "recommendQuestionDescription": null
+      }
+    ]
+  }
+}

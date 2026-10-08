@@ -1,0 +1,39 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": {
+  "id": null,
+  "schoolUnitCode": "30530571",
+  "schoolUnitName": "af Chapmangymnasiet",
+  "studyPathCode": "EK25",
+  "studyPathName": "Ekonomiprogrammet",
+  "schoolOrientation": "Ej relevant",
+  "studyPathCategory": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+  "startDate": "2026-07-31 20:00:00",
+  "endDate": "2027-07-30 20:00:00",
+  "typeOfSchooling": {
+   "code": "gy",
+   "displayName": "Gymnasieskolan"
+  },
+  "visitingAddressCity": "Karlskrona",
+  "visitingAddressStreet": "Drottninggatan 49",
+  "resursSkola": "false",
+  "studyPaths": [],
+  "studyPathsVariants": [],
+  "admissionPointsMin": "215,0",
+  "admissionPointsAverage": "257,1",
+  "admissionPointsSemester": "2025",
+  "principalOrganizerType": "Kommun",
+  "programVarianter": "",
+  "programVariantList": [],
+  "documentType": null,
+  "_links": {
+   "self": {
+    "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571/education-events/EK25"
+   },
+   "school-unit": {
+    "href": "https://api.skolverket.se/planned-educations/v4/school-units/30530571"
+   }
+  }
+ }
+}

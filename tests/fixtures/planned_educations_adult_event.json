@@ -1,0 +1,48 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": {
+  "educationEventId": "e.myh.27538",
+  "instructionLanguages": "swe",
+  "studyPathName": ".NET Cloud Developer",
+  "areasOfInterest": null,
+  "providerName": "IT-Högskolan Sverige AB",
+  "municipality": "Göteborg",
+  "town": "Göteborg",
+  "distance": false,
+  "credits": "400",
+  "creditsSystem": "yh",
+  "contractor": null,
+  "typeOfSchool": "Yrkeshögskoleutbildning",
+  "semesterStartFrom": "2025-08-01",
+  "paceOfStudy": "100.0",
+  "educationEventDescription": "Cloud development, även kallat molntjänster, gör det möjligt att hantera programvaror, datalagring och andra funktioner på nätet istället för i din dators mjukvara. Det är ett anpassbart och prisvärt sätt att hantera applikationer, infrastruktur och mjukvaror.Du är en initiativrik, analytisk och kvalitetsmedveten person. Du vill vara en del av den snabbt växande molnutvecklingen och företags resa in i molnet. Du trivs med omväxlande arbetsuppgifter, gillar att lösa problem och ser möjligheten till en spännande karriär. Matchar utbildningen dig ska du ansöka till IT-Högskolans .NET cloud developer-utbildning i Göteborg!Målet med vår .NET cloud-utbildning är att du lär dig att designa, utveckla och administrera olika molnlösningar med Microsoft Azure. Du lär dig grundläggande C# programmering och att skapa molnlösningar genom plattformen Microsoft Azure. Du utbildas inom databasprogrammering och webbutveckling viket medför att du kan skapa kraftfulla molnlösningar.Du kommer uppleva IT-Högskolans pedagogiska profil, Learning by doing genom att arbeta i team utifrån agilmetodik med att programmera molnlösningar. Här lär du dig hur en molnlösning tas fram från tanke och strategi till fungerande molntjänst.Som .NET cloud developer kan du jobba som konsult och därför lär du dig hur du tar fram tydliga rapporter och kommunicerar åtgärder och lösningar med en kravställare. Du kommer lära dig skapa strategier och bygga upp en arkitektur för olika molnlösningar utifrån företags behov i vår sista kurs. Som en röd tråd genom utbildningen lär du dig grundläggande säkerhetsaspekter för att skydda molnlösningen.Som .NET developer ser framtidsutsikterna ljusa ut. Fler och fler företag väljer att övergå till molntjänster och du kommer besitta de kompetenser inom molnutveckling med Microsoft Azure som IT-branschen efterfrågar. Kanske har du lyckats ta en certifiering inom Azure som gör dig extra eftertraktad. Du kommer ha många spännande möjligheter att arbeta med molntjänsten Azure på ett företag eller som konsult.",
+  "providerDescription": null,
+  "requirements": "Du är behörig att antas till en yrkeshögskoleutbildning om du uppfyller något av följande: 1. Har en gymnasieexamen från gymnasieskolan eller kommunal vuxenutbildning. 2. Har en svensk eller utländsk utbildning som motsvarar kraven i punkt 1. 3. Är bosatt i Danmark, Finland, Island eller Norge och där är behörig till motsvarande utbildning. 4. Genom svensk eller utländsk utbildning, praktisk erfarenhet eller på grund av någon annan omständighet har förutsättningar att tillgodogöra dig utbildningen. Förutom detta ställs följande krav:   Kurser: Teknikprogrammet Engelska 6, 100p Programmering 1, 100p Svenska 2 alt Svenska som andraspråk 2, 100p Matematik 2, 100p",
+  "fee": null,
+  "eligibleForStudentAid": true,
+  "contactInfo": {
+   "email": "info@iths.se",
+   "web": "https://www.iths.se/utbildningar/net-cloud-developer/",
+   "telephone": "031-7904255",
+   "addresses": [
+    {
+     "type": "VISITING_ADDRESS",
+     "street": "Ebbe Lieberathsgatan 18C",
+     "zipCode": "41265",
+     "city": "Göteborg"
+    }
+   ]
+  },
+  "organizerName": "IT-Högskolan Sverige AB (Enskild)",
+  "extent": null,
+  "timeOfStudy": null,
+  "geographicalAreaCode": null,
+  "executionCondition": 0,
+  "_links": {
+   "self": {
+    "href": "https://api.skolverket.se/planned-educations/v3/adult-education-events/e.myh.27538"
+   }
+  }
+ }
+}

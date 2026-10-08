@@ -1,0 +1,147 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": {
+  "compulsorySchoolUnitSalsaMetricList": [
+   {
+    "schoolUnitCode": "68613823",
+    "name": "Väröbackaskolan 4-9",
+    "geographicalAreaCode": "1383",
+    "salsaAverageGradesIn9thGradeActual": {
+     "value": "213",
+     "valueType": "EXISTS"
+    },
+    "salsaAverageGradesIn9thGradeDeviation": {
+     "value": "-20",
+     "valueType": "EXISTS"
+    },
+    "salsaRequirementsReachedActual": {
+     "value": "84",
+     "valueType": "EXISTS"
+    },
+    "salsaRequirementsReachedDeviation": {
+     "value": "10",
+     "valueType": "EXISTS"
+    },
+    "salsaNewlyImmigratedQuota": {
+     "value": "5",
+     "valueType": "EXISTS"
+    },
+    "salsaBoysQuota": {
+     "value": "47",
+     "valueType": "EXISTS"
+    },
+    "salsaParentsEducation": {
+     "value": "2,4",
+     "valueType": "EXISTS"
+    },
+    "salsaAverageCalculated": {
+     "value": "233",
+     "valueType": "EXISTS"
+    },
+    "salsaRequirementsReachedCalculated": {
+     "value": "74",
+     "valueType": "EXISTS"
+    },
+    "_links": {
+     "self": {
+      "href": "https://api-ext-test.skolverket.se/planned-educations/v3/statistics/all-schools/salsa/68613823"
+     }
+    }
+   },
+   {
+    "schoolUnitCode": "68653982",
+    "name": "Ankarskolan 4-9",
+    "geographicalAreaCode": "1383",
+    "salsaAverageGradesIn9thGradeActual": {
+     "value": "228",
+     "valueType": "EXISTS"
+    },
+    "salsaAverageGradesIn9thGradeDeviation": {
+     "value": "-23",
+     "valueType": "EXISTS"
+    },
+    "salsaRequirementsReachedActual": {
+     "value": "82",
+     "valueType": "EXISTS"
+    },
+    "salsaRequirementsReachedDeviation": {
+     "value": "-4",
+     "valueType": "EXISTS"
+    },
+    "salsaNewlyImmigratedQuota": {
+     "value": "0",
+     "valueType": "EXISTS"
+    },
+    "salsaBoysQuota": {
+     "value": "45",
+     "valueType": "EXISTS"
+    },
+    "salsaParentsEducation": {
+     "value": "2,6",
+     "valueType": "EXISTS"
+    },
+    "salsaAverageCalculated": {
+     "value": "252",
+     "valueType": "EXISTS"
+    },
+    "salsaRequirementsReachedCalculated": {
+     "value": "86",
+     "valueType": "EXISTS"
+    },
+    "_links": {
+     "self": {
+      "href": "https://api-ext-test.skolverket.se/planned-educations/v3/statistics/all-schools/salsa/68653982"
+     }
+    }
+   },
+   {
+    "schoolUnitCode": "36374693",
+    "name": "Heby skola 7-9",
+    "geographicalAreaCode": "0331",
+    "salsaAverageGradesIn9thGradeActual": {
+     "value": "230",
+     "valueType": "EXISTS"
+    },
+    "salsaAverageGradesIn9thGradeDeviation": {
+     "value": "17",
+     "valueType": "EXISTS"
+    },
+    "salsaRequirementsReachedActual": {
+     "value": "78",
+     "valueType": "EXISTS"
+    },
+    "salsaRequirementsReachedDeviation": {
+     "value": "13",
+     "valueType": "EXISTS"
+    },
+    "salsaNewlyImmigratedQuota": {
+     "value": "4",
+     "valueType": "EXISTS"
+    },
+    "salsaBoysQuota": {
+     "value": "54",
+     "valueType": "EXISTS"
+    },
+    "salsaParentsEducation": {
+     "value": "2,2",
+     "valueType": "EXISTS"
+    },
+    "salsaAverageCalculated": {
+     "value": "212",
+     "valueType": "EXISTS"
+    },
+    "salsaRequirementsReachedCalculated": {
+     "value": "65",
+     "valueType": "EXISTS"
+    },
+    "_links": {
+     "self": {
+      "href": "https://api-ext-test.skolverket.se/planned-educations/v3/statistics/all-schools/salsa/36374693"
+     }
+    }
+   }
+  ],
+  "timePeriod": "2022/23"
+ }
+}

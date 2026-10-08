@@ -1,0 +1,961 @@
+{
+ "id": "introduktionsprogram",
+ "titel": "Introduktionsprogram",
+ "beskrivning": "Koder för introduktionsprogrammen (IMA individuellt alternativ, IMS språkintroduktion, IMV programinriktat val, IMY yrkesintroduktion m.fl.) inklusive varianter för Gy25.",
+ "kalla": "Skolverkets Syllabus-API (valuestore/studypathcodes).",
+ "licens": "CC0 1.0",
+ "koder": [
+  {
+   "kod": "IMA",
+   "namn": "Individuellt alternativ",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Att IMA, IMS, IMV och IMY är de fyra nuvarande introduktionsprogrammen anges också i en webbsökningssammanfattning av en myndighetssida."
+  },
+  {
+   "kod": "IMA00J",
+   "namn": "Introduktionsprogram, individuellt alternativ, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMA00U",
+   "namn": "Introduktionsprogram, individuellt alternativ, mot fortsatt utbildning",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMA00Y",
+   "namn": "Introduktionsprogram, individuellt alternativ, mot yrkesintroduktion",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMIND",
+   "namn": "Individuellt alternativ",
+   "typ": "INTRODUCTORY_PROGRAM",
+   "startdatum": "2011-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMP",
+   "namn": "Preparandutbildning",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMPRE",
+   "namn": "Preparandutbildning",
+   "typ": "INTRODUCTORY_PROGRAM",
+   "startdatum": "2011-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMPRO",
+   "namn": "Programinriktat individuellt val",
+   "typ": "INTRODUCTORY_PROGRAM",
+   "startdatum": "2011-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMR",
+   "namn": "Programinriktat individuellt val",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMRBA",
+   "namn": "Programinriktat individuellt val mot bygg- och anläggningsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMRBF",
+   "namn": "Programinriktat individuellt val mot barn- och fritidsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMREE",
+   "namn": "Programinriktat individuellt val mot el- och energiprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMRFT",
+   "namn": "Programinriktat individuellt val mot fordons- och transportprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMRHA",
+   "namn": "Programinriktat individuellt val mot handels- och administrationsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMRHT",
+   "namn": "Programinriktat individuellt val mot hotell- och turismprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMRHV",
+   "namn": "Programinriktat individuellt val mot hantverksprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMRIN",
+   "namn": "Programinriktat individuellt val mot industritekniska programmet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMRNB",
+   "namn": "Programinriktat individuellt val mot naturbruksprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMRRL",
+   "namn": "Programinriktat individuellt val mot restaurang- och livsmedelsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMRVF",
+   "namn": "Programinriktat individuellt val mot VVS- och fastighetsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMRVO",
+   "namn": "Programinriktat individuellt val mot vård- och omsorgsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMS",
+   "namn": "Språkintroduktion",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Att IMA, IMS, IMV och IMY är de fyra nuvarande introduktionsprogrammen anges också i en webbsökningssammanfattning av en myndighetssida."
+  },
+  {
+   "kod": "IMS00G",
+   "namn": "Introduktionsprogram, språkintroduktion, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMS00U",
+   "namn": "Introduktionsprogram, språkintroduktion, mot annan utbildning",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMSPR",
+   "namn": "Språkintroduktion",
+   "typ": "INTRODUCTORY_PROGRAM",
+   "startdatum": "2011-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMV",
+   "namn": "Programinriktat val",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Att IMA, IMS, IMV och IMY är de fyra nuvarande introduktionsprogrammen anges också i en webbsökningssammanfattning av en myndighetssida."
+  },
+  {
+   "kod": "IMVBA",
+   "namn": "Programinriktat val mot bygg- och anläggningsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVBAG",
+   "namn": "Introduktionsprogram, programinriktat val, bygg och anläggning, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVBF",
+   "namn": "Programinriktat val mot barn- och fritidsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVBFG",
+   "namn": "Introduktionsprogram, programinriktat val, barn och fritid, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVDSG",
+   "namn": "Introduktionsprogram, programinriktat val, design och sömnads tekniska, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVEE",
+   "namn": "Programinriktat val mot el- och energiprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVEEG",
+   "namn": "Introduktionsprogram, programinriktat val, el och energi, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVEK",
+   "namn": "Programinriktat val mot ekonomiprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVEKG",
+   "namn": "Introduktionsprogram, programinriktat val, ekonomi, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVES",
+   "namn": "Programinriktat val mot estetiska programmet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVESG",
+   "namn": "Introduktionsprogram, programinriktat val, estetiska, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVFIG",
+   "namn": "Introduktionsprogram, programinriktat val, finsnickeri, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVFOG",
+   "namn": "Introduktionsprogram, programinriktat val, florist, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVFRG",
+   "namn": "Introduktionsprogram, programinriktat val, frisör och stylist, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVFS",
+   "namn": "Programinriktat val mot försäljnings- och serviceprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2022-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVFSG",
+   "namn": "Introduktionsprogram, programinriktat val, försäljning och service, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVFT",
+   "namn": "Programinriktat val mot fordons- och transportprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVFTG",
+   "namn": "Introduktionsprogram, programinriktat val, fordon och transport, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVGLG",
+   "namn": "Introduktionsprogram, programinriktat val, glashantverk, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVGUG",
+   "namn": "Introduktionsprogram, programinriktat val, guldsmed, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVHA",
+   "namn": "Programinriktat val mot handels- och administrationsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVHT",
+   "namn": "Programinriktat val mot hotell- och turismprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVHTG",
+   "namn": "Introduktionsprogram, programinriktat val, hotell och turism, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVHU",
+   "namn": "Programinriktat val mot humanistiska programmet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVHUG",
+   "namn": "Introduktionsprogram, programinriktat val, humanistiska, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVHV",
+   "namn": "Programinriktat val mot hantverksprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVIN",
+   "namn": "Programinriktat val mot industritekniska programmet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVING",
+   "namn": "Introduktionsprogram, programinriktat val, industritekniska, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVNA",
+   "namn": "Programinriktat val mot naturvetenskapsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVNAG",
+   "namn": "Introduktionsprogram, programinriktat val, naturvetenskap, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVNB",
+   "namn": "Programinriktat val mot naturbruksprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVNBG",
+   "namn": "Introduktionsprogram, programinriktat val, naturbruk, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVRL",
+   "namn": "Programinriktat val mot restaurang- och livsmedelsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVRLG",
+   "namn": "Introduktionsprogram, programinriktat val, restaurang och livsmedel, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVSA",
+   "namn": "Programinriktat val mot samhällsvetenskapsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVSAG",
+   "namn": "Introduktionsprogram, programinriktat val, samhällsvetenskap, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVTE",
+   "namn": "Programinriktat val mot teknikprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVTEG",
+   "namn": "Introduktionsprogram, programinriktat val, teknik, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVVF",
+   "namn": "Programinriktat val mot VVS- och fastighetsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVVFG",
+   "namn": "Introduktionsprogram, programinriktat val, VVS och fastighet, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVVO",
+   "namn": "Programinriktat val mot vård- och omsorgsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2019-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMVVOG",
+   "namn": "Introduktionsprogram, programinriktat val, vård och omsorg, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMY",
+   "namn": "Yrkesintroduktion",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag. Att IMA, IMS, IMV och IMY är de fyra nuvarande introduktionsprogrammen anges också i en webbsökningssammanfattning av en myndighetssida."
+  },
+  {
+   "kod": "IMY00G",
+   "namn": "Introduktionsprogram, yrkesintroduktion, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMY00J",
+   "namn": "Introduktionsprogram, yrkesintroduktion, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYBA",
+   "namn": "Yrkesintroduktion mot bygg- och anläggningsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYBAG",
+   "namn": "Introduktionsprogram, yrkesintroduktion, bygg och anläggning, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYBAJ",
+   "namn": "Introduktionsprogram, yrkesintroduktion, bygg och anläggning, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYBF",
+   "namn": "Yrkesintroduktion mot barn- och fritidsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYBFG",
+   "namn": "Introduktionsprogram, yrkesintroduktion, barn och fritid, mot gymnasieprogram,",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYBFJ",
+   "namn": "Introduktionsprogram, yrkesintroduktion, barn och fritid, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYDSG",
+   "namn": "Introduktionsprogram, yrkesintroduktion, design och sömnadstekniska, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYDSJ",
+   "namn": "Introduktionsprogram, yrkesintroduktion, design och sömnadstekniska, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYEE",
+   "namn": "Yrkesintroduktion mot el- och energiprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYEEG",
+   "namn": "Introduktionsprogram, yrkesintroduktion, el och energi, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYEEJ",
+   "namn": "Introduktionsprogram, yrkesintroduktion, el och energi, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYFIG",
+   "namn": "Introduktionsprogram, yrkesintroduktion, finsnickeri, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYFIJ",
+   "namn": "Introduktionsprogram, yrkesintroduktion, finsnickeri, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYFOG",
+   "namn": "Introduktionsprogram, yrkesintroduktion, florist, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYFOJ",
+   "namn": "Introduktionsprogram, yrkesintroduktion, florist, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYFRG",
+   "namn": "Introduktionsprogram, yrkesintroduktion, frisör och stylist, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYFRJ",
+   "namn": "Introduktionsprogram, yrkesintroduktion, frisör och stylist, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYFS",
+   "namn": "Yrkesintroduktion mot försäljnings- och serviceprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2022-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYFSG",
+   "namn": "Introduktionsprogram, yrkesintroduktion, försäljning och service, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYFSJ",
+   "namn": "Introduktionsprogram, yrkesintroduktion, försäljning och service, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYFT",
+   "namn": "Yrkesintroduktion mot fordons- och transportprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYFTG",
+   "namn": "Introduktionsprogram, yrkesintroduktion, fordon och transport, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYFTJ",
+   "namn": "Introduktionsprogram, yrkesintroduktion, fordon och transport, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYGLG",
+   "namn": "Introduktionsprogram, yrkesintroduktion, glashantverk, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYGLJ",
+   "namn": "Introduktionsprogram, yrkesintroduktion, glashantverk, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYGUG",
+   "namn": "Introduktionsprogram, yrkesintroduktion, guldsmed, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYGUJ",
+   "namn": "Introduktionsprogram, yrkesintroduktion, guldsmed, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYHA",
+   "namn": "Yrkesintroduktion mot handels- och administrationsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYHT",
+   "namn": "Yrkesintroduktion mot hotell- och turismprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYHTG",
+   "namn": "Introduktionsprogram, yrkesintroduktion, hotell och turism, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYHTJ",
+   "namn": "Introduktionsprogram, yrkesintroduktion, hotell och turism, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYHV",
+   "namn": "Yrkesintroduktion mot hantverksprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYIN",
+   "namn": "Yrkesintroduktion mot industritekniska programmet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYING",
+   "namn": "Introduktionsprogram, yrkesintroduktion, industritekniska, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYINJ",
+   "namn": "Introduktionsprogram, yrkesintroduktion, industritekniska, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYNB",
+   "namn": "Yrkesintroduktion mot naturbruksprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYNBG",
+   "namn": "Introduktionsprogram, yrkesintroduktion, naturbruk, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYNBJ",
+   "namn": "Introduktionsprogram, yrkesintroduktion, naturbruk, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYRK",
+   "namn": "Yrkesintroduktion",
+   "typ": "INTRODUCTORY_PROGRAM",
+   "startdatum": "2011-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYRL",
+   "namn": "Yrkesintroduktion mot restaurang- och livsmedelsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYRLG",
+   "namn": "Introduktionsprogram, yrkesintroduktion, restaurang och livsmedel, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYRLJ",
+   "namn": "Introduktionsprogram, yrkesintroduktion, restaurang och livsmedel, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYVF",
+   "namn": "Yrkesintroduktion mot VVS- och fastighetsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYVFG",
+   "namn": "Introduktionsprogram, yrkesintroduktion, VVS och fastighet, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYVFJ",
+   "namn": "Introduktionsprogram, yrkesintroduktion, VVS och fastighet, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYVO",
+   "namn": "Yrkesintroduktion mot vård- och omsorgsprogrammet",
+   "typ": "PARTICULAR_STUDY_PATH",
+   "startdatum": "2018-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYVOG",
+   "namn": "Introduktionsprogram, yrkesintroduktion, vård och omsorg, mot gymnasieprogram",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  },
+  {
+   "kod": "IMYVOJ",
+   "namn": "Introduktionsprogram, yrkesintroduktion, vård och omsorg, mot jobb",
+   "typ": "PARTICULAR_STUDY_PATH25",
+   "startdatum": "2025-07-01",
+   "verifiering": "referenskod",
+   "verifiering_not": "Kod, namn, typ och startdatum enligt Skolverkets Syllabus-API (studievägskoder) via community-uttag."
+  }
+ ]
+}

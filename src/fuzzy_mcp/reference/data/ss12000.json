@@ -1,0 +1,589 @@
+{
+ "id": "ss12000",
+ "titel": "SS 12000 (v2.1) – kodlistor och fält som bär Skolverkets identifierare",
+ "beskrivning": "Svensk standard för informationsutbyte mellan skoladministrativa processer (SIS). Skolformskoder och övriga uppräkningar, samt vilka fält som motsvarar skolenhetskod, kommunkod, organisationsnummer, studievägskod, ämnes- och kurskod.",
+ "kalla": "SS 12000:2020 implementationsspecifikation 2.1.0 (openapi_ss12000_version2_1_0.yaml, SIS). Observera: v2.1 använder äldre koder (GRS, GYS, VUXSAR*) medan Skolverkets API:er använder GRAN/GYAN.",
+ "licens": "Kodvärdena återges som referens; standarden distribueras av SIS.",
+ "koder": [
+  {
+   "kod": "FS",
+   "namn": "Förskola",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "FKLASS",
+   "namn": "Förskoleklass",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "FTH",
+   "namn": "Fritidshem",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "OPPFTH",
+   "namn": "Öppen fritidsverksamhet",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "GR",
+   "namn": "Grundskola",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "GRS",
+   "namn": "Grundsärskola (anpassad grundskola)",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämningen Grundsärskola respektive Gymnasiesärskola enligt SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Parentesen med dagens namn är ett tillägg som inte står i specifikationen."
+  },
+  {
+   "kod": "TR",
+   "namn": "Träningsskolan",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "SP",
+   "namn": "Specialskola",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "SAM",
+   "namn": "Sameskola",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "GY",
+   "namn": "Gymnasieskola",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "GYS",
+   "namn": "Gymnasiesärskola (anpassad gymnasieskola)",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämningen Grundsärskola respektive Gymnasiesärskola enligt SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Parentesen med dagens namn är ett tillägg som inte står i specifikationen."
+  },
+  {
+   "kod": "VUX",
+   "namn": "Kommunal vuxenutbildning",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "VUXSFI",
+   "namn": "Kommunal vuxenutbildning i svenska för invandrare",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "VUXGR",
+   "namn": "Kommunal vuxenutbildning på grundläggande nivå",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "VUXGY",
+   "namn": "Kommunal vuxenutbildning på gymnasial nivå",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "VUXSARGR",
+   "namn": "Kommunal vuxenutbildning som särskild utbildning på grundläggande nivå",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "VUXSARTR",
+   "namn": "Kommunal vuxenutbildning som särskild utbildning som motsvarar träningsskolan",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "VUXSARGY",
+   "namn": "Kommunal vuxenutbildning som särskild utbildning på gymnasial nivå",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "SFI",
+   "namn": "Utbildning i svenska för invandrare",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Specifikationens beskrivning av skolformskoderna nämner SFI två gånger, andra gången som Kommunal vuxenutbildning i svenska för invandrare."
+  },
+  {
+   "kod": "SARVUX",
+   "namn": "Särskild utbildning för vuxna",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "SARVUXGR",
+   "namn": "Särskild utbildning för vuxna på grundläggande nivå",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "SARVUXGY",
+   "namn": "Särskild utbildning för vuxna på gymnasial nivå",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "KU",
+   "namn": "Kulturskola",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "YH",
+   "namn": "Yrkeshögskola",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "FHS",
+   "namn": "Folkhögskola",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "STF",
+   "namn": "Studieförbund",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "KKU",
+   "namn": "Konst- och kulturutbildning",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "HS",
+   "namn": "Högskola",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "ABU",
+   "namn": "Arbetsmarknadsutbildning",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  },
+  {
+   "kod": "AU",
+   "namn": "Annan undervisning",
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Kod och benämning enligt uppräkningen Code_SchoolType i SS 12000:2020 implementationsspecifikation 2.1.0 (SIS). Samma 30 koder finns i Skolverkets SS 12000-delmängd för digitala nationella prov."
+  }
+ ],
+ "uppräkningar": {
+  "Code_SchoolType": [
+   "FS",
+   "FKLASS",
+   "FTH",
+   "OPPFTH",
+   "GR",
+   "GRS",
+   "TR",
+   "SP",
+   "SAM",
+   "GY",
+   "GYS",
+   "VUX",
+   "VUXSFI",
+   "VUXGR",
+   "VUXGY",
+   "VUXSARGR",
+   "VUXSARTR",
+   "VUXSARGY",
+   "SFI",
+   "SARVUX",
+   "SARVUXGR",
+   "SARVUXGY",
+   "KU",
+   "YH",
+   "FHS",
+   "STF",
+   "KKU",
+   "HS",
+   "ABU",
+   "AU"
+  ],
+  "Code_Sex": [
+   "Man",
+   "Kvinna",
+   "Okänt"
+  ],
+  "Code_SecurityMarking": [
+   "Ingen",
+   "Sekretessmarkering",
+   "Skyddad folkbokföring"
+  ],
+  "Code_PersonStatus": [
+   "Aktiv",
+   "Utvandrad",
+   "Avliden"
+  ],
+  "Code_Reason": [
+   "Omsorgsbehov",
+   "Erbjuden tid",
+   "Eget behov"
+  ],
+  "Code_ProgrammeType": [
+   "Yrkesprogram",
+   "Högskoleförberedande program",
+   "Intruduktionsprogram",
+   "Nationellt yrkespaket",
+   "Regionalt yrkespaket",
+   "Fjärde tekniskt år",
+   "Programinriktning",
+   "Utgång"
+  ],
+  "Code_ActivityType": [
+   "Undervisning",
+   "Elevaktivitet",
+   "Provaktivitet",
+   "Läraraktivitet",
+   "Övrigt"
+  ],
+  "Code_AttendanceEventType": [
+   "In",
+   "Ut"
+  ],
+  "Code_GradeCorrectionType": [
+   "Ändring",
+   "Rättelse"
+  ],
+  "Code_Semester": [
+   "HT",
+   "VT"
+  ],
+  "Code_OrganisationType": [
+   "Huvudman",
+   "Verksamhetsområde",
+   "Förvaltning",
+   "Rektorsområde",
+   "Skola",
+   "Skolenhet",
+   "Varumärke",
+   "Bolag",
+   "Övrigt"
+  ],
+  "Code_DutyRole": [
+   "Rektor",
+   "Lärare",
+   "Förskollärare",
+   "Barnskötare",
+   "Bibliotekarie",
+   "Lärarassistent",
+   "Fritidspedagog",
+   "Annan personal",
+   "Studie- och yrkesvägledare",
+   "Förstelärare",
+   "Kurator",
+   "Skolsköterska",
+   "Skolläkare",
+   "Skolpsykolog",
+   "Speciallärare/specialpedagog",
+   "Skoladministratör",
+   "Övrig arbetsledning",
+   "Övrig pedagogisk personal",
+   "Förskolechef"
+  ],
+  "Code_GroupType": [
+   "Undervisning",
+   "Klass",
+   "Mentor",
+   "Provgrupp",
+   "Schema",
+   "Avdelning",
+   "Personalgrupp",
+   "Övrigt"
+  ],
+  "Code_AbsenceType": [
+   "Beviljad ledighet",
+   "Anmäld frånvaro"
+  ],
+  "Code_ObjectType": [
+   "Absence",
+   "AttendanceEvent",
+   "Attendance",
+   "Grade",
+   "CalendarEvent",
+   "AttendanceSchedule",
+   "Resource",
+   "Room",
+   "Activity",
+   "Duty",
+   "Placement",
+   "StudyPlan",
+   "Programme",
+   "Syllabus",
+   "SchoolUnitOffering",
+   "Group",
+   "Person",
+   "Organisation"
+  ],
+  "Code_RelationType": [
+   "Vårdnadshavare",
+   "Annan ansvarig",
+   "God man",
+   "Utsedd behörig"
+  ],
+  "Code_AssignmentRole": [
+   "Mentor",
+   "Förskollärare",
+   "Barnskötare",
+   "Fritidspedagog",
+   "Specialpedagog",
+   "Elevhälsopersonal",
+   "Pedagogisk ledare",
+   "Schemaläggare",
+   "Lärarassistent",
+   "Administrativ personal"
+  ],
+  "Code_Curriculum": [
+   "Lgy70",
+   "Lgr80",
+   "Lpo94",
+   "Lpf94",
+   "Lpfö98",
+   "GR2000",
+   "GY2000",
+   "GYSÄR2000",
+   "GYVUX2000",
+   "GYVUX2001",
+   "GYVUX2002",
+   "GR2011",
+   "GRSÄR2011",
+   "SPEC2011",
+   "SAM2011",
+   "Lvux12",
+   "GY2011",
+   "GYSÄR2013",
+   "VU2013"
+  ],
+  "Code_OrganisationAddressType": [
+   "Besöksadress",
+   "Leveransadress",
+   "Postadress",
+   "Fakturaadress"
+  ],
+  "Code_OrganisationContactInfoType": [
+   "Support",
+   "Publik"
+  ],
+  "Code_EmailType": [
+   "Privat",
+   "Skola elev",
+   "Skola personal",
+   "Arbete övrigt"
+  ],
+  "Code_PhoneNumberType": [
+   "Hem",
+   "Arbete"
+  ],
+  "Code_AddressType": [
+   "Folkbokföring",
+   "Särskild postadress",
+   "Tillfällig adress",
+   "Postadress"
+  ],
+  "Code_ProgrammeContentType": [
+   "Gymnasiegemensamma",
+   "Programgemensamma",
+   "Inriktning",
+   "Programfördjupning",
+   "Gymnasiearbete",
+   "Individuellt val"
+  ],
+  "Code_StudyPlanContentType": [
+   "Gymnasiegemensamma",
+   "Programgemensamma",
+   "Inriktning",
+   "Programfördjupning",
+   "Gymnasiearbete",
+   "Individuellt val",
+   "Borttagna",
+   "Utökade"
+  ],
+  "Code_StudyPlanNoteType": [
+   "Anteckningar",
+   "Andra insatser som är gynnsamma för elevens kunskapsutveckling",
+   "Elevens tidigare arbetslivserfarenhet och studier",
+   "Validering av kunskaper och kompetenser",
+   "Elevens mål med studierna"
+  ],
+  "Code_AttendanceScheduleState": [
+   "Godkänt",
+   "Begärt",
+   "Nekat"
+  ]
+ },
+ "falt_med_identifierare": {
+  "Organisation.schoolUnitCode": "skolenhetskod (8 siffror) – samma som Skolenhetsregistret och Planerad utbildning",
+  "Organisation.municipalityCode": "kommunkod (4 siffror) – samma som SCB:s Region",
+  "Organisation.organisationNumber": "organisationsnummer (huvudman)",
+  "Person.civicNo.value": "personnummer, 12 siffror utan skiljetecken",
+  "Enrolment.educationCode": "studievägskod (program/inriktning)",
+  "Programme.code": "studievägskod enligt Skolverket",
+  "Syllabus.subjectCode": "ämneskod enligt Skolverket (med skolformsprefix)",
+  "Syllabus.courseCode": "kurskod (Gy11) eller ämnesnivåkod (Gy25)",
+  "Grade.gradeValue": "fri text – förväntade värden A–F, streck, Godkänt/Icke godkänt, från 2028 även 1–10"
+ },
+ "andra_versioner": {
+  "ss12000_v2_0_draft": {
+   "kalla": "stefan-jonasson/ss12000v2 common.yaml (implementation spec 2.0.0)",
+   "Code_SchoolType": [
+    "FS",
+    "FKLASS",
+    "FTH",
+    "OPPFTH",
+    "GR",
+    "GRS",
+    "SP",
+    "SAM",
+    "GY",
+    "GYS",
+    "KOMVUX",
+    "SARVUX",
+    "SFI",
+    "KU",
+    "YH",
+    "FHS",
+    "STF",
+    "KKU",
+    "HS",
+    "ABU",
+    "AU"
+   ],
+   "Code_OrganisationType": [
+    "Huvudman",
+    "Stadsdel",
+    "Rektorsområde",
+    "Skola",
+    "Skolenhet",
+    "Övrigt"
+   ],
+   "Code_DutyRole": [
+    "Rektor",
+    "Lärare",
+    "Förskollärare",
+    "Övrig pedagogisk personal",
+    "Förskolechef",
+    "Annan personal"
+   ],
+   "Code_RelationType": [
+    "Vårdnadshavare",
+    "Annan ansvarig",
+    "Annan behörig",
+    "God man",
+    "Förälder"
+   ],
+   "Code_Reason": [
+    "Omsorg",
+    "Erbjuden tid",
+    "Eget behov"
+   ],
+   "Code_AddressType": [
+    "Folkbokföring",
+    "Särskildpostadress",
+    "Tillfälligadress",
+    "Postadress"
+   ],
+   "Code_AssignmentRole": [
+    "Mentor",
+    "Förskollärare",
+    "Barnskötare",
+    "Fritidspedagog",
+    "Specialpedagog",
+    "Elevhälsopersonal",
+    "Pedagogisk ledare",
+    "Schemaläggare"
+   ],
+   "Code_ActivityType": [
+    "Undervisning",
+    "Elevaktivitet",
+    "Provaktivitet",
+    "Läraraktivitet",
+    "Övrigt"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Uppräkningarna kommer från en inofficiell community-uppdelning av SS 12000 implementationsspecifikation 2.0.0 (stefan-jonasson/ss12000v2), inte från SIS egen fil."
+  },
+  "ss12000_2018_egil": {
+   "kalla": "Sambruk/EgilDoc implementationsprofil.md",
+   "Code_SchoolType": {
+    "FS": "förskola",
+    "FSK": "förskoleklass",
+    "FTH": "fritidshem",
+    "GR": "grundskola",
+    "GRS": "grundsärskola",
+    "SP": "specialskola",
+    "SAM": "sameskola",
+    "GY": "gymnasieskola",
+    "GYS": "gymnasiesärskola",
+    "VUX": "vuxenutbildning",
+    "SUV": "särskild utbildning för vuxna",
+    "YH": "yrkeshögskola",
+    "FHS": "folkhögskola",
+    "HS": "högskola",
+    "AU": "annan utbildning"
+   },
+   "Code_RelationType": [
+    "Vårdnadshavare",
+    "Annan ansvarig vuxen"
+   ],
+   "falt": {
+    "schoolUnitCode": "SCB skolenhetskod (krävs)",
+    "municipalityCode": "Kommunkod",
+    "civicNo": "Personnummer YYYYMMDDNNNN",
+    "enrolments.programCode": "Studievägskod (Gy/Vux)",
+    "enrolments.schoolType": "Code_SchoolType"
+   },
+   "verifiering": "referenskod",
+   "verifiering_not": "Uppräkningar och fält enligt Sambruks EGIL-profil för SS 12000:2018 (implementationsprofil.md), ett profildokument och inte SIS standardtext."
+  },
+  "skolverket_dnp_subset": {
+   "kalla": "skolverket/dnp-ss12000-reference-api expose openapi.yml",
+   "Code_SchoolType": "identisk med v2.1 (30 värden)",
+   "Code_DutyRole": "identisk med v2.1 (19 värden)",
+   "Code_ActivityType": [
+    "Undervisning",
+    "Elevaktivitet",
+    "Provaktivitet",
+    "Läraraktivitet",
+    "Övrigt"
+   ],
+   "avvikelser": [
+    "Organisation kräver schoolUnitCode (v2.1: valfritt) och har bara id, meta, displayName, schoolUnitCode",
+    "GET /organisations returnerar {\"organisations\": [...]} i stället för {\"data\": [...], \"pageToken\"}",
+    "Person kräver civicNo och eduPersonPrincipalNames",
+    "Enrolment: enroledAt, schoolYear (0-10), schoolType, cancelled, educationCode, programme, specification (inget krav på startDate)",
+    "LogEntry.severityLevel: Info|Warning|Error; Code_ObjectType begränsad till Activity, Duty, Group, Person, Organisation"
+   ],
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Enligt Skolverkets egen OpenAPI-fil för SS 12000-delmängden i dnp-ss12000-reference-api (expose). Filen anger själv att specifikationen kanske inte motsvarar den faktiska implementationen."
+  }
+ },
+ "verifiering_samlingar": {
+  "uppräkningar": {
+   "verifiering": "officiell_spec",
+   "verifiering_not": "Alla 27 uppräkningar och samtliga värden, i samma ordning, stämmer ordagrant mot SS 12000:2020 implementationsspecifikation 2.1.0 (SIS), kontrollerat mot en GitHub-kopia av OpenAPI-filen. Stavningen ”Intruduktionsprogram” finns så i specifikationen."
+  },
+  "falt_med_identifierare": {
+   "verifiering": "härlett",
+   "verifiering_not": "Att fälten finns och vad de bär är kontrollerat mot SS 12000:2020 implementationsspecifikation 2.1.0 (SIS); längden 8 siffror för skolenhetskod kommer från SCB:s filspecifikation för betygsinsamling (community-kopia). Hänvisningarna till Skolenhetsregistret, Planerad utbildning och SCB:s Region, tolkningen ”huvudman”, ämnesnivåkod (Gy25) och de förväntade betygsvärdena är projektets egna slutsatser."
+  }
+ }
+}

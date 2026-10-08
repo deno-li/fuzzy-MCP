@@ -1,0 +1,57 @@
+# SPDX-FileCopyrightText: 2026 Deniz Özer
+#
+# SPDX-License-Identifier: CC0-1.0
+#
+# fuzzy-mcp bredvid Eneo (se docs/ENEO.md). Förutsätter att Eneo redan körs och att dess interna nät heter
+# eneo_module_net (kontrollera med `docker network ls`). Imagen: docker load -i fuzzy-mcp-0.1.2-image.tar.gz
+# (leveranspaketet) eller i repot: docker build --build-arg VERSION=0.1.2 -t fuzzy-mcp:0.1.2 . (se DRIFT.md). Registrera sedan http://fuzzy-mcp:8000/mcp
+# med Bearer-token i Eneo.
+#
+# eneo_module_net delas med Eneos backend, Traefik och eventuella andra moduler – alla där når fuzzy-mcp:8000,
+# därför krävs token. Vill ni begränsa ytterligare: skapa ett eget internt nät (docker network create --internal
+# fuzzy_mcp_net), anslut bara eneo_backend och fuzzy-mcp till det och byt eneo_module_net nedan mot det nätet.
+
+# Eget projektnamn så att `docker compose down` här aldrig rör Eneos egna tjänster.
+name: fuzzy-mcp
+
+services:
+  fuzzy-mcp:
+    image: fuzzy-mcp:0.1.2
+    container_name: fuzzy-mcp
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 512m
+    pids_limit: 128
+    environment:
+      FUZZY_MCP_TRANSPORT: streamable-http
+      FUZZY_MCP_HOST: 0.0.0.0
+      FUZZY_MCP_PORT: "8000"
+      FUZZY_MCP_ALLOWED_HOSTS: fuzzy-mcp
+      FUZZY_MCP_AUTH_TOKEN_FILE: /run/secrets/fuzzy_mcp_token
+      FUZZY_MCP_MAX_OUTPUT_CHARS: "30000"
+      FUZZY_MCP_STATELESS: "true"
+      FUZZY_MCP_PERSONAL_DATA: "off"
+      FUZZY_MCP_HTTP_TIMEOUT: "20"
+      FUZZY_MCP_MAX_RETRIES: "1"
+      FUZZY_MCP_SOURCES: scb,skolverket,fohm,reference
+      # Utgående proxy, om sådan krävs (NO_PROXY behövs inte här: fuzzy-mcp anropar bara myndigheterna):
+      # HTTPS_PROXY: http://proxy.kommun.se:8080
+      # Vid TLS-inspektion: en komplett CA-bundle (publika rotcertifikat + organisationens CA), inte bara CA:n
+      # SSL_CERT_FILE: /certs/ca-bundle.pem
+    # volumes:   # värdens bundle – Debian/Ubuntu nedan, RHEL: /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+    #   - /etc/ssl/certs/ca-certificates.crt:/certs/ca-bundle.pem:ro
+    secrets: [fuzzy_mcp_token]
+    networks: [eneo_module_net, fuzzy_egress]
+    # Inga publicerade portar: bara Eneos backend (på eneo_module_net) når tjänsten.
+
+secrets:
+  fuzzy_mcp_token:
+    file: ./secrets/fuzzy_mcp_token.txt
+
+networks:
+  eneo_module_net:
+    external: true
+  fuzzy_egress:
+    driver: bridge

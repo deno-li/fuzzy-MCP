@@ -1,0 +1,28 @@
+{
+  "status": "OK",
+  "message": "",
+  "body": {
+    "schoolUnit": "85014247",
+    "studentsPerTeacherQuota": [
+      {"value": "15,5", "valueType": "EXISTS", "timePeriod": "2024/25"},
+      {"value": "14,9", "valueType": "EXISTS", "timePeriod": "2023/24"}
+    ],
+    "certifiedTeachersQuota": [
+      {"value": "67,4", "valueType": "EXISTS", "timePeriod": "2022/23"},
+      {"value": "60,9", "valueType": "EXISTS", "timePeriod": "2021/22"},
+      {"value": "71,0", "valueType": "EXISTS", "timePeriod": "2024/25"}
+    ],
+    "specialTeacherPositions": [{"value": ".", "valueType": "MISSING", "timePeriod": "2024/25"}],
+    "specialEducatorsQuota": [],
+    "docLinks": null,
+    "totalNumberOfPupils": [{"value": "cirka 370", "valueType": "EXISTS", "timePeriod": "2024/25"}],
+    "averageGradesMeritRating9thGrade": [
+      {"value": "..", "valueType": "OMITTED_DUE_TO_BASED_ON_FEW_PUPILS", "timePeriod": "2024/25"},
+      {"value": "264,0", "valueType": "EXISTS", "timePeriod": "2023/24"}
+    ],
+    "ratioOfPupils9thGradeEligibleForNationalProgramYR": [
+      {"value": "~100", "valueType": "ROUNDED_OFF_DUE_TO_FEW_PUPILS_NOT_ELIGIBLE", "timePeriod": "2024/25"}
+    ],
+    "_links": {"self": {"href": "https://api.skolverket.se/planned-educations/v4/school-units/85014247/statistics/gr"}}
+  }
+}

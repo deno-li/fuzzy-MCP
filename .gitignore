@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+# Editors
+.idea/
+.vscode/
+*.swp
+.DS_Store
+# Lokala miljöfiler
+.env
+
+# Leveranspaket (scripts/build_release.py)
+release/
+
+# Lokala hemligheter (t.ex. docs/eneo/secrets/fuzzy_mcp_token.txt)
+secrets/
+**/secrets/
+*.token

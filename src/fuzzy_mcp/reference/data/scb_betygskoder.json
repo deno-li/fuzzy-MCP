@@ -1,0 +1,137 @@
+{
+ "id": "scb_betygskoder",
+ "titel": "SCB:s koder vid insamling av betyg",
+ "beskrivning": "Koder som skolor använder när betyg rapporteras till SCB (på uppdrag av Skolverket), t.ex. 9 = streck, 3 = ämnet inte läst p.g.a. anpassad studiegång/timplan, 2 = ej betygssatt i ej obligatoriskt ämne.",
+ "kalla": "SCB:s filspecifikationer för betygsinsamling åk 6 och åk 9 (2026); nivåbetygsinsamling gymnasieskolan 2026.",
+ "licens": "CC0 1.0",
+ "koder": [
+  {
+   "kod": "A",
+   "namn": "betyg A",
+   "verifiering": "referenskod",
+   "verifiering_not": "Text ur SCB:s filspecifikationer för betygsinsamling åk 9 och åk 6 (2026), läst som ordagrann kopia i communityprojektet andersmosshall/sser-id-103. En söksammanfattning av SCB:s instruktion för åk 9 stämmer överens."
+  },
+  {
+   "kod": "B",
+   "namn": "betyg B",
+   "verifiering": "referenskod",
+   "verifiering_not": "Text ur SCB:s filspecifikationer för betygsinsamling åk 9 och åk 6 (2026), läst som ordagrann kopia i communityprojektet andersmosshall/sser-id-103. En söksammanfattning av SCB:s instruktion för åk 9 stämmer överens."
+  },
+  {
+   "kod": "C",
+   "namn": "betyg C",
+   "verifiering": "referenskod",
+   "verifiering_not": "Text ur SCB:s filspecifikationer för betygsinsamling åk 9 och åk 6 (2026), läst som ordagrann kopia i communityprojektet andersmosshall/sser-id-103. En söksammanfattning av SCB:s instruktion för åk 9 stämmer överens."
+  },
+  {
+   "kod": "D",
+   "namn": "betyg D",
+   "verifiering": "referenskod",
+   "verifiering_not": "Text ur SCB:s filspecifikationer för betygsinsamling åk 9 och åk 6 (2026), läst som ordagrann kopia i communityprojektet andersmosshall/sser-id-103. En söksammanfattning av SCB:s instruktion för åk 9 stämmer överens."
+  },
+  {
+   "kod": "E",
+   "namn": "betyg E",
+   "verifiering": "referenskod",
+   "verifiering_not": "Text ur SCB:s filspecifikationer för betygsinsamling åk 9 och åk 6 (2026), läst som ordagrann kopia i communityprojektet andersmosshall/sser-id-103. En söksammanfattning av SCB:s instruktion för åk 9 stämmer överens."
+  },
+  {
+   "kod": "F",
+   "namn": "ej godkänt betyg",
+   "verifiering": "referenskod",
+   "verifiering_not": "Text ur SCB:s filspecifikationer för betygsinsamling åk 9 och åk 6 (2026), läst som ordagrann kopia i communityprojektet andersmosshall/sser-id-103. En söksammanfattning av SCB:s instruktion för åk 9 stämmer överens."
+  },
+  {
+   "kod": "9",
+   "namn": "Streck (-) i betygskatalogen, dvs. bedömningsunderlag saknas pga. frånvaro.",
+   "verifiering": "referenskod",
+   "verifiering_not": "Text ur SCB:s filspecifikationer för betygsinsamling åk 9 och åk 6 (2026), läst som ordagrann kopia i communityprojektet andersmosshall/sser-id-103. En söksammanfattning av SCB:s instruktion för åk 9 stämmer överens."
+  },
+  {
+   "kod": "3",
+   "namn": "Anges när ett ämne inte lästs på grund av anpassad studiegång eller (i åk 9) anpassad timplan enligt 3 kap. 12 § skollagen (2010:800)",
+   "verifiering": "referenskod",
+   "verifiering_not": "Text ur SCB:s filspecifikation för betygsinsamling åk 9 (2026), läst som ordagrann kopia i communityprojektet andersmosshall/sser-id-103. I åk 6-specifikationen står bara ”anpassad studiegång”."
+  },
+  {
+   "kod": "2",
+   "namn": "Ej betygssatt i ej obligatoriskt ämne.",
+   "verifiering": "referenskod",
+   "verifiering_not": "Text ur SCB:s filspecifikationer för betygsinsamling åk 9 och åk 6 (2026), läst som ordagrann kopia i communityprojektet andersmosshall/sser-id-103. En söksammanfattning av SCB:s instruktion för åk 9 stämmer överens."
+  },
+  {
+   "kod": "Y",
+   "namn": "Ej erhållit kunskapsrelaterade betyg (aktuell för waldorfskola och internationella skolor.) [endast åk 6]",
+   "verifiering": "referenskod",
+   "verifiering_not": "Text ur SCB:s filspecifikation för terminsbetyg åk 6 (2026), läst som ordagrann kopia i communityprojektet andersmosshall/sser-id-103; koden används bara i åk 6."
+  },
+  {
+   "kod": "Z",
+   "namn": "Eleven har ej undervisats i ämnet i åk 6. Ämnet är därmed ej angivet i betygskatalogen [endast åk 6]",
+   "verifiering": "referenskod",
+   "verifiering_not": "Text ur SCB:s filspecifikation för terminsbetyg åk 6 (2026), läst som ordagrann kopia i communityprojektet andersmosshall/sser-id-103; koden används bara i åk 6."
+  }
+ ],
+ "amneskolumner": [
+  "Bl",
+  "En",
+  "Hkk",
+  "Idh",
+  "Ma",
+  "M1",
+  "M2",
+  "ML",
+  "Mu",
+  "Bi",
+  "Fy",
+  "Ke",
+  "Ge",
+  "Hi",
+  "Re",
+  "Sh",
+  "Sl",
+  "Sv",
+  "Sva",
+  "Tn",
+  "Tk",
+  "OVR"
+ ],
+ "gymnasiet_dokumenttyp": [
+  {
+   "kod": "E",
+   "namn": "Examensbevis, högskoleförberedande examen",
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "Koder och benämningar bygger på sammanfattningar av SCB:s kontroller för nivåbetygsinsamlingen 2026 och SCB:s/UHR:s filformat v5.3.G; originaldokumenten är inte lästa."
+  },
+  {
+   "kod": "L",
+   "namn": "Examensbevis, yrkesexamen",
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "Koder och benämningar bygger på sammanfattningar av SCB:s kontroller för nivåbetygsinsamlingen 2026 och SCB:s/UHR:s filformat v5.3.G; originaldokumenten är inte lästa."
+  },
+  {
+   "kod": "Z",
+   "namn": "Studiebevis",
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "Koder och benämningar bygger på sammanfattningar av SCB:s kontroller för nivåbetygsinsamlingen 2026 och SCB:s/UHR:s filformat v5.3.G; originaldokumenten är inte lästa."
+  },
+  {
+   "kod": "G",
+   "namn": "Gymnasieintyg",
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "Koder och benämningar bygger på sammanfattningar av SCB:s kontroller för nivåbetygsinsamlingen 2026 och SCB:s/UHR:s filformat v5.3.G; originaldokumenten är inte lästa."
+  },
+  {
+   "kod": "",
+   "namn": "(tomt) inget dokument utfärdat ännu",
+   "verifiering": "härlett",
+   "verifiering_not": "Att fältet får vara tomt bygger på en sammanfattning av SCB:s kontroller för nivåbetygsinsamlingen 2026; betydelsen ”inget dokument utfärdat ännu” är en tolkning som saknar dokumenterad källa."
+  }
+ ],
+ "verifiering_samlingar": {
+  "amneskolumner": {
+   "verifiering": "referenskod",
+   "verifiering_not": "Ämneskolumnerna i SCB:s filspecifikation för slutbetyg åk 9 2026, kontrollerade mot en ordagrann kopia i ett community-projekt på GitHub (inte läst direkt hos SCB); för M1, M2 och ML finns där även en kolumn för språkkod. Åk 6-filen har dessutom No och So och anger modersmål i Modm_anm/Modmalbe i stället för ML."
+  }
+ }
+}

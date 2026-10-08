@@ -1,0 +1,11 @@
+{
+  "status": "OK",
+  "message": "",
+  "body": {
+    "_links": {
+      "custodiansgr": {"href": "https://api.skolverket.se/planned-educations/v4/school-units/44673074/nestedsurveys/custodiansgr"},
+      "pupilsgr": {"href": "https://api.skolverket.se/planned-educations/v4/school-units/44673074/nestedsurveys/pupilsgr"},
+      "self": {"href": "https://api.skolverket.se/planned-educations/v4/school-units/44673074/nestedsurveys"}
+    }
+  }
+}

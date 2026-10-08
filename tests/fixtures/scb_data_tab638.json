@@ -1,0 +1,15 @@
+{
+  "version": "2.0", "class": "dataset",
+  "label": "Folkmängden efter region, år och tabellinnehåll",
+  "source": "Statistikmyndigheten SCB", "updated": "2025-02-21T07:00:00Z",
+  "role": {"time": ["Tid"], "metric": ["ContentsCode"]},
+  "id": ["Region", "ContentsCode", "Tid"],
+  "size": [2, 1, 2],
+  "dimension": {
+    "Region": {"label": "region", "category": {"index": {"0180": 0, "1480": 1}, "label": {"0180": "Stockholm", "1480": "Göteborg"}}},
+    "ContentsCode": {"label": "tabellinnehåll", "category": {"index": {"BE0101N1": 0}, "label": {"BE0101N1": "Folkmängd"},
+      "unit": {"BE0101N1": {"base": "antal", "decimals": 0}}}},
+    "Tid": {"label": "år", "category": {"index": {"2023": 0, "2024": 1}, "label": {"2023": "2023", "2024": "2024"}}}
+  },
+  "value": [984748, 988943, 600151, 604616]
+}

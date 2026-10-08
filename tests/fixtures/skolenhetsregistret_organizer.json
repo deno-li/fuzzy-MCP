@@ -1,0 +1,54 @@
+{
+  "meta": { "extractDate": "2025-05-08T00:06:10.19+02:00", "created": "2015-12-12", "modified": "2025-03-05" },
+  "links": { "href": "https://api.skolverket.se/skolenhetsregistret/v2/organizers/2120000126", "rel": "self", "method": "GET" },
+  "data": {
+    "type": "organizer",
+    "organizationNumber": "2120000126",
+    "attributes": {
+      "displayName": "EKERÖ KOMMUN",
+      "address": {
+        "type": "POSTADRESS",
+        "careOfAddress": "CO-EXEMPEL",
+        "streetAddress": "Box 205",
+        "postalCode": "17823",
+        "locality": "Ekerö",
+        "geoCoordinates": { "coordinateSweRefN": null, "coordinateSweRefE": null, "latitude": null, "longitude": null },
+        "country": null,
+        "continent": "Europa"
+      },
+      "url": "https://www.ekero.se",
+      "email": [ { "providerType": "SCB", "email": "kommun@ekero.se" }, { "providerType": "SKOLVERKET", "email": "skola@ekero.se" } ],
+      "phoneNumber": [ { "providerType": "SCB", "phone": "08-12457100" } ],
+      "companyForm": { "code": "81", "displayName": "Kommuner" },
+      "organizerType": "KOMMUN",
+      "legalEntityStatus": "INKLUDERAD_SKV",
+      "companyStatus": "AKTIV",
+      "isInternational": false,
+      "municipalities": [ { "municipalityCode": "0125", "displayName": "Ekerö" } ],
+      "regions": [],
+      "schoolTypes": ["FKLASS", "FTH", "GR", "GY", "VUX"],
+      "highSchoolAssociationId": null
+    },
+    "relationships": {
+      "schoolunit": {
+        "links": {
+          "href": "https://api.skolverket.se/skolenhetsregistret/v2/school-units?organization_number=2120000126",
+          "rel": "self",
+          "method": "GET",
+          "related": [
+            { "href": "https://api.skolverket.se/skolenhetsregistret/v2/school-units/43038662", "rel": "related", "method": "GET" },
+            { "href": "https://api.skolverket.se/skolenhetsregistret/v2/school-units/23456789", "rel": "related", "method": "GET" }
+          ]
+        },
+        "data": [
+          { "type": "schoolunit", "schoolUnitCode": "43038662" },
+          { "type": "schoolunit", "schoolUnitCode": "23456789" }
+        ]
+      },
+      "contract": {
+        "links": { "href": "https://api.skolverket.se/skolenhetsregistret/v2/contracts?organizer_organization_number=2120000126", "rel": "self", "method": "GET", "related": [] },
+        "data": [ { "type": "contract", "organizationNumber": "2120000126", "educationProviderCode": "87654321" } ]
+      }
+    }
+  }
+}

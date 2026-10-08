@@ -1,0 +1,10 @@
+{
+  "meta": { "extractDate": "2025-05-08T00:06:10.19+02:00" },
+  "data": {
+    "type": "contract",
+    "attributes": [
+      { "organizerOrganizationNumber": "2120000126", "organizerName": "EKERÖ KOMMUN", "educationProviderOrganizationNumber": "5560001111", "educationProviderName": "Lärande i Sverige AB", "educationProviderCode": "87654321", "folkHighschoolName": null, "status": "aktiv" },
+      { "organizerOrganizationNumber": "2120000126", "organizerName": "EKERÖ KOMMUN", "educationProviderOrganizationNumber": "8020002222", "educationProviderName": "Föreningen Mälardalens folkhögskola", "educationProviderCode": "76543210", "folkHighschoolName": "Mälardalens folkhögskola", "status": "inaktiv" }
+    ]
+  }
+}

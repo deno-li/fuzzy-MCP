@@ -1,0 +1,19 @@
+{
+  "id": "p.uoh.kth",
+  "status": "ACTIVE",
+  "content": {
+    "identifier": "p.uoh.kth",
+    "lastEdited": "2026-01-10T09:00:00",
+    "name": {"strings": [{"lang": "swe", "value": "Kungliga Tekniska högskolan"}]},
+    "url": {"urls": [{"lang": "swe", "value": "https://www.kth.se"}]},
+    "contactAddress": {"streetAddress": "Brinellvägen 8", "postalCode": "100 44", "town": "Stockholm", "areaCode": "0180"},
+    "visitAddresses": [{"streetAddress": "Valhallavägen 79", "town": "Stockholm", "areaCode": "0180"}],
+    "emailAddresses": ["info@kth.se"],
+    "phones": [{"number": {"strings": [{"lang": "swe", "value": "08-790 60 00"}]},
+                "function": {"strings": [{"lang": "swe", "value": "Växel"}]}}],
+    "responsibleBody": {"type": {"type": "C_Body", "code": "statlig"},
+                        "name": {"strings": [{"lang": "swe", "value": "Kungliga Tekniska högskolan"}]}},
+    "years": [{"type": "C_SchoolYear", "code": "10"}],
+    "organisationNumber": "2021006237"
+  }
+}

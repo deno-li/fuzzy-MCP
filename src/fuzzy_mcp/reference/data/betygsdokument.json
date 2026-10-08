@@ -1,0 +1,197 @@
+{
+ "id": "betygsdokument",
+ "titel": "Betygsdokument per skolform",
+ "beskrivning": "Betygskatalog, terminsbetyg, slutbetyg, examensbevis, studiebevis, gymnasieintyg, komvuxbevis m.fl.",
+ "kalla": "Skolförordningen 6 kap., gymnasieförordningen 8 kap., förordningen om vuxenutbildning 4 kap.",
+ "licens": "Sammanställning: CC0 1.0. Författningstext är inte upphovsrättsligt skyddad (URL 9 §).",
+ "koder": [
+  {
+   "kod": "betygskatalog",
+   "namn": "Betygskatalog",
+   "skolformer": [
+    "GR",
+    "GRAN",
+    "SP",
+    "SAM",
+    "GY",
+    "GYAN",
+    "VUX"
+   ],
+   "not": null,
+   "lagrum": "SF 6 kap 10 §, GyF 8 kap 8 §, VuxF 4 kap 11 §",
+   "verifiering": "författning",
+   "verifiering_not": "Dokumenttyp, skolformer och lagrum enligt skolförordningen (2011:185), gymnasieförordningen (2010:2039), förordningen (2011:1108) om vuxenutbildning och skollagen (2010:800) i lydelse hösten 2026; skolformerna är omkodade till Skolenhetsregistrets koder."
+  },
+  {
+   "kod": "utdrag_ur_betygskatalogen",
+   "namn": "Utdrag ur betygskatalogen",
+   "skolformer": [
+    "GY",
+    "GYAN",
+    "VUX"
+   ],
+   "not": "GY: minst två gånger per läsår; inkl. ogiltig frånvaro",
+   "lagrum": "GyF 8 kap 9 §, VuxF 4 kap 22 §",
+   "verifiering": "författning",
+   "verifiering_not": "Dokumenttyp, skolformer och lagrum enligt skolförordningen (2011:185), gymnasieförordningen (2010:2039), förordningen (2011:1108) om vuxenutbildning och skollagen (2010:800) i lydelse hösten 2026; skolformerna är omkodade till Skolenhetsregistrets koder."
+  },
+  {
+   "kod": "terminsbetyg",
+   "namn": "Terminsbetyg",
+   "skolformer": [
+    "GR",
+    "GRAN",
+    "SP",
+    "SAM"
+   ],
+   "not": null,
+   "lagrum": "SF 6 kap 11-13 §§",
+   "verifiering": "författning",
+   "verifiering_not": "Dokumenttyp, skolformer och lagrum enligt skolförordningen (2011:185), gymnasieförordningen (2010:2039), förordningen (2011:1108) om vuxenutbildning och skollagen (2010:800) i lydelse hösten 2026; skolformerna är omkodade till Skolenhetsregistrets koder."
+  },
+  {
+   "kod": "slutbetyg",
+   "namn": "Slutbetyg",
+   "skolformer": [
+    "GR",
+    "GRAN",
+    "SP"
+   ],
+   "not": null,
+   "lagrum": "SF 6 kap 14-16 §§",
+   "verifiering": "författning",
+   "verifiering_not": "Dokumenttyp, skolformer och lagrum enligt skolförordningen (2011:185), gymnasieförordningen (2010:2039), förordningen (2011:1108) om vuxenutbildning och skollagen (2010:800) i lydelse hösten 2026; skolformerna är omkodade till Skolenhetsregistrets koder."
+  },
+  {
+   "kod": "avgangsintyg",
+   "namn": "Avgångsintyg",
+   "skolformer": [
+    "GR",
+    "GRAN",
+    "SP",
+    "SAM"
+   ],
+   "not": null,
+   "lagrum": "SF 6 kap 17-18 §§",
+   "verifiering": "författning",
+   "verifiering_not": "Dokumenttyp, skolformer och lagrum enligt skolförordningen (2011:185), gymnasieförordningen (2010:2039), förordningen (2011:1108) om vuxenutbildning och skollagen (2010:800) i lydelse hösten 2026; skolformerna är omkodade till Skolenhetsregistrets koder."
+  },
+  {
+   "kod": "examensbevis_yrkesexamen",
+   "namn": "Examensbevis – yrkesexamen",
+   "skolformer": [
+    "GY",
+    "VUXGY"
+   ],
+   "not": null,
+   "lagrum": "GyF 8 kap 12-17 §§, VuxF 4 kap 20 §",
+   "verifiering": "författning",
+   "verifiering_not": "Dokumenttyp, skolformer och lagrum enligt skolförordningen (2011:185), gymnasieförordningen (2010:2039), förordningen (2011:1108) om vuxenutbildning och skollagen (2010:800) i lydelse hösten 2026; skolformerna är omkodade till Skolenhetsregistrets koder."
+  },
+  {
+   "kod": "examensbevis_hogskoleforberedande_examen",
+   "namn": "Examensbevis – högskoleförberedande examen",
+   "skolformer": [
+    "GY",
+    "VUXGY"
+   ],
+   "not": null,
+   "lagrum": "GyF 8 kap 17 §, VuxF 4 kap 20 §",
+   "verifiering": "författning",
+   "verifiering_not": "Dokumenttyp, skolformer och lagrum enligt skolförordningen (2011:185), gymnasieförordningen (2010:2039), förordningen (2011:1108) om vuxenutbildning och skollagen (2010:800) i lydelse hösten 2026; skolformerna är omkodade till Skolenhetsregistrets koder."
+  },
+  {
+   "kod": "studiebevis",
+   "namn": "Studiebevis",
+   "skolformer": [
+    "GY"
+   ],
+   "not": null,
+   "lagrum": "GyF 8 kap 18 §",
+   "verifiering": "författning",
+   "verifiering_not": "Dokumenttyp, skolformer och lagrum enligt skolförordningen (2011:185), gymnasieförordningen (2010:2039), förordningen (2011:1108) om vuxenutbildning och skollagen (2010:800) i lydelse hösten 2026; skolformerna är omkodade till Skolenhetsregistrets koder."
+  },
+  {
+   "kod": "gymnasieintyg",
+   "namn": "Gymnasieintyg",
+   "skolformer": [
+    "GY introduktionsprogram"
+   ],
+   "not": null,
+   "lagrum": "GyF 8 kap 21 §",
+   "verifiering": "författning",
+   "verifiering_not": "Dokumenttyp, skolformer och lagrum enligt skolförordningen (2011:185), gymnasieförordningen (2010:2039), förordningen (2011:1108) om vuxenutbildning och skollagen (2010:800) i lydelse hösten 2026; skolformerna är omkodade till Skolenhetsregistrets koder."
+  },
+  {
+   "kod": "sammanstallning",
+   "namn": "Sammanställning",
+   "skolformer": [
+    "GY introduktionsprogram (avbrott/ej nått målen)"
+   ],
+   "not": null,
+   "lagrum": "GyF 8 kap 22 §",
+   "verifiering": "författning",
+   "verifiering_not": "Dokumenttyp, skolformer och lagrum enligt skolförordningen (2011:185), gymnasieförordningen (2010:2039), förordningen (2011:1108) om vuxenutbildning och skollagen (2010:800) i lydelse hösten 2026; skolformerna är omkodade till Skolenhetsregistrets koder."
+  },
+  {
+   "kod": "skriftlig_bedomning",
+   "namn": "Skriftlig bedömning",
+   "skolformer": [
+    "GY introduktionsprogram (ej godkänt)",
+    "GR (F i avslutat ämne)"
+   ],
+   "not": null,
+   "lagrum": "GyF 8 kap 20 §, SL 10 kap 22 §",
+   "verifiering": "författning",
+   "verifiering_not": "Dokumenttyp, skolformer och lagrum enligt skolförordningen (2011:185), gymnasieförordningen (2010:2039), förordningen (2011:1108) om vuxenutbildning och skollagen (2010:800) i lydelse hösten 2026; skolformerna är omkodade till Skolenhetsregistrets koder."
+  },
+  {
+   "kod": "gymnasiebevis_avseende_anpassad_gymnasieskola",
+   "namn": "Gymnasiebevis avseende anpassad gymnasieskola",
+   "skolformer": [
+    "GYAN"
+   ],
+   "not": null,
+   "lagrum": "GyF 8 kap 22 a-22 d §§",
+   "verifiering": "författning",
+   "verifiering_not": "Dokumenttyp, skolformer och lagrum enligt skolförordningen (2011:185), gymnasieförordningen (2010:2039), förordningen (2011:1108) om vuxenutbildning och skollagen (2010:800) i lydelse hösten 2026; skolformerna är omkodade till Skolenhetsregistrets koder. Skolformen GYAN är härledd ur dokumentets namn."
+  },
+  {
+   "kod": "komvuxbevis",
+   "namn": "Komvuxbevis",
+   "skolformer": [
+    "VUXGYAN"
+   ],
+   "not": null,
+   "lagrum": "VuxF 4 kap 20 a §",
+   "verifiering": "författning",
+   "verifiering_not": "Dokumenttyp, skolformer och lagrum enligt skolförordningen (2011:185), gymnasieförordningen (2010:2039), förordningen (2011:1108) om vuxenutbildning och skollagen (2010:800) i lydelse hösten 2026; skolformerna är omkodade till Skolenhetsregistrets koder."
+  },
+  {
+   "kod": "intyg",
+   "namn": "Intyg",
+   "skolformer": [
+    "VUX (orienteringskurs, individuell kurs, validering, anpassad utan godkänt)"
+   ],
+   "not": null,
+   "lagrum": "VuxF 4 kap 25 §, SL 20 kap 35-36 §§",
+   "verifiering": "författning",
+   "verifiering_not": "Dokumenttyp, skolformer och lagrum enligt skolförordningen (2011:185), gymnasieförordningen (2010:2039), förordningen (2011:1108) om vuxenutbildning och skollagen (2010:800) i lydelse hösten 2026; skolformerna är omkodade till Skolenhetsregistrets koder."
+  },
+  {
+   "kod": "betyg_efter_provning",
+   "namn": "Betyg efter prövning",
+   "skolformer": [
+    "GR",
+    "SP",
+    "GY",
+    "VUX"
+   ],
+   "not": null,
+   "lagrum": "SF 6 kap 20-22 §§, GyF 8 kap 10 §",
+   "verifiering": "författning",
+   "verifiering_not": "Dokumenttyp, skolformer och lagrum enligt skolförordningen (2011:185), gymnasieförordningen (2010:2039), förordningen (2011:1108) om vuxenutbildning och skollagen (2010:800) i lydelse hösten 2026; skolformerna är omkodade till Skolenhetsregistrets koder."
+  }
+ ],
+ "skolformskoder": "Skolenhetsregistrets skolformskoder (GR, GRAN, SP, SAM, GY, GYAN, VUX, VUXGY, VUXGYAN); se ref_get_code_list(\"skolformer\"), fältet skolenhetsregistret."
+}

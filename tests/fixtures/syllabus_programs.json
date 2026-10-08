@@ -1,0 +1,94 @@
+{
+ "apiPublisher": "Skolverket",
+ "apiName": "Syllabus API",
+ "apiVersion": "1.16.2-SNAPSHOT",
+ "apiReleased": "2026-05-08",
+ "apiStatus": "active",
+ "apiDocumentation": "https://www.skolverket.se/om-oss/oppna-data/api-for-laroplaner-kurs--och-amnesplaner-syllabus",
+ "dataOrigin": "Syllabus API - Skolverket - 1.16.2-SNAPSHOT",
+ "calledMethod": "ListPrograms",
+ "totalElements": 4,
+ "processingTime": "75 ms",
+ "startedCaching": "2026-10-06T12:06:39.8861591",
+ "dateParam": "2026-10-06",
+ "timeSpanParam": "LATEST",
+ "schoolTypeParam": "GY",
+ "programs": [
+  {
+   "code": "EK25",
+   "name": "Ekonomiprogrammet",
+   "studyPathType": "PROGRAM25",
+   "category": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+   "startDate": "2025-07-01",
+   "modifiedDate": "2026-02-13",
+   "schoolTypes": [
+    "GY"
+   ],
+   "orientations": [
+    {
+     "code": "EKEKI",
+     "name": "Ekonomi"
+    },
+    {
+     "code": "EKJUK",
+     "name": "Juridik"
+    }
+   ]
+  },
+  {
+   "code": "NA",
+   "name": "Naturvetenskapsprogrammet",
+   "studyPathType": "PROGRAM",
+   "category": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+   "startDate": "2024-07-01",
+   "modifiedDate": "2026-02-13",
+   "canceledDate": "2025-07-01",
+   "canceledSkolfs": "2023:130",
+   "schoolTypes": [
+    "GY"
+   ],
+   "orientations": [
+    {
+     "code": "NANAT",
+     "name": "Naturvetenskap"
+    },
+    {
+     "code": "NANAS",
+     "name": "Naturvetenskap och samhälle"
+    }
+   ]
+  },
+  {
+   "code": "NA25",
+   "name": "Naturvetenskapsprogrammet",
+   "studyPathType": "PROGRAM25",
+   "category": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+   "startDate": "2025-07-01",
+   "modifiedDate": "2026-02-13",
+   "schoolTypes": [
+    "GY"
+   ],
+   "orientations": [
+    {
+     "code": "NANAP",
+     "name": "Naturvetenskap"
+    },
+    {
+     "code": "NANAA",
+     "name": "Naturvetenskap och samhälle"
+    }
+   ]
+  },
+  {
+   "code": "VI25",
+   "name": "Vidareutbildning i form av ett fjärde tekniskt år",
+   "studyPathType": "FOURTH_TECHNICAL_YEAR25",
+   "category": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+   "startDate": "2025-07-01",
+   "modifiedDate": "2026-02-13",
+   "schoolTypes": [
+    "GY"
+   ]
+  }
+ ]
+}

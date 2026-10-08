@@ -1,0 +1,36 @@
+{
+  "links": [],
+  "educationProviders": [
+    {
+      "id": "p.uoh.kth",
+      "status": "ACTIVE",
+      "content": {
+        "identifier": "p.uoh.kth",
+        "lastEdited": "2026-01-10T09:00:00",
+        "name": {"strings": [{"lang": "swe", "value": "Kungliga Tekniska högskolan"}]},
+        "url": {"urls": [{"lang": "swe", "value": "https://www.kth.se"}]},
+        "contactAddress": {"streetAddress": "Brinellvägen 8", "postalCode": "100 44", "town": "Stockholm", "areaCode": "0180"},
+        "emailAddresses": ["info@kth.se"],
+        "responsibleBody": {"type": {"type": "C_Body", "code": "statlig"},
+                            "name": {"strings": [{"lang": "swe", "value": "Kungliga Tekniska högskolan"}]}},
+        "organisationNumber": "2021006237"
+      }
+    },
+    {
+      "id": "p.sv.fhs.timra",
+      "status": "ACTIVE",
+      "content": {
+        "identifier": "p.sv.fhs.timra",
+        "lastEdited": "2026-01-10T09:00:00",
+        "name": {"strings": [{"lang": "swe", "value": "Timrå folkhögskola"}]},
+        "url": {"urls": [{"lang": "swe", "value": "https://www.timra.fhsk.se"}]},
+        "contactAddress": {"town": "Timrå", "areaCode": "2262"},
+        "visitAddresses": [{"town": "Sundsvall", "areaCode": "2281"}],
+        "emailAddresses": ["info@timra.fhsk.se"],
+        "responsibleBody": {"type": {"type": "C_Body", "code": "region"},
+                            "name": {"strings": [{"lang": "swe", "value": "Region Västernorrland"}]}}
+      }
+    }
+  ],
+  "page": {"size": 500, "totalElements": 2, "totalPages": 1, "pageNumber": 0}
+}

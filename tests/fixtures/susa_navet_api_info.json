@@ -1,0 +1,9 @@
+{
+  "apiPublisher": "Skolverket",
+  "apiName": "susa-navet",
+  "apiVersion": "1.0.0",
+  "emilSchemaVersion": "1.0.0",
+  "apiReleased": "2025-10-07",
+  "apiDocumentation": "https://www.skolverket.se/om-skolverket/webbplatser-och-tjanster/oppna-data/api-for-utbildningstillfallen-susa-navet",
+  "apiStatus": "beta"
+}

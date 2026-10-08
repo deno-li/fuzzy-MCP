@@ -1,0 +1,116 @@
+{
+ "id": "komvux_kurskoder",
+ "titel": "Kurskoder i komvux (sfi och grundläggande nivå)",
+ "beskrivning": "Kurskoder och kodmönster för sfi (SFIKU...) och komvux på grundläggande nivå (VGR...) fr.o.m. 2025-07-01.",
+ "kalla": "Skolverket 'Koder för komvux' (sammanfattning via webbsökning). Syllabus-API:ts kodlista har sfi-kurserna SFIKUA9–SFIKUD9 utan studievägssiffra. Verifiera mot Syllabus-API:t.",
+ "licens": "CC0 1.0",
+ "koder": [
+  {
+   "kod": "SFIKUA91",
+   "namn": "Sfi kurs A, studieväg 1",
+   "giltig_fran": "2025-07-01",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod, namn och startdatum bygger bara på en webbsökningssammanfattning där källsidan inte anges, och underlaget anger att sfi-koderna för kurs A–C återstår att verifiera."
+  },
+  {
+   "kod": "SFIKUB91",
+   "namn": "Sfi kurs B, studieväg 1",
+   "giltig_fran": "2025-07-01",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod, namn och startdatum bygger bara på en webbsökningssammanfattning där källsidan inte anges, och underlaget anger att sfi-koderna för kurs A–C återstår att verifiera."
+  },
+  {
+   "kod": "SFIKUC91",
+   "namn": "Sfi kurs C, studieväg 1",
+   "giltig_fran": "2025-07-01",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod, namn och startdatum bygger bara på en webbsökningssammanfattning där källsidan inte anges, och underlaget anger att sfi-koderna för kurs A–C återstår att verifiera."
+  },
+  {
+   "kod": "SFIKUD91",
+   "namn": "Sfi kurs D, studieväg 1",
+   "giltig_fran": "2025-07-01",
+   "verifiering": "okänd",
+   "verifiering_not": "Koden finns som exempel i Skolverkets OpenAPI för Syllabus-API:t (Ämnen 1.14.0, fältet studyPathDescription); namn och startdatum bygger bara på en webbsökningssammanfattning där källsidan inte anges."
+  },
+  {
+   "kod": "SFIKUB92",
+   "namn": "Sfi kurs B, studieväg 2",
+   "giltig_fran": "2025-07-01",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod, namn och startdatum bygger bara på en webbsökningssammanfattning där källsidan inte anges, och underlaget anger att sfi-koderna för kurs A–C återstår att verifiera."
+  },
+  {
+   "kod": "SFIKUC92",
+   "namn": "Sfi kurs C, studieväg 2",
+   "giltig_fran": "2025-07-01",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod, namn och startdatum bygger bara på en webbsökningssammanfattning där källsidan inte anges, och underlaget anger att sfi-koderna för kurs A–C återstår att verifiera."
+  },
+  {
+   "kod": "SFIKUD92",
+   "namn": "Sfi kurs D, studieväg 2",
+   "giltig_fran": "2025-07-01",
+   "verifiering": "okänd",
+   "verifiering_not": "Koden finns som exempel i Skolverkets OpenAPI för Syllabus-API:t (Ämnen 1.14.0, fältet studyPathDescription); namn och startdatum bygger bara på en webbsökningssammanfattning där källsidan inte anges."
+  },
+  {
+   "kod": "SFIKUC93",
+   "namn": "Sfi kurs C, studieväg 3",
+   "giltig_fran": "2025-07-01",
+   "verifiering": "okänd",
+   "verifiering_not": "Kod, namn och startdatum bygger bara på en webbsökningssammanfattning där källsidan inte anges, och underlaget anger att sfi-koderna för kurs A–C återstår att verifiera."
+  },
+  {
+   "kod": "SFIKUD93",
+   "namn": "Sfi kurs D, studieväg 3",
+   "giltig_fran": "2025-07-01",
+   "verifiering": "okänd",
+   "verifiering_not": "Koden finns som exempel i Skolverkets OpenAPI för Syllabus-API:t (Ämnen 1.14.0, fältet studyPathDescription); namn och startdatum bygger bara på en webbsökningssammanfattning där källsidan inte anges."
+  }
+ ],
+ "kodmonster": [
+  {
+   "monster": "^VGR[A-ZÅÄÖ]{3}1$",
+   "betydelse": "komvux grundläggande nivå kurs (från 2025-07-01)",
+   "exempel": [
+    "VGRMAT1",
+    "VGRENG1",
+    "VGRBIO1",
+    "VGRFYS1"
+   ],
+   "verifiering": "okänd",
+   "not": "Syllabus-API:t har även 13 koder med prefixet VGRA (t.ex. VGRAMAT1) som inte följer mönstret; deras betydelse är inte dokumenterad."
+  },
+  {
+   "monster": "^VGR[A-ZÅÄÖ]{3}1D[1-4]$",
+   "betydelse": "delkurs 1-4",
+   "exempel": [
+    "VGRENG1D1",
+    "VGRENG1D4"
+   ],
+   "verifiering": "okänd"
+  },
+  {
+   "monster": "^GRN",
+   "betydelse": "komvux grundläggande nivå (äldre kurskoder)",
+   "exempel": [
+    "GRNMAT2",
+    "GRNENG2"
+   ],
+   "verifiering": "okänd"
+  },
+  {
+   "monster": "^SGR",
+   "betydelse": "särskild/anpassad utbildning för vuxna, grundläggande nivå",
+   "exempel": null,
+   "verifiering": "okänd"
+  },
+  {
+   "monster": "^KGY",
+   "betydelse": "komvux gymnasial nivå (äldre)",
+   "exempel": null,
+   "verifiering": "okänd"
+  }
+ ]
+}

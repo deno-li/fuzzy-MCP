@@ -1,0 +1,405 @@
+{
+ "id": "skolformer",
+ "titel": "Skolformer – korsreferens mellan SS 12000, Skolenhetsregistret och Syllabus-API:t",
+ "beskrivning": "Samma skolform har olika koder i olika standarder och API:er (t.ex. anpassad grundskola: GRS i SS 12000 v2.1, GRAN i Skolenhetsregistret v2). Använd listan för att översätta mellan dem.",
+ "kalla": "SS 12000 v2.1 (SIS), SS 12000:2018/EGIL, Skolenhetsregistret v2 och Syllabus-API v1 (Skolverket). Planerad utbildning v4 (typeOfSchooling, gemener).",
+ "licens": "CC0 1.0",
+ "koder": [
+  {
+   "kod": "Förskola",
+   "namn": "Förskola",
+   "ss12000_v21": [
+    "FS"
+   ],
+   "ss12000_2018": [
+    "FS"
+   ],
+   "skolenhetsregistret": [],
+   "syllabus_api": [],
+   "not": null,
+   "planerad_utbildning": [],
+   "verifiering": "okänd",
+   "verifiering_not": "Koderna för SS 12000 v2.1 och Skolenhetsregistret v2 följer officiella OpenAPI-filer, och koderna för SS 12000:2018 (Sambruks EGIL-profil) och Syllabus-API:t har stöd i referenskod. Att Planerad utbildning saknar typeOfSchooling-kod för skolformen är inte belagt."
+  },
+  {
+   "kod": "Förskoleklass",
+   "namn": "Förskoleklass",
+   "ss12000_v21": [
+    "FKLASS"
+   ],
+   "ss12000_2018": [
+    "FSK"
+   ],
+   "skolenhetsregistret": [
+    "FKLASS"
+   ],
+   "syllabus_api": [],
+   "not": "avskaffas 2028-07-01 (Lag 2025:729)",
+   "planerad_utbildning": [
+    "fsk"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Svagaste delen avgör: SS 12000 v2.1 och Skolenhetsregistret v2 enligt officiella OpenAPI-filer, medan FSK i SS 12000:2018 (Sambruks EGIL-profil), den tomma Syllabus-kolumnen och fsk i Planerad utbildning (tredjepartsuttag) är referenskod. Noten om avveckling 2028-07-01 stöds av skollagens övergångsbestämmelser (Lag 2025:729)."
+  },
+  {
+   "kod": "Fritidshem",
+   "namn": "Fritidshem",
+   "ss12000_v21": [
+    "FTH"
+   ],
+   "ss12000_2018": [
+    "FTH"
+   ],
+   "skolenhetsregistret": [
+    "FTH"
+   ],
+   "syllabus_api": [],
+   "not": null,
+   "planerad_utbildning": [],
+   "verifiering": "okänd",
+   "verifiering_not": "Koderna för SS 12000 v2.1 och Skolenhetsregistret v2 följer officiella OpenAPI-filer, och koderna för SS 12000:2018 (Sambruks EGIL-profil) och Syllabus-API:t har stöd i referenskod. Att Planerad utbildning saknar typeOfSchooling-kod för skolformen är inte belagt."
+  },
+  {
+   "kod": "Öppen fritidsverksamhet",
+   "namn": "Öppen fritidsverksamhet",
+   "ss12000_v21": [
+    "OPPFTH"
+   ],
+   "ss12000_2018": [],
+   "skolenhetsregistret": [
+    "OPPFTH"
+   ],
+   "syllabus_api": [],
+   "not": null,
+   "planerad_utbildning": [],
+   "verifiering": "okänd",
+   "verifiering_not": "Koderna för SS 12000 v2.1 och Skolenhetsregistret v2 följer officiella OpenAPI-filer, och koderna för SS 12000:2018 (Sambruks EGIL-profil) och Syllabus-API:t har stöd i referenskod. Att Planerad utbildning saknar typeOfSchooling-kod för skolformen är inte belagt."
+  },
+  {
+   "kod": "Grundskola",
+   "namn": "Grundskola",
+   "ss12000_v21": [
+    "GR"
+   ],
+   "ss12000_2018": [
+    "GR"
+   ],
+   "skolenhetsregistret": [
+    "GR"
+   ],
+   "syllabus_api": [
+    "GR"
+   ],
+   "not": null,
+   "planerad_utbildning": [
+    "gr"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Svagaste delen avgör: SS 12000 v2.1 och Skolenhetsregistret v2 enligt officiella OpenAPI-filer; GR i SS 12000:2018 (Sambruks EGIL-profil), GR i Syllabus-API:t (community-härlett kodmaterial) och gr i Planerad utbildning (tredjepartsuttag, visningsnamn Grundskolan) är referenskod."
+  },
+  {
+   "kod": "Anpassad grundskola",
+   "namn": "Anpassad grundskola",
+   "ss12000_v21": [
+    "GRS",
+    "TR"
+   ],
+   "ss12000_2018": [
+    "GRS"
+   ],
+   "skolenhetsregistret": [
+    "GRAN"
+   ],
+   "syllabus_api": [
+    "GRAN",
+    "GRS"
+   ],
+   "not": null,
+   "planerad_utbildning": [
+    "gran"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Svagaste delen avgör: SS 12000 v2.1 och Skolenhetsregistret v2 enligt officiella OpenAPI-filer; GRS i SS 12000:2018 (Sambruks EGIL-profil), GRAN/GRS i Syllabus-API:t (community-härlett kodmaterial) och gran i Planerad utbildning (tredjepartsuttag) är referenskod."
+  },
+  {
+   "kod": "Specialskola",
+   "namn": "Specialskola",
+   "ss12000_v21": [
+    "SP"
+   ],
+   "ss12000_2018": [
+    "SP"
+   ],
+   "skolenhetsregistret": [
+    "SP"
+   ],
+   "syllabus_api": [
+    "SP"
+   ],
+   "not": null,
+   "planerad_utbildning": [
+    "sp"
+   ],
+   "verifiering": "härlett",
+   "verifiering_not": "Svagaste delen avgör: att typeOfSchooling-koden sp i Planerad utbildning avser specialskola är härlett (koden är bara observerad i tredjepartsuttag). SS 12000 v2.1 och Skolenhetsregistret v2 enligt officiella OpenAPI-filer; SS 12000:2018 och Syllabus-API:t är referenskod."
+  },
+  {
+   "kod": "Sameskola",
+   "namn": "Sameskola",
+   "ss12000_v21": [
+    "SAM"
+   ],
+   "ss12000_2018": [
+    "SAM"
+   ],
+   "skolenhetsregistret": [
+    "SAM"
+   ],
+   "syllabus_api": [
+    "SAM"
+   ],
+   "not": null,
+   "planerad_utbildning": [
+    "sam"
+   ],
+   "verifiering": "härlett",
+   "verifiering_not": "Svagaste delen avgör: att typeOfSchooling-koden sam i Planerad utbildning avser sameskola är härlett (koden är bara observerad i tredjepartsuttag). SS 12000 v2.1 och Skolenhetsregistret v2 enligt officiella OpenAPI-filer; SS 12000:2018 och Syllabus-API:t är referenskod."
+  },
+  {
+   "kod": "Gymnasieskola",
+   "namn": "Gymnasieskola",
+   "ss12000_v21": [
+    "GY"
+   ],
+   "ss12000_2018": [
+    "GY"
+   ],
+   "skolenhetsregistret": [
+    "GY"
+   ],
+   "syllabus_api": [
+    "GY"
+   ],
+   "not": null,
+   "planerad_utbildning": [
+    "gy"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Svagaste delen avgör: SS 12000 v2.1 och Skolenhetsregistret v2 enligt officiella OpenAPI-filer; GY i SS 12000:2018 (Sambruks EGIL-profil), GY i Syllabus-API:t (community-härlett kodmaterial) och gy i Planerad utbildning (tredjepartsuttag, visningsnamn Gymnasieskolan) är referenskod."
+  },
+  {
+   "kod": "Anpassad gymnasieskola",
+   "namn": "Anpassad gymnasieskola",
+   "ss12000_v21": [
+    "GYS"
+   ],
+   "ss12000_2018": [
+    "GYS"
+   ],
+   "skolenhetsregistret": [
+    "GYAN"
+   ],
+   "syllabus_api": [
+    "GYAN",
+    "GYS"
+   ],
+   "not": null,
+   "planerad_utbildning": [
+    "gyan"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Svagaste delen avgör: SS 12000 v2.1 och Skolenhetsregistret v2 enligt officiella OpenAPI-filer; GYS i SS 12000:2018 (Sambruks EGIL-profil), GYAN/GYS i Syllabus-API:t (community-härlett kodmaterial) och gyan i Planerad utbildning (tredjepartsuttag) är referenskod."
+  },
+  {
+   "kod": "Kommunal vuxenutbildning",
+   "namn": "Kommunal vuxenutbildning",
+   "ss12000_v21": [
+    "VUX"
+   ],
+   "ss12000_2018": [
+    "VUX"
+   ],
+   "skolenhetsregistret": [
+    "VUX"
+   ],
+   "syllabus_api": [],
+   "not": null,
+   "planerad_utbildning": [],
+   "verifiering": "okänd",
+   "verifiering_not": "Koderna för SS 12000 v2.1 och Skolenhetsregistret v2 följer officiella OpenAPI-filer, och koderna för SS 12000:2018 (Sambruks EGIL-profil) och Syllabus-API:t har stöd i referenskod. Att Planerad utbildning saknar typeOfSchooling-kod för skolformen är inte belagt."
+  },
+  {
+   "kod": "Komvux grundläggande nivå",
+   "namn": "Komvux grundläggande nivå",
+   "ss12000_v21": [
+    "VUXGR"
+   ],
+   "ss12000_2018": [
+    "VUX"
+   ],
+   "skolenhetsregistret": [
+    "VUXGR"
+   ],
+   "syllabus_api": [
+    "VUXGR"
+   ],
+   "not": null,
+   "planerad_utbildning": [
+    "vuxgr"
+   ],
+   "verifiering": "härlett",
+   "verifiering_not": "Svagaste delen avgör: VUXGR i Syllabus-API:t och vuxgr i Planerad utbildning är observerade koder vars betydelse är härledd. SS 12000 v2.1 och Skolenhetsregistret v2 enligt officiella OpenAPI-filer; VUX i SS 12000:2018 enligt Sambruks EGIL-profil."
+  },
+  {
+   "kod": "Komvux gymnasial nivå",
+   "namn": "Komvux gymnasial nivå",
+   "ss12000_v21": [
+    "VUXGY"
+   ],
+   "ss12000_2018": [
+    "VUX"
+   ],
+   "skolenhetsregistret": [
+    "VUXGY"
+   ],
+   "syllabus_api": [
+    "VUXGY"
+   ],
+   "not": null,
+   "planerad_utbildning": [
+    "vuxgy"
+   ],
+   "verifiering": "härlett",
+   "verifiering_not": "Svagaste delen avgör: att vuxgy i Planerad utbildning avser komvux på gymnasial nivå är härlett. SS 12000 v2.1 och Skolenhetsregistret v2 enligt officiella OpenAPI-filer; VUX i SS 12000:2018 och VUXGY i Syllabus-API:t är referenskod."
+  },
+  {
+   "kod": "Komvux sfi",
+   "namn": "Komvux sfi",
+   "ss12000_v21": [
+    "VUXSFI",
+    "SFI"
+   ],
+   "ss12000_2018": [
+    "VUX"
+   ],
+   "skolenhetsregistret": [
+    "VUXSFI"
+   ],
+   "syllabus_api": [
+    "VUXSFI"
+   ],
+   "not": null,
+   "planerad_utbildning": [
+    "sfi"
+   ],
+   "verifiering": "referenskod",
+   "verifiering_not": "Svagaste delen avgör: SS 12000 v2.1 och Skolenhetsregistret v2 enligt officiella OpenAPI-filer; VUX i SS 12000:2018 (Sambruks EGIL-profil), VUXSFI i Syllabus-API:t och sfi i Planerad utbildning (tredjepartsuttag, visningsnamn Kommunal vuxenutbildning i svenska för invandrare) är referenskod."
+  },
+  {
+   "kod": "Komvux som anpassad utbildning, grundläggande",
+   "namn": "Komvux som anpassad utbildning, grundläggande",
+   "ss12000_v21": [
+    "VUXSARGR"
+   ],
+   "ss12000_2018": [
+    "SUV"
+   ],
+   "skolenhetsregistret": [
+    "VUXGRAN"
+   ],
+   "syllabus_api": [
+    "VUXGRAN",
+    "VUXSARGR"
+   ],
+   "not": "Syllabus: VUXGRAN är aktiv kod; VUXSARGR är en äldre kod som troligen är utgången.",
+   "planerad_utbildning": [
+    "vuxgran"
+   ],
+   "verifiering": "härlett",
+   "verifiering_not": "Svagaste delen avgör: VUXGRAN i Syllabus-API:t och vuxgran i Planerad utbildning är observerade koder med härledd betydelse; att VUXSARGR är utgången anges bara som osäkert. SS 12000 v2.1 och Skolenhetsregistret v2 enligt officiella OpenAPI-filer; SUV i SS 12000:2018 enligt Sambruks EGIL-profil."
+  },
+  {
+   "kod": "Komvux som anpassad utbildning, motsvarar träningsskolan",
+   "namn": "Komvux som anpassad utbildning, motsvarar träningsskolan",
+   "ss12000_v21": [
+    "VUXSARTR"
+   ],
+   "ss12000_2018": [
+    "SUV"
+   ],
+   "skolenhetsregistret": [],
+   "syllabus_api": [],
+   "not": null,
+   "planerad_utbildning": [],
+   "verifiering": "okänd",
+   "verifiering_not": "Koderna för SS 12000 v2.1 och Skolenhetsregistret v2 följer officiella OpenAPI-filer, och koderna för SS 12000:2018 (Sambruks EGIL-profil) och Syllabus-API:t har stöd i referenskod. Att Planerad utbildning saknar typeOfSchooling-kod för skolformen är inte belagt."
+  },
+  {
+   "kod": "Komvux som anpassad utbildning, gymnasial",
+   "namn": "Komvux som anpassad utbildning, gymnasial",
+   "ss12000_v21": [
+    "VUXSARGY"
+   ],
+   "ss12000_2018": [
+    "SUV"
+   ],
+   "skolenhetsregistret": [
+    "VUXGYAN"
+   ],
+   "syllabus_api": [
+    "VUXGYAN",
+    "VUXSARGY"
+   ],
+   "not": "Syllabus: VUXGYAN är aktiv kod; VUXSARGY är en äldre kod som troligen är utgången.",
+   "planerad_utbildning": [
+    "vuxgyan"
+   ],
+   "verifiering": "härlett",
+   "verifiering_not": "Svagaste delen avgör: VUXGYAN i Syllabus-API:t och vuxgyan i Planerad utbildning är observerade koder med härledd betydelse; att VUXSARGY är utgången anges bara som osäkert. SS 12000 v2.1 och Skolenhetsregistret v2 enligt officiella OpenAPI-filer; SUV i SS 12000:2018 enligt Sambruks EGIL-profil."
+  },
+  {
+   "kod": "Särvux (legacy)",
+   "namn": "Särvux (äldre skolform)",
+   "ss12000_v21": [
+    "SARVUX",
+    "SARVUXGR",
+    "SARVUXGY"
+   ],
+   "ss12000_2018": [
+    "SUV"
+   ],
+   "skolenhetsregistret": [],
+   "syllabus_api": [],
+   "not": null,
+   "planerad_utbildning": [],
+   "verifiering": "okänd",
+   "verifiering_not": "Koderna för SS 12000 v2.1 och Skolenhetsregistret v2 följer officiella OpenAPI-filer, och koderna för SS 12000:2018 (Sambruks EGIL-profil) och Syllabus-API:t har stöd i referenskod. Att Planerad utbildning saknar typeOfSchooling-kod för skolformen är inte belagt."
+  },
+  {
+   "kod": "Utanför skolväsendet",
+   "namn": "Utanför skolväsendet",
+   "ss12000_v21": [
+    "KU",
+    "YH",
+    "FHS",
+    "STF",
+    "KKU",
+    "HS",
+    "ABU",
+    "AU"
+   ],
+   "ss12000_2018": [
+    "YH",
+    "FHS",
+    "HS",
+    "AU"
+   ],
+   "skolenhetsregistret": [],
+   "syllabus_api": [],
+   "not": null,
+   "planerad_utbildning": [],
+   "verifiering": "okänd",
+   "verifiering_not": "Koderna för SS 12000 v2.1 och Skolenhetsregistret v2 följer officiella OpenAPI-filer, och koderna för SS 12000:2018 (Sambruks EGIL-profil) och Syllabus-API:t har stöd i referenskod. Att Planerad utbildning saknar typeOfSchooling-kod för skolformen är inte belagt."
+  }
+ ]
+}

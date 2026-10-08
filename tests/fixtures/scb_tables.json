@@ -1,0 +1,32 @@
+{
+  "language": "sv",
+  "tables": [
+    {
+      "id": "TAB638", "label": "Folkmängden efter region, civilstånd, ålder och kön. År 1968 - 2024",
+      "description": "", "updated": "2025-02-21T07:00:00Z", "firstPeriod": "1968", "lastPeriod": "2024",
+      "category": "public", "variableNames": ["region", "civilstånd", "ålder", "kön", "tabellinnehåll", "år"],
+      "source": "Statistikmyndigheten SCB", "subjectCode": "BE", "timeUnit": "Annual",
+      "paths": [[{"id": "BE", "label": "Befolkning"}, {"id": "BE0101", "label": "Befolkningsstatistik"},
+                 {"id": "BE0101A", "label": "Folkmängd"}]],
+      "links": [{"rel": "self", "hreflang": "sv", "href": "https://statistikdatabasen.scb.se/api/v2/tables/TAB638?lang=sv"}]
+    },
+    {
+      "id": "TAB6471", "label": "Folkmängden per månad efter region, ålder och kön. Månad 2025M01 - 2026M08",
+      "updated": "2026-09-14T06:00:00Z", "firstPeriod": "2025M01", "lastPeriod": "2026M08",
+      "variableNames": ["region", "ålder", "kön", "tabellinnehåll", "månad"], "subjectCode": "BE", "timeUnit": "Monthly",
+      "paths": [[{"id": "BE", "label": "Befolkning"}, {"id": "BE0101", "label": "Befolkningsstatistik"},
+                 {"id": "BE0101A", "label": "Folkmängd"}]],
+      "links": []
+    },
+    {
+      "id": "TAB4320", "label": "Befolkning 16-95+ år efter region, utbildningsnivå, ålder och kön. År 2008 - 2025",
+      "updated": "2026-04-10T06:00:00Z", "firstPeriod": "2008", "lastPeriod": "2025",
+      "variableNames": ["region", "utbildningsnivå", "ålder", "kön", "tabellinnehåll", "år"], "subjectCode": "UF",
+      "timeUnit": "Annual",
+      "paths": [[{"id": "UF", "label": "Utbildning och forskning"}, {"id": "UF0506", "label": "Befolkningens utbildning"}]],
+      "links": []
+    }
+  ],
+  "page": {"pageNumber": 1, "pageSize": 20, "totalElements": 3, "totalPages": 1, "links": []},
+  "links": []
+}

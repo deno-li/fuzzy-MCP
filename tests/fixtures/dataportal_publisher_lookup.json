@@ -1,0 +1,35 @@
+{
+  "resource": {
+    "children": [
+      {
+        "entryId": "12",
+        "contextId": "5",
+        "rights": ["readmetadata", "readresource"],
+        "info": {
+          "https://admin.dataportal.se/store/5/entry/12": {
+            "http://entrystore.org/terms/resource": [
+              {"type": "uri", "value": "http://dataportal.se/organisation/SE2021000837"}
+            ]
+          }
+        },
+        "metadata": {
+          "http://dataportal.se/organisation/SE2021000837": {
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+              {"type": "uri", "value": "http://xmlns.com/foaf/0.1/Agent"}
+            ],
+            "http://xmlns.com/foaf/0.1/name": [
+              {"type": "literal", "value": "Statistics Sweden", "lang": "en"},
+              {"type": "literal", "value": "Statistiska centralbyrån", "lang": "sv"}
+            ],
+            "http://purl.org/dc/terms/type": [
+              {"type": "uri", "value": "http://purl.org/adms/publishertype/NationalAuthority"}
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "results": 1,
+  "limit": 100,
+  "offset": 0
+}

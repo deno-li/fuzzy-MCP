@@ -1,0 +1,125 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": {
+  "_embedded": {
+   "vuxenUtbildningsForm": [
+    {
+     "id": "aub",
+     "value": "Arbetsmarknadsutbildning",
+     "old code": "arbmarknutb"
+    },
+    {
+     "id": "au",
+     "value": "annan undervisning",
+     "old code": null
+    },
+    {
+     "id": "coursebasic",
+     "value": "Kurs eller kurspaket på grund eller grund avancerad nivå, högskola",
+     "old code": null
+    },
+    {
+     "id": "courseadvanced",
+     "value": "Kurs eller kurspaket på avancerad nivå, högskola",
+     "old code": null
+    },
+    {
+     "id": "fhsaub",
+     "value": "Folkhögskola (Arbetsmarknadsutbildning)",
+     "old code": "fhskaub"
+    },
+    {
+     "id": "fhs",
+     "value": "Folkhögskola",
+     "old code": "fhsk"
+    },
+    {
+     "id": "forutbildning",
+     "value": "Förutbildning för högskola. Kurspaket, kurs eller program (ex. tekniskt basår eller Basfysik 1)",
+     "old code": null
+    },
+    {
+     "id": "forberutb",
+     "value": "Förberedande utbildning",
+     "old code": null
+    },
+    {
+     "id": "kku",
+     "value": "Övriga eftergymnasiala konst- och kulturutbildningar",
+     "old code": "konstkultur"
+    },
+    {
+     "id": "ny",
+     "value": "Nationell yrkesutbildning",
+     "old code": null
+    },
+    {
+     "id": "programbasic",
+     "value": "Program grundnivå",
+     "old code": null
+    },
+    {
+     "id": "programadvanced",
+     "value": "Program avancerad nivå (ex. masterexamen)",
+     "old code": null
+    },
+    {
+     "id": "testokartl",
+     "value": "Test och kartläggning inför AUB (arbetsmarknadsutbildning)",
+     "old code": null
+    },
+    {
+     "id": "vuxgran",
+     "value": "Kommunal vuxenutbildning som anpassad utbildning på grundläggande nivå",
+     "old code": "komvuxgrsar"
+    },
+    {
+     "id": "vuxgyan",
+     "value": "Kommunal vuxenutbildning som anpassad utbildning på gymnasial nivå",
+     "old code": "komvuxgysar"
+    },
+    {
+     "id": "vuxgy",
+     "value": "Gymnasial vuxenutbildning",
+     "old code": "komvuxgycourses"
+    },
+    {
+     "id": "vuxgr",
+     "value": "Grundläggande vuxenutbildning",
+     "old code": "komvuxbasiccourses"
+    },
+    {
+     "id": "vuxsfi",
+     "value": "Svenska för invandrare",
+     "old code": "komvuxsfi/sfi"
+    },
+    {
+     "id": "komvuxcoursepackage",
+     "value": "Yrkespaket eller grundläggande vuxenutbildning eller gymnasial vuxenutbildning eller sfi eller Kommunal vuxenutbildning som anpassad utbildning på grundläggande nivå eller Kommunal vuxenutbildning som anpassad utbildning på gymnasial nivå.",
+     "old code": null
+    },
+    {
+     "id": "yhkurskurspaket",
+     "value": "Yrkeshögskoleutbildning (kurs eller kurspaket)",
+     "old code": null
+    },
+    {
+     "id": "yhprogram",
+     "value": "Yrkeshögskoleutbildning (program)",
+     "old code": null
+    },
+    {
+     "id": "yh",
+     "value": "Yrkeshögskola (Allt inom YH)",
+     "old code": null
+    }
+   ]
+  },
+  "_links": {
+   "self": {
+    "href": "https://api.skolverket.se/planned-educations/v4/support/adultTypeOfSchooling"
+   }
+  }
+ }
+}

@@ -1,0 +1,1185 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": {
+  "areas": [
+   {
+    "areaId": 1,
+    "name": "Bygg och anläggning",
+    "nameEn": "Building and construction",
+    "directions": [
+     {
+      "directionId": 1,
+      "name": "Anläggning (mark, väg, vatten)",
+      "nameEn": null
+     },
+     {
+      "directionId": 4,
+      "name": "Arkitektur",
+      "nameEn": null
+     },
+     {
+      "directionId": 9,
+      "name": "Bergteknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 6,
+      "name": "Byggnadsvård",
+      "nameEn": null
+     },
+     {
+      "directionId": 8,
+      "name": "Byggteknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 7,
+      "name": "Fastighetsförvaltning",
+      "nameEn": null
+     },
+     {
+      "directionId": 3,
+      "name": "Snickeri och trä",
+      "nameEn": null
+     },
+     {
+      "directionId": 5,
+      "name": "Övrigt inom bygg och anläggning",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 2,
+    "name": "Data och IT",
+    "nameEn": "Computer science and ICT",
+    "directions": [
+     {
+      "directionId": 12,
+      "name": "Databaser",
+      "nameEn": null
+     },
+     {
+      "directionId": 151,
+      "name": "Datateknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 208,
+      "name": "Datavetenskap",
+      "nameEn": "Computer Scinece"
+     },
+     {
+      "directionId": 13,
+      "name": "Datoranvändning",
+      "nameEn": null
+     },
+     {
+      "directionId": 17,
+      "name": "Informatik och systemvetenskap",
+      "nameEn": null
+     },
+     {
+      "directionId": 10,
+      "name": "Programmeringsteknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 15,
+      "name": "Spelutveckling",
+      "nameEn": null
+     },
+     {
+      "directionId": 14,
+      "name": "Webbdesign",
+      "nameEn": null
+     },
+     {
+      "directionId": 11,
+      "name": "Övrigt inom data och IT",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 3,
+    "name": "Ekonomi, marknadsföring och administration",
+    "nameEn": "Business, marketing and administration",
+    "directions": [
+     {
+      "directionId": 27,
+      "name": "Administration",
+      "nameEn": null
+     },
+     {
+      "directionId": 22,
+      "name": "Ekonomi",
+      "nameEn": null
+     },
+     {
+      "directionId": 24,
+      "name": "Försäljning",
+      "nameEn": null
+     },
+     {
+      "directionId": 25,
+      "name": "Förvaltning",
+      "nameEn": null
+     },
+     {
+      "directionId": 19,
+      "name": "Logistik",
+      "nameEn": null
+     },
+     {
+      "directionId": 26,
+      "name": "Management och ledarskap",
+      "nameEn": null
+     },
+     {
+      "directionId": 20,
+      "name": "Marknadsföring",
+      "nameEn": null
+     },
+     {
+      "directionId": 18,
+      "name": "Nationalekonomi",
+      "nameEn": null
+     },
+     {
+      "directionId": 23,
+      "name": "Redovisning",
+      "nameEn": null
+     },
+     {
+      "directionId": 21,
+      "name": "Övrigt inom ekonomi och marknadsföring",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 4,
+    "name": "Frisk- och skönhetsvård",
+    "nameEn": "Wellness and beauty care",
+    "directions": [
+     {
+      "directionId": 33,
+      "name": "Fotvård",
+      "nameEn": null
+     },
+     {
+      "directionId": 30,
+      "name": "Friluftsliv",
+      "nameEn": null
+     },
+     {
+      "directionId": 32,
+      "name": "Friskvård och hälsopedagogik",
+      "nameEn": null
+     },
+     {
+      "directionId": 28,
+      "name": "Hudvård och spaterapi",
+      "nameEn": null
+     },
+     {
+      "directionId": 29,
+      "name": "Massage",
+      "nameEn": null
+     },
+     {
+      "directionId": 31,
+      "name": "Övrigt inom frisk och skönhetsvård",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 20,
+    "name": "Förberedande utbildningar",
+    "nameEn": "Preparatory courses",
+    "directions": [
+     {
+      "directionId": 195,
+      "name": "Förutbildningar",
+      "nameEn": null
+     },
+     {
+      "directionId": 197,
+      "name": "Kurser för invandrare",
+      "nameEn": null
+     },
+     {
+      "directionId": 194,
+      "name": "Utbildningar för dig med funktionsnedsättning",
+      "nameEn": null
+     },
+     {
+      "directionId": 196,
+      "name": "Övrigt inom förberedande utbildningar",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 5,
+    "name": "Hantverk",
+    "nameEn": "Crafts",
+    "directions": [
+     {
+      "directionId": 39,
+      "name": "Bageri",
+      "nameEn": null
+     },
+     {
+      "directionId": 41,
+      "name": "Båtbyggeri",
+      "nameEn": null
+     },
+     {
+      "directionId": 37,
+      "name": "Frisör",
+      "nameEn": null
+     },
+     {
+      "directionId": 36,
+      "name": "Konsthantverk",
+      "nameEn": null
+     },
+     {
+      "directionId": 35,
+      "name": "Metall och smide",
+      "nameEn": null
+     },
+     {
+      "directionId": 40,
+      "name": "Skinnhantverk",
+      "nameEn": null
+     },
+     {
+      "directionId": 42,
+      "name": "Textilhantverk",
+      "nameEn": null
+     },
+     {
+      "directionId": 34,
+      "name": "Trähantverk",
+      "nameEn": null
+     },
+     {
+      "directionId": 43,
+      "name": "Övrigt inom hantverk",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 6,
+    "name": "Hotell, restaurang och turism",
+    "nameEn": "Hotel, restaurants and tourism",
+    "directions": [
+     {
+      "directionId": 51,
+      "name": "Eventproduktion",
+      "nameEn": null
+     },
+     {
+      "directionId": 47,
+      "name": "Hotell",
+      "nameEn": null
+     },
+     {
+      "directionId": 50,
+      "name": "Kost",
+      "nameEn": null
+     },
+     {
+      "directionId": 46,
+      "name": "Ledarskap inom turism",
+      "nameEn": null
+     },
+     {
+      "directionId": 49,
+      "name": "Restaurang och storhushåll",
+      "nameEn": null
+     },
+     {
+      "directionId": 45,
+      "name": "Turism och resor",
+      "nameEn": null
+     },
+     {
+      "directionId": 48,
+      "name": "Övrigt inom hotell, restaurang och turism",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 7,
+    "name": "Information och media",
+    "nameEn": "Journalism and information",
+    "directions": [
+     {
+      "directionId": 59,
+      "name": "Bibliotek och informationsvetenskap",
+      "nameEn": null
+     },
+     {
+      "directionId": 54,
+      "name": "Grafisk design",
+      "nameEn": null
+     },
+     {
+      "directionId": 56,
+      "name": "Journalistik",
+      "nameEn": null
+     },
+     {
+      "directionId": 57,
+      "name": "Kommunikationsvetenskap",
+      "nameEn": null
+     },
+     {
+      "directionId": 210,
+      "name": "Ljudteknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 53,
+      "name": "Medieproduktion",
+      "nameEn": null
+     },
+     {
+      "directionId": 58,
+      "name": "TV och radioproduktion",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 8,
+    "name": "Konstnärliga utbildningar",
+    "nameEn": "Arts",
+    "directions": [
+     {
+      "directionId": 60,
+      "name": "Bild och form",
+      "nameEn": null
+     },
+     {
+      "directionId": 66,
+      "name": "Dans",
+      "nameEn": null
+     },
+     {
+      "directionId": 69,
+      "name": "Design/konst",
+      "nameEn": null
+     },
+     {
+      "directionId": 63,
+      "name": "Film",
+      "nameEn": null
+     },
+     {
+      "directionId": 62,
+      "name": "Foto",
+      "nameEn": null
+     },
+     {
+      "directionId": 68,
+      "name": "Inredningsarkitektur",
+      "nameEn": null
+     },
+     {
+      "directionId": 64,
+      "name": "Keramik och glas",
+      "nameEn": null
+     },
+     {
+      "directionId": 70,
+      "name": "Musik",
+      "nameEn": null
+     },
+     {
+      "directionId": 209,
+      "name": "Skrivande",
+      "nameEn": "Writing"
+     },
+     {
+      "directionId": 65,
+      "name": "Sång",
+      "nameEn": null
+     },
+     {
+      "directionId": 67,
+      "name": "Teater (drama)",
+      "nameEn": null
+     },
+     {
+      "directionId": 61,
+      "name": "Övrigt inom konstnärliga utbildningar",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 9,
+    "name": "Kultur och humanistiska ämnen",
+    "nameEn": "Humanities",
+    "directions": [
+     {
+      "directionId": 78,
+      "name": "Arkeologi",
+      "nameEn": null
+     },
+     {
+      "directionId": 79,
+      "name": "Filosofi",
+      "nameEn": null
+     },
+     {
+      "directionId": 77,
+      "name": "Historia",
+      "nameEn": null
+     },
+     {
+      "directionId": 75,
+      "name": "Internationellt",
+      "nameEn": null
+     },
+     {
+      "directionId": 73,
+      "name": "Konstvetenskap",
+      "nameEn": null
+     },
+     {
+      "directionId": 76,
+      "name": "Kulturvetenskap",
+      "nameEn": null
+     },
+     {
+      "directionId": 74,
+      "name": "Litteraturvetenskap",
+      "nameEn": null
+     },
+     {
+      "directionId": 71,
+      "name": "Religion",
+      "nameEn": null
+     },
+     {
+      "directionId": 72,
+      "name": "Övrigt inom kultur och humanistiska ämnen",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 11,
+    "name": "Medicin och vård",
+    "nameEn": "Health and welfare",
+    "directions": [
+     {
+      "directionId": 114,
+      "name": "Biomedicin",
+      "nameEn": null
+     },
+     {
+      "directionId": 107,
+      "name": "Dietist",
+      "nameEn": null
+     },
+     {
+      "directionId": 123,
+      "name": "Farmakologi",
+      "nameEn": null
+     },
+     {
+      "directionId": 113,
+      "name": "Fysioterapi och rehabilitering",
+      "nameEn": null
+     },
+     {
+      "directionId": 105,
+      "name": "Hälsa och samhälle",
+      "nameEn": null
+     },
+     {
+      "directionId": 104,
+      "name": "Hälso- och sjukvårdadministration",
+      "nameEn": null
+     },
+     {
+      "directionId": 115,
+      "name": "Läkare",
+      "nameEn": null
+     },
+     {
+      "directionId": 102,
+      "name": "Medicin",
+      "nameEn": null
+     },
+     {
+      "directionId": 206,
+      "name": "Medicinsk fysik",
+      "nameEn": null
+     },
+     {
+      "directionId": 106,
+      "name": "Omvårdnad",
+      "nameEn": null
+     },
+     {
+      "directionId": 204,
+      "name": "Optiker",
+      "nameEn": null
+     },
+     {
+      "directionId": 109,
+      "name": "Psykoterapi",
+      "nameEn": null
+     },
+     {
+      "directionId": 103,
+      "name": "Sjuksköterska",
+      "nameEn": null
+     },
+     {
+      "directionId": 111,
+      "name": "Tal och hörsel",
+      "nameEn": null
+     },
+     {
+      "directionId": 112,
+      "name": "Tandvård",
+      "nameEn": null
+     },
+     {
+      "directionId": 110,
+      "name": "Övrigt inom medicin och vård",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 12,
+    "name": "Naturbruk",
+    "nameEn": "Agriculture",
+    "directions": [
+     {
+      "directionId": 121,
+      "name": "Agronom",
+      "nameEn": null
+     },
+     {
+      "directionId": 203,
+      "name": "Djursjukvård",
+      "nameEn": null
+     },
+     {
+      "directionId": 116,
+      "name": "Djurvård och hästhållning",
+      "nameEn": null
+     },
+     {
+      "directionId": 119,
+      "name": "Fiske och vattenbruk",
+      "nameEn": null
+     },
+     {
+      "directionId": 118,
+      "name": "Lant- och skogsbruk",
+      "nameEn": null
+     },
+     {
+      "directionId": 120,
+      "name": "Trädgård och landskap",
+      "nameEn": null
+     },
+     {
+      "directionId": 108,
+      "name": "Veterinär",
+      "nameEn": null
+     },
+     {
+      "directionId": 117,
+      "name": "Viltvård och jakt",
+      "nameEn": null
+     },
+     {
+      "directionId": 122,
+      "name": "Övrigt inom naturbruk",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 13,
+    "name": "Naturvetenskap",
+    "nameEn": "Natural science",
+    "directions": [
+     {
+      "directionId": 131,
+      "name": "Biologi",
+      "nameEn": null
+     },
+     {
+      "directionId": 123,
+      "name": "Farmakologi",
+      "nameEn": null
+     },
+     {
+      "directionId": 127,
+      "name": "Fysik",
+      "nameEn": null
+     },
+     {
+      "directionId": 126,
+      "name": "Geografi",
+      "nameEn": null
+     },
+     {
+      "directionId": 125,
+      "name": "Geovetenskap",
+      "nameEn": null
+     },
+     {
+      "directionId": 130,
+      "name": "Kemi",
+      "nameEn": null
+     },
+     {
+      "directionId": 128,
+      "name": "Matematik",
+      "nameEn": null
+     },
+     {
+      "directionId": 129,
+      "name": "Miljö",
+      "nameEn": null
+     },
+     {
+      "directionId": 124,
+      "name": "Övrigt inom naturvetenskap",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 14,
+    "name": "Samhällsvetenskap och juridik",
+    "nameEn": "Social science and law",
+    "directions": [
+     {
+      "directionId": 132,
+      "name": "Bistånd och U-länder",
+      "nameEn": null
+     },
+     {
+      "directionId": 202,
+      "name": "Genusperspektiv",
+      "nameEn": null
+     },
+     {
+      "directionId": 136,
+      "name": "Juridik",
+      "nameEn": null
+     },
+     {
+      "directionId": 134,
+      "name": "Psykologi",
+      "nameEn": null
+     },
+     {
+      "directionId": 139,
+      "name": "Samhällsvetenskap",
+      "nameEn": "Social sciences"
+     },
+     {
+      "directionId": 135,
+      "name": "Socialt inriktade utbildningar",
+      "nameEn": null
+     },
+     {
+      "directionId": 140,
+      "name": "Sociologi",
+      "nameEn": null
+     },
+     {
+      "directionId": 138,
+      "name": "Statistik",
+      "nameEn": null
+     },
+     {
+      "directionId": 133,
+      "name": "Statsvetenskap",
+      "nameEn": null
+     },
+     {
+      "directionId": 137,
+      "name": "Övrigt inom samhällsvetenskap och juridik",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 10,
+    "name": "Språk",
+    "nameEn": "Languages",
+    "directions": [
+     {
+      "directionId": 95,
+      "name": "Arabiska",
+      "nameEn": null
+     },
+     {
+      "directionId": 82,
+      "name": "Engelska",
+      "nameEn": null
+     },
+     {
+      "directionId": 81,
+      "name": "Finska",
+      "nameEn": null
+     },
+     {
+      "directionId": 98,
+      "name": "Franska",
+      "nameEn": null
+     },
+     {
+      "directionId": 84,
+      "name": "Grekiska",
+      "nameEn": null
+     },
+     {
+      "directionId": 87,
+      "name": "Italienska",
+      "nameEn": null
+     },
+     {
+      "directionId": 94,
+      "name": "Japanska",
+      "nameEn": null
+     },
+     {
+      "directionId": 212,
+      "name": "Jiddisch",
+      "nameEn": null
+     },
+     {
+      "directionId": 85,
+      "name": "Kinesiska",
+      "nameEn": null
+     },
+     {
+      "directionId": 97,
+      "name": "Klassiska språk",
+      "nameEn": null
+     },
+     {
+      "directionId": 101,
+      "name": "Lingvistik/Allmänspråkvetenskap",
+      "nameEn": null
+     },
+     {
+      "directionId": 214,
+      "name": "Meänkieli",
+      "nameEn": null
+     },
+     {
+      "directionId": 92,
+      "name": "Portugisiska",
+      "nameEn": null
+     },
+     {
+      "directionId": 213,
+      "name": "Romani chib",
+      "nameEn": null
+     },
+     {
+      "directionId": 80,
+      "name": "Ryska",
+      "nameEn": null
+     },
+     {
+      "directionId": 211,
+      "name": "Samiska",
+      "nameEn": null
+     },
+     {
+      "directionId": 91,
+      "name": "Spanska",
+      "nameEn": null
+     },
+     {
+      "directionId": 100,
+      "name": "Svenska",
+      "nameEn": null
+     },
+     {
+      "directionId": 89,
+      "name": "Teckenspråk",
+      "nameEn": null
+     },
+     {
+      "directionId": 99,
+      "name": "Tolk",
+      "nameEn": null
+     },
+     {
+      "directionId": 90,
+      "name": "Tyska",
+      "nameEn": null
+     },
+     {
+      "directionId": 86,
+      "name": "Översättare",
+      "nameEn": null
+     },
+     {
+      "directionId": 93,
+      "name": "Övriga nordiska språk",
+      "nameEn": null
+     },
+     {
+      "directionId": 88,
+      "name": "Övriga språk",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 15,
+    "name": "Säkerhet, försvar och räddningstjänst",
+    "nameEn": "Security services",
+    "directions": [
+     {
+      "directionId": 141,
+      "name": "Bevakning och larm",
+      "nameEn": null
+     },
+     {
+      "directionId": 142,
+      "name": "Brand och räddningstjänst",
+      "nameEn": null
+     },
+     {
+      "directionId": 207,
+      "name": "Officer",
+      "nameEn": null
+     },
+     {
+      "directionId": 143,
+      "name": "Polis",
+      "nameEn": null
+     },
+     {
+      "directionId": 144,
+      "name": "Övrigt inom säkerhet och räddningstjänst",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 16,
+    "name": "Teknik",
+    "nameEn": "Technology",
+    "directions": [
+     {
+      "directionId": 4,
+      "name": "Arkitektur",
+      "nameEn": null
+     },
+     {
+      "directionId": 161,
+      "name": "Byggnadsteknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 151,
+      "name": "Datateknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 146,
+      "name": "Design och produktutveckling",
+      "nameEn": null
+     },
+     {
+      "directionId": 147,
+      "name": "Elektroteknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 150,
+      "name": "Farkostteknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 148,
+      "name": "Industriell ekonomi",
+      "nameEn": null
+     },
+     {
+      "directionId": 149,
+      "name": "Information- och kommunikationsteknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 155,
+      "name": "Kemiteknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 160,
+      "name": "Lantmäteriteknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 154,
+      "name": "Ljudteknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 158,
+      "name": "Maskinteknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 156,
+      "name": "Materialteknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 159,
+      "name": "Medicinsk teknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 153,
+      "name": "Miljö och energiteknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 157,
+      "name": "Rymdteknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 152,
+      "name": "Samhällsbyggnadsteknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 162,
+      "name": "Teknisk fysik",
+      "nameEn": null
+     },
+     {
+      "directionId": 145,
+      "name": "Övrigt inom teknik",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 17,
+    "name": "Tillverkning och underhåll",
+    "nameEn": "Manufacturing and processing",
+    "directions": [
+     {
+      "directionId": 164,
+      "name": "El",
+      "nameEn": null
+     },
+     {
+      "directionId": 163,
+      "name": "Fastighetsskötsel",
+      "nameEn": null
+     },
+     {
+      "directionId": 168,
+      "name": "Fordon",
+      "nameEn": null
+     },
+     {
+      "directionId": 174,
+      "name": "Grafisk, processteknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 165,
+      "name": "Industri och produktion",
+      "nameEn": null
+     },
+     {
+      "directionId": 172,
+      "name": "Kyl- och VVS teknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 171,
+      "name": "Livsmedel",
+      "nameEn": null
+     },
+     {
+      "directionId": 166,
+      "name": "Papper",
+      "nameEn": null
+     },
+     {
+      "directionId": 173,
+      "name": "Svetsteknik",
+      "nameEn": null
+     },
+     {
+      "directionId": 170,
+      "name": "Textil",
+      "nameEn": null
+     },
+     {
+      "directionId": 167,
+      "name": "Trä/tillverkning och underhåll",
+      "nameEn": null
+     },
+     {
+      "directionId": 169,
+      "name": "Övrigt inom tillverkning och underhåll",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 18,
+    "name": "Transport",
+    "nameEn": "Transport services",
+    "directions": [
+     {
+      "directionId": 181,
+      "name": "Buss/Lastbil/Maskinförare",
+      "nameEn": null
+     },
+     {
+      "directionId": 180,
+      "name": "Flyg",
+      "nameEn": null
+     },
+     {
+      "directionId": 179,
+      "name": "Järnväg",
+      "nameEn": null
+     },
+     {
+      "directionId": 175,
+      "name": "Sjöfart",
+      "nameEn": null
+     },
+     {
+      "directionId": 177,
+      "name": "Transportledare",
+      "nameEn": null
+     },
+     {
+      "directionId": 178,
+      "name": "Transportlogistik",
+      "nameEn": null
+     },
+     {
+      "directionId": 176,
+      "name": "Övrigt inom transport",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 19,
+    "name": "Undervisning och idrott",
+    "nameEn": "Teaching",
+    "directions": [
+     {
+      "directionId": 184,
+      "name": "Dramapedagog",
+      "nameEn": null
+     },
+     {
+      "directionId": 205,
+      "name": "Folkhögskollärare",
+      "nameEn": null
+     },
+     {
+      "directionId": 183,
+      "name": "Fritidsledare",
+      "nameEn": null
+     },
+     {
+      "directionId": 191,
+      "name": "Förskollärare",
+      "nameEn": null
+     },
+     {
+      "directionId": 182,
+      "name": "Grundlärare och fritidspedagog",
+      "nameEn": null
+     },
+     {
+      "directionId": 186,
+      "name": "Idrott",
+      "nameEn": null
+     },
+     {
+      "directionId": 193,
+      "name": "Pedagogik",
+      "nameEn": null
+     },
+     {
+      "directionId": 192,
+      "name": "Specialpedagogik",
+      "nameEn": null
+     },
+     {
+      "directionId": 189,
+      "name": "Studie- och yrkesvägledare",
+      "nameEn": null
+     },
+     {
+      "directionId": 190,
+      "name": "Yrkeslärare",
+      "nameEn": null
+     },
+     {
+      "directionId": 187,
+      "name": "Ämneslärare",
+      "nameEn": null
+     },
+     {
+      "directionId": 188,
+      "name": "Övrigt inom undervisning och idrott",
+      "nameEn": null
+     }
+    ]
+   },
+   {
+    "areaId": 21,
+    "name": "Övriga kurser och tvärvetenskap",
+    "nameEn": "Other courses and interdisciplinary studies",
+    "directions": [
+     {
+      "directionId": 200,
+      "name": "Övriga kurser",
+      "nameEn": null
+     },
+     {
+      "directionId": 201,
+      "name": "Övrigt tvärvetenskap",
+      "nameEn": null
+     }
+    ]
+   }
+  ]
+ }
+}

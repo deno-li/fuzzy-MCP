@@ -1,0 +1,14 @@
+{
+  "meta": { "extractDate": "2025-05-08T00:06:10.19+02:00" },
+  "data": {
+    "type": "schoolunit",
+    "attributes": [
+      { "schoolUnitCode": "43038662", "name": "Färentuna skola", "status": "AKTIV" },
+      { "schoolUnitCode": "12345678", "name": "Storskolan", "status": "AKTIV" },
+      { "schoolUnitCode": "84411355", "name": "Kunskapsskolan Tumba", "status": "AKTIV" },
+      { "schoolUnitCode": "23456789", "name": "Ekerö gymnasium", "status": "AKTIV" },
+      { "schoolUnitCode": "34567890", "name": "Stenhamra skola", "status": "VILANDE" },
+      { "schoolUnitCode": "45678901", "name": "Skå skola", "status": "AKTIV" }
+    ]
+  }
+}

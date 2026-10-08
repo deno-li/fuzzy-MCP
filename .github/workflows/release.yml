@@ -1,0 +1,231 @@
+# SPDX-FileCopyrightText: 2026 Deniz Özer
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# Bygger leveranspaketen, kontrollerar dem och skapar ett release-UTKAST med paket, kontrollsummor och releasetext.
+# Startas för hand (Actions → Release → Run workflow). Utkastet publiceras av en människa; först då skapas taggen.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "main eller en fullständig commit-SHA (40 tecken) på main vars arbetsflödesfiler är desamma som nu"
+        required: true
+        default: main
+
+# Actions är låsta till commit-SHA (Dependabot uppdaterar dem); jobbet release har skrivrätt.
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash # -eo pipefail
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Lint och tester
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      commit: ${{ steps.commit.outputs.commit }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 0 # origin/main behövs för kontrollen nedan
+          persist-credentials: false
+      # Bygget hämtar exakt den här commiten, även om main flyttas medan testerna körs.
+      - name: Commit som testas och byggs (måste finnas på main)
+        id: commit
+        run: |
+          commit=$(git rev-parse HEAD)
+          if ! git merge-base --is-ancestor "$commit" refs/remotes/origin/main; then
+            echo "::error::$commit finns inte på main – välj main eller en commit i mains historik"; exit 1
+          fi
+          echo "commit=$commit" >> "$GITHUB_OUTPUT"
+          echo "Testar $commit"
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e ".[dev]"
+      - run: ruff format --check src tests scripts
+      - run: ruff check src tests scripts
+      - run: python -m pytest -q
+
+  build:
+    name: Bygg och kontrollera paketen
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      commit: ${{ steps.meta.outputs.commit }}
+    steps:
+      - name: Hämta koden som ska byggas (den testade commiten)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.test.outputs.commit }}
+          path: src
+          persist-credentials: false
+      - name: Hämta release-verktygen (den här versionen av flödet)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: tools
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Version och commit
+        id: meta
+        working-directory: src
+        env:
+          TESTED: ${{ needs.test.outputs.commit }}
+        run: |
+          if [ "$GITHUB_REF" != refs/heads/main ]; then echo "::error::Starta flödet från main"; exit 1; fi
+          if [ -z "$TESTED" ] || [ "$(git rev-parse HEAD)" != "$TESTED" ]; then
+            echo "::error::Koden som byggs är inte den testade commiten '$TESTED'"; exit 1
+          fi
+          version=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then echo "::error::Ogiltig version '$version'"; exit 1; fi
+          # GITHUB_TOKEN kan inte skapa en release på en commit vars arbetsflöden skiljer sig från main (404).
+          if ! diff -rq .github/workflows ../tools/.github/workflows; then
+            echo "::error::$(git rev-parse HEAD) har andra arbetsflödesfiler än main – bygg från main eller skapa releasen för hand"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "Bygger fuzzy-mcp $version från $(git rev-parse HEAD)"
+      - name: Byggverktyg
+        run: python -m pip install "uv==0.11.32"
+      - name: Bygg Windows-paketet
+        working-directory: src
+        run: python scripts/build_release.py --platform windows
+      - name: Bygg Linux-paketet med container-image
+        working-directory: src
+        run: python scripts/build_release.py --platform linux --with-image
+      - name: Kontrollsummor
+        working-directory: src/release
+        run: |
+          sha256sum -c fuzzy-mcp-*-windows-*.zip.sha256 fuzzy-mcp-*-linux-*.tar.gz.sha256
+          for dir in fuzzy-mcp-*-windows-*/ fuzzy-mcp-*-linux-*/; do (cd "$dir" && sha256sum -c --quiet SHA256SUMS); done
+      - name: Windows-paketet går att installera offline (pip --dry-run för win_amd64)
+        working-directory: src/release
+        run: |
+          cd fuzzy-mcp-*-windows-py*/
+          py=$(basename "$PWD" | sed 's/.*-py//')
+          python -m pip install --dry-run --ignore-installed --target /tmp/windows-target --no-index \
+            --find-links wheelhouse --require-hashes -r requirements.lock \
+            --platform win_amd64 --python-version "$py" --implementation cp --only-binary=:all:
+      - name: Linux-paketet – installation utan nät och röktest
+        working-directory: src/release
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          cd fuzzy-mcp-*-linux-py*/
+          python -m venv /tmp/release-venv
+          /tmp/release-venv/bin/python -m pip install --no-index --find-links wheelhouse --require-hashes -r requirements.lock
+          /tmp/release-venv/bin/python -m pip install --no-index --no-deps dist/*.whl
+          reported=$(/tmp/release-venv/bin/fuzzy-mcp --version)
+          if [ "$reported" != "fuzzy-mcp $VERSION" ]; then
+            echo "::error::fuzzy-mcp --version gav '$reported', väntade 'fuzzy-mcp $VERSION' (src/fuzzy_mcp/__init__.py)"; exit 1
+          fi
+          /tmp/release-venv/bin/python smoke_test.py --stdio -- --sources reference
+      - name: Container-imagen – startar inte utan token, blir healthy med token
+        working-directory: src/release
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          rc=0
+          timeout 120 docker run --rm --name fuzzy-release-notoken "fuzzy-mcp:$VERSION" || rc=$?
+          docker rm -f fuzzy-release-notoken >/dev/null 2>&1 || true
+          if [ "$rc" -ne 2 ]; then echo "::error::Imagen utan token avslutades med kod $rc (väntade 2)"; exit 1; fi
+          token=$(mktemp)
+          python -c "import secrets; print(secrets.token_urlsafe(48))" > "$token"
+          chmod 644 "$token"
+          docker run -d --name fuzzy-release-check -p 127.0.0.1:18080:8000 \
+            -e FUZZY_MCP_ALLOWED_HOSTS=localhost -e FUZZY_MCP_SOURCES=reference \
+            -v "$token":/run/secrets/fuzzy_mcp_token:ro -e FUZZY_MCP_AUTH_TOKEN_FILE=/run/secrets/fuzzy_mcp_token \
+            --read-only --cap-drop ALL --security-opt no-new-privileges "fuzzy-mcp:$VERSION"
+          status=starting
+          for _ in $(seq 1 60); do
+            status=$(docker inspect --format '{{.State.Health.Status}}' fuzzy-release-check)
+            [ "$status" = healthy ] && break
+            sleep 2
+          done
+          docker logs fuzzy-release-check
+          test "$status" = healthy
+          cd fuzzy-mcp-*-linux-py*/
+          /tmp/release-venv/bin/python smoke_test.py --url http://127.0.0.1:18080/mcp --token-file "$token"
+          docker rm -f fuzzy-release-check
+          rm -f "$token"
+      - name: Releasetext
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+          COMMIT: ${{ steps.meta.outputs.commit }}
+        run: |
+          python tools/scripts/release_notes.py --version "$VERSION" --changelog src/CHANGELOG.md \
+            --release-dir src/release --commit "$COMMIT" \
+            --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" > src/release/RELEASE_NOTES.md
+          cat src/release/RELEASE_NOTES.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            src/release/fuzzy-mcp-*.zip
+            src/release/fuzzy-mcp-*.zip.sha256
+            src/release/fuzzy-mcp-*.tar.gz
+            src/release/fuzzy-mcp-*.tar.gz.sha256
+            src/release/RELEASE_NOTES.md
+
+  release:
+    name: Skapa release-utkast
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release
+          path: release
+      - name: Utkast med paket, kontrollsummor och releasetext
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.build.outputs.version }}
+          COMMIT: ${{ needs.build.outputs.commit }}
+        run: |
+          # Fail closed: utan giltig commit skulle utkastet peka på main i stället för den byggda commiten.
+          if ! [[ "$COMMIT" =~ ^[0-9a-f]{40}$ && "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Ogiltig version '$VERSION' eller commit '$COMMIT' från byggjobbet"; exit 1
+          fi
+          if ! grep -qF -- "Commit: \`$COMMIT\`" release/RELEASE_NOTES.md; then
+            echo "::error::Releasetexten anger inte commit $COMMIT"; exit 1
+          fi
+          tag="v$VERSION"
+          # Bara 404 betyder att taggen saknas; alla andra fel stoppar (fail closed).
+          if out=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" 2>&1); then
+            echo "::error::Taggen $tag finns redan – höj versionen eller ta bort taggen först"; exit 1
+          elif [[ "$out" != *"HTTP 404"* ]]; then
+            echo "::error::Kunde inte kontrollera om taggen $tag finns"; echo "$out" >&2; exit 1
+          fi
+          releases=$(gh release list --repo "$GITHUB_REPOSITORY" --limit 1000 --json tagName --jq '.[].tagName')
+          if grep -qxF -- "$tag" <<<"$releases"; then
+            echo "::error::Det finns redan en release (eller ett utkast) för $tag"; exit 1
+          fi
+          cd release
+          ls -l
+          if ! gh release create "$tag" --repo "$GITHUB_REPOSITORY" --draft --target "$COMMIT" \
+              --title "fuzzy-mcp $VERSION" --notes-file RELEASE_NOTES.md \
+              fuzzy-mcp-*.zip fuzzy-mcp-*.zip.sha256 fuzzy-mcp-*.tar.gz fuzzy-mcp-*.tar.gz.sha256; then
+            gh release delete "$tag" --repo "$GITHUB_REPOSITORY" --yes >/dev/null 2>&1 || true
+            echo "::error::Utkastet kunde inte skapas helt och har tagits bort – kör flödet igen"; exit 1
+          fi
+          echo "Utkastet $tag är skapat – granska det under Releases och publicera det." >> "$GITHUB_STEP_SUMMARY"

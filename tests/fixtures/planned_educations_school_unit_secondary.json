@@ -1,0 +1,16 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": [
+  {
+   "schoolUnitCode": "77364720",
+   "studyPathCode": "EK",
+   "admissionPointsMin": null,
+   "admissionPointsAverage": null,
+   "studentsInProgram": null,
+   "studentsInSemester": null,
+   "studyPaths": [],
+   "typeOfSchooling": "gy"
+  }
+ ]
+}

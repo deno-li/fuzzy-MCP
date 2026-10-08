@@ -1,0 +1,30 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": [
+  {
+   "code": "1440",
+   "name": "Ale",
+   "areaType": "MUNICIPALITY",
+   "shortName": null
+  },
+  {
+   "code": "2121-Alfta",
+   "name": "Alfta",
+   "areaType": "TOWN",
+   "shortName": null
+  },
+  {
+   "code": "1489",
+   "name": "Alingsås",
+   "areaType": "MUNICIPALITY",
+   "shortName": null
+  },
+  {
+   "code": "1489-Alingsås",
+   "name": "Alingsås",
+   "areaType": "TOWN",
+   "shortName": null
+  }
+ ]
+}

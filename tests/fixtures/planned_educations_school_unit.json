@@ -1,0 +1,66 @@
+{
+ "status": "OK",
+ "message": "Success",
+ "body": {
+  "code": "76026322",
+  "name": "Abisko skola",
+  "resursSkola": "false",
+  "schoolUnitStartDate": "2013-10-01",
+  "contactInfo": {
+   "email": "fornamn.efternamn@kommun.example",
+   "web": "https://kiruna.se/utbildning--barnomsorg/grundskola/grundskolor.html",
+   "telephone": "0980-00 00 00",
+   "addresses": [
+    {
+     "type": "VISITING_ADDRESS",
+     "street": "Kalle Jons väg 18",
+     "zipCode": "98107",
+     "city": "Abisko"
+    }
+   ]
+  },
+  "geographicalAreaCode": "2584",
+  "wgs84_Lat": "68.348910876455",
+  "wgs84_Long": "18.833010049255474",
+  "sweRef_N": "7586671.849",
+  "sweRef_E": "657736.635",
+  "organisationRegistryNumber": "2120002783",
+  "principalOrganizerType": "Kommunal",
+  "corporationName": "KIRUNA KOMMUN",
+  "companyForm": "Kommunal",
+  "schoolOrientation": "Ej relevant",
+  "typeOfSchooling": [
+   {
+    "code": "fsk",
+    "displayName": "Förskoleklassen",
+    "schoolYears": [
+     "0"
+    ]
+   },
+   {
+    "code": "gr",
+    "displayName": "Grundskolan",
+    "schoolYears": [
+     "1",
+     "2",
+     "3",
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9"
+    ]
+   }
+  ],
+  "abroadSchool": false,
+  "_links": {
+   "self": {
+    "href": "https://api.skolverket.se/planned-educations/v4/school-units/76026322"
+   },
+   "statistics": {
+    "href": "https://api.skolverket.se/planned-educations/v4/school-units/76026322/statistics"
+   }
+  }
+ }
+}

@@ -1,0 +1,5 @@
+{"type": "FeatureCollection", "totalFeatures": 3, "numberMatched": 3, "numberReturned": 2,
+ "features": [
+  {"type": "Feature", "id": "DeSO_2025.1", "geometry": null, "properties": {"desokod": "2180C1010", "regsokod": "2180R001", "kommunkod": "2180", "kommunnamn": "Gävle"}},
+  {"type": "Feature", "id": "DeSO_2025.2", "geometry": null, "properties": {"desokod": "2180C1020", "regsokod": "2180R001", "kommunkod": "2180", "kommunnamn": "Gävle"}}
+ ]}

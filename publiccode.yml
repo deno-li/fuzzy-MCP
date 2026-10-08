@@ -1,0 +1,57 @@
+# SPDX-FileCopyrightText: 2026 Deniz Özer
+#
+# SPDX-License-Identifier: CC0-1.0
+
+publiccodeYmlVersion: "0.4"
+name: fuzzy-mcp
+url: "https://github.com/deno-li/fuzzy-MCP.git"
+releaseDate: "2026-10-08"
+softwareVersion: "0.1.2"
+developmentStatus: beta
+softwareType: standalone/backend
+platforms:
+  - linux
+  - mac
+  - windows
+categories:
+  - data-analytics
+  - data-collection
+  - knowledge-management
+description:
+  sv:
+    shortDescription: "MCP-server som ger AI-assistenter tillgång till öppna data från SCB, Skolverket och Folkhälsomyndigheten."
+    longDescription: |
+      fuzzy-mcp är en server för Model Context Protocol (MCP) som gör svenska myndigheters öppna API:er
+      tillgängliga för AI-assistenter: SCB:s Statistikdatabas (PxWebApi 2), Folkhälsomyndighetens
+      Folkhälsodata (PxWeb), Skolverkets Skolenhetsregister, Läroplans-API, Planerad utbildning och
+      Susa-navet samt Sveriges dataportal. Servern validerar urval mot metadata innan anrop, returnerar
+      kompakta tabeller med källhänvisning och innehåller referensdata (kommun- och länskoder, kodlistor)
+      för att koppla ihop källorna.
+    features:
+      - Sök och hämta statistik från SCB och Folkhälsomyndigheten
+      - Skolenheter, huvudmän, läroplaner, kurser, ämnen och skolstatistik från Skolverket
+      - Utbildningsinformation från Susa-navet
+      - Datasetsökning i Sveriges dataportal
+      - Power Query-recept för Power BI och Excel
+  en:
+    shortDescription: "MCP server exposing Swedish open data from Statistics Sweden, the National Agency for Education and the Public Health Agency."
+    longDescription: |
+      fuzzy-mcp is a Model Context Protocol (MCP) server that gives AI assistants read-only access to Swedish
+      open government data: Statistics Sweden (PxWebApi 2), the Public Health Agency of Sweden (PxWeb),
+      the Swedish National Agency for Education (school unit register, syllabus API, planned educations,
+      Susa-navet) and the Swedish data portal.
+    features:
+      - Search and retrieve official statistics
+      - School units, organisers, syllabi and school statistics
+      - Dataset discovery on dataportal.se
+legal:
+  license: MIT AND CC0-1.0
+maintenance:
+  type: community
+  contacts:
+    - name: Deniz Özer
+localisation:
+  localisationReady: true
+  availableLanguages:
+    - sv
+    - en
