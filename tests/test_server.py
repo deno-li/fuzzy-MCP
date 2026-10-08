@@ -91,7 +91,7 @@ def test_transport_security_allowlists():
     security = transport_security("mcp.exempel.se", "https://app.exempel.se")
     assert security is not None and security.enable_dns_rebinding_protection
     assert {"mcp.exempel.se", "mcp.exempel.se:*", "[::1]:*", "localhost:*"} <= set(security.allowed_hosts)
-    assert "https://app.exempel.se" in security.allowed_origins and "http://localhost:*" in security.allowed_origins
+    assert {"https://app.exempel.se", "http://localhost:*"} <= set(security.allowed_origins)
 
 
 async def test_healthz_route_on_http_transport():

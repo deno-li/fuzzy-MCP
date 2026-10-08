@@ -3,16 +3,13 @@
 # SPDX-License-Identifier: CC0-1.0
 
 # Bygger leveranspaketen, kontrollerar dem och skapar ett release-UTKAST med paket, kontrollsummor och releasetext.
-# Startas för hand (Actions → Release → Run workflow). Utkastet publiceras av en människa; först då skapas taggen.
+# Startas för hand från main (Actions → Release → Run workflow). Alla jobb hämtar körningens commit (GITHUB_SHA,
+# senaste commit på main när flödet startades), så ingen annan kod körs här. Utkastet publiceras av en människa;
+# först då skapas taggen.
 name: Release
 
 on:
   workflow_dispatch:
-    inputs:
-      ref:
-        description: "main eller en fullständig commit-SHA (40 tecken) på main vars arbetsflödesfiler är desamma som nu"
-        required: true
-        default: main
 
 # Actions är låsta till commit-SHA (Dependabot uppdaterar dem); jobbet release har skrivrätt.
 permissions:
@@ -31,24 +28,12 @@ jobs:
     name: Lint och tester
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    outputs:
-      commit: ${{ steps.commit.outputs.commit }}
     steps:
+      - name: Starta från main
+        run: if [ "$GITHUB_REF" != refs/heads/main ]; then echo "::error::Starta flödet från main"; exit 1; fi
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ inputs.ref }}
-          fetch-depth: 0 # origin/main behövs för kontrollen nedan
           persist-credentials: false
-      # Bygget hämtar exakt den här commiten, även om main flyttas medan testerna körs.
-      - name: Commit som testas och byggs (måste finnas på main)
-        id: commit
-        run: |
-          commit=$(git rev-parse HEAD)
-          if ! git merge-base --is-ancestor "$commit" refs/remotes/origin/main; then
-            echo "::error::$commit finns inte på main – välj main eller en commit i mains historik"; exit 1
-          fi
-          echo "commit=$commit" >> "$GITHUB_OUTPUT"
-          echo "Testar $commit"
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
@@ -66,55 +51,37 @@ jobs:
       version: ${{ steps.meta.outputs.version }}
       commit: ${{ steps.meta.outputs.commit }}
     steps:
-      - name: Hämta koden som ska byggas (den testade commiten)
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ needs.test.outputs.commit }}
-          path: src
-          persist-credentials: false
-      - name: Hämta release-verktygen (den här versionen av flödet)
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          path: tools
           persist-credentials: false
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       - name: Version och commit
         id: meta
-        working-directory: src
-        env:
-          TESTED: ${{ needs.test.outputs.commit }}
         run: |
           if [ "$GITHUB_REF" != refs/heads/main ]; then echo "::error::Starta flödet från main"; exit 1; fi
-          if [ -z "$TESTED" ] || [ "$(git rev-parse HEAD)" != "$TESTED" ]; then
-            echo "::error::Koden som byggs är inte den testade commiten '$TESTED'"; exit 1
-          fi
+          # Samma commit som testjobbet, även om main har flyttats under tiden.
+          commit=$(git rev-parse HEAD)
+          if [ "$commit" != "$GITHUB_SHA" ]; then echo "::error::Hämtade $commit, väntade $GITHUB_SHA"; exit 1; fi
           version=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
           if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then echo "::error::Ogiltig version '$version'"; exit 1; fi
-          # GITHUB_TOKEN kan inte skapa en release på en commit vars arbetsflöden skiljer sig från main (404).
-          if ! diff -rq .github/workflows ../tools/.github/workflows; then
-            echo "::error::$(git rev-parse HEAD) har andra arbetsflödesfiler än main – bygg från main eller skapa releasen för hand"
-            exit 1
-          fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-          echo "Bygger fuzzy-mcp $version från $(git rev-parse HEAD)"
+          echo "commit=$commit" >> "$GITHUB_OUTPUT"
+          echo "Bygger fuzzy-mcp $version från $commit"
       - name: Byggverktyg
         run: python -m pip install "uv==0.11.32"
       - name: Bygg Windows-paketet
-        working-directory: src
         run: python scripts/build_release.py --platform windows
       - name: Bygg Linux-paketet med container-image
-        working-directory: src
         run: python scripts/build_release.py --platform linux --with-image
       - name: Kontrollsummor
-        working-directory: src/release
+        working-directory: release
         run: |
           sha256sum -c fuzzy-mcp-*-windows-*.zip.sha256 fuzzy-mcp-*-linux-*.tar.gz.sha256
           for dir in fuzzy-mcp-*-windows-*/ fuzzy-mcp-*-linux-*/; do (cd "$dir" && sha256sum -c --quiet SHA256SUMS); done
       - name: Windows-paketet går att installera offline (pip --dry-run för win_amd64)
-        working-directory: src/release
+        working-directory: release
         run: |
           cd fuzzy-mcp-*-windows-py*/
           py=$(basename "$PWD" | sed 's/.*-py//')
@@ -122,7 +89,7 @@ jobs:
             --find-links wheelhouse --require-hashes -r requirements.lock \
             --platform win_amd64 --python-version "$py" --implementation cp --only-binary=:all:
       - name: Linux-paketet – installation utan nät och röktest
-        working-directory: src/release
+        working-directory: release
         env:
           VERSION: ${{ steps.meta.outputs.version }}
         run: |
@@ -136,7 +103,7 @@ jobs:
           fi
           /tmp/release-venv/bin/python smoke_test.py --stdio -- --sources reference
       - name: Container-imagen – startar inte utan token, blir healthy med token
-        working-directory: src/release
+        working-directory: release
         env:
           VERSION: ${{ steps.meta.outputs.version }}
         run: |
@@ -168,21 +135,21 @@ jobs:
           VERSION: ${{ steps.meta.outputs.version }}
           COMMIT: ${{ steps.meta.outputs.commit }}
         run: |
-          python tools/scripts/release_notes.py --version "$VERSION" --changelog src/CHANGELOG.md \
-            --release-dir src/release --commit "$COMMIT" \
-            --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" > src/release/RELEASE_NOTES.md
-          cat src/release/RELEASE_NOTES.md >> "$GITHUB_STEP_SUMMARY"
+          python scripts/release_notes.py --version "$VERSION" --changelog CHANGELOG.md \
+            --release-dir release --commit "$COMMIT" \
+            --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" > release/RELEASE_NOTES.md
+          cat release/RELEASE_NOTES.md >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release
           if-no-files-found: error
           retention-days: 7
           path: |
-            src/release/fuzzy-mcp-*.zip
-            src/release/fuzzy-mcp-*.zip.sha256
-            src/release/fuzzy-mcp-*.tar.gz
-            src/release/fuzzy-mcp-*.tar.gz.sha256
-            src/release/RELEASE_NOTES.md
+            release/fuzzy-mcp-*.zip
+            release/fuzzy-mcp-*.zip.sha256
+            release/fuzzy-mcp-*.tar.gz
+            release/fuzzy-mcp-*.tar.gz.sha256
+            release/RELEASE_NOTES.md
 
   release:
     name: Skapa release-utkast

@@ -7,6 +7,15 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ## [Unreleased]
 
+### Ändrat
+
+- Release-flödet bygger alltid den commit på main som flödet startades från (`GITHUB_SHA`); indata `ref` är borttaget.
+  Ingen kod från en annan commit körs i flödet, vilket stänger CodeQL-varningarna om cache poisoning, och flödet blir
+  enklare (en utcheckning, ingen jämförelse av arbetsflödesfiler). En äldre commit släpps med den manuella vägen i
+  DEVELOPMENT.md.
+- Testerna jämför värdnamn och mängder i stället för delsträngar i URL:er (CodeQL: incomplete URL substring
+  sanitization).
+
 ## [0.1.2] - 2026-10-08
 
 Första publika utgåvan. Projektet ligger nu i ett nytt publikt repo med ren historik. Det tidigare repot är privat,
