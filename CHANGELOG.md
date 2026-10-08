@@ -15,6 +15,7 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
   DEVELOPMENT.md.
 - Testerna jämför värdnamn och mängder i stället för delsträngar i URL:er (CodeQL: incomplete URL substring
   sanitization).
+- CI-flödet låser alla actions till commit-SHA, som release-flödet (även `fsfe/reuse-action`).
 
 ## [0.1.2] - 2026-10-08
 
