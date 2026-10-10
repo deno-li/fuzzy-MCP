@@ -2,7 +2,7 @@
  "id": "deso_regso_2018",
  "titel": "Koppling DeSO 2018 – RegSO 2020",
  "beskrivning": "Varje DeSO 2018 med sitt RegSO 2020 (kod), och varje RegSO-kod med SCB:s namn. Kommunkoden är kodens fyra första tecken. Nio positioner: kommunkod (1–4), kategori A/B/C (5), löpnummer som sorterar områdena geografiskt (6–8) och en reservplats för framtida delningar (9). DeSO har inga namn. RegSO: kommunkod + R + tre siffror; RegSO har namn, men enligt SCB är ett RegSO unikt bara tillsammans med kommunen, och namnen kan ändras över tid.",
- "kalla": "SCB, filen 'Koppling DeSO och RegSO' för DeSO_2018 och 2020 (xlsx) på sidan Demografiska statistikområden (DeSO) under öppna geodata.",
+ "kalla": "SCB, filen 'Koppling DeSO och RegSO' för DeSO 2018 och RegSO 2020 (xlsx) på sidan Demografiska statistikområden (DeSO) under öppna geodata.",
  "kalla_url": "https://www.scb.se/vara-tjanster/oppna-data/oppna-geodata/demografiska-statistikomraden-deso/",
  "licens": "CC0 1.0",
  "fil": {
@@ -10,7 +10,7 @@
   "datum_i_fil": "2026-03-25",
   "sha256": "1117b35503e166944a0147174b9cd3152d769846ed587c464d232524d7b6395e",
   "hamtad": "2026-10-10",
-  "hamtning": "Nedladdad manuellt från SCB:s sida och konverterad med scripts/build_deso_reference.py. Filens URL är inte kontrollerad maskinellt; arbetsflödet Källkontroll (gruppen scb-nycklar) hämtar filerna och visar sha256."
+  "hamtning": "Nedladdad manuellt från SCB:s sida och konverterad med scripts/build_deso_reference.py. Filens URL och innehåll är inte kontrollerade maskinellt; sha256 avser den manuellt nedladdade filen."
  },
  "version": {
   "deso": "DeSO 2018",
@@ -28,7 +28,7 @@
    "antal": 1080,
    "beskrivning": "Områden som till största del ligger utanför större befolkningskoncentrationer eller tätorter.",
    "verifiering": "myndighetswebb",
-   "verifiering_not": "Antal räknat ur filen. Beskrivningen är SCB:s text om kodens femte position (metadata på geodata.se, återgiven i SCB:s guide till WMS- och WFS-tjänsterna 2025-03-03)."
+   "verifiering_not": "Antal räknat ur filen. Beskrivningen är SCB:s text om kodens femte position (metadata på geodata.se, återgiven i SCB:s guide 'SCB:s öppna geodata via WMS- och WFS-tjänster', scbs-oppna-geodata-via-wms-och-wfs-tjanster_20250303.pdf, sha256 0f99a024ee0a5c25f2979e7c063277bd7b05aca4487fa783e07998a81f7d5832, nedladdad från samma sida)."
   },
   {
    "kod": "B",
@@ -36,7 +36,7 @@
    "antal": 580,
    "beskrivning": "Områden som till största delen ligger i befolkningskoncentrationer eller tätorter men som inte är en centralort.",
    "verifiering": "myndighetswebb",
-   "verifiering_not": "Antal räknat ur filen. Beskrivningen är SCB:s text om kodens femte position (metadata på geodata.se, återgiven i SCB:s guide till WMS- och WFS-tjänsterna 2025-03-03)."
+   "verifiering_not": "Antal räknat ur filen. Beskrivningen är SCB:s text om kodens femte position (metadata på geodata.se, återgiven i SCB:s guide 'SCB:s öppna geodata via WMS- och WFS-tjänster', scbs-oppna-geodata-via-wms-och-wfs-tjanster_20250303.pdf, sha256 0f99a024ee0a5c25f2979e7c063277bd7b05aca4487fa783e07998a81f7d5832, nedladdad från samma sida)."
   },
   {
    "kod": "C",
@@ -44,7 +44,7 @@
    "antal": 4324,
    "beskrivning": "Områden som till största delen finns i kommunens centralort.",
    "verifiering": "myndighetswebb",
-   "verifiering_not": "Antal räknat ur filen. Beskrivningen är SCB:s text om kodens femte position (metadata på geodata.se, återgiven i SCB:s guide till WMS- och WFS-tjänsterna 2025-03-03)."
+   "verifiering_not": "Antal räknat ur filen. Beskrivningen är SCB:s text om kodens femte position (metadata på geodata.se, återgiven i SCB:s guide 'SCB:s öppna geodata via WMS- och WFS-tjänster', scbs-oppna-geodata-via-wms-och-wfs-tjanster_20250303.pdf, sha256 0f99a024ee0a5c25f2979e7c063277bd7b05aca4487fa783e07998a81f7d5832, nedladdad från samma sida)."
   }
  ],
  "verifiering_samlingar": {
@@ -55,6 +55,10 @@
   "antal": {
    "verifiering": "härlett",
    "verifiering_not": "Räknat ur filen."
+  },
+  "kalla_url": {
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "Adressen till SCB:s sida som filerna laddades ner från, angiven av utvecklaren vid nedladdningen (se fil.hamtad). Inte kontrollerad maskinellt."
   },
   "version": {
    "verifiering": "myndighetswebb",

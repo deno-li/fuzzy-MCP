@@ -16,12 +16,13 @@ kostnaden beror på modellen.
 
 | Profil | `FUZZY_MCP_SOURCES` | Verktyg | Katalog | Cirka token per tur |
 | --- | --- | --- | --- | --- |
-| Statistik | `scb.statistik,skolverket.statistik,fohm,reference` | 28 | 23 655 byte | 6 000 |
-| Skolor och skolenheter | `skolverket.skolenhetsregistret,skolverket.planerad,reference` | 31 | 44 730 byte | 11 000 |
-| Läroplaner, ämnen och kurser | `skolverket.syllabus,reference` | 21 | 23 020 byte | 6 000 |
-| Vuxen- och högre utbildning | `skolverket.susa,skolverket.planerad,reference` | 28 | 42 694 byte | 10 500 |
-| Geodata och dataset | `scb.geodata,dataportal,reference` | 15 | 13 473 byte | 3 500 |
-| Allt | alla | 81 | 108 992 byte | 27 000 |
+| Statistik | `scb.statistik,skolverket.statistik,fohm,reference` | 30 | 26 193 byte | 6 500 |
+| Skolor och skolenheter | `skolverket.skolenhetsregistret,skolverket.planerad,reference` | 33 | 47 268 byte | 12 000 |
+| Läroplaner, ämnen och kurser | `skolverket.syllabus,reference` | 23 | 25 558 byte | 6 500 |
+| Vuxen- och högre utbildning | `skolverket.susa,skolverket.planerad,reference` | 30 | 45 232 byte | 11 500 |
+| Geodata och dataset | `scb.geodata,dataportal,reference` | 17 | 16 041 byte | 4 000 |
+| Områdesstatistik (DeSO och RegSO) | `scb.statistik,scb.geodata,reference` | 22 | 17 172 byte | 4 500 |
+| Allt | alla | 83 | 111 560 byte | 28 000 |
 
 ## Statistik
 
@@ -38,7 +39,9 @@ kostnaden beror på modellen.
 - `ref_entity_catalog`
 - `ref_get_code_list`
 - `ref_list_code_lists`
+- `ref_list_deso`
 - `ref_list_municipalities`
+- `ref_lookup_deso`
 - `ref_lookup_region`
 - `scb_browse_subjects`
 - `scb_build_query`
@@ -65,7 +68,9 @@ kostnaden beror på modellen.
 - `ref_entity_catalog`
 - `ref_get_code_list`
 - `ref_list_code_lists`
+- `ref_list_deso`
 - `ref_list_municipalities`
+- `ref_lookup_deso`
 - `ref_lookup_region`
 - `skolverket_get_contract`
 - `skolverket_get_education_provider`
@@ -101,7 +106,9 @@ kostnaden beror på modellen.
 - `ref_entity_catalog`
 - `ref_get_code_list`
 - `ref_list_code_lists`
+- `ref_list_deso`
 - `ref_list_municipalities`
+- `ref_lookup_deso`
 - `ref_lookup_region`
 - `skolverket_get_course`
 - `skolverket_get_curriculum`
@@ -127,7 +134,9 @@ kostnaden beror på modellen.
 - `ref_entity_catalog`
 - `ref_get_code_list`
 - `ref_list_code_lists`
+- `ref_list_deso`
 - `ref_list_municipalities`
+- `ref_lookup_deso`
 - `ref_lookup_region`
 - `skolverket_pe_adult_education_areas`
 - `skolverket_pe_compare_secondary`
@@ -164,9 +173,38 @@ kostnaden beror på modellen.
 - `ref_entity_catalog`
 - `ref_get_code_list`
 - `ref_list_code_lists`
+- `ref_list_deso`
 - `ref_list_municipalities`
+- `ref_lookup_deso`
 - `ref_lookup_region`
 - `scb_geodata_describe_layer`
 - `scb_geodata_download_url`
 - `scb_geodata_get_features`
 - `scb_geodata_layers`
+
+## Områdesstatistik (DeSO och RegSO)
+
+`FUZZY_MCP_SOURCES=scb.statistik,scb.geodata,reference`
+
+- `fuzzy_api_notices`
+- `fuzzy_list_sources`
+- `ref_entity_catalog`
+- `ref_get_code_list`
+- `ref_list_code_lists`
+- `ref_list_deso`
+- `ref_list_municipalities`
+- `ref_lookup_deso`
+- `ref_lookup_region`
+- `scb_browse_subjects`
+- `scb_build_query`
+- `scb_geodata_describe_layer`
+- `scb_geodata_download_url`
+- `scb_geodata_get_features`
+- `scb_geodata_layers`
+- `scb_get_codelist`
+- `scb_get_config`
+- `scb_get_default_selection`
+- `scb_get_table`
+- `scb_get_table_data`
+- `scb_get_table_metadata`
+- `scb_search_tables`

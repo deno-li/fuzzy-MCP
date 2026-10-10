@@ -10,7 +10,7 @@
   "datum_i_fil": "2025-09-19",
   "sha256": "c57825792c4a0754515b62847fbcd6aa94805579212cedb44ef1c71bd3face91",
   "hamtad": "2026-10-10",
-  "hamtning": "Nedladdad manuellt från SCB:s sida och konverterad med scripts/build_deso_reference.py. Filens URL är inte kontrollerad maskinellt; arbetsflödet Källkontroll (gruppen scb-nycklar) hämtar filerna och visar sha256."
+  "hamtning": "Nedladdad manuellt från SCB:s sida och konverterad med scripts/build_deso_reference.py. Filens URL och innehåll är inte kontrollerade maskinellt; sha256 avser den manuellt nedladdade filen."
  },
  "antal": {
   "rader": 1234,
@@ -78,6 +78,10 @@
   "antal": {
    "verifiering": "härlett",
    "verifiering_not": "Räknat ur filen."
+  },
+  "kalla_url": {
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "Adressen till SCB:s sida som filerna laddades ner från, angiven av utvecklaren vid nedladdningen (se fil.hamtad). Inte kontrollerad maskinellt."
   },
   "forandringar": {
    "verifiering": "myndighetswebb",

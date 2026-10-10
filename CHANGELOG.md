@@ -13,9 +13,27 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
   med läsande anrop som kontrollerar API-kontrakten för SCB:s geodata (DeSO/RegSO), SCB:s statistikdatabas, SCB:s
   DeSO-sidor och nyckelfiler samt Socialstyrelsens statistikdatabas. Svaren skrivs i jobbloggen. Startas för hand,
   har bara läsrätt och används inte av servern.
+- Kodlistorna `deso_regso_2018`, `deso_regso_2025` och `deso_forandringar`: SCB:s nyckelfiler "Koppling DeSO och RegSO"
+  (DeSO 2018–RegSO 2020 och DeSO 2025–RegSO 2025, daterade 2026-03-25) och "Historiska förändringar i DeSO" (daterad
+  2025-09-19), med filnamn, datum och sha256 i varje kodlistas `fil`. DeSO 2018 har 5 984 koder och DeSO 2025 6 160;
+  5 835 koder finns i båda, 149 upphör och 325 är nya. RegSO 2020 och RegSO 2025 har 3 363 koder vardera (en kod
+  bytt: 2584R001 bort, 2523R011 ny; 10 RegSO har nytt namn). Förändringsloggen har 1 234 rader (1 232 daterade
+  2025-01-01 och 2 daterade 2018-02-21) och täcker alla upphörda och nya koder. Kategorierna A/B/C beskrivs i
+  kodlistornas `kategorier`.
+- Verktygen `ref_lookup_deso` (för DeSO: version, RegSO, förändringar och summerbarhet; för RegSO: namn, DeSO-koder
+  per version och om namnet ändrats) och `ref_list_deso` (områdena i en kommun per RegSO).
+- Prompten `omradesprofil` (områdesprofil för DeSO/RegSO med jämförelse mot kommun och rike) och profilen
+  Områdesstatistik (DeSO och RegSO) (`scb.statistik,scb.geodata,reference`) för Eneo.
+- `scripts/build_deso_reference.py` som bygger kodlistorna ur SCB:s xlsx-filer med bara standardbiblioteket och
+  registrerar sha256 och datum per fil.
 
 ### Ändrat
 
+- Texterna om DeSO/RegSO i entitetskatalogen, kopplingsnycklarna, informationsmodellen, serverinstruktionen, README
+  och `scb_geodata_get_features`: två versionspar (DeSO 2018 med RegSO 2020, DeSO 2025 med RegSO 2025; 687 koder
+  behåller kod men har ändrad gräns enligt loggen: 603 med egen rad och 84 som bara tar emot från andra koder),
+  DeSO-kodens kategori A/B/C (femte tecknet) och reservsiffra (nionde tecknet, används vid delningar i DeSO 2025),
+  och att RegSO-namn bara är unika inom kommunen och kan ändras.
 - Release-flödet bygger alltid den commit på main som flödet startades från (`GITHUB_SHA`); indata `ref` är borttaget.
   Ingen kod från en annan commit körs i flödet, vilket stänger CodeQL-varningarna om cache poisoning, och flödet blir
   enklare (en utcheckning, ingen jämförelse av arbetsflödesfiler). En äldre commit släpps med den manuella vägen i
@@ -23,6 +41,12 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 - Testerna jämför värdnamn och mängder i stället för delsträngar i URL:er (CodeQL: incomplete URL substring
   sanitization).
 - CI-flödet låser alla actions till commit-SHA, som release-flödet (även `fsfe/reuse-action`).
+
+### Rättat
+
+- Entitetskatalogen påstod att SCB:s tabeller på DeSO/RegSO-nivå använder kodlistorna `vs_DeSO*`/`vs_RegSO*` (inte
+  belagt; tabellens kodlistor läses ur `scb_get_table_metadata`), och `scb_geodata_get_features` beskrev DeSO-områden
+  "med koder och namn"; DeSO har bara koder, RegSO har namn.
 
 ## [0.1.2] - 2026-10-08
 

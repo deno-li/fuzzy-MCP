@@ -11,10 +11,22 @@ pytestmark = pytest.mark.anyio
 async def test_prompts_listed_and_rendered(make_client):
     async with make_client("reference") as client:
         names = {p.name for p in (await client.list_prompts()).prompts}
-        assert {"analysera_kommun", "jamfor_kommuner", "hitta_statistik", "power_bi_fraga", "skolenhet_profil"} <= names
+        expected = {
+            "analysera_kommun",
+            "jamfor_kommuner",
+            "hitta_statistik",
+            "power_bi_fraga",
+            "skolenhet_profil",
+            "omradesprofil",
+        }
+        assert expected <= names
         prompt = await client.get_prompt("analysera_kommun", {"kommun": "Gävle"})
         text = prompt.messages[0].content.text
         assert "Gävle" in text and "ref_lookup_region" in text and "scb_get_table_data" in text
+        prompt = await client.get_prompt("omradesprofil", {"omrade": "2180C1010"})
+        text = prompt.messages[0].content.text
+        assert "2180C1010" in text and "befolkning" in text
+        assert "ref_lookup_deso" in text and "ref_list_deso" in text and "scb_get_table_data" in text
 
 
 async def test_completion_for_region_and_code_lists(make_client):

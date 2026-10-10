@@ -34,6 +34,7 @@ LICENCE = "CC0 1.0"
 DESO = re.compile(r"^\d{4}[ABC]\d{4}$")
 REGSO = re.compile(r"^\d{4}R\d{3}$")
 NS = {"m": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+MAX_PART_BYTES = 50_000_000  # an uncompressed worksheet or shared-string part larger than this is not SCB's key file
 
 # SCB's description of the code (geodata.se metadata for DeSO, as quoted in SCB's guide to the WMS/WFS services,
 # 2025-03-03): position 1–4 kommunkod, position 5 kategori, 6–8 löpnummer, 9 reservplats.
@@ -54,10 +55,15 @@ FILE_MARKERS = {
         "verifiering_not": "Filnamn, datum i filen och sha256 från den nedladdade filen; hamtad är nedladdningsdagen.",
     },
     "antal": {"verifiering": "härlett", "verifiering_not": "Räknat ur filen."},
+    "kalla_url": {
+        "verifiering": "myndighetswebb",
+        "verifiering_not": "Adressen till SCB:s sida som filerna laddades ner från, angiven av utvecklaren vid "
+        "nedladdningen (se fil.hamtad). Inte kontrollerad maskinellt.",
+    },
 }
 HAMTNING = (
-    "Nedladdad manuellt från SCB:s sida och konverterad med scripts/build_deso_reference.py. Filens URL är inte "
-    "kontrollerad maskinellt; arbetsflödet Källkontroll (gruppen scb-nycklar) hämtar filerna och visar sha256."
+    "Nedladdad manuellt från SCB:s sida och konverterad med scripts/build_deso_reference.py. Filens URL och "
+    "innehåll är inte kontrollerade maskinellt; sha256 avser den manuellt nedladdade filen."
 )
 
 
@@ -74,15 +80,28 @@ def _col_index(ref: str) -> int:
 def _shared_strings(z: zipfile.ZipFile) -> list[str]:
     if "xl/sharedStrings.xml" not in z.namelist():
         return []
-    root = ET.fromstring(z.read("xl/sharedStrings.xml"))
+    root = ET.fromstring(_part(z, "xl/sharedStrings.xml"))
     return ["".join(t.text or "" for t in si.iter(f"{{{NS['m']}}}t")) for si in root.findall("m:si", NS)]
+
+
+def _part(z: zipfile.ZipFile, name: str) -> bytes:
+    info = z.getinfo(name)
+    if info.file_size > MAX_PART_BYTES:
+        raise SystemExit(f"{z.filename}: delen {name} är {info.file_size} byte, större än väntat")
+    return z.read(name)
 
 
 def xlsx_rows(path: Path) -> list[list[str]]:
     """Rows of the first worksheet as lists of strings (empty cells as '')."""
-    with zipfile.ZipFile(path) as z:
-        shared = _shared_strings(z)
-        root = ET.fromstring(z.read("xl/worksheets/sheet1.xml"))
+    try:
+        with zipfile.ZipFile(path) as z:
+            sheets = sorted(n for n in z.namelist() if re.fullmatch(r"xl/worksheets/sheet\d+\.xml", n))
+            if not sheets:
+                raise SystemExit(f"{path.name}: inget kalkylblad i filen")
+            shared = _shared_strings(z)
+            root = ET.fromstring(_part(z, sheets[0]))
+    except (zipfile.BadZipFile, ET.ParseError, KeyError) as exc:
+        raise SystemExit(f"{path.name}: kan inte läsas som xlsx ({exc})") from exc
     rows: list[list[str]] = []
     for row in root.iter(f"{{{NS['m']}}}row"):
         cells: dict[int, str] = {}
@@ -109,12 +128,19 @@ def excel_date(serial: str) -> str:
 
 def table(rows: list[list[str]]) -> tuple[str, str, list[dict[str, str]]]:
     """(title, date cell as ISO date, records) – the header row is the first row starting with 'Kommun'."""
+    if not rows or not rows[0]:
+        raise SystemExit("tom fil")
     title = rows[0][0]
     serial = next((c for c in rows[0][1:] if re.fullmatch(r"\d{5}", c)), "")
-    start = next(i for i, r in enumerate(rows) if r and r[0] == "Kommun")
+    start = next((i for i, r in enumerate(rows) if r and r[0] == "Kommun"), None)
+    if start is None:
+        raise SystemExit("ingen rubrikrad som börjar med 'Kommun'")
     header = rows[start]
     records = [dict(zip(header, r + [""] * (len(header) - len(r)), strict=False)) for r in rows[start + 1 :]]
-    return title, excel_date(serial) if serial else "", [r for r in records if any(r.values())]
+    records = [r for r in records if any(r.values())]
+    if not records:
+        raise SystemExit("inga rader under rubrikraden")
+    return title, excel_date(serial) if serial else "", records
 
 
 def sha256(path: Path) -> str:
@@ -139,8 +165,15 @@ def file_block(path: Path, date_in_file: str, fetched: str) -> dict[str, Any]:
     }
 
 
+def read_table(path: Path) -> tuple[str, str, list[dict[str, str]]]:
+    try:
+        return table(xlsx_rows(path))
+    except (SystemExit, ValueError) as exc:
+        raise SystemExit(f"{path.name}: {exc}") from exc
+
+
 def build_mapping(path: Path, deso_version: str, regso_version: str, fetched: str) -> dict[str, Any]:
-    title, date_in_file, records = table(xlsx_rows(path))
+    title, date_in_file, records = read_table(path)
     deso_col, regso_name_col, regso_code_col = (
         f"DeSO_{deso_version}",
         f"RegSO_{regso_version}",
@@ -179,7 +212,7 @@ def build_mapping(path: Path, deso_version: str, regso_version: str, fetched: st
             f"Varje DeSO {deso_version} med sitt RegSO {regso_version} (kod), och varje RegSO-kod med SCB:s namn. "
             f"Kommunkoden är kodens fyra första tecken. {CODE_NOTE}"
         ),
-        "kalla": f"SCB, filen '{title}' för {deso_col} och {regso_version} (xlsx) på sidan Demografiska "
+        "kalla": f"SCB, filen '{title}' för DeSO {deso_version} och RegSO {regso_version} (xlsx) på sidan Demografiska "
         "statistikområden (DeSO) under öppna geodata.",
         "kalla_url": PAGE_URL,
         "licens": LICENCE,
@@ -194,7 +227,9 @@ def build_mapping(path: Path, deso_version: str, regso_version: str, fetched: st
                 "beskrivning": v,
                 "verifiering": "myndighetswebb",
                 "verifiering_not": "Antal räknat ur filen. Beskrivningen är SCB:s text om kodens femte position "
-                "(metadata på geodata.se, återgiven i SCB:s guide till WMS- och WFS-tjänsterna 2025-03-03).",
+                "(metadata på geodata.se, återgiven i SCB:s guide 'SCB:s öppna geodata via WMS- och WFS-tjänster', "
+                "scbs-oppna-geodata-via-wms-och-wfs-tjanster_20250303.pdf, sha256 0f99a024ee0a5c25f2979e7c063277bd7b05"
+                "aca4487fa783e07998a81f7d5832, nedladdad från samma sida).",
             }
             for k, v in CATEGORIES.items()
         ],
@@ -210,7 +245,7 @@ def build_mapping(path: Path, deso_version: str, regso_version: str, fetched: st
 
 
 def build_changes(path: Path, fetched: str) -> dict[str, Any]:
-    title, date_in_file, records = table(xlsx_rows(path))
+    title, date_in_file, records = read_table(path)
     expected = {"Kommun", "Kommunnamn", "Tidigare DeSO", "DeSO", "Förändringstyp", "Datum för förändring"}
     if missing := expected - set(records[0]):
         raise SystemExit(f"{path.name}: saknar kolumner {sorted(missing)}")
@@ -219,7 +254,11 @@ def build_changes(path: Path, fetched: str) -> dict[str, Any]:
         before, after = r["Tidigare DeSO"], r["DeSO"]
         if not DESO.match(before) or not DESO.match(after):
             raise SystemExit(f"{path.name}: oväntad kod i {r}")
-        changes.append([before, after, r["Förändringstyp"], excel_date(r["Datum för förändring"])])
+        try:
+            when = excel_date(r["Datum för förändring"])
+        except ValueError as exc:
+            raise SystemExit(f"{path.name}: oväntat datum i {r}") from exc
+        changes.append([before, after, r["Förändringstyp"], when])
     types = Counter(c[2] for c in changes)
     return {
         "id": "deso_forandringar",

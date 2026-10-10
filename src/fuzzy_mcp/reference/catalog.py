@@ -42,7 +42,8 @@ ENTITIES: list[dict[str, Any]] = [
     {
         "kalla": "scb",
         "entitet": "Geografiskt område (DeSO, RegSO, tätort m.m.)",
-        "nyckel": "desokod (t.ex. 2180C1010), regsokod, kommunkod; lagernamn med årsversion (DeSO_2025)",
+        "nyckel": "DeSO-/RegSO-kod och kommunkod; attributnamn och lagernamn (årsversion) läses ur "
+        "scb_geodata_layers/scb_geodata_describe_layer",
         "verktyg": [
             "scb_geodata_layers",
             "scb_geodata_describe_layer",
@@ -205,17 +206,36 @@ ENTITIES: list[dict[str, Any]] = [
         "verktyg": ["ref_lookup_region", "ref_list_municipalities"],
         "beskrivning": "SCB:s regionala indelning – nyckeln som kopplar ihop alla källor geografiskt.",
     },
+    {
+        "kalla": "reference",
+        "entitet": "DeSO och RegSO (kopplingstabeller och förändringslogg)",
+        "nyckel": "DeSO-kod (9 tecken), RegSO-kod (kommunkod + R + 3 siffror)",
+        "verktyg": ["ref_lookup_deso", "ref_list_deso"],
+        "beskrivning": "SCB:s koppling DeSO↔RegSO för båda versionsparen (DeSO 2018/RegSO 2020, DeSO 2025/RegSO 2025) "
+        "och SCB:s förändringslogg för DeSO, med kontroll av summerbarhet över förändringar.",
+    },
 ]
 
 JOIN_KEYS: list[dict[str, Any]] = [
     {
         "nyckel": "DeSO-/RegSO-kod",
-        "format": "DeSO: kommunkod + bokstav + 4 siffror (t.ex. 2180C1010); RegSO: kommunkod + R + löpnummer",
+        "format": "DeSO: 9 tecken = kommunkod (1–4) + kategori A/B/C (5) + löpnummer (6–8) + reservsiffra som används "
+        "vid delningar (9), t.ex. 2180C1010; DeSO har inga namn. RegSO: kommunkod + R + 3 siffror, t.ex. 2180R001; "
+        "RegSO har namn, men namnet är unikt bara inom kommunen och kan ändras.",
         "forekomst": {
-            "scb": "variabeln Region i tabeller på DeSO/RegSO-nivå (kodlistor vs_DeSO*/vs_RegSO*)",
-            "scb_geodata": "attributen desokod/regsokod i lagren DeSO_<år>/RegSO_<år>",
+            "scb": "variabeln Region i tabeller på DeSO/RegSO-nivå; tabellens kodlistor läses ur "
+            "scb_get_table_metadata",
+            "scb_geodata": "attribut i SCB:s DeSO-/RegSO-lager; lager- och attributnamn läses ur scb_geodata_layers "
+            "respektive scb_geodata_describe_layer",
+            "referens": "ref_lookup_deso och ref_list_deso – kopplingen DeSO↔RegSO för båda versionsparen och SCB:s "
+            "förändringslogg (kodlistorna deso_regso_2018, deso_regso_2025, deso_forandringar)",
         },
-        "not": "Indelningarna versioneras (2018, 2025): använd samma årsversion i tabell och geodatalager.",
+        "not": "Två versionspar: DeSO 2018 med RegSO 2020 och DeSO 2025 med RegSO 2025. 5 835 koder finns i båda, men "
+        "enligt SCB:s förändringslogg (förändringar daterade 2025-01-01; filen daterad 2025-09-19) har 603 av dem en "
+        "egen rad (samma kod före och efter) och ytterligare 84 förekommer bara som mottagare på andra koders rader; "
+        "ref_lookup_deso ger 'ändrad gräns' för alla 687: samma kod är inte alltid samma yta. Kontrollera i tabellens "
+        "metadata (scb_get_table_metadata: noter och kodlistan för Region) vilken DeSO/RegSO-version som gäller för "
+        "den valda perioden, och summerbarheten i ref_lookup_deso innan statistik summeras över en förändring.",
     },
     {
         "nyckel": "kommunkod",
@@ -404,6 +424,8 @@ INFORMATION_MODEL: dict[str, Any] = {
             "verktyg": [
                 "ref_lookup_region",
                 "ref_list_municipalities",
+                "ref_lookup_deso",
+                "ref_list_deso",
                 "scb_geodata_get_features",
                 "scb_geodata_download_url",
             ],
