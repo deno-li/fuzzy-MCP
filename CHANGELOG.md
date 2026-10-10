@@ -7,6 +7,13 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ## [Unreleased]
 
+### Tillagt
+
+- Arbetsflödet Källkontroll (`.github/workflows/verify-sources.yml`) och `scripts/verify_sources.py`: en fast lista
+  med läsande anrop som kontrollerar API-kontrakten för SCB:s geodata (DeSO/RegSO), SCB:s statistikdatabas, SCB:s
+  DeSO-sidor och nyckelfiler samt Socialstyrelsens statistikdatabas. Svaren skrivs i jobbloggen. Startas för hand,
+  har bara läsrätt och används inte av servern.
+
 ### Ändrat
 
 - Release-flödet bygger alltid den commit på main som flödet startades från (`GITHUB_SHA`); indata `ref` är borttaget.
