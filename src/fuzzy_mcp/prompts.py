@@ -147,7 +147,8 @@ Ange källa och läsår/period för varje uppgift."""
 
 Arbetsgång:
 1. Slå upp området med `ref_lookup_deso`: version (DeSO 2018 med RegSO 2020 eller DeSO 2025 med RegSO 2025),
-   tillhörande RegSO, förändringar enligt SCB:s förändringslogg och om statistik kan summeras över en förändring.
+   tillhörande RegSO, förändringar enligt SCB:s förändringslogg och om antal kan summeras över en förändring
+   (andelar, medelvärden och index kan aldrig summeras över områden; hämta dem per område från källan).
    För en kommun: lista områdena med `ref_list_deso` och välj ut dem som ska ingå.
 2. Hitta tabeller på DeSO/RegSO-nivå med `scb_search_tables` (t.ex. 'DeSO') och kontrollera med
    `scb_get_table_metadata` vilka regionkoder tabellen har och vilken DeSO-/RegSO-version de avser (kodlista och

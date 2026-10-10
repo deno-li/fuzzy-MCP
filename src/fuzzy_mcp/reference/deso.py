@@ -16,14 +16,18 @@ verdicts in :func:`comparability` are derived here from the log and carry
   when it gives away territory; a code that only receives appears as ``till``);
   a row whose other code is in neither key file predates the files (Karlskoga's
   two rows of 2018-02-21) and leaves the code ``oförändrad`` with a note;
-* a code only in DeSO 2018 is ``upphört``; it is *summerbar* when every row for
-  it has SCB's type ``Upphör; till nybildad`` and each receiving code has no
-  other source, so DeSO 2025 statistics for the parts add up to the old code;
-* a code only in DeSO 2025 is ``nytt``; it is *summerbar_till* its parent when
-  it has exactly one source and that parent is summerbar; ``syskon`` are the
+* a code only in DeSO 2018 is ``upphört``; ``summerbar_antal`` is true when every
+  row for it has SCB's type ``Upphör; till nybildad`` and each receiving code has
+  no other source, so the parts together cover the old code and *counts* for the
+  parts add up to it (same period and definition);
+* a code only in DeSO 2025 is ``nytt``; ``summerbar_antal_till`` names its parent
+  when it has exactly one source and that parent is summerbar; ``syskon`` are the
   other new codes with the same parent (a receiving code that already existed
   in DeSO 2018 is not a sibling).
 
+Summing is only ever about additive measures (counts). Shares, rates, means,
+medians and indices cannot be summed over areas, split or not; they need the
+source data per area or a weighting the source provides. Every note says so.
 A 1:1 code change (SCB's type ``Kodändrad; annat än 20-22``) is deliberately
 not counted as summerbar: the log does not say whether the boundary is unchanged.
 """
@@ -49,6 +53,10 @@ DERIVED = "härlett"
 SOURCE_DATA = "myndighetswebb"
 SOURCE_PAGE = "SCB, sidan Demografiska statistikområden (DeSO) under öppna geodata"
 MAX_OPTIONS = 60  # RegSO alternatives listed in an error message
+ADDITIVE_ONLY = (
+    "Gäller bara antal (additiva mått) med samma period och definition; andelar, medelvärden, medianer och index "
+    "kan inte summeras över områden."
+)
 
 
 class Row(NamedTuple):
@@ -161,26 +169,26 @@ def _ended(code: str, rows: Iterable[Row], when: str) -> dict[str, Any]:
     types = sorted({row.typ for row in rows})
     summable = is_summable(code)
     if summable:
-        note = f"Upphört {when}: delades i {_count(len(replaced), 'nytt område', 'nya områden')} som kan summeras "
-        note += "tillbaka till koden."
+        note = f"Upphört {when}: delades i {_count(len(replaced), 'nytt område', 'nya områden')} som tillsammans "
+        note += f"täcker koden; antal för delarna kan summeras tillbaka till koden. {ADDITIVE_ONLY}"
     elif types == [RECODED]:
         note = (
             f"Upphört {when}: koden ersattes av {', '.join(replaced)} med SCB:s förändringstyp '{RECODED}'. "
-            "Loggen säger inte om gränsen är oförändrad, så koden räknas inte som summerbar; "
+            "Loggen säger inte om gränsen är oförändrad, så koden räknas inte som summerbar ens för antal; "
             "kontrollera kodbytet mot SCB innan serierna kopplas ihop."
         )
     else:
         note = (
             f"Upphört {when}: delar gick till {_count(len(replaced), 'område', 'områden')} ({_quoted(types)}). "
-            "Kan inte summeras tillbaka ur DeSO 2025-statistik: minst ett mottagande område har enligt loggen "
-            "även andra delar eller fanns sedan tidigare."
+            "Kan inte summeras tillbaka ur DeSO 2025-statistik, inte ens antal: minst ett mottagande område har "
+            "enligt loggen även andra delar eller fanns sedan tidigare."
         )
-    return {"ersatts_av": replaced, "summerbar": summable, "not": note}
+    return {"ersatts_av": replaced, "summerbar_antal": summable, "not": note}
 
 
 def _new(code: str, rows: Iterable[Row], when: str) -> dict[str, Any]:
     parents = sorted(sources_of(code))
-    out: dict[str, Any] = {"bildat_av": parents, "summerbar_till": None, "syskon": []}
+    out: dict[str, Any] = {"bildat_av": parents, "summerbar_antal_till": None, "syskon": []}
     if len(parents) != 1:
         out["not"] = (
             f"Nytt område {when} med delar från {len(parents)} tidigare områden: "
@@ -200,10 +208,10 @@ def _new(code: str, rows: Iterable[Row], when: str) -> dict[str, Any]:
     parent_ended = parent in _doc("2018")["deso"] and parent not in _doc("2025")["deso"]
     types = sorted({row.typ for row in rows})
     if parent_ended and is_summable(parent):
-        out["summerbar_till"] = parent
+        out["summerbar_antal_till"] = parent
         together = f" tillsammans med {', '.join(siblings)}" if siblings else ""
-        note = f"Nytt område {when}: bildat genom delning av {parent}{together}; delarna kan summeras till {parent} "
-        note += "i DeSO 2018."
+        note = f"Nytt område {when}: bildat genom delning av {parent}{together}; antal för delarna kan summeras till "
+        note += f"{parent} i DeSO 2018. {ADDITIVE_ONLY}"
     elif types == [RECODED]:
         note = (
             f"Nytt område {when}: ersätter {parent} med SCB:s förändringstyp '{RECODED}'. Loggen säger inte om "
@@ -211,8 +219,8 @@ def _new(code: str, rows: Iterable[Row], when: str) -> dict[str, Any]:
         )
     elif parent_ended:
         note = (
-            f"Nytt område {when}: del av {parent}, som upphörde utan att delarna kan summeras tillbaka; "
-            "koden kan inte härledas ur DeSO 2018-statistik."
+            f"Nytt område {when}: del av {parent}, som upphörde utan att delarna kan summeras tillbaka "
+            "(inte ens antal); koden kan inte härledas ur DeSO 2018-statistik."
         )
     else:
         note = (

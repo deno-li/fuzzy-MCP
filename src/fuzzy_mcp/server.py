@@ -54,8 +54,9 @@ Urvalsuttryck i PxWeb: "*" (alla), "202*" (jokertecken), "TOP(5)" (senaste 5 per
 "BOTTOM(n)", "RANGE(a,b)", "FROM(a)", "TO(b)". Utelämnade variabler elimineras om tabellen tillåter det.
 Koppla ihop källor via kommunkod (4 siffror, t.ex. 0180 = Stockholm), länskod (2 siffror),
 skolenhetskod (8 siffror), organisationsnummer (huvudman) och DeSO/RegSO-kod. DeSO finns i två versioner
-(2018 och 2025, med RegSO 2020 respektive 2025); kontrollera version och summerbarhet med `ref_lookup_deso`
-innan du jämför över tid. Ange alltid källa (myndighet + tabell/endpoint) när du redovisar siffror.
+(2018 och 2025, med RegSO 2020 respektive 2025); kontrollera version och om antal kan summeras med
+`ref_lookup_deso` innan du jämför över tid (andelar och medelvärden summeras aldrig över områden).
+Ange alltid källa (myndighet + tabell/endpoint) när du redovisar siffror.
 All data är öppen; se `fuzzy://sources` för licenser.
 Namn på enskilda personer (t.ex. rektor, c/o-adress, kontaktperson) returneras bara när verktyget anropas
 med en uttrycklig parameter för personuppgifter – använd den bara när användaren behöver uppgiften.

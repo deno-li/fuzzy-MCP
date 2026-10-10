@@ -212,7 +212,8 @@ ENTITIES: list[dict[str, Any]] = [
         "nyckel": "DeSO-kod (9 tecken), RegSO-kod (kommunkod + R + 3 siffror)",
         "verktyg": ["ref_lookup_deso", "ref_list_deso"],
         "beskrivning": "SCB:s koppling DeSO↔RegSO för båda versionsparen (DeSO 2018/RegSO 2020, DeSO 2025/RegSO 2025) "
-        "och SCB:s förändringslogg för DeSO, med kontroll av summerbarhet över förändringar.",
+        "och SCB:s förändringslogg för DeSO, med kontroll av om antal kan summeras över en förändring (andelar och "
+        "medelvärden kan inte summeras).",
     },
 ]
 
@@ -235,7 +236,8 @@ JOIN_KEYS: list[dict[str, Any]] = [
         "egen rad (samma kod före och efter) och ytterligare 84 förekommer bara som mottagare på andra koders rader; "
         "ref_lookup_deso ger 'ändrad gräns' för alla 687: samma kod är inte alltid samma yta. Kontrollera i tabellens "
         "metadata (scb_get_table_metadata: noter och kodlistan för Region) vilken DeSO/RegSO-version som gäller för "
-        "den valda perioden, och summerbarheten i ref_lookup_deso innan statistik summeras över en förändring.",
+        "den valda perioden, och i ref_lookup_deso om antal kan summeras över en förändring. Andelar, medelvärden "
+        "och index summeras aldrig över områden.",
     },
     {
         "nyckel": "kommunkod",

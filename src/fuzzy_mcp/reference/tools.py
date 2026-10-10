@@ -99,9 +99,10 @@ def register(server: MCPServer[Any], services: Services) -> None:
         """Slå upp en DeSO- eller RegSO-kod i SCB:s nyckelfiler: kommun, kategori, RegSO per version och
         jämförbarhet mellan DeSO 2018 och DeSO 2025. För DeSO ges RegSO-kod och -namn i varje version koden
         finns i (DeSO 2018/RegSO 2020, DeSO 2025/RegSO 2025), alla rader ur SCB:s förändringslogg och ett i kod
-        härlett omdöme (jamforbarhet): oförändrad, ändrad gräns, upphört (ersatts_av, summerbar) eller nytt
-        (bildat_av, summerbar_till, syskon). För RegSO ges namn och DeSO-koder per version samt om namnet
-        ändrats. Lokala data, inga nätanrop; svaret anger fil och datum."""
+        härlett omdöme (jamforbarhet): oförändrad, ändrad gräns, upphört (ersatts_av, summerbar_antal) eller nytt
+        (bildat_av, summerbar_antal_till, syskon). Summerbarheten gäller bara antal (additiva mått); andelar,
+        medelvärden, medianer och index kan aldrig summeras över områden. För RegSO ges namn och DeSO-koder per
+        version samt om namnet ändrats. Lokala data, inga nätanrop; svaret anger fil och datum."""
         return deso.lookup(code)
 
     @server.tool(name="ref_list_deso", title="DeSO i en kommun", annotations=READ_ONLY_LOCAL)

@@ -20,8 +20,9 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
   bytt: 2584R001 bort, 2523R011 ny; 10 RegSO har nytt namn). Förändringsloggen har 1 234 rader (1 232 daterade
   2025-01-01 och 2 daterade 2018-02-21) och täcker alla upphörda och nya koder. Kategorierna A/B/C beskrivs i
   kodlistornas `kategorier`.
-- Verktygen `ref_lookup_deso` (för DeSO: version, RegSO, förändringar och summerbarhet; för RegSO: namn, DeSO-koder
-  per version och om namnet ändrats) och `ref_list_deso` (områdena i en kommun per RegSO).
+- Verktygen `ref_lookup_deso` (för DeSO: version, RegSO, förändringar och om antal kan summeras över en förändring;
+  för RegSO: namn, DeSO-koder per version och om namnet ändrats) och `ref_list_deso` (områdena i en kommun per
+  RegSO).
 - Prompten `omradesprofil` (områdesprofil för DeSO/RegSO med jämförelse mot kommun och rike) och profilen
   Områdesstatistik (DeSO och RegSO) (`scb.statistik,scb.geodata,reference`) för Eneo.
 - `scripts/build_deso_reference.py` som bygger kodlistorna ur SCB:s xlsx-filer med bara standardbiblioteket och

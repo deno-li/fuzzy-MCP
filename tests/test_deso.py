@@ -73,8 +73,11 @@ async def test_lookup_deso_ended_code_is_a_pure_split(make_client):
     ]
     verdict = hit["jamforbarhet"]
     assert verdict["status"] == "upphört" and verdict["verifiering"] == "härlett"
-    assert verdict["ersatts_av"] == ["0114C1061", "0114C1062"] and verdict["summerbar"] is True
-    assert verdict["not"] == "Upphört 2025-01-01: delades i 2 nya områden som kan summeras tillbaka till koden."
+    assert verdict["ersatts_av"] == ["0114C1061", "0114C1062"] and verdict["summerbar_antal"] is True
+    assert verdict["not"].startswith(
+        "Upphört 2025-01-01: delades i 2 nya områden som tillsammans täcker koden; antal för delarna kan summeras"
+    )
+    assert "andelar, medelvärden, medianer och index kan inte summeras" in verdict["not"]
     assert hit["verifiering"] == "myndighetswebb" and "härlett" in hit["verifiering_not"]
     assert {f["namn"] for f in hit["kalla"]["filer"]} == SOURCE_FILES
     assert all(f["datum_i_fil"] in {"2026-03-25", "2025-09-19"} for f in hit["kalla"]["filer"])
@@ -89,8 +92,8 @@ async def test_lookup_deso_new_code_points_back_to_its_parent(make_client):
     verdict = hit["jamforbarhet"]
     assert verdict["status"] == "nytt"
     assert verdict["bildat_av"] == ["0114C1060"]
-    assert verdict["summerbar_till"] == "0114C1060" and verdict["syskon"] == ["0114C1062"]
-    assert "kan summeras till 0114C1060" in verdict["not"]
+    assert verdict["summerbar_antal_till"] == "0114C1060" and verdict["syskon"] == ["0114C1062"]
+    assert "antal för delarna kan summeras till 0114C1060" in verdict["not"] and "andelar" in verdict["not"]
 
 
 async def test_lookup_deso_changed_boundary(make_client):
@@ -115,7 +118,7 @@ async def test_lookup_deso_changed_boundary(make_client):
     # The new part has one source that survives: it is not a split, so nothing can be summed back.
     verdict = new_part["jamforbarhet"]
     assert verdict["status"] == "nytt" and verdict["bildat_av"] == ["0139A0010"]
-    assert verdict["summerbar_till"] is None and verdict["syskon"] == []
+    assert verdict["summerbar_antal_till"] is None and verdict["syskon"] == []
     assert "finns kvar med ändrad gräns" in verdict["not"]
 
 
@@ -140,10 +143,10 @@ async def test_lookup_deso_recoded_pair_is_not_summable(make_client):
     assert old["kommun"] == new["kommun"] == "Mjölby"
     assert old["kategori"]["kod"] == "C" and new["kategori"]["kod"] == "B"
     assert old["jamforbarhet"]["status"] == "upphört"
-    assert old["jamforbarhet"]["ersatts_av"] == ["0586B2010"] and old["jamforbarhet"]["summerbar"] is False
+    assert old["jamforbarhet"]["ersatts_av"] == ["0586B2010"] and old["jamforbarhet"]["summerbar_antal"] is False
     assert "Kodändrad; annat än 20-22" in old["jamforbarhet"]["not"]
     assert new["jamforbarhet"]["status"] == "nytt" and new["jamforbarhet"]["bildat_av"] == ["0586C2010"]
-    assert new["jamforbarhet"]["summerbar_till"] is None and new["jamforbarhet"]["syskon"] == []
+    assert new["jamforbarhet"]["summerbar_antal_till"] is None and new["jamforbarhet"]["syskon"] == []
     assert "Kodändrad; annat än 20-22" in new["jamforbarhet"]["not"]
 
 
@@ -323,7 +326,8 @@ def test_siblings_are_only_the_new_parts_of_the_parent():
     """1280C2080 ended into four new codes and the existing 1280C2320 ('Upphör; till befintlig'): the existing
     receiver is listed under forandringar but is not a sibling of the new parts."""
     verdict = deso.comparability("1280C2083")
-    assert verdict["status"] == "nytt" and verdict["bildat_av"] == ["1280C2080"] and verdict["summerbar_till"] is None
+    assert verdict["status"] == "nytt" and verdict["bildat_av"] == ["1280C2080"]
+    assert verdict["summerbar_antal_till"] is None
     assert verdict["syskon"] == ["1280C2081", "1280C2082", "1280C2084"]
     assert deso.deso_versions("1280C2320") == ["2018", "2025"]
     assert {r.till for r in deso.rows_for("1280C2080")} == {*verdict["syskon"], "1280C2083", "1280C2320"}
@@ -402,13 +406,13 @@ def test_comparability_totals_match_the_counted_figures():
     }
     ended = {c: v for c, v in verdicts.items() if v["status"] == "upphört"}
     new = {c: v for c, v in verdicts.items() if v["status"] == "nytt"}
-    assert sum(v["summerbar"] for v in ended.values()) == 88
+    assert sum(v["summerbar_antal"] for v in ended.values()) == 88
     assert sum(len(v["bildat_av"]) > 1 for v in new.values()) == 53
     assert all(v["ersatts_av"] and set(v["ersatts_av"]) <= s25 for v in ended.values())
     assert all(v["bildat_av"] and set(v["bildat_av"]) <= s18 for v in new.values())
     # Parts and parents agree: every part of a summable split points back to it and only to it.
-    parts = {part: parent for parent, v in ended.items() if v["summerbar"] for part in v["ersatts_av"]}
-    assert parts == {c: v["summerbar_till"] for c, v in new.items() if v["summerbar_till"]}
+    parts = {part: parent for parent, v in ended.items() if v["summerbar_antal"] for part in v["ersatts_av"]}
+    assert parts == {c: v["summerbar_antal_till"] for c, v in new.items() if v["summerbar_antal_till"]}
     assert all(set(ended[p]["ersatts_av"]) == {c, *new[c]["syskon"]} for c, p in parts.items())
     assert all(v["verifiering"] == "härlett" and v["not"] for v in verdicts.values())
     assert all("jämför inte över tid" in v["not"] for v in verdicts.values() if v["status"] == "ändrad gräns")
