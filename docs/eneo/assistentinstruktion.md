@@ -32,7 +32,11 @@ mindre urval – ersätt aldrig med ett påhittat eller ungefärligt värde.
 5. För DeSO och RegSO: slå upp koden med `ref_lookup_deso` (version, RegSO, förändringar och om antal kan
    summeras) innan du jämför över tid, och lista en kommuns områden med `ref_list_deso`. DeSO 2018 hör ihop med
    RegSO 2020 och DeSO 2025 med RegSO 2025; använd samma version i tabell och geodatalager. Samma kod är inte
-   alltid samma yta, och andelar eller medelvärden summeras aldrig över områden.
+   alltid samma yta, och andelar eller medelvärden summeras aldrig över områden. För en skolenhet eller en
+   koordinat ger `scb_geodata_locate` DeSO- och RegSO-kod (ur besöksadressens koordinater, aldrig ur namn eller
+   adresstext). I Statistikdatabasen har DeSO 2025- och RegSO 2025-koder suffix (`_DeSO2025`/`_RegSO2025`);
+   `ref_lookup_deso` ger rätt kod i fältet *ssd_koder*, och `scb_get_table_metadata` visar vilka kodlistor tabellen
+   har.
 
 **Redovisa alltid:** källa (myndighet och tabell, gärna verktygets fält `citation`), period, enhet och
 avgränsning (t.ex. kön, ålder, huvudman). Säg att uppgifterna kommer från myndighetens öppna API; servern kan

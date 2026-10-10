@@ -175,6 +175,38 @@ async def test_lookup_regso(make_client):
     assert kiruna["finns_i"] == ["RegSO 2020"] and kiruna["namn_andrat"] is None
 
 
+async def test_lookup_gives_the_codes_statistikdatabasen_uses(make_client):
+    """ssd_koder: the code as the variable Region spells it per version. Verified extract 2026-10-10 (TAB6680):
+    vs_DeSO2018 and vs_RegSO2020 have plain codes, vs_DeSO2025 and vs_RegSO2025 add _DeSO2025/_RegSO2025."""
+    async with make_client("reference") as client:
+        both = await call(client, "ref_lookup_deso", {"code": "0114C1010"})
+        new = await call(client, "ref_lookup_deso", {"code": "0114C1061"})
+        old = await call(client, "ref_lookup_deso", {"code": "0586C2010"})
+        regso = await call(client, "ref_lookup_deso", {"code": "0114R010"})
+    assert both["finns_i"] == ["DeSO 2018", "DeSO 2025"]
+    assert both["ssd_koder"] == {
+        "DeSO 2018": {"kod": "0114C1010", "kodlista": "vs_DeSO2018", "galler": "t.o.m. referensår 2023"},
+        "DeSO 2025": {"kod": "0114C1010_DeSO2025", "kodlista": "vs_DeSO2025", "galler": "fr.o.m. referensår 2024"},
+    }
+    assert new["ssd_koder"] == {
+        "DeSO 2025": {"kod": "0114C1061_DeSO2025", "kodlista": "vs_DeSO2025", "galler": "fr.o.m. referensår 2024"}
+    }
+    assert old["ssd_koder"] == {
+        "DeSO 2018": {"kod": "0586C2010", "kodlista": "vs_DeSO2018", "galler": "t.o.m. referensår 2023"}
+    }
+    assert regso["ssd_koder"] == {
+        "RegSO 2020": {"kod": "0114R010", "kodlista": "vs_RegSO2020", "galler": "t.o.m. referensår 2023"},
+        "RegSO 2025": {"kod": "0114R010_RegSO2025", "kodlista": "vs_RegSO2025", "galler": "fr.o.m. referensår 2024"},
+    }
+    for hit in (both, new, old, regso):
+        assert list(hit["ssd_koder"]) == hit["finns_i"]
+        assert "ssd_koder följer SCB:s kodlistor i Statistikdatabasen" in hit["verifiering_not"]
+        assert "TAB6680" in hit["verifiering_not"] and "scb_get_table_metadata" in hit["verifiering_not"]
+    assert deso.SSD_SUFFIX == {"deso": {"2025": "_DeSO2025"}, "regso": {"2025": "_RegSO2025"}}
+    assert deso.SSD_CODELISTS["deso"] == {"2018": "vs_DeSO2018", "2025": "vs_DeSO2025"}
+    assert deso.SSD_CODELISTS["regso"] == {"2018": "vs_RegSO2020", "2025": "vs_RegSO2025"}
+
+
 async def test_list_deso_by_name_and_code(make_client):
     async with make_client("reference") as client:
         vasby = await call(client, "ref_list_deso", {"municipality": "Upplands Väsby"})

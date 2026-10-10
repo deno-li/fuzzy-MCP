@@ -128,3 +128,15 @@ async def test_scb_geodata_live():
         assert any(a["geometry"] for a in described["attributes"])
         features = await call(client, "scb_geodata_get_features", {"layer": layer, "limit": 3})
         assert features["returned"] == 3
+
+
+async def test_scb_geodata_locate_live():
+    """INTERSECTS(sp_geometry,POINT(N E)) for east=674032, north=6580822 (Stockholm) gave DeSO 0180C4040 with
+    regsokod 0180R047 on 2026-10-10. If SCB republishes the layer the point may land elsewhere; then this fails."""
+    async with live_client() as client:
+        result = await call(client, "scb_geodata_locate", {"east": 674032, "north": 6580822, "layers": ["DeSO_2025"]})
+        assert result["punkt"]["sweref99tm"] == {"east": 674032.0, "north": 6580822.0}
+        hits = [hit for hit in result["traffar"] if hit["layer"] == "DeSO_2025"]
+        if hits:
+            assert hits[0]["properties"]["desokod"] == "0180C4040"
+            assert hits[0]["properties"]["regsokod"] == "0180R047"

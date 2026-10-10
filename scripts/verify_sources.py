@@ -63,8 +63,11 @@ WFS_NS = "{http://www.opengis.net/wfs}"
 DESO_LAYERS = ("DeSO_2018", "DeSO_2025", "RegSO_2020", "RegSO_2025")
 SAMPLE_LAYER = "DeSO_2025"
 SAMPLE_MUNICIPALITY = "0180"  # Stockholm; a neutral example
-# A point in central Stockholm in SWEREF 99 TM (EPSG:3006): easting, northing.
+# A point in central Stockholm in SWEREF 99 TM (EPSG:3006): easting, northing. Verified 2026-10-10: GeoServer reads
+# POINT(N E) for EPSG:3006 in CQL (the "y_x" variant hit DeSO 0180C4040, "x_y" hit nothing).
 SAMPLE_POINT = (674032, 6580822)
+# The same neighbourhood in WGS84 (lon, lat), for the EWKT variants SRID=4326;POINT(...) – not yet verified.
+SAMPLE_POINT_WGS84 = (18.06, 59.33)
 SRS_VARIANTS = ("EPSG:3006", "EPSG:4326", "urn:ogc:def:crs:EPSG::4326")
 
 PXWEB = "https://statistikdatabasen.scb.se/api/v2"
@@ -348,6 +351,13 @@ def is_key_file(url: str, label: str) -> bool:
     return path.lower().endswith(KEY_FILE_SUFFIXES) and bool(KEY_FILE_PATTERN.search(f"{label} {path}"))
 
 
+def page_name(url: str) -> str:
+    """Check name of a web page: its last two path segments joined by a dot, so pages that end alike stay apart
+    (SCB has 'demografiska-statistikomraden-deso' both under regionala-indelningar and under oppna-geodata)."""
+    segments = [part for part in urllib.parse.urlsplit(url).path.split("/") if part]
+    return ".".join(segments[-2:]) or "rot"
+
+
 # ----------------------------------------------------------------------------- SCB geodata (WFS)
 
 
@@ -458,21 +468,63 @@ def check_scb_geodata() -> None:
         }
         record(f"wfs.crs.{srs}", got, summary)
 
+    def record_intersects(label: str, target: str, cql: str) -> None:
+        params = {"request": "GetFeature", "typeName": f"stat:{target}", "outputFormat": "application/json"}
+        params |= {"maxFeatures": 3, "CQL_FILTER": cql}
+        if attributes[target]:
+            params["propertyName"] = ",".join(attributes[target])
+        got = fetch(wfs(params))
+        features = as_list(as_dict(parse_json(got.get("body") or b"")).get("features"))
+        record(
+            f"wfs.intersects.{label}",
+            got,
+            {"filter": cql, "egenskaper": [as_dict(f).get("properties") for f in features]},
+        )
+
+    x, y = SAMPLE_POINT
     if geometry[layer]:
-        x, y = SAMPLE_POINT
         for label, point in (("x_y", f"{x} {y}"), ("y_x", f"{y} {x}")):
-            cql = f"INTERSECTS({geometry[layer]},POINT({point}))"
-            params = {"request": "GetFeature", "typeName": f"stat:{layer}", "outputFormat": "application/json"}
-            params |= {"maxFeatures": 3, "CQL_FILTER": cql}
-            if attributes[layer]:
-                params["propertyName"] = ",".join(attributes[layer])
-            got = fetch(wfs(params))
-            features = as_list(as_dict(parse_json(got.get("body") or b"")).get("features"))
-            record(
-                f"wfs.intersects.{label}",
-                got,
-                {"filter": cql, "egenskaper": [as_dict(f).get("properties") for f in features]},
-            )
+            record_intersects(label, layer, f"INTERSECTS({geometry[layer]},POINT({point}))")
+        # Does GeoServer accept EWKT (an SRID prefix) in CQL, and in which axis order? Unverified so far: a hit in
+        # exactly one of the two says which order it reads; an error status says the syntax is not accepted.
+        lon, lat = SAMPLE_POINT_WGS84
+        for label, point in (("srid4326", f"{lon} {lat}"), ("srid4326_latlon", f"{lat} {lon}")):
+            record_intersects(label, layer, f"INTERSECTS({geometry[layer]},SRID=4326;POINT({point}))")
+    # The server's point search (scb_geodata_locate) also runs against RegSO_2025 by default and allows DeSO_2018 and
+    # RegSO_2020; only DeSO_2025 was verified on 2026-10-10. Same point in N E order; the DeSO hit carries regsokod
+    # 0180R047, which is the expected RegSO_2025 answer.
+    for other in DESO_LAYERS:
+        if other != layer and geometry[other]:
+            record_intersects(f"y_x.{other}", other, f"INTERSECTS({geometry[other]},POINT({y} {x}))")
+
+    # Parameter combinations scb_geodata_get_features sends but the first run did not try: startIndex + sortBy with
+    # a CQL_FILTER, sortBy on regsokod (the default sort key of RegSO layers) and propertyName with the geometry
+    # together with srsName.
+    def codes_of(body: Any, attribute: str) -> list[Any]:
+        features = as_list(as_dict(parse_json(body or b"")).get("features"))
+        return [as_dict(as_dict(f).get("properties")).get(attribute) for f in features]
+
+    municipality = next((a for a in attributes[layer] if a.lower().startswith("kommun") and "namn" not in a), None)
+    if code and municipality:
+        params = {"request": "GetFeature", "typeName": f"stat:{layer}", "outputFormat": "application/json"}
+        params |= {"propertyName": code, "sortBy": code, "maxFeatures": 2, "startIndex": 2}
+        params["CQL_FILTER"] = f"{municipality}='{SAMPLE_MUNICIPALITY}'"
+        got = fetch(wfs(params))
+        record("wfs.sida.filter", got, {"filter": params["CQL_FILTER"], "koder": codes_of(got.get("body"), code)})
+    regso_layer = "RegSO_2025"
+    regso_code = next((a for a in attributes.get(regso_layer, []) if a.lower() == "regsokod"), None)
+    if regso_code:
+        params = {"request": "GetFeature", "typeName": f"stat:{regso_layer}", "outputFormat": "application/json"}
+        params |= {"propertyName": regso_code, "sortBy": regso_code, "maxFeatures": 2, "startIndex": 2}
+        got = fetch(wfs(params))
+        record("wfs.sida.regso", got, {"sortBy": regso_code, "koder": codes_of(got.get("body"), regso_code)})
+    if code and geometry[layer]:
+        params = {"request": "GetFeature", "typeName": f"stat:{layer}", "outputFormat": "application/json"}
+        params |= {"maxFeatures": 1, "srsName": "EPSG:4326", "propertyName": f"{code},{geometry[layer]}"}
+        got = fetch(wfs(params))
+        parsed = as_dict(parse_json(got.get("body") or b""))
+        summary = {"crs": parsed.get("crs"), "forsta_koordinat": first_coordinates(parsed)[:1]}
+        record("wfs.crs.propertyName", got, {**summary, "koder": codes_of(got.get("body"), code)})
 
     for label, with_properties in (("alla", False), ("urval", True)):
         params = {"request": "GetFeature", "typeName": f"stat:{layer}", "outputFormat": "csv", "maxFeatures": 2}
@@ -636,7 +688,7 @@ def check_scb_keys() -> None:
             for url, label in links
             if allowed(url) and urllib.parse.urlsplit(url).path.lower().endswith(FILE_SUFFIXES)
         ]
-        name = page_url.rstrip("/").rsplit("/", 1)[-1]
+        name = page_name(page_url)
         record(f"scb.sida.{name}", got, {"tecken": len(text), "fillankar": [list(link) for link in file_links][:60]})
         emit_chunks("TEXT", f"scb.sida.{name}", text[:TEXT_MAX_CHARS], as_json=True)
         for url, label in file_links:
