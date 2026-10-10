@@ -250,6 +250,38 @@ def test_scb_geodata_group_with_stubbed_answers(monkeypatch: pytest.MonkeyPatch,
     assert any(f"propertyName={','.join(attributes)}" in url for url in calls)
 
 
+def test_scb_geodata_point_checks_survive_a_sample_layer_without_geometry(monkeypatch, capsys) -> None:
+    """DescribeFeatureType for DeSO_2025 reports no geometry (or fails) while the other layers do: the point checks
+    for DeSO_2025 are skipped, the ones for the other layers still run, and nothing raises."""
+    describe_deso = json.loads((FIXTURES / "scb_geodata_describe_deso.json").read_text())
+    describe_regso = json.loads((FIXTURES / "scb_geodata_describe_regso.json").read_text())
+    without_geometry = json.loads(json.dumps(describe_deso))
+    properties = without_geometry["featureTypes"][0]["properties"]
+    without_geometry["featureTypes"][0]["properties"] = [p for p in properties if not p["type"].startswith("gml:")]
+
+    def describe(url: str) -> dict:
+        if "DeSO_2025" in url:
+            return response(url, without_geometry)
+        return response(url, describe_regso if "RegSO" in url else describe_deso)
+
+    routes = {
+        "GetCapabilities": (FIXTURES / "scb_geodata_capabilities.xml").read_text(),
+        "DescribeFeatureType": describe,
+        "resultType=hits": '<wfs:FeatureCollection numberOfFeatures="6160" numberMatched="6160"/>',
+        "outputFormat=csv": "desokod,kommunkod\n0180C1010,0180\n",
+        "GetFeature": json.loads((FIXTURES / "scb_geodata_features.json").read_text()),
+    }
+    fetch, _ = fake_fetch(routes)
+    monkeypatch.setattr(vs, "fetch", fetch)
+    vs.check_scb_geodata()
+    checks = verify_lines(capsys)
+    assert not any(name.startswith("wfs.intersects.") and "." not in name[15:] for name in checks), sorted(checks)
+    assert "wfs.crs.propertyName" not in checks
+    for other in ("DeSO_2018", "RegSO_2020", "RegSO_2025"):
+        assert checks[f"wfs.intersects.y_x.{other}"]["summary"]["filter"].endswith(",POINT(6580822 674032))")
+    assert checks["wfs.sida.regso"]["summary"]["sortBy"] == "regsokod"
+
+
 def test_scb_pxweb_group_with_stubbed_answers(monkeypatch: pytest.MonkeyPatch, capsys) -> None:
     metadata = json.loads((FIXTURES / "scb_metadata_tab638.json").read_text())
     metadata["dimension"]["Region"]["category"]["index"]["0180C1010_DeSO2025"] = 99

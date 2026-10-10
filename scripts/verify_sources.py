@@ -481,8 +481,8 @@ def check_scb_geodata() -> None:
             {"filter": cql, "egenskaper": [as_dict(f).get("properties") for f in features]},
         )
 
+    x, y = SAMPLE_POINT
     if geometry[layer]:
-        x, y = SAMPLE_POINT
         for label, point in (("x_y", f"{x} {y}"), ("y_x", f"{y} {x}")):
             record_intersects(label, layer, f"INTERSECTS({geometry[layer]},POINT({point}))")
         # Does GeoServer accept EWKT (an SRID prefix) in CQL, and in which axis order? Unverified so far: a hit in
