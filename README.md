@@ -111,16 +111,18 @@ Frågor du kan ställa till assistenten:
   `fohm_search_tables` ("mobbning") → `fohm_get_table_data`.
 - *"Bygg en Power Query som hämtar folkmängd per kommun i Gävleborg till Power BI."*
   `scb_build_query` ger GET-URL, POST-kropp och färdig M-kod.
+- *"Vilket RegSO hör DeSO 2180C1010 till, och har området ändrats mellan DeSO 2018 och DeSO 2025?"*
+  `ref_lookup_deso` (lokalt, utan nätverk) → `scb_search_tables` ("DeSO") → `scb_get_table_data`.
 
-Promptarna `analysera_kommun`, `jamfor_kommuner`, `hitta_statistik`, `power_bi_fraga` och `skolenhet_profil`
-paketerar sådana arbetsflöden.
+Promptarna `analysera_kommun`, `jamfor_kommuner`, `hitta_statistik`, `power_bi_fraga`, `skolenhet_profil` och
+`omradesprofil` paketerar sådana arbetsflöden.
 
 ## Verktyg, resurser och promptar
 
 Tabellen genereras från servern med `python scripts/generate_tool_docs.py`.
 
 <!-- verktyg:start -->
-Servern har **81 verktyg**, 11 resurser och 5 promptar.
+Servern har **83 verktyg**, 11 resurser och 6 promptar.
 
 #### Översikt
 
@@ -135,7 +137,9 @@ Servern har **81 verktyg**, 11 resurser och 5 promptar.
 | --- | --- |
 | `ref_lookup_region` | Fuzzy-sök kommun- och länskoder (SCB:s regionala indelning) på namn eller kod. |
 | `ref_list_municipalities` | Lista kommuner (kod, namn, länskod), valfritt filtrerat på län. |
-| `ref_list_code_lists` | Lista medföljande kodlistor/referensdata (t.ex. |
+| `ref_lookup_deso` | Slå upp en DeSO- eller RegSO-kod i SCB:s nyckelfiler: kommun, kategori, RegSO per version och jämförbarhet mellan DeSO 2018 och DeSO 2025. |
+| `ref_list_deso` | Lista alla DeSO-koder i en kommun grupperade per RegSO (kod, namn, antal) för DeSO 2025 eller DeSO 2018, med antal per kategori A/B/C. |
+| `ref_list_code_lists` | Lista medföljande kodlistor och referensdata med beskrivning, källa och verifiering. |
 | `ref_get_code_list` | Hämta en hel kodlista (koder, namn, beskrivningar och källhänvisning). |
 | `ref_entity_catalog` | Katalog över alla dataentiteter som servern exponerar (tabeller, skolenheter, huvudmän, ämnen, kurser, program, utbildningstillfällen, dataset ...) med identifierare, verktyg och hur källorna kopplas ihop (kommunkod, länskod, skolenhetskod, organisationsnummer, skolform, kurs-/ämnes-/programkoder). |
 
@@ -273,6 +277,7 @@ Servern har **81 verktyg**, 11 resurser och 5 promptar.
 | `hitta_statistik` | Hitta rätt källa och tabell för en statistikfråga. |
 | `power_bi_fraga` | Bygg återanvändbara frågor (Power Query M) mot SCB eller Folkhälsomyndigheten. |
 | `skolenhet_profil` | Sammanställ register-, utbuds- och statistikuppgifter för en skolenhet. |
+| `omradesprofil` | Ta fram statistik för ett DeSO eller RegSO med rätt version och jämförelse med kommunen och riket. |
 <!-- verktyg:end -->
 
 ### Urval i PxWeb (SCB, Skolverkets statistikdatabas, Folkhälsomyndigheten)
@@ -324,11 +329,19 @@ t.ex. Power BI.
 | Skolenhetskod | 8 siffror | Skolenhetsregistret, Planerad utbildning, Skolverkets statistikdatabas (`orgnr-skolenhetskod`), SS 12000 |
 | Organisationsnummer | 10 siffror | Skolenhetsregistret (huvudman), Skolverkets statistikdatabas (UFA), dataportalen, SS 12000 |
 | Skolform | t.ex. GR, GRAN/GRS, GY | Alla Skolverket-API:er och SS 12000 – översätt med kodlistan `skolformer` |
-| DeSO-/RegSO-kod | t.ex. `2180C1010` | SCB-tabeller på DeSO/RegSO-nivå och SCB:s geodatalager (`scb_geodata_*`) |
+| DeSO-/RegSO-kod | DeSO 9 tecken (t.ex. `2180C1010`), RegSO 8 tecken (t.ex. `2180R001`) | SCB-tabeller på DeSO/RegSO-nivå, SCB:s geodatalager (`scb_geodata_*`) och kopplingstabellerna i `ref_lookup_deso`/`ref_list_deso` |
 
 Mer finns i `ref_entity_catalog` och resursen `fuzzy://entities`. Medföljande kodlistor (`ref_list_code_lists`):
 regioner, betygsskalor (inklusive Gy25 och kommande skala 1–10), SCB:s betygskoder, gymnasieprogram, anpassad
-gymnasieskola, introduktionsprogram, komvux-koder, betygsdokument, kodstrukturer, SS 12000 och skolformer.
+gymnasieskola, introduktionsprogram, komvux-koder, betygsdokument, kodstrukturer, SS 12000, skolformer samt
+DeSO/RegSO-kopplingar för båda versionsparen (DeSO 2018–RegSO 2020, DeSO 2025–RegSO 2025) och SCB:s förändringslogg
+för DeSO. DeSO-kopplingarna är en daterad ögonblicksbild av SCB:s nyckelfiler (filnamn, datum och sha256 står i
+varje kodlista); nya filer läses in med `scripts/build_deso_reference.py`.
+
+Relaterade källor som inte är anslutna som verktyg: SCB:s sida om DeSO under öppna geodata
+(<https://www.scb.se/vara-tjanster/oppna-data/oppna-geodata/demografiska-statistikomraden-deso/>) med nyckelfilerna,
+och SCB:s Regina (<https://regina.scb.se/indelningar>) för historiska regionala indelningar sedan 1952 (webbplats
+utan dokumenterat API).
 
 Varje post i kodlistorna har fältet `verifiering` som anger hur posten är kontrollerad:
 

@@ -1,0 +1,7497 @@
+{
+ "id": "deso_forandringar",
+ "titel": "Historiska förändringar i DeSO",
+ "beskrivning": "SCB:s logg över förändringar av DeSO: varje rad är ett tidigare DeSO, det DeSO som berörs efter förändringen, SCB:s förändringstyp och datum. Samma kod före och efter betyder att området finns kvar med ändrad gräns. En kod kan förekomma på flera rader. Raderna är [fran, till, typ, datum]. Loggen beskriver koder och gränser, inte befolkning: att summera statistik över en förändring kräver att alla delar är kända (se ref_lookup_deso).",
+ "kalla": "SCB, filen 'Historiska förändringar i DeSO' (xlsx) på sidan Demografiska statistikområden (DeSO) under öppna geodata.",
+ "kalla_url": "https://www.scb.se/vara-tjanster/oppna-data/oppna-geodata/demografiska-statistikomraden-deso/",
+ "licens": "CC0 1.0",
+ "fil": {
+  "namn": "deso-historiska-forandringar-2025-09-19.xlsx",
+  "datum_i_fil": "2025-09-19",
+  "sha256": "c57825792c4a0754515b62847fbcd6aa94805579212cedb44ef1c71bd3face91",
+  "hamtad": "2026-10-10",
+  "hamtning": "Nedladdad manuellt från SCB:s sida och konverterad med scripts/build_deso_reference.py. Filens URL och innehåll är inte kontrollerade maskinellt; sha256 avser den manuellt nedladdade filen."
+ },
+ "antal": {
+  "rader": 1234,
+  "datum": {
+   "2018-02-21": 2,
+   "2025-01-01": 1232
+  }
+ },
+ "forandringstyper": [
+  {
+   "typ": "Upphör; till nybildad",
+   "antal": 323,
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "SCB:s egen benämning i filen; antal räknat ur filen."
+  },
+  {
+   "typ": "Minskas och ger del till befintlig eller nybildad",
+   "antal": 253,
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "SCB:s egen benämning i filen; antal räknat ur filen."
+  },
+  {
+   "typ": "Ger del/delar till befintlig",
+   "antal": 203,
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "SCB:s egen benämning i filen; antal räknat ur filen."
+  },
+  {
+   "typ": "Utvidgas till territorialvattengräns",
+   "antal": 200,
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "SCB:s egen benämning i filen; antal räknat ur filen."
+  },
+  {
+   "typ": "Utvidgas",
+   "antal": 172,
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "SCB:s egen benämning i filen; antal räknat ur filen."
+  },
+  {
+   "typ": "Ger del till nybildad",
+   "antal": 62,
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "SCB:s egen benämning i filen; antal räknat ur filen."
+  },
+  {
+   "typ": "Upphör; till befintlig",
+   "antal": 16,
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "SCB:s egen benämning i filen; antal räknat ur filen."
+  },
+  {
+   "typ": "Kodändrad; annat än 20-22",
+   "antal": 5,
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "SCB:s egen benämning i filen; antal räknat ur filen."
+  }
+ ],
+ "forandringar_falt": "fran, till, typ, datum",
+ "verifiering_samlingar": {
+  "fil": {
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "Filnamn, datum i filen och sha256 från den nedladdade filen; hamtad är nedladdningsdagen."
+  },
+  "antal": {
+   "verifiering": "härlett",
+   "verifiering_not": "Räknat ur filen."
+  },
+  "kalla_url": {
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "Adressen till SCB:s sida som filerna laddades ner från, angiven av utvecklaren vid nedladdningen (se fil.hamtad). Inte kontrollerad maskinellt."
+  },
+  "forandringar": {
+   "verifiering": "myndighetswebb",
+   "verifiering_not": "Ur SCB:s fil 'deso-historiska-forandringar-2025-09-19.xlsx' (datum i filen 2025-09-19); varje rad är [tidigare DeSO, DeSO, förändringstyp, datum] med SCB:s egna ord. Kommun och kommunnamn är utelämnade: kommunkoden är kodens fyra första tecken, och tre rader går över en kommungräns."
+  }
+ },
+ "forandringar": [
+  [
+   "0114C1060",
+   "0114C1061",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0114C1060",
+   "0114C1062",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0114C1090",
+   "0114C1091",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0114C1090",
+   "0114C1092",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0114C1140",
+   "0114C1141",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0114C1140",
+   "0114C1142",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0117C1080",
+   "0117C1081",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0117C1080",
+   "0117C1082",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0120A0010",
+   "0120A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0120C1040",
+   "0120A0010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0120C1040",
+   "0120C1040",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0120C1050",
+   "0120A0010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0120C1050",
+   "0120C1050",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0120C1080",
+   "0120C1060",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0120C1080",
+   "0120C1080",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0120C1110",
+   "0120C1111",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0120C1110",
+   "0120C1112",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0120C1130",
+   "0120C1130",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0120C1210",
+   "0120C1210",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0123C1090",
+   "0123C1091",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0123C1090",
+   "0123C1092",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0123C1090",
+   "0123C1141",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0123C1140",
+   "0123C1141",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0123C1140",
+   "0123C1142",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0123C1140",
+   "0123C1143",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0123C1200",
+   "0123C1143",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0123C1200",
+   "0123C1200",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0123C1220",
+   "0123C1221",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0123C1220",
+   "0123C1222",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0123C1250",
+   "0123C1221",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0123C1250",
+   "0123C1250",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0126C1020",
+   "0126C1020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0126C1020",
+   "0126C1081",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0126C1080",
+   "0126C1081",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0126C1080",
+   "0126C1082",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0126C1140",
+   "0126C1140",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0126C1190",
+   "0126C1191",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0126C1190",
+   "0126C1192",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0126C1310",
+   "0126C1311",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0126C1310",
+   "0126C1312",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0127C1050",
+   "0127C1051",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0127C1050",
+   "0127C1052",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0127C1180",
+   "0127C1181",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0127C1180",
+   "0127C1182",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0127C1310",
+   "0127C1310",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0127C1350",
+   "0127C1351",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0127C1350",
+   "0127C1352",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0127C1430",
+   "0127C1431",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0127C1430",
+   "0127C1432",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0136A0020",
+   "0136A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0136B2010",
+   "0136B2010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0136C1290",
+   "0136C1290",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0136C1290",
+   "0136C1343",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0136C1310",
+   "0136C1311",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0136C1310",
+   "0136C1312",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0136C1310",
+   "0136C1313",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0136C1310",
+   "0136C1314",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0136C1340",
+   "0136C1341",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0136C1340",
+   "0136C1342",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0136C1340",
+   "0136C1343",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0136C1400",
+   "0136C1312",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0136C1400",
+   "0136C1400",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0138C1170",
+   "0138C1170",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0139A0010",
+   "0139A0010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0139A0010",
+   "0139B2070",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0139C1010",
+   "0139A0010",
+   "Upphör; till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0139C1010",
+   "0139C1011",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0139C1010",
+   "0139C1012",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0139C1010",
+   "0139C1020",
+   "Upphör; till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0139C1020",
+   "0139C1020",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0139C1040",
+   "0139A0010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0139C1040",
+   "0139C1040",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0139C1040",
+   "0139C1052",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0139C1050",
+   "0139C1051",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0139C1050",
+   "0139C1052",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0140C1010",
+   "0140C1011",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0140C1010",
+   "0140C1012",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0160C1040",
+   "0160C1040",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0160C1040",
+   "0160C1143",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0160C1090",
+   "0160C1090",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0160C1140",
+   "0160C1141",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0160C1140",
+   "0160C1142",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0160C1140",
+   "0160C1143",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0160C1340",
+   "0160C1341",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0160C1340",
+   "0160C1342",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0163C1010",
+   "0163C1011",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0163C1010",
+   "0163C1012",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0163C1310",
+   "0163C1311",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0163C1310",
+   "0163C1312",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C1100",
+   "0180C1101",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C1100",
+   "0180C1102",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C1240",
+   "0180C1241",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C1240",
+   "0180C1242",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C1560",
+   "0180C1560",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C1560",
+   "0180C1592",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C1590",
+   "0180C1591",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C1590",
+   "0180C1592",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C1600",
+   "0180C1600",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C1600",
+   "0180C1873",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C1870",
+   "0180C1871",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C1870",
+   "0180C1872",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C1870",
+   "0180C1873",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2020",
+   "0180C2020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2020",
+   "0180C2111",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2110",
+   "0180C2111",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2110",
+   "0180C2112",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2110",
+   "0180C2113",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2140",
+   "0180C2140",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0180C2190",
+   "0180C2190",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2190",
+   "0180C2340",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0180C2340",
+   "0180C2340",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0180C2430",
+   "0180C2340",
+   "Upphör; till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0180C2430",
+   "0180C2431",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2430",
+   "0180C2432",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2480",
+   "0180C2340",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0180C2480",
+   "0180C2480",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2730",
+   "0180C2730",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0180C2780",
+   "0180C2730",
+   "Upphör; till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0180C2780",
+   "0180C2781",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2780",
+   "0180C2782",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2780",
+   "0180C2783",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2880",
+   "0180C2881",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2880",
+   "0180C2882",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2950",
+   "0180C2730",
+   "Upphör; till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0180C2950",
+   "0180C2951",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2950",
+   "0180C2952",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2950",
+   "0180C2953",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2970",
+   "0180C2970",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0180C2980",
+   "0180C2881",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2980",
+   "0180C2980",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2980",
+   "0180C2980",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0180C2990",
+   "0180C2970",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0180C2990",
+   "0180C2990",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C2990",
+   "0180C2990",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0180C3000",
+   "0180C3000",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C3000",
+   "0180C3080",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0180C3010",
+   "0180C2990",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0180C3010",
+   "0180C3010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C3010",
+   "0180C3010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0180C3060",
+   "0180C3060",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0180C3200",
+   "0180C3201",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C3200",
+   "0180C3202",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C3220",
+   "0180C3220",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0180C3230",
+   "0180C3010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0180C3230",
+   "0180C3220",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0180C3230",
+   "0180C3230",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C3270",
+   "0180C3270",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0180C3410",
+   "0180C3410",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C3540",
+   "0180C3540",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C3540",
+   "0180C3920",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0180C3560",
+   "0180C3560",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0180C3650",
+   "0180C3650",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0180C3690",
+   "0180C3690",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0180C3830",
+   "0180C3510",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0180C3830",
+   "0180C3830",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C3900",
+   "0180C3830",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0180C3900",
+   "0180C3900",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5060",
+   "0180C5060",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5260",
+   "0180C5261",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5260",
+   "0180C5262",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5260",
+   "0180C5263",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5260",
+   "0180C5264",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5390",
+   "0180C5390",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0180C5420",
+   "0180C5421",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5420",
+   "0180C5422",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5430",
+   "0180C5431",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5430",
+   "0180C5432",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5650",
+   "0180C5651",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5650",
+   "0180C5652",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5650",
+   "0180C5653",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5690",
+   "0180C5691",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5690",
+   "0180C5692",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5740",
+   "0180C5740",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5740",
+   "0180C5751",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5750",
+   "0180C5751",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5750",
+   "0180C5752",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5860",
+   "0180C5861",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C5860",
+   "0180C5862",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C6150",
+   "0180C6151",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0180C6150",
+   "0180C6152",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0181B2030",
+   "0181B2031",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0181B2030",
+   "0181B2032",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0181C1160",
+   "0181C1161",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0181C1160",
+   "0181C1162",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0181C1280",
+   "0181C1281",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0181C1280",
+   "0181C1282",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0181C1300",
+   "0181C1301",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0181C1300",
+   "0181C1302",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0182C1010",
+   "0182C1010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0182C1030",
+   "0138C1170",
+   "Upphör; till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0182C1030",
+   "0182C1010",
+   "Upphör; till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0182C1030",
+   "0182C1031",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0182C1030",
+   "0182C1032",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0182C1030",
+   "0182C1033",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0182C1230",
+   "0182C1231",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0182C1230",
+   "0182C1232",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0182C1290",
+   "0182C1291",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0182C1290",
+   "0182C1292",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0182C1350",
+   "0182C1350",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0182C1350",
+   "0182C1371",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0182C1350",
+   "0182C1372",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0182C1370",
+   "0182C1371",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0182C1370",
+   "0182C1372",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0182C1380",
+   "0182C1380",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0182C1410",
+   "0182C1411",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0182C1410",
+   "0182C1412",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0183C1160",
+   "0183C1161",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0183C1160",
+   "0183C1162",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0183C1240",
+   "0183C1241",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0183C1240",
+   "0183C1242",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0183C1240",
+   "0183C1243",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0183C1250",
+   "0183C1241",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0183C1250",
+   "0183C1250",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0183C1260",
+   "0183C1261",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0183C1260",
+   "0183C1262",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0184C1050",
+   "0184C1051",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0184C1050",
+   "0184C1052",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0184C1110",
+   "0184C1110",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0184C1130",
+   "0184C1110",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0184C1130",
+   "0184C1130",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0184C1130",
+   "0184C1180",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0184C1180",
+   "0180C5261",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0184C1180",
+   "0180C5263",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0184C1180",
+   "0184C1051",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0184C1180",
+   "0184C1180",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0188A0010",
+   "0188A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0188A0060",
+   "0188A0060",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0188A0130",
+   "0188A0130",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0188A0180",
+   "0188A0180",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0188C1060",
+   "0188C1061",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0188C1060",
+   "0188C1062",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0188C1060",
+   "0188C1063",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0188C1070",
+   "0188C1063",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0188C1070",
+   "0188C1070",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0191A0010",
+   "0191A0010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0191A0010",
+   "0191C1082",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0191B2030",
+   "0191B2031",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0191B2030",
+   "0191B2032",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0191C1030",
+   "0191C1030",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0191C1060",
+   "0191C1060",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0191C1060",
+   "0191C1110",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0191C1070",
+   "0191C1030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0191C1070",
+   "0191C1070",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0191C1080",
+   "0191C1081",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0191C1080",
+   "0191C1082",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0191C1080",
+   "0191C1083",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0191C1090",
+   "0191C1090",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0191C1090",
+   "0191C1110",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0191C1100",
+   "0191C1100",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0191C1100",
+   "0191C1110",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0191C1100",
+   "0191C1130",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0191C1110",
+   "0191C1110",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0191C1130",
+   "0191C1110",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0191C1130",
+   "0191C1130",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0192A0010",
+   "0192A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0192C1010",
+   "0192C1010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0192C1020",
+   "0192A0010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0192C1020",
+   "0192C1020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0192C1030",
+   "0192A0010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0192C1030",
+   "0192C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0192C1030",
+   "0192C1100",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0192C1050",
+   "0192C1050",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0192C1060",
+   "0192C1060",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0192C1070",
+   "0192C1070",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0192C1070",
+   "0192C1100",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0192C1090",
+   "0192A0010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0192C1090",
+   "0192C1060",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0192C1090",
+   "0192C1090",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0192C1090",
+   "0192C1100",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0192C1100",
+   "0192A0010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0192C1100",
+   "0192C1100",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0192C1100",
+   "0192C1100",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0305A0010",
+   "0305A0010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0305A0010",
+   "0305C1012",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0305C1010",
+   "0305C1011",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0305C1010",
+   "0305C1012",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0319A0010",
+   "0319A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0319C1020",
+   "0319C1020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0319C1030",
+   "0319C1030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0330C1030",
+   "0330C1031",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0330C1030",
+   "0330C1032",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0330C1030",
+   "0330C1050",
+   "Upphör; till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0360A0070",
+   "0360A0070",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0380A0030",
+   "0380A0030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380A0030",
+   "0380C1331",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380B5010",
+   "0380B5011",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380B5010",
+   "0380B5012",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380B6010",
+   "0380B6011",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380B6010",
+   "0380B6012",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380C1090",
+   "0380C1060",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0380C1090",
+   "0380C1090",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380C1110",
+   "0380C1110",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380C1110",
+   "0380C1211",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380C1210",
+   "0380C1211",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380C1210",
+   "0380C1212",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380C1210",
+   "0380C1213",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380C1260",
+   "0380C1260",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380C1260",
+   "0380C1353",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380C1270",
+   "0380C1270",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0380C1330",
+   "0380C1331",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380C1330",
+   "0380C1332",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380C1350",
+   "0380C1351",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380C1350",
+   "0380C1352",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380C1350",
+   "0380C1353",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380C1380",
+   "0380C1380",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0380C1480",
+   "0380C1481",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380C1480",
+   "0380C1482",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0380C1480",
+   "0380C1483",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0381B3010",
+   "0381A0010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0381B3010",
+   "0381B3010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0381C1040",
+   "0381C1040",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0382A0050",
+   "0382A0050",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0382B4020",
+   "0382A0030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0382B4020",
+   "0382B4020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0382B5010",
+   "0382A0050",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0382B5010",
+   "0382B5010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0382C1030",
+   "0382A0050",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0382C1030",
+   "0382C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0480A0070",
+   "0480A0070",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0480B4010",
+   "0480A0010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0480B4010",
+   "0480B4010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0480C1010",
+   "0480C1011",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0480C1010",
+   "0480C1012",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0480C1020",
+   "0480C1020",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0480C1090",
+   "0480C1090",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0481C1010",
+   "0481C1010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0481C1070",
+   "0481C1070",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0484B4010",
+   "0484A0070",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0484B4010",
+   "0484B4010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0484C1020",
+   "0484C1020",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0484C1100",
+   "0484C1100",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0484C1100",
+   "0484C1140",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0484C1340",
+   "0484C1341",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0484C1340",
+   "0484C1342",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0484C1380",
+   "0484C1341",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0484C1380",
+   "0484C1380",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0484C1450",
+   "0484A0060",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0484C1450",
+   "0484C1450",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0484C1490",
+   "0484A0050",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0484C1490",
+   "0484C1490",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0484C1500",
+   "0484C1500",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0486A0080",
+   "0486A0080",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0486A0080",
+   "0486C1091",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0486C1030",
+   "0486C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0486C1030",
+   "0486C1091",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0486C1090",
+   "0486C1091",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0486C1090",
+   "0486C1092",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0488A0010",
+   "0488A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0488A0010",
+   "0488C1032",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0488C1010",
+   "0488A0010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0488C1010",
+   "0488C1010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0488C1030",
+   "0488A0020",
+   "Upphör; till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0488C1030",
+   "0488C1031",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0488C1030",
+   "0488C1032",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0513B2020",
+   "0513A0030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0513B2020",
+   "0513B2010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0513B2020",
+   "0513B2020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0513C1010",
+   "0513C1010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0563A0010",
+   "0563A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0563A0020",
+   "0563A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0580A0030",
+   "0580A0030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580A0030",
+   "0580C1192",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580B2020",
+   "0580B2020",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0580B2030",
+   "0580B2010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0580B2030",
+   "0580B2030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1020",
+   "0580C1020",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0580C1050",
+   "0580C1010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0580C1050",
+   "0580C1050",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1060",
+   "0580C1060",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1060",
+   "0580C1192",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1070",
+   "0580C1070",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0580C1080",
+   "0580C1020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0580C1080",
+   "0580C1080",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1130",
+   "0580C1130",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0580C1150",
+   "0580C1130",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0580C1150",
+   "0580C1150",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1190",
+   "0580C1191",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1190",
+   "0580C1192",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1220",
+   "0580C1220",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0580C1230",
+   "0580C1231",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1230",
+   "0580C1232",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1250",
+   "0580C1250",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0580C1270",
+   "0580C1192",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1270",
+   "0580C1270",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1270",
+   "0580C1311",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1270",
+   "0580C1312",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1300",
+   "0580C1300",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1310",
+   "0580C1311",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1310",
+   "0580C1312",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1400",
+   "0580C1311",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1400",
+   "0580C1400",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1400",
+   "0580C1580",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0580C1410",
+   "0580C1410",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1410",
+   "0580C1490",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0580C1420",
+   "0580C1311",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1420",
+   "0580C1420",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1540",
+   "0580C1540",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0580C1550",
+   "0580C1550",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1550",
+   "0580C1602",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1580",
+   "0580C1580",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0580C1590",
+   "0580C1590",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1600",
+   "0580C1601",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1600",
+   "0580C1602",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1620",
+   "0580C1580",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0580C1620",
+   "0580C1620",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1620",
+   "0580C1670",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0580C1650",
+   "0580C1650",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0580C1660",
+   "0580C1630",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0580C1660",
+   "0580C1660",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1670",
+   "0580C1601",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0580C1670",
+   "0580C1670",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0581A0020",
+   "0581A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0581C1480",
+   "0581C1480",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0582A0010",
+   "0582A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0583A0020",
+   "0583A0020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0583A0020",
+   "0583A0030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0583B2020",
+   "0583B2020",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0583C1010",
+   "0583A0010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0583C1010",
+   "0583C1010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0583C1030",
+   "0583A0010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0583C1030",
+   "0583A0050",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0583C1030",
+   "0583C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0583C1090",
+   "0583C1090",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0583C1140",
+   "0583A0050",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0583C1140",
+   "0583C1140",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0584C1040",
+   "0584C1040",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0586C2010",
+   "0586B2010",
+   "Kodändrad; annat än 20-22",
+   "2025-01-01"
+  ],
+  [
+   "0586C2020",
+   "0586B2020",
+   "Kodändrad; annat än 20-22",
+   "2025-01-01"
+  ],
+  [
+   "0586C2030",
+   "0586B2030",
+   "Kodändrad; annat än 20-22",
+   "2025-01-01"
+  ],
+  [
+   "0586C3010",
+   "0586B3010",
+   "Kodändrad; annat än 20-22",
+   "2025-01-01"
+  ],
+  [
+   "0586C3020",
+   "0586B3020",
+   "Kodändrad; annat än 20-22",
+   "2025-01-01"
+  ],
+  [
+   "0642C1010",
+   "0642C1010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0643C1030",
+   "0643C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0680C1070",
+   "0680C1071",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0680C1070",
+   "0680C1072",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0680C1160",
+   "0680C1161",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0680C1160",
+   "0680C1162",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0680C1180",
+   "0680C1181",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0680C1180",
+   "0680C1182",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0680C1200",
+   "0680C1201",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0680C1200",
+   "0680C1202",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0682C1060",
+   "0682C1060",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0683C1020",
+   "0683C1020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0683C1020",
+   "0683C1050",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0683C1030",
+   "0683C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0683C1050",
+   "0683C1020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0683C1050",
+   "0683C1050",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0683C1060",
+   "0683C1030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0683C1060",
+   "0683C1060",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0683C1090",
+   "0683C1090",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0684C1010",
+   "0684C1010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0684C1010",
+   "0684C1020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0684C1020",
+   "0684C1020",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0686C1030",
+   "0686C1030",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0686C1060",
+   "0686C1050",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0686C1060",
+   "0686C1060",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0687C1020",
+   "0687C1010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "0687C1020",
+   "0687C1020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0780A0030",
+   "0780A0030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0780A0030",
+   "0780C1022",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0780C1020",
+   "0780C1021",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0780C1020",
+   "0780C1022",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0780C1070",
+   "0780C1071",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0780C1070",
+   "0780C1072",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0780C1200",
+   "0780C1201",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0780C1200",
+   "0780C1202",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0780C1340",
+   "0780C1340",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0834A0010",
+   "0834A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0840A0010",
+   "0840A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0840A0020",
+   "0840A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0840A0030",
+   "0840A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0840B2050",
+   "0840B2050",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0861C1010",
+   "0861C1010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0880A0010",
+   "0880A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0880A0030",
+   "0880A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0880A0060",
+   "0880A0060",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0880A0070",
+   "0880A0070",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0880C1010",
+   "0880C1010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "0880C1030",
+   "0880C1030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0880C1100",
+   "0880C1100",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0880C1130",
+   "0880C1130",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0880C1180",
+   "0880C1180",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0880C1200",
+   "0880C1201",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0880C1200",
+   "0880C1202",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "0880C1230",
+   "0880C1230",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0880C1240",
+   "0880C1240",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0882A0010",
+   "0882A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0882A0020",
+   "0882A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0882A0030",
+   "0882A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0882C1010",
+   "0882C1010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0882C1050",
+   "0882C1050",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0882C1120",
+   "0882C1120",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0883A0020",
+   "0883A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0883A0040",
+   "0883A0040",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0885A0010",
+   "0885A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0885A0020",
+   "0885A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0885A0030",
+   "0885A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0885A0040",
+   "0885A0040",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0980A0010",
+   "0980A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0980A0020",
+   "0980A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0980A0030",
+   "0980A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0980A0040",
+   "0980A0040",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0980A0060",
+   "0980A0060",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0980A0070",
+   "0980A0070",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0980A0080",
+   "0980A0080",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0980A0100",
+   "0980A0100",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0980A0120",
+   "0980A0120",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0980A0130",
+   "0980A0130",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0980A0140",
+   "0980A0140",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0980A0150",
+   "0980A0150",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0980A0160",
+   "0980A0160",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0980A0170",
+   "0980A0170",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "0980A0180",
+   "0980A0180",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1080A0010",
+   "1080A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1080A0020",
+   "1080A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1080A0030",
+   "1080A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1080A0050",
+   "1080A0050",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1080C1070",
+   "1080C1070",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1080C1080",
+   "1080A0020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1080C1080",
+   "1080C1080",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1080C1130",
+   "1080A0020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1080C1130",
+   "1080C1130",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1081A0010",
+   "1081A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1081A0020",
+   "1081A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1081A0030",
+   "1081A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1082A0010",
+   "1082A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1082A0020",
+   "1082A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1082C1030",
+   "1082C1020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1082C1030",
+   "1082C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1082C1040",
+   "1082C1020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1082C1040",
+   "1082C1040",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1082C1040",
+   "1082C1050",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1082C1050",
+   "1082C1050",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1082C1120",
+   "1082C1090",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1082C1120",
+   "1082C1120",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1083A0010",
+   "1083A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1083A0020",
+   "1083A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1214B4010",
+   "1214B4010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1230B2010",
+   "1230B2010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1230B2010",
+   "1230B2021",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1230B2020",
+   "1230B2021",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1230B2020",
+   "1230B2022",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1230C1010",
+   "1230C1011",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1230C1010",
+   "1230C1012",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1230C1030",
+   "1230C1011",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1230C1030",
+   "1230C1012",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1230C1030",
+   "1230C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1230C1040",
+   "1230C1040",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1233A0010",
+   "1233A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1233B2020",
+   "1233B2020",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1233B2030",
+   "1233B2030",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1233B3010",
+   "1233B3010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1233B3040",
+   "1233B3040",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1256B2020",
+   "1256B2010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1256B2020",
+   "1256B2020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1261A0010",
+   "1261A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1261C1080",
+   "1261C1081",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1261C1080",
+   "1261C1082",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1262C1010",
+   "1262C1010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1262C1030",
+   "1262C1030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1262C1050",
+   "1262C1050",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1262C1070",
+   "1262C1070",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1262C1080",
+   "1262C1080",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1262C1090",
+   "1262C1090",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1262C1100",
+   "1262C1100",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1264A0010",
+   "1264A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1264A0020",
+   "1264A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1264C1020",
+   "1264C1010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1264C1020",
+   "1264C1020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1265C1020",
+   "1265C1010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1265C1020",
+   "1265C1020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1272B3010",
+   "1272B3010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1277C1040",
+   "1277C1040",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1278A0010",
+   "1278A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1278A0020",
+   "1278A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1278B3010",
+   "1278B3010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1278C1030",
+   "1278C1031",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1278C1030",
+   "1278C1032",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C1020",
+   "1280C1020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1280C1030",
+   "1280C1030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1280C1090",
+   "1280C1090",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1280C1120",
+   "1280C1120",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C1120",
+   "1280C1273",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C1140",
+   "1280C1140",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1280C1170",
+   "1280C1171",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C1170",
+   "1280C1172",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C1190",
+   "1280C1190",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1280C1200",
+   "1280C1200",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1280C1250",
+   "1280C1250",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1280C1270",
+   "1280C1271",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C1270",
+   "1280C1272",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C1270",
+   "1280C1273",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C1270",
+   "1280C1274",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C1340",
+   "1280C1341",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C1340",
+   "1280C1342",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C1340",
+   "1280C1343",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C1430",
+   "1280C1430",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1280C1440",
+   "1280C1441",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C1440",
+   "1280C1442",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C1540",
+   "1280C1540",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1280C2080",
+   "1280C2081",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C2080",
+   "1280C2082",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C2080",
+   "1280C2083",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C2080",
+   "1280C2084",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C2080",
+   "1280C2320",
+   "Upphör; till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1280C2100",
+   "1280C2100",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1280C2210",
+   "1280C2210",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1280C2320",
+   "1280C2320",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1280C2610",
+   "1280C2611",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C2610",
+   "1280C2612",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C2660",
+   "1280C2560",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1280C2660",
+   "1280C2660",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C2710",
+   "1280C2710",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1280C2720",
+   "1280C2612",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C2720",
+   "1280C2720",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C2850",
+   "1280C2850",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1280C2870",
+   "1280C2871",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C2870",
+   "1280C2872",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C2870",
+   "1280C2873",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C2870",
+   "1280C2874",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C2880",
+   "1280C2881",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C2880",
+   "1280C2882",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C2880",
+   "1280C2883",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C2900",
+   "1280C2900",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1280C2910",
+   "1280C2911",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C2910",
+   "1280C2912",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1280C2920",
+   "1280C2920",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1281C1030",
+   "1281C1031",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1281C1030",
+   "1281C1032",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1281C1390",
+   "1281C1390",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1281C1390",
+   "1281C1432",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1281C1430",
+   "1281C1431",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1281C1430",
+   "1281C1432",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1282A0010",
+   "1282A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1282C1190",
+   "1282C1191",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1282C1190",
+   "1282C1192",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1283A0030",
+   "1283A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1283A0040",
+   "1283A0040",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1283B2010",
+   "1283B2010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1283B2030",
+   "1283B2030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1283C1020",
+   "1283C1020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1283C1030",
+   "1283C1030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1283C1070",
+   "1283C1070",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1283C1130",
+   "1283C1130",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1283C1200",
+   "1283C1201",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1283C1200",
+   "1283C1202",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1283C1220",
+   "1283C1221",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1283C1220",
+   "1283C1222",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1283C1340",
+   "1283C1222",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1283C1340",
+   "1283C1340",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1283C1350",
+   "1283C1350",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1283C1590",
+   "1283C1590",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1283C1630",
+   "1283C1631",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1283C1630",
+   "1283C1632",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1283C1630",
+   "1283C1633",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1284A0010",
+   "1284A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1284A0020",
+   "1284A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1284A0030",
+   "1284A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1284C1010",
+   "1284A0030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1284C1010",
+   "1284C1010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1284C1120",
+   "1284C1120",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1285C1080",
+   "1285C1081",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1285C1080",
+   "1285C1082",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1286A0010",
+   "1286A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1286A0020",
+   "1286A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1286A0030",
+   "1286A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1286A0040",
+   "1286A0040",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1286C1030",
+   "1286C1030",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1286C1040",
+   "1286C1041",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1286C1040",
+   "1286C1042",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1287A0010",
+   "1287A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1287A0030",
+   "1287A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1287C1020",
+   "1287C1020",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1287C1040",
+   "1287C1040",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1287C1050",
+   "1287C1050",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1287C1060",
+   "1287C1060",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1287C1070",
+   "1287C1070",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1287C1090",
+   "1287A0030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1287C1090",
+   "1287C1090",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1287C1100",
+   "1287C1100",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1287C1120",
+   "1287C1040",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1287C1120",
+   "1287C1100",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1287C1120",
+   "1287C1120",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1287C1130",
+   "1287C1130",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1287C1130",
+   "1287C1140",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1287C1150",
+   "1287C1150",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1287C1150",
+   "1287C1150",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1287C1150",
+   "1287C1160",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1287C1160",
+   "1287C1160",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1290A0020",
+   "1290A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1290A0080",
+   "1290A0080",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1290B2010",
+   "1290B2010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1291A0010",
+   "1291A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1291A0020",
+   "1291A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1291A0030",
+   "1291A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1291A0040",
+   "1291A0040",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1291A0060",
+   "1291A0060",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1291A0070",
+   "1291A0070",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1291C1030",
+   "1291C1020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1291C1030",
+   "1291C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1292A0020",
+   "1292A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1292C1140",
+   "1292A0020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1292C1140",
+   "1292C1140",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1292C1150",
+   "1292A0020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1292C1150",
+   "1292C1150",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1380A0010",
+   "1380A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1380C1180",
+   "1380C1181",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1380C1180",
+   "1380C1182",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1380C1440",
+   "1380A0010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1380C1440",
+   "1380C1440",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1382A0010",
+   "1382A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1382A0030",
+   "1382A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1382C1020",
+   "1382C1021",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1382C1020",
+   "1382C1022",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1382C1060",
+   "1382C1022",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1382C1060",
+   "1382C1060",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1382C1150",
+   "1382C1151",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1382C1150",
+   "1382C1152",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1383A0010",
+   "1383A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1383A0070",
+   "1383A0070",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1383A0090",
+   "1383A0090",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1383C1010",
+   "1383C1010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1383C1020",
+   "1383C1020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1383C1030",
+   "1383C1030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1383C1040",
+   "1383C1040",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1383C1150",
+   "1383C1150",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1383C1190",
+   "1383C1191",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1383C1190",
+   "1383C1192",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1384C1010",
+   "1384C1010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1384C1050",
+   "1384C1050",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1384C1080",
+   "1384C1080",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1384C1200",
+   "1384C1200",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1384C1250",
+   "1384C1200",
+   "Upphör; till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1384C1250",
+   "1384C1251",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1384C1250",
+   "1384C1252",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1384C1280",
+   "1384C1280",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1402C1010",
+   "1402C1011",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1402C1010",
+   "1402C1012",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1402C1140",
+   "1402C1140",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1402C1140",
+   "1402C1151",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1402C1150",
+   "1402C1151",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1402C1150",
+   "1402C1152",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1407A0010",
+   "1407A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1407A0030",
+   "1407A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1407C1020",
+   "1407C1020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1419B3010",
+   "1419B3010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1419C1020",
+   "1419C1020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1419C1040",
+   "1419C1040",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1421A0020",
+   "1421A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1427A0010",
+   "1427A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1427A0020",
+   "1427A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1427A0030",
+   "1427A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1435A0010",
+   "1435A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1435A0030",
+   "1435A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1440C1080",
+   "1440C1070",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1440C1080",
+   "1440C1080",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1441B2030",
+   "1441B2030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1441B2030",
+   "1441B2040",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1442C1020",
+   "1442C1020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1442C1020",
+   "1442C1030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1442C1030",
+   "1442C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1472C1030",
+   "1472C1030",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1480A0010",
+   "1480A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1480A0020",
+   "1480A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1480C1030",
+   "1480C1031",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C1030",
+   "1480C1032",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C1160",
+   "1480C1161",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C1160",
+   "1480C1162",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C1350",
+   "1480C1280",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1480C1350",
+   "1480C1350",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C1420",
+   "1480C1421",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C1420",
+   "1480C1422",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C1570",
+   "1480C1571",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C1570",
+   "1480C1572",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C1620",
+   "1480C1621",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C1620",
+   "1480C1622",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C1690",
+   "1480C1691",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C1690",
+   "1480C1692",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C1690",
+   "1480C1710",
+   "Upphör; till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1480C1710",
+   "1480C1710",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1480C2270",
+   "1480C2271",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C2270",
+   "1480C2272",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C2430",
+   "1480C2430",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1480C2560",
+   "1480C2561",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C2560",
+   "1480C2562",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C2560",
+   "1480C2563",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C2710",
+   "1480C2562",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C2710",
+   "1480C2710",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C2780",
+   "1480C2710",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1480C2780",
+   "1480C2780",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C2950",
+   "1480C2951",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C2950",
+   "1480C2952",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C3040",
+   "1480C3041",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C3040",
+   "1480C3042",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C3220",
+   "1480C3221",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C3220",
+   "1480C3222",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C3560",
+   "1480C3561",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C3560",
+   "1480C3562",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C3590",
+   "1480C3591",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1480C3590",
+   "1480C3592",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1481C1200",
+   "1481C1201",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1481C1200",
+   "1481C1202",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1482A0020",
+   "1482A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1482A0060",
+   "1482A0060",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1482B2020",
+   "1482A0060",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1482B2020",
+   "1482B2020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1482B2020",
+   "1482B2020",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1482B2040",
+   "1482B2040",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1482B4010",
+   "1482A0060",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1482B4010",
+   "1482B4010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1482B4010",
+   "1482B4010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1482C1010",
+   "1482C1011",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1482C1010",
+   "1482C1012",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1484A0010",
+   "1484A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1484A0020",
+   "1484A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1484B2010",
+   "1484A0030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1484B2010",
+   "1484B2010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1484C1040",
+   "1484C1040",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1485A0010",
+   "1485A0011",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1485A0010",
+   "1485A0012",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1486A0010",
+   "1486A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "1487C1030",
+   "1487C1030",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1487C1050",
+   "1487C1010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1487C1050",
+   "1487C1050",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1487C1060",
+   "1487C1060",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1487C1070",
+   "1487C1070",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1487C1070",
+   "1487C1090",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1487C1080",
+   "1487C1080",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1487C1090",
+   "1487C1090",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1487C1090",
+   "1487C1090",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1487C1090",
+   "1487C1110",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1487C1110",
+   "1487C1080",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1487C1110",
+   "1487C1110",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1487C1130",
+   "1487C1130",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1487C1130",
+   "1487C1150",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1487C1160",
+   "1487C1140",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1487C1160",
+   "1487C1160",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1487C1160",
+   "1487C1160",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1487C1170",
+   "1487C1170",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1487C1190",
+   "1487C1150",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1487C1190",
+   "1487C1190",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1050",
+   "1490C1020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1050",
+   "1490C1050",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1060",
+   "1490C1060",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1080",
+   "1490C1080",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1080",
+   "1490C1080",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1490C1080",
+   "1490C1090",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1090",
+   "1490C1080",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1090",
+   "1490C1090",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1090",
+   "1490C1140",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1170",
+   "1490A0030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1170",
+   "1490C1170",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1180",
+   "1490C1180",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1490C1190",
+   "1490C1130",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1190",
+   "1490C1190",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1190",
+   "1490C1280",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1200",
+   "1490C1200",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1210",
+   "1490C1180",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1210",
+   "1490C1210",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1220",
+   "1490C1220",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1240",
+   "1490C1040",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1240",
+   "1490C1240",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1240",
+   "1490C1450",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1250",
+   "1490C1240",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1250",
+   "1490C1250",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1260",
+   "1490C1260",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1490C1270",
+   "1490C1270",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1490C1280",
+   "1490C1270",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1280",
+   "1490C1280",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1290",
+   "1490C1270",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1290",
+   "1490C1290",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1300",
+   "1490C1220",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1300",
+   "1490C1300",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1300",
+   "1490C1340",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1320",
+   "1490C1320",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1490C1340",
+   "1490C1300",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1340",
+   "1490C1340",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1340",
+   "1490C1340",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1490C1340",
+   "1490C1520",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1350",
+   "1490C1350",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1360",
+   "1490C1360",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1370",
+   "1490C1270",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1370",
+   "1490C1290",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1370",
+   "1490C1370",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1470",
+   "1490C1470",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1470",
+   "1490C1520",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1480",
+   "1490C1470",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1480",
+   "1490C1480",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1490",
+   "1490C1490",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1490",
+   "1490C1490",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1490C1490",
+   "1490C1520",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1500",
+   "1490C1500",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1500",
+   "1490C1520",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1510",
+   "1490C1510",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1490C1510",
+   "1490C1530",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1540",
+   "1490A0080",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1490C1540",
+   "1490C1540",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1491C1040",
+   "1491C1040",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1491C1050",
+   "1491C1050",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1492C1030",
+   "1492A0020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1492C1030",
+   "1492C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1492C1040",
+   "1492C1040",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1492C1040",
+   "1492C1050",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1496A0030",
+   "1496A0030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1496A0030",
+   "1496C1182",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1496A0030",
+   "1496C1230",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1496C1180",
+   "1496C1181",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1496C1180",
+   "1496C1182",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1496C1180",
+   "1496C1230",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1715C1040",
+   "1715C1040",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1760C1010",
+   "1760A0010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1760C1010",
+   "1760C1010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1761C1010",
+   "1761C1010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1761C1010",
+   "1761C1010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1761C1010",
+   "1761C1020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1761C1010",
+   "1761C1040",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1761C1020",
+   "1761C1020",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1761C1040",
+   "1761C1040",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1761C1050",
+   "1761C1050",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1761C1050",
+   "1761C1080",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1761C1060",
+   "1761C1060",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1761C1060",
+   "1761C1070",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1761C1070",
+   "1761C1060",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1761C1070",
+   "1761C1070",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1761C1070",
+   "1761C1070",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1764C1010",
+   "1764C1010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1764C1020",
+   "1764C1020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1764C1030",
+   "1764C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1764C1030",
+   "1764C1040",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1765C1010",
+   "1765A0010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1765C1010",
+   "1765C1010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1765C1030",
+   "1765C1010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1765C1030",
+   "1765C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1766C1030",
+   "1766C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1766C1030",
+   "1766C1040",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1780B3010",
+   "1780B3010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1780C1010",
+   "1780C1010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1780C1040",
+   "1780C1041",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1780C1040",
+   "1780C1042",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1780C1040",
+   "1780C1043",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1780C1040",
+   "1780C1044",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1780C1110",
+   "1780C1110",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1780C1240",
+   "1780C1240",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1780C1280",
+   "1780C1060",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1780C1280",
+   "1780C1280",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1780C1320",
+   "1780C1321",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1780C1320",
+   "1780C1322",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1780C1360",
+   "1780A0030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1780C1360",
+   "1780C1360",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1780C1380",
+   "1780A0050",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1780C1380",
+   "1780C1380",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1780C1380",
+   "1780C1380",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1780C1400",
+   "1780C1400",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1781C1010",
+   "1781A0020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1781C1010",
+   "1781C1010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1781C1060",
+   "1781C1060",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1781C1070",
+   "1781C1070",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1781C1080",
+   "1781C1010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1781C1080",
+   "1781C1080",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1781C1120",
+   "1781A0020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1781C1120",
+   "1781C1120",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1784C1010",
+   "1784A0030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1784C1010",
+   "1784C1010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1784C1030",
+   "1784C1030",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1784C1040",
+   "1784C1040",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1784C1050",
+   "1784C1050",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1784C1060",
+   "1784C1060",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1880C1130",
+   "1880C1131",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1880C1130",
+   "1880C1132",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1880C1140",
+   "1880C1141",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1880C1140",
+   "1880C1142",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1880C1140",
+   "1880C1143",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1880C1270",
+   "1880C1271",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1880C1270",
+   "1880C1272",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1881C1010",
+   "1881C1010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1881C1030",
+   "1881C1010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1881C1030",
+   "1881C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1882C1010",
+   "1882C1010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1882C1010",
+   "1882C1030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1882C1020",
+   "1882A0030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1882C1020",
+   "1882C1020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1882C1030",
+   "1882A0030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1882C1030",
+   "1882C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1884C1010",
+   "1884C1010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1884C1010",
+   "1884C1030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1884C1020",
+   "1884C1020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1884C1030",
+   "1884A0020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1884C1030",
+   "1884C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1884C1040",
+   "1884C1020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1884C1040",
+   "1884C1030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1884C1040",
+   "1884C1040",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1884C1040",
+   "1884C1040",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1884C1050",
+   "1884C1050",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1885B2010",
+   "1885B2010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1885B2020",
+   "1885B2020",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1885B3010",
+   "1885B3010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1885C1040",
+   "1885C1030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1885C1040",
+   "1885C1040",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1907B2010",
+   "1907A0010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1907B2010",
+   "1907B2010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1907B3010",
+   "1907A0010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1907B3010",
+   "1907B3010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1907C1020",
+   "1907C1020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1907C1040",
+   "1907C1040",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1960C1010",
+   "1960C1010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1961C1010",
+   "1961C1010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1961C1010",
+   "1961C1020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1961C1020",
+   "1961C1020",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1961C1030",
+   "1961C1030",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1961C1050",
+   "1961C1051",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1961C1050",
+   "1961C1052",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1961C1070",
+   "1961C1040",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1961C1070",
+   "1961C1070",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1980B2010",
+   "1980B2010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1980B4010",
+   "1980A0030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1980B4010",
+   "1980B4010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1980C1020",
+   "1980C1020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1980C1020",
+   "1980C1020",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1980C1020",
+   "1980C1030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1980C1030",
+   "1980C1030",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1980C1060",
+   "1980A0020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1980C1060",
+   "1980C1060",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1980C1060",
+   "1980C1151",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1980C1060",
+   "1980C1152",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1980C1060",
+   "1980C1153",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1980C1060",
+   "1980C1154",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1980C1090",
+   "1980C1090",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1980C1150",
+   "1980C1151",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1980C1150",
+   "1980C1152",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1980C1150",
+   "1980C1153",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1980C1150",
+   "1980C1154",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "1980C1160",
+   "1980C1160",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1984C1030",
+   "1984C1010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "1984C1030",
+   "1984C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2026C1020",
+   "2026A0020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2026C1020",
+   "2026C1020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2080C1010",
+   "2080A0020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2080C1010",
+   "2080C1010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2080C1010",
+   "2080C1010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2080C1040",
+   "2080A0020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2080C1040",
+   "2080C1010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2080C1040",
+   "2080C1040",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2080C1080",
+   "2080C1080",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2081C1050",
+   "2081C1050",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2081C1050",
+   "2081C1060",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2081C1070",
+   "2081C1060",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2081C1070",
+   "2081C1070",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2081C1100",
+   "2081C1100",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2081C1100",
+   "2081C1120",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2081C1120",
+   "2081C1120",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2085C1050",
+   "2085C1010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2085C1050",
+   "2085C1050",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2085C1080",
+   "2085C1080",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2132A0020",
+   "2132A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2132A0040",
+   "2132A0040",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2161C1020",
+   "2161C1020",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2161C1030",
+   "2161C1030",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2180A0030",
+   "2180A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2180A0030",
+   "2180C1432",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2180A0040",
+   "2180A0040",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2180B2010",
+   "2180B2010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2180B5010",
+   "2180B5010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2180C1350",
+   "2180C1350",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2180C1350",
+   "2180C1432",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2180C1360",
+   "2180C1360",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2180C1360",
+   "2180C1432",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2180C1420",
+   "2180C1420",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2180C1430",
+   "2180C1431",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2180C1430",
+   "2180C1432",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2180C1460",
+   "2180C1432",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2180C1460",
+   "2180C1460",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2182A0010",
+   "2182A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2182A0030",
+   "2182A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2182C1010",
+   "2182C1010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2183B3010",
+   "2183B3010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2184A0010",
+   "2184A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2184A0040",
+   "2184A0040",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2184B2020",
+   "2184A0050",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2184B2020",
+   "2184B2020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2184B2030",
+   "2184A0050",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2184B2030",
+   "2184B2030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2184C1010",
+   "2184C1010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2262A0010",
+   "2262A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2280A0010",
+   "2280A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2280A0020",
+   "2280A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2281A0010",
+   "2281A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2281A0060",
+   "2281A0060",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2281B2030",
+   "2281B2030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2281B2060",
+   "2281B2060",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2281C1130",
+   "2281C1131",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2281C1130",
+   "2281C1132",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2281C1230",
+   "2281C1230",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2281C1270",
+   "2281C1230",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2281C1270",
+   "2281C1270",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2282A0010",
+   "2282A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2282A0020",
+   "2282A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2283C1030",
+   "2283C1030",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2283C1040",
+   "2283C1010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2283C1040",
+   "2283C1040",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2284A0010",
+   "2284A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2284A0020",
+   "2284A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2284A0050",
+   "2284A0050",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2284C1010",
+   "2284C1010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2284C1010",
+   "2284C1030",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2284C1050",
+   "2284C1050",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2284C1050",
+   "2284C1090",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2284C1060",
+   "2284C1060",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2284C1090",
+   "2284C1090",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2284C1100",
+   "2284C1060",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2284C1100",
+   "2284C1100",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2284C1140",
+   "2284C1140",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2284C1140",
+   "2284C1170",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2284C1210",
+   "2284C1210",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2321B2010",
+   "2321A0040",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2321B2010",
+   "2321B2010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2321B2020",
+   "2321A0040",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2321B2020",
+   "2321B2020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2401A0010",
+   "2401A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2409A0010",
+   "2409A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2409A0020",
+   "2409A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2409A0030",
+   "2409A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2460C1030",
+   "2460C1030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2460C1030",
+   "2460C1040",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480A0010",
+   "2480A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2480A0020",
+   "2480A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2480A0030",
+   "2480A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2480A0050",
+   "2480A0050",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2480B3020",
+   "2480B3010",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480B3020",
+   "2480B3020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480B4010",
+   "2480B4010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480B4010",
+   "2480B4020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480B4020",
+   "2480B4020",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2480C1020",
+   "2480C1020",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2480C1040",
+   "2480C1040",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1050",
+   "2480C1050",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1050",
+   "2480C1070",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1060",
+   "2480C1060",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1060",
+   "2480C1070",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1070",
+   "2480C1070",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1070",
+   "2480C1070",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2480C1070",
+   "2480C1120",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1080",
+   "2480C1080",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2480C1090",
+   "2480C1091",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1090",
+   "2480C1092",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1090",
+   "2480C1093",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1090",
+   "2480C1100",
+   "Upphör; till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1110",
+   "2480C1070",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1110",
+   "2480C1110",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1110",
+   "2480C1110",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2480C1120",
+   "2480C1110",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1120",
+   "2480C1120",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1130",
+   "2480C1040",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1130",
+   "2480C1130",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1130",
+   "2480C1150",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1140",
+   "2480C1060",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1140",
+   "2480C1140",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1150",
+   "2480C1150",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2480C1170",
+   "2480C1150",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1170",
+   "2480C1170",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1180",
+   "2480C1180",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2480C1290",
+   "2480C1290",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1290",
+   "2480C1450",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1300",
+   "2480C1300",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1300",
+   "2480C1400",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1300",
+   "2480C1450",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1340",
+   "2480C1340",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2480C1360",
+   "2480A0060",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1360",
+   "2480C1360",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1380",
+   "2480A0060",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1380",
+   "2480C1380",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1390",
+   "2480C1390",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1390",
+   "2480C1450",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1400",
+   "2480C1400",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1400",
+   "2480C1440",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1400",
+   "2480C1450",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1420",
+   "2480C1420",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1420",
+   "2480C1430",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1430",
+   "2480C1340",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1430",
+   "2480C1430",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1430",
+   "2480C1430",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2480C1440",
+   "2480C1440",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1440",
+   "2480C1440",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2480C1440",
+   "2480C1500",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1450",
+   "2480C1450",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2480C1490",
+   "2480C1490",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2480C1500",
+   "2480C1500",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1500",
+   "2480C1520",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1510",
+   "2480C1490",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2480C1510",
+   "2480C1510",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2480C1520",
+   "2480C1520",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2482A0010",
+   "2482A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2482A0020",
+   "2482A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2482A0060",
+   "2482A0060",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2482A0100",
+   "2482A0100",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2482A0110",
+   "2482A0110",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2514A0010",
+   "2514A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2514A0020",
+   "2514A0020",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2514A0030",
+   "2514A0030",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2514C1020",
+   "2514C1020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2514C1040",
+   "2514C1040",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2514C1050",
+   "2514C1050",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2523A0030",
+   "2523A0030",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2523A0030",
+   "2523C1100",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2523C1010",
+   "2523C1010",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2523C1010",
+   "2523C1100",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2523C1020",
+   "2523C1020",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2523C1020",
+   "2523C1100",
+   "Ger del till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2523C1060",
+   "2523C1090",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2523C1070",
+   "2523C1090",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2523C1080",
+   "2523C1090",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2580A0010",
+   "2580A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2580A0040",
+   "2580A0040",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2580C1190",
+   "2580C1191",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2580C1190",
+   "2580C1192",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2580C1290",
+   "2580C1291",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2580C1290",
+   "2580C1292",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2581A0010",
+   "2581A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2581A0040",
+   "2581A0040",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2581C1010",
+   "2581C1010",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2581C1040",
+   "2581C1020",
+   "Ger del/delar till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2581C1040",
+   "2581C1040",
+   "Minskas och ger del till befintlig eller nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2581C1090",
+   "2581C1090",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2583A0010",
+   "2583A0010",
+   "Utvidgas till territorialvattengräns",
+   "2025-01-01"
+  ],
+  [
+   "2584C1040",
+   "2584C1040",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2584C1050",
+   "2584A0030",
+   "Upphör; till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2584C1050",
+   "2584C1040",
+   "Upphör; till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2584C1050",
+   "2584C1110",
+   "Upphör; till befintlig",
+   "2025-01-01"
+  ],
+  [
+   "2584C1070",
+   "2584C1071",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2584C1070",
+   "2584C1072",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2584C1070",
+   "2584C1073",
+   "Upphör; till nybildad",
+   "2025-01-01"
+  ],
+  [
+   "2584C1090",
+   "2584C1090",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "2584C1110",
+   "2584C1110",
+   "Utvidgas",
+   "2025-01-01"
+  ],
+  [
+   "1883A0010",
+   "1883A0030",
+   "Upphör; till nybildad",
+   "2018-02-21"
+  ],
+  [
+   "1883A0020",
+   "1883A0030",
+   "Upphör; till nybildad",
+   "2018-02-21"
+  ]
+ ]
+}

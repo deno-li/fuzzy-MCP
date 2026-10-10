@@ -32,6 +32,7 @@ PROFILES = [
     ("Läroplaner, ämnen och kurser", "skolverket.syllabus,reference"),
     ("Vuxen- och högre utbildning", "skolverket.susa,skolverket.planerad,reference"),
     ("Geodata och dataset", "scb.geodata,dataportal,reference"),
+    ("Områdesstatistik (DeSO och RegSO)", "scb.statistik,scb.geodata,reference"),
 ]
 
 GROUPS = [

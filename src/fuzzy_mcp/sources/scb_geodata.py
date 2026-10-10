@@ -266,8 +266,9 @@ def register(server: MCPServer[Any], services: Services) -> None:
             int, Field(description=f"Max antal objekt (1–{MAX_FEATURES}; med geometri 1–{MAX_GEOMETRY_FEATURES})")
         ] = 100,
     ) -> Annotated[CallToolResult, GeoFeatures]:
-        """Hämta objekt ur ett geodatalager, t.ex. alla DeSO-områden i en kommun med koder och namn. Utan
-        geometri som standard; koderna (t.ex. DeSO '2180C1010') kopplar till SCB-statistik på DeSO/RegSO-nivå."""
+        """Hämta objekt ur ett geodatalager, t.ex. alla DeSO-områden i en kommun med koder (DeSO har bara koder;
+        RegSO har namn). Utan geometri som standard; koderna (t.ex. DeSO '2180C1010') kopplar till SCB-statistik på
+        DeSO/RegSO-nivå."""
         name = layer_name(layer)
         attributes = await geo.describe(name)
         cql = build_cql(filters or {}, attributes)

@@ -47,13 +47,17 @@ Den här servern ger läsåtkomst till svensk öppen data:
   och underlag för analys per kommun, huvudman och skolenhet).
 * Sveriges dataportal: `dataportal_*` för att hitta dataset (DCAT-AP-SE) från alla myndigheter.
 * Referensdata: `ref_*` och resurser under `fuzzy://` – kodlistor (kommun/län, betygsskala, skolformer,
-  SS 12000), entitetskatalog och nycklar för att koppla ihop källorna.
+  SS 12000), DeSO/RegSO-kopplingar och förändringslogg (`ref_lookup_deso`, `ref_list_deso`), entitetskatalog
+  och nycklar för att koppla ihop källorna.
 
 Urvalsuttryck i PxWeb: "*" (alla), "202*" (jokertecken), "TOP(5)" (senaste 5 perioderna för tid),
 "BOTTOM(n)", "RANGE(a,b)", "FROM(a)", "TO(b)". Utelämnade variabler elimineras om tabellen tillåter det.
 Koppla ihop källor via kommunkod (4 siffror, t.ex. 0180 = Stockholm), länskod (2 siffror),
-skolenhetskod (8 siffror), organisationsnummer (huvudman) och DeSO/RegSO-kod. Ange alltid källa
-(myndighet + tabell/endpoint) när du redovisar siffror. All data är öppen; se `fuzzy://sources` för licenser.
+skolenhetskod (8 siffror), organisationsnummer (huvudman) och DeSO/RegSO-kod. DeSO finns i två versioner
+(2018 och 2025, med RegSO 2020 respektive 2025); kontrollera version och om antal kan summeras med
+`ref_lookup_deso` innan du jämför över tid (andelar och medelvärden summeras aldrig över områden).
+Ange alltid källa (myndighet + tabell/endpoint) när du redovisar siffror.
+All data är öppen; se `fuzzy://sources` för licenser.
 Namn på enskilda personer (t.ex. rektor, c/o-adress, kontaktperson) returneras bara när verktyget anropas
 med en uttrycklig parameter för personuppgifter – använd den bara när användaren behöver uppgiften.
 """

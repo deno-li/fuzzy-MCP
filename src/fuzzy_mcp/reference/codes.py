@@ -123,7 +123,8 @@ def list_code_lists() -> list[dict[str, Any]]:
                 "titel": doc.get("titel"),
                 "beskrivning": doc.get("beskrivning"),
                 "kalla": doc.get("kalla"),
-                "antal": len(entries) if isinstance(entries, list) else None,
+                # Lists without ``koder`` may count their collections themselves (DeSO/RegSO: deso, regso, rader).
+                "antal": len(entries) if isinstance(entries, list) else doc.get("antal"),
                 "antal_poster": sum(1 for _ in posts(doc)),
                 "verifiering": verification_summary(doc),
             }
