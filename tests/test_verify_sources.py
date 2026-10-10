@@ -139,6 +139,16 @@ def test_html_to_text_and_links() -> None:
     assert vs.is_key_file("https://www.scb.se/a/fil.xlsx", "Historiska förändringar i DeSO")
 
 
+def test_page_name_uses_the_last_two_segments() -> None:
+    """Two of SCB's pages end in 'demografiska-statistikomraden-deso'; the parent segment keeps them apart."""
+    names = [vs.page_name(url) for url in vs.SCB_PAGES]
+    assert len(set(names)) == len(vs.SCB_PAGES)
+    assert "regionala-indelningar.demografiska-statistikomraden-deso" in names
+    assert "oppna-geodata.demografiska-statistikomraden-deso" in names
+    assert vs.page_name("https://www.scb.se/a/b/c/") == "b.c"
+    assert vs.page_name("https://www.scb.se/") == "rot"
+
+
 def test_capabilities_summary_from_fixture() -> None:
     summary = vs.capabilities_summary((FIXTURES / "scb_geodata_capabilities.xml").read_bytes())
     assert "DeSO_2025" in summary["lager"]
@@ -200,13 +210,44 @@ def test_scb_geodata_group_with_stubbed_answers(monkeypatch: pytest.MonkeyPatch,
     monkeypatch.setattr(vs, "fetch", fetch)
     vs.check_scb_geodata()
     checks = verify_lines(capsys)
+    # Expected values follow the fixtures, which mirror the WFS answers.
+    properties = describe["featureTypes"][0]["properties"]
+    attributes = [p["name"] for p in properties if not p["type"].startswith("gml:")]
+    geometry = next(p["name"] for p in properties if p["type"].startswith("gml:"))
+    codes = [f["properties"]["desokod"] for f in features["features"]]
     assert checks["wfs.hits.DeSO_2025"]["summary"]["numberOfFeatures"] == 6160
     assert checks["wfs.hits.version_2_0_0"]["summary"]["numberMatched"] == 6160
     assert checks["wfs.kommun.DeSO_2025"]["summary"]["filter"] == "kommunkod='0180'"
-    assert checks["wfs.sida.jamforelse"]["start0_max4"] == ["2180C1010", "2180C1020"]
-    assert "INTERSECTS(geom,POINT(674032 6580822))" in checks["wfs.intersects.x_y"]["summary"]["filter"]
+    assert checks["wfs.sida.jamforelse"]["start0_max4"] == codes
+    assert checks["wfs.intersects.x_y"]["summary"]["filter"] == f"INTERSECTS({geometry},POINT(674032 6580822))"
+    assert checks["wfs.intersects.y_x"]["summary"]["filter"] == f"INTERSECTS({geometry},POINT(6580822 674032))"
+    # EWKT variants (unverified so far): both orders are tried so the next run tells which one, if any, works.
+    assert checks["wfs.intersects.srid4326"]["summary"]["filter"] == (
+        f"INTERSECTS({geometry},SRID=4326;POINT(18.06 59.33))"
+    )
+    assert checks["wfs.intersects.srid4326_latlon"]["summary"]["filter"] == (
+        f"INTERSECTS({geometry},SRID=4326;POINT(59.33 18.06))"
+    )
+    assert all(
+        isinstance(checks[f"wfs.intersects.{label}"]["summary"]["egenskaper"], list)
+        for label in ("x_y", "y_x", "srid4326", "srid4326_latlon")
+    )
+    # Not yet verified against the live service: the point search in the other three layers and the parameter
+    # combinations the server sends (filter + paging, sortBy=regsokod, propertyName with geometry + srsName).
+    for other in ("DeSO_2018", "RegSO_2020", "RegSO_2025"):
+        assert checks[f"wfs.intersects.y_x.{other}"]["summary"]["filter"] == (
+            f"INTERSECTS({geometry},POINT(6580822 674032))"
+        )
+        assert f"typeName=stat:{other}" in checks[f"wfs.intersects.y_x.{other}"]["url"]
+    assert checks["wfs.sida.filter"]["summary"] == {"filter": "kommunkod='0180'", "koder": codes}
+    assert "sortBy=desokod" in checks["wfs.sida.filter"]["url"] and "startIndex=2" in checks["wfs.sida.filter"]["url"]
+    assert checks["wfs.sida.regso"]["summary"]["sortBy"] == "regsokod"
+    assert "typeName=stat:RegSO_2025" in checks["wfs.sida.regso"]["url"]
+    assert f"propertyName=desokod,{geometry}" in checks["wfs.crs.propertyName"]["url"]
+    assert "srsName=EPSG:4326" in checks["wfs.crs.propertyName"]["url"]
+    assert checks["wfs.crs.propertyName"]["summary"]["koder"] == codes
     assert checks["wfs.csv.alla"]["summary"]["rubrik"] == "desokod,kommunkod"
-    assert any("propertyName=desokod,regsokod,kommunkod,kommunnamn" in url for url in calls)
+    assert any(f"propertyName={','.join(attributes)}" in url for url in calls)
 
 
 def test_scb_pxweb_group_with_stubbed_answers(monkeypatch: pytest.MonkeyPatch, capsys) -> None:
@@ -252,6 +293,12 @@ def test_scb_key_files_are_emitted_as_base64(monkeypatch: pytest.MonkeyPatch, ca
     assert all(name == "nyckelfil1" for name, _, _ in chunks)
     assert base64.b64decode("".join(data for _, _, data in chunks)) == workbook
     assert any(tag == "TEXT" and "Nycklar" in rest for tag, rest in out)
+    # One VERIFY and one TEXT record per page, named by the last two path segments (no two pages share a name).
+    pages = [check for check in verify if check.startswith("scb.sida.")]
+    assert len(pages) == len(vs.SCB_PAGES) == len(set(pages))
+    assert "scb.sida.oppna-geodata.demografiska-statistikomraden-deso" in pages
+    text_names = {rest.split(" ", 1)[0] for tag, rest in out if tag == "TEXT"}
+    assert text_names == set(pages)
 
 
 def test_socialstyrelsen_group_with_stubbed_answers(monkeypatch: pytest.MonkeyPatch, capsys) -> None:

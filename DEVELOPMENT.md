@@ -60,9 +60,9 @@ i `ALLOWED_HOSTS` och följer bara omdirigeringar inom dem.
 
 | Grupp | Vad som kontrolleras |
 | --- | --- |
-| `scb-geodata` | WFS för DeSO/RegSO 2018–2025: lager, attribut, antal, kommunfilter, sidning, koordinatsystem, punktsökning och format |
+| `scb-geodata` | WFS för DeSO/RegSO 2018–2025: lager, attribut, antal, kommunfilter, sidning, koordinatsystem, punktsökning (axelordning N E och EWKT-varianterna `SRID=4326;POINT(...)`) och format |
 | `scb-pxweb` | PxWebApi 2: tabeller med DeSO/RegSO, regionkoder (med och utan versionssuffix), kodlistor och ett litet datauttag |
-| `scb-nycklar` | SCB:s DeSO- och RegSO-sidor som text, länkade filer och nyckelfilerna (kopplingar, historiska förändringar) |
+| `scb-nycklar` | SCB:s DeSO- och RegSO-sidor som text (kontrollnamn `scb.sida.<två sista sökvägssegment>`), länkade filer och nyckelfilerna (kopplingar, historiska förändringar) |
 | `socialstyrelsen` | Statistikdatabasens API v1: dokumentation, ämnen, variabler, värden, ett litet resultat och sidning |
 
 Kör så här:
@@ -83,6 +83,11 @@ python scripts/verify_sources.py --group scb-geodata
 HTTP-fel och tomma svar är resultat, inte bevis för att data saknas. Skriptet avslutas med fel bara om inget anrop
 fick något svar alls.
 
+Resultatet av körningen 2026-10-10 – verifierade lager, attribut, kodlistor, suffixregler, referensår, nyckelfilernas
+sha256 och Socialstyrelsens API-former, samt det som fortfarande är overifierat – står i
+[docs/KALLKONTROLL.md](docs/KALLKONTROLL.md). Uppdatera det dokumentet när en ny körning ändrar bilden, och skriv
+bara det loggen faktiskt visar.
+
 ## Arkitektur
 
 ```text
@@ -91,6 +96,7 @@ src/fuzzy_mcp/
 ├── server.py            build_server(): MCPServer, livscykel, registrering av källor
 ├── config.py            inställningar från miljövariabler (FUZZY_MCP_*)
 ├── core.py              Services, felöversättning (tool_errors), kompakta svar (structured)
+├── geo.py               SWEREF 99 TM ↔ WGS84 (Gauss-Krüger) och rimlighetskontroll av koordinater
 ├── http.py              delad HTTP-klient: cache, omförsök, anropsgränser, Deprecation/Sunset
 ├── meta.py              fuzzy_list_sources, fuzzy_api_notices, fuzzy://sources
 ├── prompts.py           promptar och autokomplettering

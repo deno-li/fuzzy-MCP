@@ -42,16 +42,19 @@ ENTITIES: list[dict[str, Any]] = [
     {
         "kalla": "scb",
         "entitet": "Geografiskt område (DeSO, RegSO, tätort m.m.)",
-        "nyckel": "DeSO-/RegSO-kod och kommunkod; attributnamn och lagernamn (årsversion) läses ur "
-        "scb_geodata_layers/scb_geodata_describe_layer",
+        "nyckel": "lagren DeSO_2018, DeSO_2025, RegSO_2020, RegSO_2025: desokod (DeSO-lagren), regsokod, regsonamn "
+        "(RegSO-lagren), kommunkod, lanskod, version, referensdatum; geometrin sp_geometry (verifierat 2026-10-10). "
+        "Övriga lagers attribut läses ur scb_geodata_describe_layer.",
         "verktyg": [
             "scb_geodata_layers",
             "scb_geodata_describe_layer",
             "scb_geodata_get_features",
+            "scb_geodata_locate",
             "scb_geodata_download_url",
         ],
         "beskrivning": "Statistikområden och andra indelningar som WFS-lager; koderna kopplar till SCB-tabeller "
-        "på DeSO/RegSO-nivå. Geometri via nedladdningslänk (GeoPackage, GeoJSON, Shape, CSV).",
+        "på DeSO/RegSO-nivå. scb_geodata_locate ger DeSO och RegSO för en punkt eller en skolenhet. Geometri via "
+        "nedladdningslänk (GeoPackage, GeoJSON, Shape, CSV).",
     },
     # --- Folkhälsomyndigheten ------------------------------------------------------------------------
     {
@@ -224,20 +227,34 @@ JOIN_KEYS: list[dict[str, Any]] = [
         "vid delningar (9), t.ex. 2180C1010; DeSO har inga namn. RegSO: kommunkod + R + 3 siffror, t.ex. 2180R001; "
         "RegSO har namn, men namnet är unikt bara inom kommunen och kan ändras.",
         "forekomst": {
-            "scb": "variabeln Region i tabeller på DeSO/RegSO-nivå; tabellens kodlistor läses ur "
-            "scb_get_table_metadata",
-            "scb_geodata": "attribut i SCB:s DeSO-/RegSO-lager; lager- och attributnamn läses ur scb_geodata_layers "
-            "respektive scb_geodata_describe_layer",
+            "scb": "variabeln Region; kodlistor vs_DeSO2018 (DeSO 2018 t.o.m. referensår 2023, rena koder), "
+            "vs_DeSO2025 (fr.o.m. 2024, koder med suffix _DeSO2025), vs_RegSO2020 (RegSO 2020 t.o.m. referensår "
+            "2023, rena koder) och vs_RegSO2025 (fr.o.m. 2024, koder med suffix _RegSO2025); äldre tabeller märkta "
+            '"uppdateras ej" har vs_DeSoHE/vs_RegSo1. Vilka en tabell har framgår av scb_get_table_metadata '
+            "(verifierat 2026-10-10).",
+            "scb_geodata": "lagren DeSO_2018, DeSO_2025, RegSO_2020, RegSO_2025: attributen desokod, regsokod (RegSO: "
+            "regsokod, regsonamn), kommunkod, lanskod, version, referensdatum; geometrin sp_geometry (SWEREF 99 TM) "
+            "– verifierat 2026-10-10",
             "referens": "ref_lookup_deso och ref_list_deso – kopplingen DeSO↔RegSO för båda versionsparen och SCB:s "
-            "förändringslogg (kodlistorna deso_regso_2018, deso_regso_2025, deso_forandringar)",
+            "förändringslogg (kodlistorna deso_regso_2018, deso_regso_2025, deso_forandringar); ssd_koder i "
+            "ref_lookup_deso ger koden så som Statistikdatabasen skriver den per version",
         },
         "not": "Två versionspar: DeSO 2018 med RegSO 2020 och DeSO 2025 med RegSO 2025. 5 835 koder finns i båda, men "
         "enligt SCB:s förändringslogg (förändringar daterade 2025-01-01; filen daterad 2025-09-19) har 603 av dem en "
         "egen rad (samma kod före och efter) och ytterligare 84 förekommer bara som mottagare på andra koders rader; "
-        "ref_lookup_deso ger 'ändrad gräns' för alla 687: samma kod är inte alltid samma yta. Kontrollera i tabellens "
-        "metadata (scb_get_table_metadata: noter och kodlistan för Region) vilken DeSO/RegSO-version som gäller för "
-        "den valda perioden, och i ref_lookup_deso om antal kan summeras över en förändring. Andelar, medelvärden "
-        "och index summeras aldrig över områden.",
+        "ref_lookup_deso ger 'ändrad gräns' för alla 687: samma kod är inte alltid samma yta. DeSO 2018/RegSO 2020 "
+        "gäller t.o.m. referensår 2023 och DeSO 2025/RegSO 2025 fr.o.m. referensår 2024 (SCB:s tabellnoter och "
+        "kodlistor, verifierat 2026-10-10); äldre år räknas inte om. Kontrollera i ref_lookup_deso om antal kan "
+        "summeras över en förändring. Andelar, medelvärden och index summeras aldrig över områden.",
+    },
+    {
+        "nyckel": "koordinat (SWEREF 99 TM / WGS84)",
+        "format": "SWEREF 99 TM: östlig (E) och nordlig (N) koordinat i meter; WGS84: lat/lon",
+        "forekomst": {
+            "skolenhetsregistret": "besöksadressens geoCoordinates (latitude/longitude, coordinateSweRefE/N)",
+            "scb_geodata": "punktsökning scb_geodata_locate (INTERSECTS); i CQL anges punkten POINT(N E) för EPSG:3006",
+        },
+        "not": "DeSO-/RegSO-tillhörighet för en skolenhet räknas aldrig ur namn eller adresstext, bara ur koordinater.",
     },
     {
         "nyckel": "kommunkod",
@@ -429,9 +446,11 @@ INFORMATION_MODEL: dict[str, Any] = {
                 "ref_lookup_deso",
                 "ref_list_deso",
                 "scb_geodata_get_features",
+                "scb_geodata_locate",
                 "scb_geodata_download_url",
             ],
-            "not": "Stadsdelar, NYKO och postnummer finns inte i källorna; koppla dem lokalt till DeSO/RegSO.",
+            "not": "Stadsdelar, NYKO och postnummer finns inte i källorna; koppla dem lokalt till DeSO/RegSO. "
+            "scb_geodata_locate ger DeSO/RegSO för en koordinat eller en skolenhets besöksadress.",
         },
         {
             "entitet": "Organisation",

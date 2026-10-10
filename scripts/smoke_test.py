@@ -33,6 +33,7 @@ from mcp.client.streamable_http import create_mcp_http_client, streamable_http_c
 LIVE_CALLS: list[tuple[str, dict[str, Any]]] = [
     ("scb_get_config", {}),
     ("scb_geodata_layers", {"search": "deso"}),
+    ("scb_geodata_locate", {"east": 674032, "north": 6580822}),
     ("fohm_list_databases", {}),
     ("skolverket_stat_list_databases", {}),
     ("skolverket_search_school_units", {"municipality_code": ["2180"], "limit": 1}),
