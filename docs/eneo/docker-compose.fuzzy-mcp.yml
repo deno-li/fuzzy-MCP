@@ -14,9 +14,11 @@
 #   docker compose -f docker-compose.fuzzy-mcp.yml -f docker-compose.egress.yml down
 #   docker compose -f docker-compose.fuzzy-mcp.yml -f docker-compose.egress.yml up -d --build
 #
-# eneo_module_net delas med Eneos backend, Traefik och eventuella andra moduler – alla där når fuzzy-mcp:8000,
-# därför krävs token. Vill ni begränsa ytterligare: skapa ett eget internt nät (docker network create --internal
-# fuzzy_mcp_net), anslut bara eneo_backend och fuzzy-mcp till det och byt eneo_module_net nedan mot det nätet.
+# eneo_module_net delas med Eneos backend, Traefik och eventuella moduler – alla där når fuzzy-mcp:8000, därför
+# krävs token. Vill ni begränsa ytterligare: skapa ett eget internt nät (docker network create --internal
+# fuzzy_mcp_net), byt eneo_module_net nedan mot det och lägg nätet på Eneos backend med en docker-compose.override.yml
+# bredvid Eneos docker-compose.yml (ENEO.md avsnitt 2). Använd inte `docker network connect` – den anslutningen
+# försvinner när backend-containern skapas om, t.ex. vid en Eneo-uppgradering.
 
 # Eget projektnamn så att `docker compose down` här aldrig rör Eneos egna tjänster.
 name: fuzzy-mcp
@@ -56,7 +58,8 @@ services:
     #   - /etc/ssl/certs/ca-certificates.crt:/certs/ca-bundle.pem:ro
     secrets: [fuzzy_mcp_token]
     networks: [eneo_module_net, fuzzy_egress]
-    # Inga publicerade portar: bara Eneos backend (på eneo_module_net) når tjänsten.
+    # Inga publicerade portar och inga traefik-etiketter. Alla på eneo_module_net (Eneos backend, Traefik, eventuella
+    # moduler) når tjänsten – därför krävs token.
     logging:
       driver: json-file
       options:

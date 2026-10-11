@@ -95,9 +95,16 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 - Eneo-compose: `FUZZY_MCP_TOOL_TIMEOUT=50`, `FUZZY_MCP_CACHE_MAX_MB=24` (cachen räknar svarens storlek, men tolkade
   svar tar 3–5 gånger mer minne, och containern har 512 MB), loggrotation (json-file, 5 × 10 MB) och imagen
   `fuzzy-mcp:0.2.0`.
-- docs/ENEO.md avsnitt 1 är kontrollerat mot Eneos källkod för taggen v2.2.1: kretsbrytaren räknar även felsvar
-  (`isError`) och timeouts, verktygssvaren i en tur får ta högst halva kontextfönstret, verktygets titel står först i
-  beskrivningen och servernamnet skrivs med gemener och `_` i stället för t.ex. å, ä, ö.
+- docs/ENEO.md är kontrollerad mot Eneos källkod och dokumentation (docs.eneo.ai/v2.2) för taggen v2.2.1; där de
+  skiljer sig gäller koden. Kretsbrytaren räknar även felsvar (`isError`) och timeouts, per backend-process;
+  verktygssvaren i en tur får ta högst hälften av modellens Max indatatokens och skickas med i senare turer; högst 10
+  verktygsrundor per svar; verktygets titel står först i beskrivningen; servernamnet skrivs med gemener och `_` i
+  stället för t.ex. å, ä, ö; Eneos egna inställningar (`MCP_CLIENT_*`, `MCP_TOOL_OUTPUT_MAX_CHARS`,
+  `MCP_CIRCUIT_BREAKER_*`). Nytt: modellen måste ha **Verktygsstöd** i Eneo och Max indata- + utdatatokens får inte
+  överstiga vLLM:s `--max-model-len`; `ENCRYPTION_KEY` krävs inte av Eneo, så token kan ligga i klartext – med en
+  kontroll; Eneo sparar verktygsanropen med samtalet; nätverken `object_content_net` och `proxy_tier`; eget internt
+  nät via `docker-compose.override.yml`; säkerhetsklassning på servern; rotation av token i Eneo; felsökningsrader
+  för "External tool service temporarily unavailable", saknade verktyg och okrypterbar token.
 - DRIFT.md och ENEO.md: imagen hämtas från leveranspaketet och image-id jämförs med releasesidan; en image som byggs
   från repot taggas `fuzzy-mcp:dev` och används bara för test. DRIFT.md beskriver omdirigeringar, att `ufw` inte
   stoppar containertrafik, loggarnas innehåll, cachens minne, vilka data som lämnar servern och vad
