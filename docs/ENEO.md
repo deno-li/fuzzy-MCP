@@ -28,7 +28,7 @@ egen Eneo-backend.
 | Ingen spärr mot interna adresser; URL:en används som den skrivs | Nätsegmentering är den tekniska spärren (avsnitt 2) |
 | Läser **bara textinnehållet** i verktygssvar (aldrig `structuredContent`) och kapar vid **32 768 tecken** efter JSON-kodning | Sätt `FUZZY_MCP_MAX_OUTPUT_CHARS=30000` – servern kortar då själv och behåller giltig JSON |
 | Modellen ser verktygen som `<servernamn>__<verktyg>`; många modell-API:er tillåter högst 64 tecken | Använd ett kort servernamn i Eneo, **högst 19 tecken** (t.ex. `oppnadata`) |
-| Alla aktiverade verktygsdefinitioner skickas till modellen i **varje** tur | Aktivera bara en profil per assistent (avsnitt 5) – alla 83 verktyg kostar cirka 28 000 token per tur |
+| Alla aktiverade verktygsdefinitioner skickas till modellen i **varje** tur | Aktivera bara en profil per assistent (avsnitt 5) – alla 84 verktyg kostar cirka 28 500 token per tur |
 | Ny MCP-session per svar, parallella anrop i samma session, `DELETE` vid avslut | Kör gärna `FUZZY_MCP_STATELESS=true` |
 | Timeouts: anslutning 30 s, verktygsanrop 60 s, administratörens testanslutning 10 s; efter 5 fel pausas servern i 60 s | `FUZZY_MCP_HTTP_TIMEOUT=20` och `FUZZY_MCP_MAX_RETRIES=1` minskar risken att ett långsamt myndighets-API slår i Eneos gräns (ett verktyg kan göra flera anrop, så det är ingen garanti) |
 | Avvisar komprimerade svar på `initialize`/`tools/list` | Ingen gzip/brotli i en proxy framför fuzzy-mcp |
@@ -127,12 +127,12 @@ i `FUZZY_MCP_ALLOWED_HOSTS`, "Stort svar" = `FUZZY_MCP_MAX_OUTPUT_CHARS` saknas)
 | Profil | `FUZZY_MCP_SOURCES` | Verktyg | Cirka token per tur |
 | --- | --- | --- | --- |
 | Statistik | `scb.statistik,skolverket.statistik,fohm,reference` | 30 | 6 500 |
-| Skolor och skolenheter | `skolverket.skolenhetsregistret,skolverket.planerad,reference` | 33 | 11 500 |
+| Skolor och skolenheter | `skolverket.skolenhetsregistret,skolverket.planerad,reference` | 33 | 12 000 |
 | Läroplaner, ämnen och kurser | `skolverket.syllabus,reference` | 23 | 6 500 |
-| Vuxen- och högre utbildning | `skolverket.susa,skolverket.planerad,reference` | 30 | 11 000 |
-| Geodata och dataset | `scb.geodata,dataportal,reference` | 17 | 4 000 |
-| Områdesstatistik (DeSO och RegSO) | `scb.statistik,scb.geodata,reference` | 22 | 4 000 |
-| Allt | alla | 83 | 28 000 |
+| Vuxen- och högre utbildning | `skolverket.susa,skolverket.planerad,reference` | 30 | 11 500 |
+| Geodata och dataset | `scb.geodata,dataportal,reference` | 18 | 5 000 |
+| Områdesstatistik (DeSO och RegSO) | `scb.statistik,scb.geodata,reference` | 23 | 5 000 |
+| Allt | alla | 84 | 28 500 |
 
 Exakt vilka verktyg som hör till varje profil står i [eneo/verktygsprofiler.md](eneo/verktygsprofiler.md)
 (genereras från servern). Varje profil innehåller också `fuzzy_list_sources`, `fuzzy_api_notices` och `ref_*`.

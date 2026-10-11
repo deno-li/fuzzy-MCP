@@ -136,7 +136,11 @@ Ange källa och läsår/period för varje uppgift."""
     @server.prompt(name="omradesprofil", title="Områdesprofil (DeSO/RegSO)")
     def omradesprofil(
         omrade: Annotated[
-            str, Field(description="DeSO-kod (t.ex. '2180C1010'), RegSO-kod (t.ex. '2180R001') eller kommun")
+            str,
+            Field(
+                description="DeSO-kod (t.ex. '2180C1010'), RegSO-kod (t.ex. '2180R001'), kommun, skolenhetskod "
+                "(8 siffror) eller koordinat (SWEREF 99 TM eller WGS84)"
+            ),
         ],
         tema: Annotated[
             str, Field(description="Fokus, t.ex. 'befolkning', 'inkomst', 'utbildningsnivå'")
@@ -146,14 +150,16 @@ Ange källa och läsår/period för varje uppgift."""
         return f"""Gör en områdesprofil för {omrade} med fokus på {tema}.
 
 Arbetsgång:
+0. För en skolenhet (skolenhetskod) eller en känd koordinat (SWEREF 99 TM eller WGS84): `scb_geodata_locate` ger
+   DeSO- och RegSO-kod för punkten; räkna aldrig fram koordinater ur en adress. Fortsätt sedan med koden i steg 1.
 1. Slå upp området med `ref_lookup_deso`: version (DeSO 2018 med RegSO 2020 eller DeSO 2025 med RegSO 2025),
    tillhörande RegSO, förändringar enligt SCB:s förändringslogg och om antal kan summeras över en förändring
    (andelar, medelvärden och index kan aldrig summeras över områden; hämta dem per område från källan).
    För en kommun: lista områdena med `ref_list_deso` och välj ut dem som ska ingå.
 2. Hitta tabeller på DeSO/RegSO-nivå med `scb_search_tables` (t.ex. 'DeSO') och kontrollera med
-   `scb_get_table_metadata` vilka regionkoder tabellen har och vilken DeSO-/RegSO-version de avser (kodlista och
-   noter). Använd bara koder
-   som finns i tabellens kodlista.
+   `scb_get_table_metadata` vilka kodlistor tabellen har (vs_DeSO2018/vs_RegSO2020 t.o.m. 2023,
+   vs_DeSO2025/vs_RegSO2025 fr.o.m. 2024; de senare har koder med suffix _DeSO2025/_RegSO2025 – `ref_lookup_deso`
+   ger rätt kod under ssd_koder). Använd bara koder som finns i tabellens kodlista.
 3. Hämta värden med `scb_get_table_data` för områdets koder, kommunen (kommunkod) och riket ('00') i samma anrop
    när det går, med samma period och mått.
 4. Redovisa källa (tabell-id), period, DeSO/RegSO-version och osäkerheter: små tal, prickade värden ('..') och

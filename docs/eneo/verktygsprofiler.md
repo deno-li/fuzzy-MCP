@@ -20,9 +20,9 @@ kostnaden beror på modellen.
 | Skolor och skolenheter | `skolverket.skolenhetsregistret,skolverket.planerad,reference` | 33 | 47 411 byte | 12 000 |
 | Läroplaner, ämnen och kurser | `skolverket.syllabus,reference` | 23 | 25 701 byte | 6 500 |
 | Vuxen- och högre utbildning | `skolverket.susa,skolverket.planerad,reference` | 30 | 45 375 byte | 11 500 |
-| Geodata och dataset | `scb.geodata,dataportal,reference` | 17 | 16 184 byte | 4 000 |
-| Områdesstatistik (DeSO och RegSO) | `scb.statistik,scb.geodata,reference` | 22 | 17 315 byte | 4 500 |
-| Allt | alla | 83 | 111 703 byte | 28 000 |
+| Geodata och dataset | `scb.geodata,dataportal,reference` | 18 | 19 647 byte | 5 000 |
+| Områdesstatistik (DeSO och RegSO) | `scb.statistik,scb.geodata,reference` | 23 | 20 778 byte | 5 000 |
+| Allt | alla | 84 | 115 166 byte | 29 000 |
 
 ## Statistik
 
@@ -181,6 +181,7 @@ kostnaden beror på modellen.
 - `scb_geodata_download_url`
 - `scb_geodata_get_features`
 - `scb_geodata_layers`
+- `scb_geodata_locate`
 
 ## Områdesstatistik (DeSO och RegSO)
 
@@ -201,6 +202,7 @@ kostnaden beror på modellen.
 - `scb_geodata_download_url`
 - `scb_geodata_get_features`
 - `scb_geodata_layers`
+- `scb_geodata_locate`
 - `scb_get_codelist`
 - `scb_get_config`
 - `scb_get_default_selection`

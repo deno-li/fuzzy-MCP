@@ -30,6 +30,11 @@ medians and indices cannot be summed over areas, split or not; they need the
 source data per area or a weighting the source provides. Every note says so.
 A 1:1 code change (SCB's type ``Kodändrad; annat än 20-22``) is deliberately
 not counted as summerbar: the log does not say whether the boundary is unchanged.
+
+``ssd_koder`` in a lookup gives the code as SCB's Statistikdatabasen spells it
+per version (:data:`SSD_CODELISTS`, :data:`SSD_SUFFIX`): plain codes in the
+code lists for DeSO 2018 and RegSO 2020, a version suffix in those for DeSO 2025
+and RegSO 2025 (verified extract 2026-10-10, see docs/KALLKONTROLL.md).
 """
 
 import functools
@@ -53,6 +58,21 @@ DERIVED = "härlett"
 SOURCE_DATA = "myndighetswebb"
 SOURCE_PAGE = "SCB, sidan Demografiska statistikområden (DeSO) under öppna geodata"
 MAX_OPTIONS = 60  # RegSO alternatives listed in an error message
+# How Statistikdatabasen spells the codes, per kind ("deso"/"regso") and DeSO version year: the code lists of the
+# variable Region, the suffix the code carries there (none for the 2018/2020 pair) and the reference years each list
+# covers. Verified extract 2026-10-10 (TAB6680 has all four lists); an individual table may have only one pair.
+SSD_CODELISTS: dict[str, dict[str, str]] = {
+    "deso": {"2018": "vs_DeSO2018", "2025": "vs_DeSO2025"},
+    "regso": {"2018": "vs_RegSO2020", "2025": "vs_RegSO2025"},
+}
+SSD_SUFFIX: dict[str, dict[str, str]] = {"deso": {"2025": "_DeSO2025"}, "regso": {"2025": "_RegSO2025"}}
+SSD_VALID: dict[str, str] = {"2018": "t.o.m. referensår 2023", "2025": "fr.o.m. referensår 2024"}
+SSD_NOTE = (
+    "ssd_koder följer SCB:s kodlistor i Statistikdatabasen (verifierat uttag 2026-10-10: TAB6680 har 5 984 rena "
+    "DeSO 2018-koder, 6 160 DeSO 2025-koder med suffix _DeSO2025, 3 363 RegSO 2020 och 3 363 RegSO 2025 med suffix "
+    "_RegSO2025; äldre tabeller märkta 'uppdateras ej' har vs_DeSoHE/vs_RegSo1 med rena koder t.o.m. 2023); en "
+    "enskild tabell kan ha bara en av versionerna – kontrollera scb_get_table_metadata."
+)
 ADDITIVE_ONLY = (
     "Gäller bara antal (additiva mått) med samma period och definition; andelar, medelvärden, medianer och index "
     "kan inte summeras över områden."
@@ -137,6 +157,19 @@ def deso_versions(code: str) -> list[str]:
 
 def regso_versions(code: str) -> list[str]:
     return [version for version in VERSIONS if code in _doc(version)["regso"]]
+
+
+def ssd_codes(kind: str, code: str, versions: Sequence[str]) -> dict[str, dict[str, str]]:
+    """The code as Statistikdatabasen's variable Region spells it, keyed by the version name the key file uses
+    (``DeSO 2018``/``DeSO 2025`` or ``RegSO 2020``/``RegSO 2025``), with the code list and the reference years."""
+    return {
+        labels(version)[kind]: {
+            "kod": code + SSD_SUFFIX[kind].get(version, ""),
+            "kodlista": SSD_CODELISTS[kind][version],
+            "galler": SSD_VALID[version],
+        }
+        for version in versions
+    }
 
 
 def source_block(versions: Sequence[str], *, with_log: bool) -> dict[str, Any]:
@@ -341,13 +374,14 @@ def lookup_deso(code: str) -> dict[str, Any]:
         "kategori": {"kod": category["kod"], "beskrivning": category["beskrivning"]},
         "finns_i": [labels(version)["deso"] for version in versions],
         "versioner": per_version,
+        "ssd_koder": ssd_codes("deso", code, versions),
         "forandringar": [row.as_dict() for row in rows_for(code)],
         "jamforbarhet": comparability(code),
         "kalla": source_block(list(VERSIONS), with_log=True),
         "verifiering": SOURCE_DATA,
         "verifiering_not": "Koder, RegSO-namn och förändringsrader är SCB:s egna ur filerna under kalla. "
         "jamforbarhet är härledd i kod ur förändringsloggen (verifiering 'härlett') och säger inget om "
-        "befolkning eller gränsernas läge.",
+        f"befolkning eller gränsernas läge. {SSD_NOTE}",
     }
 
 
@@ -370,13 +404,14 @@ def lookup_regso(code: str) -> dict[str, Any]:
             }
             for version in versions
         ],
+        "ssd_koder": ssd_codes("regso", code, versions),
         # None when the code is in one version only: there is nothing to compare.
         "namn_andrat": len(set(names.values())) > 1 if len(versions) > 1 else None,
         "not": "RegSO-namn är unika bara inom kommunen och kan ändras; använd koden.",
         "kalla": source_block(versions, with_log=False),
         "verifiering": SOURCE_DATA,
         "verifiering_not": "Koder, namn och DeSO-tillhörighet är SCB:s egna ur filerna under kalla; "
-        "namn_andrat är härlett genom att jämföra filerna.",
+        f"namn_andrat är härlett genom att jämföra filerna. {SSD_NOTE}",
     }
 
 

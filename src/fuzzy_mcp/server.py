@@ -39,6 +39,7 @@ Den här servern ger läsåtkomst till svensk öppen data:
   → `scb_get_table_data` med ett urval {variabelkod: [värdekoder eller uttryck]}; `scb_build_query`
   ger delbar URL och Power Query (M).
 * SCB:s öppna geodata (WFS): `scb_geodata_*` – DeSO, RegSO, tätorter m.m.; koderna kopplar till SCB-statistik.
+  `scb_geodata_locate` ger DeSO/RegSO för en punkt (SWEREF 99 TM eller WGS84) eller en skolenhetskod.
 * Folkhälsomyndigheten Folkhälsodata (PxWeb): verktyg `fohm_*`, samma arbetsgång
   (`fohm_browse`/`fohm_search_tables` → `fohm_get_table_metadata` → `fohm_get_table_data`).
 * Skolverket: Skolenhetsregistret (`skolverket_*school_unit*`, huvudmän), Läroplan/Syllabus-API

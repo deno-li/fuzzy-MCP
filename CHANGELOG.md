@@ -9,6 +9,31 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ### Tillagt
 
+- `scb_geodata_locate`: DeSO- och RegSO-kod för en punkt (SWEREF 99 TM eller WGS84) eller för en skolenhet
+  (skolenhetskod → besöksadressens koordinater ur Skolenhetsregistret), genom punktsökning (INTERSECTS) i SCB:s
+  WFS-lager. Tillhörigheten räknas bara ur koordinater, aldrig ur namn eller adresstext. Svaret anger vilken adress
+  koordinaterna kommer från (`skolenhet.adresstyp`): en annan adress än besöksadressen används bara när besöksadressen
+  saknar koordinater, och det sägs då i `notes`; orimliga registerkoordinater (t.ex. `0`) hoppas över till förmån för
+  adressens WGS84-par. När en träff är DeSO 2025/RegSO 2025 påminner `notes` om suffixet `_DeSO2025`/`_RegSO2025` i
+  Statistikdatabasen. Modulen `geo` räknar om SWEREF 99 TM ↔ WGS84 (Gauss-Krüger) och kontrollerar att punkten
+  ligger i Sverige; axelordningen `POINT(N E)` för EPSG:3006 i CQL ligger i `scb_geodata`. När
+  Skolenhetsregistrets SWEREF 99 TM- och WGS84-koordinater för samma adress ligger mer än 50 m isär används
+  SWEREF 99 TM, och `notes` säger det.
+- `scb_geodata_get_features`: parametrarna `attributes`, `offset`, `sort_by` och `srs` samt svarsfälten `offset` och
+  `srs`; `scb_geodata_download_url`: parametern och svarsfältet `srs`. Felen för geometriattributet (`sp_geometry`)
+  i `filters`, `attributes` eller `sort_by` säger att det är lagrets geometri och hur den fås.
+- `ref_lookup_deso`: fältet `ssd_koder` med koden så som Statistikdatabasens variabel Region skriver den per version
+  (`vs_DeSO2018`/`vs_RegSO2020` rena koder t.o.m. referensår 2023, `vs_DeSO2025`/`vs_RegSO2025` med suffix
+  `_DeSO2025`/`_RegSO2025` fr.o.m. referensår 2024), och en kopplingsnyckel `koordinat (SWEREF 99 TM / WGS84)` i
+  entitetskatalogen.
+- `docs/KALLKONTROLL.md`: resultatet av Källkontroll-körningen 2026-10-10 (geodata, Statistikdatabasen, SCB:s sidor
+  och nyckelfiler, Socialstyrelsens statistikdatabas) och det som fortfarande är overifierat.
+- Källkontroll: två kontroller av om GeoServer tar emot EWKT (`SRID=4326;POINT(...)`) i CQL, i båda axelordningarna;
+  punktsökning mot `DeSO_2018`, `RegSO_2020` och `RegSO_2025` (bara `DeSO_2025` är kontrollerat) samt de
+  parameterkombinationer servern skickar men som inte prövats: `startIndex` + `sortBy` med `CQL_FILTER`, `sortBy` på
+  `regsokod` och `propertyName` med geometri tillsammans med `srsName` (`wfs.intersects.y_x.<lager>`, `wfs.sida.filter`,
+  `wfs.sida.regso`, `wfs.crs.propertyName`);
+  SCB-sidorna namnges med de två sista sökvägssegmenten så att två sidor som slutar lika inte får samma namn.
 - Arbetsflödet Källkontroll (`.github/workflows/verify-sources.yml`) och `scripts/verify_sources.py`: en fast lista
   med läsande anrop som kontrollerar API-kontrakten för SCB:s geodata (DeSO/RegSO), SCB:s statistikdatabas, SCB:s
   DeSO-sidor och nyckelfiler samt Socialstyrelsens statistikdatabas. Svaren skrivs i jobbloggen. Startas för hand,
@@ -30,6 +55,13 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ### Ändrat
 
+- Verifierade uppgifter från Källkontroll 2026-10-10 i entitetskatalogen, kopplingsnycklarna, informationsmodellen,
+  README, prompten `omradesprofil`, serverinstruktionen och Eneo-assistentinstruktionen: lagernamnen `DeSO_2018`,
+  `DeSO_2025`, `RegSO_2020`, `RegSO_2025` och attributen `desokod`, `regsokod`, `regsonamn`, `kommunkod`, `lanskod`,
+  `version`, `referensdatum`, `sp_geometry`; kodlistorna `vs_DeSO2018`, `vs_DeSO2025`, `vs_RegSO2020`, `vs_RegSO2025`
+  (äldre tabeller "uppdateras ej": `vs_DeSoHE`, `vs_RegSo1`) och referensåren (2018/2020 t.o.m. 2023, 2025 fr.o.m.
+  2024; äldre år räknas inte om).
+- Testfixturerna för geodata bygger på verkliga svar från WFS-tjänsten (Källkontroll 2026-10-10).
 - Texterna om DeSO/RegSO i entitetskatalogen, kopplingsnycklarna, informationsmodellen, serverinstruktionen, README
   och `scb_geodata_get_features`: två versionspar (DeSO 2018 med RegSO 2020, DeSO 2025 med RegSO 2025; 687 koder
   behåller kod men har ändrad gräns enligt loggen: 603 med egen rad och 84 som bara tar emot från andra koder),
@@ -45,9 +77,12 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ### Rättat
 
-- Entitetskatalogen påstod att SCB:s tabeller på DeSO/RegSO-nivå använder kodlistorna `vs_DeSO*`/`vs_RegSO*` (inte
-  belagt; tabellens kodlistor läses ur `scb_get_table_metadata`), och `scb_geodata_get_features` beskrev DeSO-områden
-  "med koder och namn"; DeSO har bara koder, RegSO har namn.
+- Kodlistorna för DeSO/RegSO i Statistikdatabasen: entitetskatalogen påstod utan belägg att tabellerna på
+  DeSO/RegSO-nivå använder `vs_DeSO*`/`vs_RegSO*`. Uppgiften togs bort i #5 och återinförs nu med de verifierade
+  namnen (2026-10-10, TAB6680 har alla fyra) och suffixregeln: koderna i `vs_DeSO2025`/`vs_RegSO2025` har suffix
+  `_DeSO2025`/`_RegSO2025`, de i `vs_DeSO2018`/`vs_RegSO2020` är rena, och äldre tabeller märkta "uppdateras ej"
+  har `vs_DeSoHE`/`vs_RegSo1` (rena koder). Vilka en tabell har framgår av `scb_get_table_metadata`.
+- `scb_geodata_get_features` beskrev DeSO-områden "med koder och namn"; DeSO har bara koder, RegSO har namn.
 
 ## [0.1.2] - 2026-10-08
 

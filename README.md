@@ -12,7 +12,7 @@ kommunkod, skolenhetskod, organisationsnummer och skolformskoder.
 | Myndighet | Källa | API | Licens |
 | --- | --- | --- | --- |
 | SCB | Statistikdatabasen | PxWebApi 2.0 | CC0 1.0 |
-| SCB | Öppna geodata (DeSO, RegSO, tätorter m.m.) | OGC WFS 1.1.0 | CC0 1.0 |
+| SCB | Öppna geodata (lagren `DeSO_2018`, `DeSO_2025`, `RegSO_2020`, `RegSO_2025`, tätorter m.m.) | OGC WFS 1.1.0 (GeoServer) | CC0 1.0 |
 | Skolverket | Statistikdatabasen (kommunala jämförelsetal, underlag för analys) | PxWeb API v1 | CC0 1.0 |
 | Skolverket | Skolenhetsregistret | REST v2 | CC0 1.0 |
 | Skolverket | Läroplan/Syllabus (ämnen, kurser, Gy25-nivåer, program, läroplaner) | REST v1 | CC0 1.0 |
@@ -113,6 +113,9 @@ Frågor du kan ställa till assistenten:
   `scb_build_query` ger GET-URL, POST-kropp och färdig M-kod.
 - *"Vilket RegSO hör DeSO 2180C1010 till, och har området ändrats mellan DeSO 2018 och DeSO 2025?"*
   `ref_lookup_deso` (lokalt, utan nätverk) → `scb_search_tables` ("DeSO") → `scb_get_table_data`.
+- *"Vilket DeSO ligger skolenheten 43038662 i?"*
+  `scb_geodata_locate` (`school_unit_code`: besöksadressens koordinater ur Skolenhetsregistret mot lagren
+  `DeSO_2025`/`RegSO_2025`) → `ref_lookup_deso` → `scb_get_table_data` med koden under `ssd_koder`.
 
 Promptarna `analysera_kommun`, `jamfor_kommuner`, `hitta_statistik`, `power_bi_fraga`, `skolenhet_profil` och
 `omradesprofil` paketerar sådana arbetsflöden.
@@ -122,7 +125,7 @@ Promptarna `analysera_kommun`, `jamfor_kommuner`, `hitta_statistik`, `power_bi_f
 Tabellen genereras från servern med `python scripts/generate_tool_docs.py`.
 
 <!-- verktyg:start -->
-Servern har **83 verktyg**, 11 resurser och 6 promptar.
+Servern har **84 verktyg**, 11 resurser och 6 promptar.
 
 #### Översikt
 
@@ -157,9 +160,10 @@ Servern har **83 verktyg**, 11 resurser och 6 promptar.
 | `scb_get_codelist` | Hämta en kodlista i Statistikdatabasen (aggregering agg_* eller värdemängd vs_*). |
 | `scb_build_query` | Bygg en delbar GET-URL och en POST-fråga för ett urval i Statistikdatabasen, med Power Query (M) för Power BI/Excel och curl. |
 | `scb_geodata_layers` | Lista SCB:s öppna geodatalager (WFS). |
-| `scb_geodata_describe_layer` | Visa ett geodatalagers attribut (fältnamn och typer), t.ex. |
-| `scb_geodata_get_features` | Hämta objekt ur ett geodatalager, t.ex. |
+| `scb_geodata_describe_layer` | Visa ett geodatalagers attribut (fältnamn och typer) som desokod, regsokod, kommunkod, lanskod och version. |
+| `scb_geodata_get_features` | Hämta objekt ur ett geodatalager, som alla DeSO-områden i en kommun med koder (DeSO har bara koder; RegSO har namn). |
 | `scb_geodata_download_url` | Bygg en nedladdningslänk (WFS GetFeature) för ett helt lager eller ett filtrerat urval i GeoPackage, Shape (zip), CSV eller GeoJSON – för QGIS, ArcGIS eller Power BI. |
+| `scb_geodata_locate` | Slå upp vilket DeSO- och RegSO-område (eller annat polygonlager) en punkt ligger i. |
 
 #### Folkhälsomyndigheten – Folkhälsodata (PxWeb)
 
@@ -329,7 +333,8 @@ t.ex. Power BI.
 | Skolenhetskod | 8 siffror | Skolenhetsregistret, Planerad utbildning, Skolverkets statistikdatabas (`orgnr-skolenhetskod`), SS 12000 |
 | Organisationsnummer | 10 siffror | Skolenhetsregistret (huvudman), Skolverkets statistikdatabas (UFA), dataportalen, SS 12000 |
 | Skolform | t.ex. GR, GRAN/GRS, GY | Alla Skolverket-API:er och SS 12000 – översätt med kodlistan `skolformer` |
-| DeSO-/RegSO-kod | DeSO 9 tecken (t.ex. `2180C1010`), RegSO 8 tecken (t.ex. `2180R001`) | SCB-tabeller på DeSO/RegSO-nivå, SCB:s geodatalager (`scb_geodata_*`) och kopplingstabellerna i `ref_lookup_deso`/`ref_list_deso` |
+| DeSO-/RegSO-kod | DeSO 9 tecken (t.ex. `2180C1010`), RegSO 8 tecken (t.ex. `2180R001`) | SCB:s tabeller: variabeln `Region` med kodlistorna `vs_DeSO2018`/`vs_RegSO2020` (t.o.m. referensår 2023, rena koder) och `vs_DeSO2025`/`vs_RegSO2025` (fr.o.m. 2024, koder med suffix `_DeSO2025`/`_RegSO2025`; `ref_lookup_deso` ger dem under `ssd_koder`); geodatalagren `DeSO_2018`, `DeSO_2025`, `RegSO_2020`, `RegSO_2025` (attributen `desokod`, `regsokod`, `regsonamn`, `kommunkod`, `lanskod`, `version`, `referensdatum`); kopplingstabellerna i `ref_lookup_deso`/`ref_list_deso` |
+| Koordinat | SWEREF 99 TM (E, N i meter) eller WGS84 (lat, lon) | Skolenhetsregistret (besöksadressens `geoCoordinates`: `latitude`/`longitude`, `coordinateSweRefE`/`N`), `scb_geodata_locate` (punkt → DeSO/RegSO via INTERSECTS; i CQL skrivs punkten `POINT(N E)` för EPSG:3006) |
 
 Mer finns i `ref_entity_catalog` och resursen `fuzzy://entities`. Medföljande kodlistor (`ref_list_code_lists`):
 regioner, betygsskalor (inklusive Gy25 och kommande skala 1–10), SCB:s betygskoder, gymnasieprogram, anpassad
@@ -341,7 +346,9 @@ varje kodlista); nya filer läses in med `scripts/build_deso_reference.py`.
 Relaterade källor som inte är anslutna som verktyg: SCB:s sida om DeSO under öppna geodata
 (<https://www.scb.se/vara-tjanster/oppna-data/oppna-geodata/demografiska-statistikomraden-deso/>) med nyckelfilerna,
 och SCB:s Regina (<https://regina.scb.se/indelningar>) för historiska regionala indelningar sedan 1952 (webbplats
-utan dokumenterat API).
+utan dokumenterat API). Nyckelfilernas adresser kan ändras när SCB publicerar nya versioner; arbetsflödet
+Källkontroll visar de aktuella fil-URL:erna och deras sha256, och [docs/KALLKONTROLL.md](docs/KALLKONTROLL.md)
+redovisar körningen 2026-10-10 (sha256 för de tre filerna var då identiska med kodlistornas).
 
 Varje post i kodlistorna har fältet `verifiering` som anger hur posten är kontrollerad:
 
@@ -401,6 +408,9 @@ Anropsgränser per värd följer det myndigheterna publicerar: SCB 30 och Skolve
 
 - **Kontrollerat mot officiella specifikationer, delvis mot live-uttag.** API-kontrakten bygger på myndigheternas
   egna OpenAPI-specifikationer och PxWeb-källkoden, kompletterade med verifierade uttag från 25–28 september 2026.
+  SCB:s geodata (WFS), Statistikdatabasens DeSO-/RegSO-kodlistor, SCB:s nyckelfiler och Socialstyrelsens
+  statistikdatabas kontrollerades 2026-10-10 med arbetsflödet Källkontroll; resultatet och det som fortfarande är
+  overifierat står i [docs/KALLKONTROLL.md](docs/KALLKONTROLL.md).
   Kör `FUZZY_MCP_LIVE_TESTS=1 pytest -m live` från en miljö med internetåtkomst innan du tar servern i drift.
 - **SCB:s v1-API** (`api.scb.se/OV0104/v1`) stängs runt årsskiftet 2026/2027 och används inte.
 - **Stora svar** kortas för att hålla sig under ungefär 25 000 token (gränsen i t.ex. Claude Code): svaren
