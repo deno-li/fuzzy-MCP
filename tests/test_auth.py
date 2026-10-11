@@ -345,7 +345,7 @@ def test_log_lines_keep_users_questions_out(monkeypatch, caplog):
     messages = [record.getMessage() for record in caplog.records]
     assert not any("barn" in m or "6580822" in m for m in messages), messages
     assert any("https://statistikdatabasen.scb.se/api/v2/tables?… | detalj: x" in m for m in messages)
-    assert any(m == "a https://geodata.scb.se/wfs?… 674032) b" for m in messages)
+    assert any(m == "a https://geodata.scb.se/wfs?…" for m in messages)  # a decoded query is removed whole
 
 
 def test_url_query_filter_leaves_other_lines_alone():
