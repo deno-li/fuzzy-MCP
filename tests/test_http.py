@@ -189,3 +189,106 @@ async def test_html_error_page_detail_is_summarised():
             await client.get_json("fohm", "https://example.se/x.px")
     message = str(info.value)
     assert "404 - File or directory not found." in message and "<" not in message and "var x" not in message
+
+
+def _redirecting(routes: dict[str, httpx2.Response], seen: list[str]):
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        seen.append(str(request.url))
+        for prefix, response in routes.items():
+            if str(request.url).startswith(prefix):
+                return response
+        return httpx2.Response(404, text="SECRET-BODY")
+
+    return handler
+
+
+@pytest.mark.parametrize(
+    "location",
+    [
+        "http://169.254.169.254/latest/meta-data/",  # another host (cloud metadata)
+        "https://eneo_backend:8000/api/",  # an internal service next to the server
+        "http://api.skolverket.se/skolenhetsregistret/v2/x",  # same host, https → http
+    ],
+)
+async def test_redirect_outside_the_agencies_is_refused(location):
+    seen: list[str] = []
+    handler = _redirecting({"https://api.skolverket.se/": httpx2.Response(302, headers={"location": location})}, seen)
+    async with _client(handler) as client:
+        with pytest.raises(UpstreamError) as info:
+            await client.get_json("skolverket", "https://api.skolverket.se/skolenhetsregistret/v2/school-units/1")
+    message = str(info.value)
+    assert "stoppades" in message and "SECRET" not in message
+    target = httpx2.URL(location)
+    assert f"{target.scheme}://{target.host}" in message and target.path not in message
+    assert len(seen) == 1  # the target was never requested, and the refusal is not retried
+
+
+async def test_redirect_within_an_agency_host_and_to_another_agency_is_followed():
+    seen: list[str] = []
+    handler = _redirecting(
+        {
+            "https://api.skolverket.se/old": httpx2.Response(301, headers={"location": "/new"}),
+            "https://api.skolverket.se/new": httpx2.Response(
+                307, headers={"location": "https://statistikdatabasen.scb.se/api/v2/x"}
+            ),
+            "https://statistikdatabasen.scb.se/": httpx2.Response(200, json={"ok": True}),
+        },
+        seen,
+    )
+    async with _client(handler) as client:
+        res = await client.get_json("skolverket", "https://api.skolverket.se/old")
+    assert res.data == {"ok": True} and res.url == "https://statistikdatabasen.scb.se/api/v2/x"
+    assert len(seen) == 3
+
+
+async def test_redirect_on_the_host_first_asked_is_followed():
+    """Hosts outside the default base URLs (a mirror set with FUZZY_MCP_<KÄLLA>_BASE_URL) may redirect within
+    themselves."""
+    seen: list[str] = []
+    handler = _redirecting(
+        {
+            "https://example.se/a": httpx2.Response(302, headers={"location": "https://example.se/b"}),
+            "https://example.se/b": httpx2.Response(200, json=[1]),
+        },
+        seen,
+    )
+    async with _client(handler) as client:
+        res = await client.get_json("scb", "https://example.se/a")
+    assert res.data == [1] and len(seen) == 2
+
+
+async def test_redirect_loop_is_stopped():
+    seen: list[str] = []
+    handler = _redirecting({"https://example.se/": httpx2.Response(302, headers={"location": "/loop"})}, seen)
+    async with _client(handler) as client:
+        with pytest.raises(UpstreamError, match="För många omdirigeringar"):
+            await client.get_json("scb", "https://example.se/start")
+    assert len(seen) == 6  # the request and MAX_REDIRECTS (5) redirects
+
+
+async def test_redirect_keeps_the_rate_limit_of_the_target_host():
+    acquired: list[str] = []
+
+    class Counting(SlidingWindowLimiter):
+        def __init__(self, host: str) -> None:
+            super().__init__(RateLimit(calls=100, per_seconds=1))
+            self.host = host
+
+        async def acquire(self) -> None:
+            acquired.append(self.host)
+            await super().acquire()
+
+    seen: list[str] = []
+    handler = _redirecting(
+        {
+            "https://api.skolverket.se/": httpx2.Response(
+                302, headers={"location": "https://statistikdatabasen.scb.se/x"}
+            ),
+            "https://statistikdatabasen.scb.se/": httpx2.Response(200, json={}),
+        },
+        seen,
+    )
+    async with _client(handler) as client:
+        client._limiters = {host: Counting(host) for host in ("api.skolverket.se", "statistikdatabasen.scb.se")}
+        await client.get_json("skolverket", "https://api.skolverket.se/a")
+    assert acquired == ["api.skolverket.se", "statistikdatabasen.scb.se"]

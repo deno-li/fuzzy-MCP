@@ -2,9 +2,9 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Shared async HTTP layer: caching, per-host rate limiting, retries and
-capture of API lifecycle headers (Deprecation/Sunset) as recommended by
-the DIGG REST API profile.
+"""Shared async HTTP layer: caching, per-host rate limiting, retries, redirects
+only within the agencies' hosts and capture of API lifecycle headers
+(Deprecation/Sunset) as recommended by the DIGG REST API profile.
 """
 
 import hashlib
@@ -27,6 +27,7 @@ from .errors import UpstreamError
 RETRY_STATUSES = frozenset({429, 502, 503, 504})
 LIFECYCLE_HEADERS = ("deprecation", "sunset", "warning")
 MAX_RETRY_AFTER_SECONDS = 30.0
+MAX_REDIRECTS = 5
 
 QueryParams = Mapping[str, str | int | float | bool | list[str] | None]
 
@@ -216,12 +217,15 @@ class HttpClient:
         sleep: Callable[[float], Awaitable[None]] = anyio.sleep,
     ) -> None:
         self.settings = settings
+        # Redirects are followed by _follow_redirects, which only goes to the agencies' hosts (never downgrading
+        # https), so a redirect can never make the server fetch an internal address.
         self._client = httpx2.AsyncClient(
             transport=transport,
             timeout=httpx2.Timeout(settings.timeout_seconds),
             headers={"User-Agent": settings.user_agent},
-            follow_redirects=True,
+            follow_redirects=False,
         )
+        self._allowed_hosts = frozenset(httpx2.URL(url).host for url in settings.base_urls.values())
         self._cache = TTLCache(
             settings.cache_max_entries, settings.cache_ttl_seconds, max_bytes=settings.cache_max_bytes
         )
@@ -368,6 +372,7 @@ class HttpClient:
                 response = await self._client.request(
                     method, url, params=params or None, json=json_body, headers=headers
                 )
+                response = await self._follow_redirects(source, url, response)
             except httpx2.TransportError as exc:
                 last_error = exc
                 if attempt + 1 < attempts:
@@ -407,6 +412,34 @@ class HttpClient:
             return response
 
         raise UpstreamError(source, "Alla försök misslyckades", url=url, detail=str(last_error))
+
+    async def _follow_redirects(self, source: str, url: str, response: httpx2.Response) -> httpx2.Response:
+        """Follow at most MAX_REDIRECTS redirects, only to the agencies' hosts (the configured base URLs and the host
+        first asked) and never from https to http. Any other target stops the call with an error naming only its
+        scheme and host; nothing from that target is fetched."""
+        origin = httpx2.URL(url)
+        allowed = self._allowed_hosts | {origin.host}
+        for _ in range(MAX_REDIRECTS):
+            target = response.next_request
+            if target is None:
+                return response
+            if target.url.host not in allowed or target.url.scheme not in ("https", origin.scheme):
+                raise UpstreamError(
+                    source,
+                    f"Omdirigeringen till {target.url.scheme}://{target.url.host} stoppades – servern följer bara "
+                    "omdirigeringar till myndigheternas egna adresser",
+                    status=response.status_code,
+                    url=url,
+                )
+            limiter = self._limiters.get(target.url.host)
+            if limiter is not None:
+                await limiter.acquire()
+            response = await self._client.send(target)
+        if response.next_request is not None:
+            raise UpstreamError(
+                source, f"För många omdirigeringar (fler än {MAX_REDIRECTS})", status=response.status_code, url=url
+            )
+        return response
 
 
 def _status_message(status: int) -> str:

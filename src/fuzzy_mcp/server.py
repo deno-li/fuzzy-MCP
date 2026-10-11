@@ -7,10 +7,12 @@
 import functools
 import importlib
 import inspect
+import logging
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from typing import Any
 
+import anyio
 import httpx2
 from mcp.server.mcpserver import MCPServer
 from mcp.types import CallToolResult, TextContent
@@ -62,6 +64,8 @@ All data är öppen; se `fuzzy://sources` för licenser.
 Namn på enskilda personer (t.ex. rektor, c/o-adress, kontaktperson) returneras bara när verktyget anropas
 med en uttrycklig parameter för personuppgifter – använd den bara när användaren behöver uppgiften.
 """
+
+logger = logging.getLogger("fuzzy_mcp")
 
 # Default request budgets per host. SCB publishes 30 calls per 10 s in /config; FoHM's
 # PxWeb allows far more (1 000 per 10 s) but community practice is a few calls per second.
@@ -158,7 +162,35 @@ def build_server(
         _compact_plain_results(tool)
         if settings.max_output_chars > 0:
             _limit_output(tool, settings.max_output_chars)
+        if settings.tool_timeout_seconds > 0:
+            _deadline(tool, settings.tool_timeout_seconds)
     return server
+
+
+def _deadline(tool: Any, seconds: float) -> None:
+    """Per-call time limit (FUZZY_MCP_TOOL_TIMEOUT): answer with a clear error before the client gives up (Eneo waits
+    60 s), and cancel the remaining upstream calls so they do not use up the agencies' rate limits for later calls."""
+    fn = tool.fn
+    name = tool.name
+
+    @functools.wraps(fn)
+    async def wrapper(*args: Any, **kwargs: Any) -> Any:
+        with anyio.move_on_after(seconds):
+            return await fn(*args, **kwargs)
+        logger.warning("Verktyget %s avbröts efter %g s (FUZZY_MCP_TOOL_TIMEOUT)", name, seconds)
+        return CallToolResult(
+            content=[
+                TextContent(
+                    type="text",
+                    text=f"{name} hann inte svara inom {seconds:g} s. Myndighetens API är långsamt eller anropsgränsen "
+                    "är nådd. Gör ett mindre urval (färre värden, perioder eller rader; with_details=false) eller "
+                    "försök igen om en stund.",
+                )
+            ],
+            is_error=True,
+        )
+
+    tool.fn = wrapper
 
 
 def _limit_output(tool: Any, limit: int) -> None:

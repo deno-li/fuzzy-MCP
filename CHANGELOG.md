@@ -7,7 +7,34 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-11
+
+### Säkerhet
+
+- Omdirigeringar följs bara mellan myndigheternas värdar (värdarna i de konfigurerade bas-URL:erna och den värd som
+  anropades), aldrig från https till http och högst fem i rad. Tidigare följde HTTP-klienten upp till 20
+  omdirigeringar till vilken adress som helst, så en komprometterad myndighetsvärd eller en öppen omdirigering kunde
+  få servern att hämta en intern adress (t.ex. en tjänst på Eneos nät) och lämna svaret till modellen. Ett stoppat
+  försök ger ett fel som bara namnger målets schema och värd, och inget hämtas därifrån.
+- Loggen innehåller inte längre användarnas frågor. MCP-biblioteket sätter loggnivån INFO, och då loggade httpx2
+  varje anrop till myndigheterna med hela URL:en (sökord, namn och koordinater i frågesträngen). Nu loggas bara
+  httpx2:s varningar, och alla loggrader – även bibliotekets `Tool … failed: …` med myndighetens adress – skrivs med
+  URL:er utan frågesträng (`?…`).
+- Utgående trafik i Eneo-uppsättningen: tillägget `docs/eneo/docker-compose.egress.yml` gör `fuzzy_egress` till ett
+  internt nät och skickar trafiken via en Squid-proxy (`docs/eneo/egress/`, Ubuntu 24.04, körs som användaren
+  `proxy`, skrivskyddad) som bara släpper fram HTTPS till de sex värdarna i DRIFT.md avsnitt 6. Provad med Squid
+  6.14: myndigheternas värdar släpps igenom (även via en överordnad proxy med `cache_peer`); andra värdar,
+  IP-adresser, andra portar och okrypterad HTTP får 403. Leveranspaketet innehåller filerna.
+
 ### Tillagt
+
+- `FUZZY_MCP_TOOL_TIMEOUT` (sekunder, 0 = av): ett verktyg som inte är klart i tid svarar med ett tydligt fel och
+  avbryter sina återstående anrop till myndigheterna, och loggen får en rad om det. Eneo-compose: `50`. Eneo ger upp
+  efter 60 s, och i Eneo 2.2 räknas både timeouts och felsvar mot kretsbrytaren som pausar servern i 60 s efter fem
+  fel i rad.
+- docs/ENEO.md avsnitt 5.1 om lokal modell (t.ex. vLLM): mät verktygens verkliga tokenkostnad, välj profil efter
+  kontextfönstret och anpassa `FUZZY_MCP_MAX_OUTPUT_CHARS`; acceptanstest 8 (skolenhet → DeSO/RegSO);
+  återställning till en tidigare version med godkännande i Eneo.
 
 - `scb_geodata_locate`: DeSO- och RegSO-kod för en punkt (SWEREF 99 TM eller WGS84) eller för en skolenhet
   (skolenhetskod → besöksadressens koordinater ur Skolenhetsregistret), genom punktsökning (INTERSECTS) i SCB:s
@@ -55,6 +82,22 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ### Ändrat
 
+- Version 0.2.0; User-Agent anger paketets version (`fuzzy-mcp/0.2.0`).
+- `skolverket_search_school_units` med `with_details=true` hämtar detaljer för högst 19 rader (tidigare 25). Då ryms
+  listanropet och detaljanropen i api.skolverket.se:s 20 anrop per 10 s; tidigare tog ett sådant anrop minst 10 s,
+  och fem samtidiga omkring 60 s.
+- Eneo-compose: `FUZZY_MCP_TOOL_TIMEOUT=50`, `FUZZY_MCP_CACHE_MAX_MB=24` (cachen räknar svarens storlek, men tolkade
+  svar tar 3–5 gånger mer minne, och containern har 512 MB), loggrotation (json-file, 5 × 10 MB) och imagen
+  `fuzzy-mcp:0.2.0`.
+- docs/ENEO.md avsnitt 1 är kontrollerat mot Eneos källkod för taggen v2.2.1: kretsbrytaren räknar även felsvar
+  (`isError`) och timeouts, verktygssvaren i en tur får ta högst halva kontextfönstret, verktygets titel står först i
+  beskrivningen och servernamnet skrivs med gemener och `_` i stället för t.ex. å, ä, ö.
+- DRIFT.md och ENEO.md: imagen hämtas från leveranspaketet och image-id jämförs med releasesidan; en image som byggs
+  från repot taggas `fuzzy-mcp:dev` och används bara för test. DRIFT.md beskriver omdirigeringar, att `ufw` inte
+  stoppar containertrafik, loggarnas innehåll, cachens minne, vilka data som lämnar servern och vad
+  `FUZZY_MCP_PERSONAL_DATA=off` inte täcker (fritext).
+- `scripts/generate_tool_docs.py` fyller även profiltabellen i docs/ENEO.md och kontrollerar den med `--check`.
+
 - Verifierade uppgifter från Källkontroll 2026-10-10 i entitetskatalogen, kopplingsnycklarna, informationsmodellen,
   README, prompten `omradesprofil`, serverinstruktionen och Eneo-assistentinstruktionen: lagernamnen `DeSO_2018`,
   `DeSO_2025`, `RegSO_2020`, `RegSO_2025` och attributen `desokod`, `regsokod`, `regsonamn`, `kommunkod`, `lanskod`,
@@ -76,6 +119,11 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 - CI-flödet låser alla actions till commit-SHA, som release-flödet (även `fsfe/reuse-action`).
 
 ### Rättat
+
+- docs/ENEO.md angav att underlaget var Eneos gren `main`, commit `d305507`. Commiten ligger på `develop` och ingår
+  inte i Eneo 2.2.0 eller 2.2.1. Tokensiffran för alla verktyg (28 500) stämde inte med verktygsprofiler.md (29 000).
+- DRIFT.md lovade att servern bara anropar de fasta adresserna och att loggen saknar frågesträngar; det stämde inte
+  för omdirigeringar och för httpx2:s loggrader, och gör det nu.
 
 - Kodlistorna för DeSO/RegSO i Statistikdatabasen: entitetskatalogen påstod utan belägg att tabellerna på
   DeSO/RegSO-nivå använder `vs_DeSO*`/`vs_RegSO*`. Uppgiften togs bort i #5 och återinförs nu med de verifierade

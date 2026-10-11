@@ -2,7 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Regenerate the tool, resource and prompt tables in README.md and the Eneo tool profiles from the server.
+"""Regenerate the tool, resource and prompt tables in README.md, the Eneo tool profiles and the profile table in
+docs/ENEO.md from the server.
 
 Usage: python scripts/generate_tool_docs.py [--check]
 """
@@ -21,8 +22,11 @@ from fuzzy_mcp.server import build_server
 ROOT = Path(__file__).resolve().parent.parent
 README = ROOT / "README.md"
 PROFILES_DOC = ROOT / "docs" / "eneo" / "verktygsprofiler.md"
+ENEO_DOC = ROOT / "docs" / "ENEO.md"
 START = "<!-- verktyg:start -->"
 END = "<!-- verktyg:end -->"
+PROFILES_START = "<!-- profiler:start -->"
+PROFILES_END = "<!-- profiler:end -->"
 
 # Tool profiles for Eneo assistants (docs/ENEO.md section 5): one profile per assistant keeps the tool
 # definitions the model receives on every turn small. Values are FUZZY_MCP_SOURCES.
@@ -102,7 +106,8 @@ def _number(value: int) -> str:
     return f"{value:,}".replace(",", " ")
 
 
-async def build_profiles() -> str:
+async def build_profiles() -> tuple[str, str]:
+    """The profiles document and the shorter table for docs/ENEO.md section 5."""
     # REUSE-IgnoreStart (the header of the generated file, not this file's licence)
     lines = [
         "<!--",
@@ -125,45 +130,49 @@ async def build_profiles() -> str:
         "| Profil | `FUZZY_MCP_SOURCES` | Verktyg | Katalog | Cirka token per tur |",
         "| --- | --- | --- | --- | --- |",
     ]
+    eneo = ["| Profil | `FUZZY_MCP_SOURCES` | Verktyg | Cirka token per tur |", "| --- | --- | --- | --- |"]
     details: list[str] = []
     for name, sources in [*PROFILES, ("Allt", ",".join(ALL_SOURCES))]:
         tools = await profile_tools(sources)
         size = len(json.dumps(tools, ensure_ascii=False, separators=(",", ":")).encode("utf-8"))
         shown = "alla" if name == "Allt" else f"`{sources}`"
-        lines.append(
-            f"| {name} | {shown} | {len(tools)} | {_number(size)} byte | {_number(round(size / 2000) * 500)} |"
-        )
+        tokens = _number(round(size / 2000) * 500)
+        lines.append(f"| {name} | {shown} | {len(tools)} | {_number(size)} byte | {tokens} |")
+        eneo.append(f"| {name} | {shown} | {len(tools)} | {tokens} |")
         if name != "Allt":
             details += [f"## {name}", "", f"`FUZZY_MCP_SOURCES={sources}`", ""]
             details += [f"- `{t['name']}`" for t in sorted(tools, key=lambda t: t["name"])]
             details.append("")
-    return "\n".join([*lines, "", *details]).rstrip() + "\n"
+    return "\n".join([*lines, "", *details]).rstrip() + "\n", "\n".join(eneo)
+
+
+def fill(text: str, start: str, end: str, generated: str) -> str:
+    head, rest = text.split(start, 1)
+    _, tail = rest.split(end, 1)
+    return f"{head}{start}\n{generated}\n{end}{tail}"
 
 
 def main() -> int:
     check = "--check" in sys.argv
     text = README.read_text(encoding="utf-8")
-    if START not in text or END not in text:
-        print("README.md saknar markörerna för verktygstabellen", file=sys.stderr)
-        return 2
-    generated = anyio.run(build_markdown)
-    head, rest = text.split(START, 1)
-    _, tail = rest.split(END, 1)
-    updated = f"{head}{START}\n{generated}\n{END}{tail}"
-    profiles = anyio.run(build_profiles)
+    eneo_text = ENEO_DOC.read_text(encoding="utf-8")
+    for doc, content, start, end in ((README, text, START, END), (ENEO_DOC, eneo_text, PROFILES_START, PROFILES_END)):
+        if start not in content or end not in content:
+            print(f"{doc.name} saknar markörerna {start} och {end}", file=sys.stderr)
+            return 2
+    updated = fill(text, START, END, anyio.run(build_markdown))
+    profiles, eneo_table = anyio.run(build_profiles)
+    eneo_updated = fill(eneo_text, PROFILES_START, PROFILES_END, eneo_table)
     current_profiles = PROFILES_DOC.read_text(encoding="utf-8") if PROFILES_DOC.exists() else ""
+    docs = ((README, updated, text), (PROFILES_DOC, profiles, current_profiles), (ENEO_DOC, eneo_updated, eneo_text))
     if check:
-        stale = [
-            p.name
-            for p, new, old in ((README, updated, text), (PROFILES_DOC, profiles, current_profiles))
-            if new != old
-        ]
+        stale = [p.name for p, new, old in docs if new != old]
         if stale:
             print(f"{', '.join(stale)} är inte uppdaterad – kör python scripts/generate_tool_docs.py", file=sys.stderr)
             return 1
         return 0
-    README.write_text(updated, encoding="utf-8")
-    PROFILES_DOC.write_text(profiles, encoding="utf-8")
+    for path, new, _ in docs:
+        path.write_text(new, encoding="utf-8")
     return 0
 
 

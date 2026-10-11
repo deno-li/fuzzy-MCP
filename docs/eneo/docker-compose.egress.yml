@@ -1,0 +1,45 @@
+# SPDX-FileCopyrightText: 2026 Deniz Özer
+#
+# SPDX-License-Identifier: CC0-1.0
+#
+# Tillägg till docker-compose.fuzzy-mcp.yml: fuzzy-mcp når bara myndigheternas värdar (docs/DRIFT.md avsnitt 6).
+# fuzzy_egress blir ett internt nät utan utgång, och all utgående trafik går via en Squid-proxy (egress/) som bara
+# släpper fram HTTPS till de sex värdarna. Lägg filen och mappen egress/ bredvid docker-compose.fuzzy-mcp.yml:
+#
+#   docker compose -f docker-compose.fuzzy-mcp.yml -f docker-compose.egress.yml down   # nätet måste skapas om
+#   docker compose -f docker-compose.fuzzy-mcp.yml -f docker-compose.egress.yml up -d --build
+#
+# Bygget hämtar ubuntu:24.04 och Squid; bakom en proxy: --build-arg http_proxy=… --build-arg https_proxy=… till
+# `docker compose build`. Kräver organisationen att all trafik går via en egen proxy: avkommentera cache_peer i
+# egress/squid.conf. Proxyns logg (`docker logs fuzzy-egress-proxy`) visar en rad per anslutning med värdnamn och
+# status; TCP_DENIED/403 betyder att något försökte nå en annan adress.
+
+services:
+  fuzzy-mcp:
+    environment:
+      HTTPS_PROXY: http://fuzzy-egress-proxy:3128
+    depends_on: [fuzzy-egress-proxy]
+
+  fuzzy-egress-proxy:
+    build: ./egress
+    image: fuzzy-mcp-egress-proxy:local
+    container_name: fuzzy-egress-proxy
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 128m
+    pids_limit: 64
+    # fuzzy_egress: nås av fuzzy-mcp. fuzzy_outbound: proxyns enda väg ut.
+    networks: [fuzzy_egress, fuzzy_outbound]
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "5"
+
+networks:
+  fuzzy_egress:
+    internal: true
+  fuzzy_outbound:
+    driver: bridge

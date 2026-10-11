@@ -13,6 +13,8 @@ bump is a base-URL change).
 import os
 from dataclasses import dataclass, field
 
+from . import __version__
+
 ENV_PREFIX = "FUZZY_MCP_"
 
 ALL_SOURCES: tuple[str, ...] = ("scb", "fohm", "skolverket", "dataportal", "reference")
@@ -91,7 +93,9 @@ class Settings:
     cache_max_bytes: int = 64_000_000
     max_rows: int = 1000
     max_output_chars: int = 0  # 0 = no cap; e.g. 30000 for Eneo (see docs/ENEO.md)
-    user_agent: str = "fuzzy-mcp/0.1 (+https://github.com/deno-li/fuzzy-MCP)"
+    # 0 = no limit; e.g. 50 for Eneo, which gives up on a tool call after 60 s (see docs/ENEO.md)
+    tool_timeout_seconds: float = 0.0
+    user_agent: str = f"fuzzy-mcp/{__version__} (+https://github.com/deno-li/fuzzy-MCP)"
     default_language: str = "sv"
     # "opt-in" (default): tools return names of individuals only when asked explicitly; False = never.
     allow_personal_data: bool = True
@@ -154,6 +158,12 @@ class Settings:
         if language not in ("sv", "en"):
             raise ValueError(f"{ENV_PREFIX}LANGUAGE måste vara 'sv' eller 'en', fick {language!r}")
 
+        tool_timeout = _env_float("TOOL_TIMEOUT", 0.0)
+        if not 0 <= tool_timeout < float("inf"):
+            raise ValueError(
+                f"{ENV_PREFIX}TOOL_TIMEOUT måste vara 0 (av) eller ett antal sekunder, fick {tool_timeout}"
+            )
+
         return cls(
             base_urls=base_urls,
             api_versions=api_versions,
@@ -165,6 +175,7 @@ class Settings:
             cache_max_bytes=_env_int("CACHE_MAX_MB", 64) * 1_000_000,
             max_rows=_env_int("MAX_ROWS", 1000),
             max_output_chars=_env_int("MAX_OUTPUT_CHARS", 0),
+            tool_timeout_seconds=tool_timeout,
             user_agent=_env("USER_AGENT", cls.user_agent) or cls.user_agent,
             default_language=language,
             allow_personal_data=personal_data == "opt-in",

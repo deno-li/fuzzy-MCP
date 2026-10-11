@@ -70,6 +70,9 @@ PACKAGE_DOCS = [
     "docs/ENEO.md",
     "docs/eneo/assistentinstruktion.md",
     "docs/eneo/docker-compose.fuzzy-mcp.yml",
+    "docs/eneo/docker-compose.egress.yml",
+    "docs/eneo/egress/Dockerfile",
+    "docs/eneo/egress/squid.conf",
     "docs/eneo/verktygsprofiler.md",
 ]
 # Copied to the package root, where the documentation runs them from.
