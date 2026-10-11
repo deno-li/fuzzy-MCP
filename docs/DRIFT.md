@@ -386,8 +386,9 @@ organisationens proxy via `HTTPS_PROXY`, eller regler i kedjan `DOCKER-USER`.
   `X-Forwarded-For`) och anropad sökväg utan frågesträng (visas som `?…`), men aldrig token eller andra headers.
   Anropen till myndigheterna loggas inte. Ett verktyg som misslyckas ger en rad `Tool '<namn>' failed: …` med
   felet och myndighetens adress, och ett verktyg som avbryts av `FUZZY_MCP_TOOL_TIMEOUT` en rad `Verktyget <namn>
-  avbröts efter …`. Alla adresser i loggen skrivs utan frågesträng (`?…`), så sökord och andra argument från
-  användarnas frågor hamnar inte där.
+  avbröts efter …`. Alla adresser i loggen skrivs utan frågesträng (`?…`), så sökord i anropen hamnar inte där.
+  Felmeddelandet kan däremot återge ett ogiltigt argument (t.ex. ett kommunnamn eller koordinater) eller
+  myndighetens egen feltext.
   MCP-biblioteket skriver `Terminating session: …` när en session avslutas (med `FUZZY_MCP_STATELESS=true`:
   `None` efter varje anrop) – det är normalt, och sessions-id:t räcker inte för att anropa servern utan token. Ett
   försök att öppna en WebSocket ger `Unsupported upgrade request` och ett tips om `uvicorn[standard]`; servern har
@@ -462,7 +463,7 @@ organisationens proxy via `HTTPS_PROXY`, eller regler i kedjan `DOCKER-USER`.
 | `403` med `Origin` | webbklientens origin saknas i `FUZZY_MCP_ALLOWED_ORIGINS` |
 | `400 Missing session ID` på `/mcp` | normalt för `GET` utan MCP-session; använd `/healthz` för hälsokontroll |
 | Verktyg svarar "… hann inte svara inom N s" | `FUZZY_MCP_TOOL_TIMEOUT` nåddes: myndighetens API är långsamt eller anropsgränsen nådd. Gör ett mindre urval; kontrollera myndigheten med `smoke_test.py --live` |
-| Verktyg svarar "Omdirigeringen till … stoppades" | myndighetens API omdirigerade till en värd utanför listan i avsnitt 6. Inget hämtades därifrån; rapportera adressen (SECURITY.md) |
+| Verktyg svarar "Omdirigeringen till … stoppades" | myndighetens API omdirigerade till en värd utanför listan i avsnitt 6 ("… myndigheternas egna adresser"; rapportera adressen enligt SECURITY.md) eller från https till http ("… okrypterad adress", ofta en server bakom TLS-avlastning; rapportera till myndigheten). Inget hämtades därifrån |
 | Verktyg svarar "Kunde inte nå API:t (ProxyError/ConnectError)" | utgående trafik blockeras – kontrollera brandvägg, `HTTPS_PROXY` och listan i avsnitt 6. Kräver proxyn NTLM/Kerberos-inloggning: be om undantag för värdarna |
 | "HTTP 429" från en källa | myndighetens anropsgräns; servern försöker igen själv, minska samtidiga klienter |
 | Certifikatfel mot myndigheterna | proxy med TLS-inspektion och en CA som saknas i operativsystemet: installera organisationens rotcertifikat där, eller sätt `SSL_CERT_FILE` till en komplett CA-bundle. Pekar `SSL_CERT_FILE` på en fil med bara organisationens CA blir det certifikatfel mot alla värdar som inte inspekteras |

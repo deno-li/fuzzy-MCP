@@ -262,7 +262,9 @@ def _without_query(value: object) -> object:
     return value.split("?", 1)[0] + "?…" if isinstance(value, str) and "?" in value else value
 
 
-_URL_QUERY = re.compile(r"(https?://[^\s?#\"'|<>]+)\?[^\s\"'|<>]*")
+# The query part is optional so that a URL without one is consumed in a single match: a required "?" would make a
+# long run of URL-like text (e.g. "https://https://…") take quadratic time on every log line.
+_URL_QUERY = re.compile(r"(https?://[^\s?#\"'|<>]+)(\?[^\s\"'|<>]*)?")
 
 
 class RedactUrlQueries(logging.Filter):
@@ -273,9 +275,9 @@ class RedactUrlQueries(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
         try:
             message = record.getMessage()
-        except (TypeError, ValueError):  # a malformed record: leave it to the handler
+        except Exception:  # a malformed record: the handler reports it (handleError), as without the filter
             return True
-        redacted = _URL_QUERY.sub(r"\1?…", message)
+        redacted = _URL_QUERY.sub(lambda m: f"{m[1]}?…" if m[2] is not None else m[0], message)
         if redacted != message:
             record.msg, record.args = redacted, None
         return True

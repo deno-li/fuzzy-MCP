@@ -359,3 +359,17 @@ def test_url_query_filter_leaves_other_lines_alone():
         "x", logging.INFO, __file__, 1, "%s och %s", ("'http://a.se/p?q=1'", "https://b.se/?x=2&y=3"), None
     )
     assert RedactUrlQueries().filter(two) and two.getMessage() == "'http://a.se/p?…' och https://b.se/?…"
+
+
+def test_url_query_filter_is_linear_and_tolerates_malformed_records():
+    import logging
+    import time
+
+    from fuzzy_mcp.__main__ import RedactUrlQueries
+
+    long = logging.LogRecord("x", logging.INFO, __file__, 1, "%s", ("https://" * 50_000,), None)
+    start = time.perf_counter()
+    assert RedactUrlQueries().filter(long)
+    assert time.perf_counter() - start < 1  # the earlier pattern took minutes on this line
+    broken = logging.LogRecord("x", logging.INFO, __file__, 1, "%(missing)s", ({"other": 1},), None)
+    assert RedactUrlQueries().filter(broken)  # left to the handler's handleError, as without the filter

@@ -9,10 +9,14 @@
 #   docker compose -f docker-compose.fuzzy-mcp.yml -f docker-compose.egress.yml down   # nätet måste skapas om
 #   docker compose -f docker-compose.fuzzy-mcp.yml -f docker-compose.egress.yml up -d --build
 #
+# `down` behövs när nätet tidigare skapats utan tillägget: annars ligger fuzzy_egress kvar som ett vanligt nät med
+# utgång. Kontrollera efteråt: docker network inspect fuzzy-mcp_fuzzy_egress --format '{{.Internal}}'  → true
+#
 # Bygget hämtar ubuntu:24.04 och Squid; bakom en proxy: --build-arg http_proxy=… --build-arg https_proxy=… till
-# `docker compose build`. Kräver organisationen att all trafik går via en egen proxy: avkommentera cache_peer i
-# egress/squid.conf. Proxyns logg (`docker logs fuzzy-egress-proxy`) visar en rad per anslutning med värdnamn och
-# status; TCP_DENIED/403 betyder att något försökte nå en annan adress.
+# `docker compose build`. Kräver organisationen att all trafik går via en egen proxy: avkommentera både cache_peer
+# och never_direct i egress/squid.conf. Ändringar i squid.conf gäller efter `docker restart fuzzy-egress-proxy`
+# (filen monteras skrivskyddad). Proxyns logg (`docker logs fuzzy-egress-proxy`) visar en rad per anslutning med
+# värdnamn och status; TCP_DENIED/403 betyder att något försökte nå en annan adress.
 
 services:
   fuzzy-mcp:
@@ -30,6 +34,11 @@ services:
     security_opt: ["no-new-privileges:true"]
     mem_limit: 128m
     pids_limit: 64
+    # Squid dimensionerar sina tabeller efter gränsen för öppna filer (se max_filedescriptors i squid.conf).
+    ulimits:
+      nofile: {soft: 4096, hard: 4096}
+    volumes:
+      - ./egress/squid.conf:/etc/squid/squid.conf:ro
     # fuzzy_egress: nås av fuzzy-mcp. fuzzy_outbound: proxyns enda väg ut.
     networks: [fuzzy_egress, fuzzy_outbound]
     logging:

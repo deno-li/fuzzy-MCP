@@ -12,17 +12,20 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 ### Säkerhet
 
 - Omdirigeringar följs bara mellan myndigheternas värdar (värdarna i de konfigurerade bas-URL:erna och den värd som
-  anropades), aldrig från https till http och högst fem i rad. Tidigare följde HTTP-klienten upp till 20
+  anropades), aldrig från https till http (okrypterat bara så länge varje steg varit okrypterat, t.ex. mot en spegel
+  med en http-adress) och högst fem i rad. Tidigare följde HTTP-klienten upp till 20
   omdirigeringar till vilken adress som helst, så en komprometterad myndighetsvärd eller en öppen omdirigering kunde
   få servern att hämta en intern adress (t.ex. en tjänst på Eneos nät) och lämna svaret till modellen. Ett stoppat
-  försök ger ett fel som bara namnger målets schema och värd, och inget hämtas därifrån.
-- Loggen innehåller inte längre användarnas frågor. MCP-biblioteket sätter loggnivån INFO, och då loggade httpx2
-  varje anrop till myndigheterna med hela URL:en (sökord, namn och koordinater i frågesträngen). Nu loggas bara
-  httpx2:s varningar, och alla loggrader – även bibliotekets `Tool … failed: …` med myndighetens adress – skrivs med
-  URL:er utan frågesträng (`?…`).
+  försök ger ett fel som bara namnger målets schema och värd och säger om det var en annan värd eller en övergång
+  till http, och inget hämtas därifrån.
+- Anropen till myndigheterna loggas inte längre. MCP-biblioteket sätter loggnivån INFO, och då loggade httpx2 varje
+  anrop med hela URL:en (sökord, namn och koordinater i frågesträngen). Nu loggas bara httpx2:s varningar, och alla
+  loggrader – även bibliotekets `Tool … failed: …` med myndighetens adress – skrivs med URL:er utan frågesträng
+  (`?…`). Ett felmeddelande kan fortfarande återge ett ogiltigt argument (t.ex. ett kommunnamn).
 - Utgående trafik i Eneo-uppsättningen: tillägget `docs/eneo/docker-compose.egress.yml` gör `fuzzy_egress` till ett
   internt nät och skickar trafiken via en Squid-proxy (`docs/eneo/egress/`, Ubuntu 24.04, körs som användaren
-  `proxy`, skrivskyddad) som bara släpper fram HTTPS till de sex värdarna i DRIFT.md avsnitt 6. Provad med Squid
+  `proxy`, skrivskyddad, högst 4 096 öppna filer så att den ryms i 128 MB, `squid.conf` monterad så att en ändring bara
+  kräver omstart) som bara släpper fram HTTPS till de sex värdarna i DRIFT.md avsnitt 6. Provad med Squid
   6.14: myndigheternas värdar släpps igenom (även via en överordnad proxy med `cache_peer`); andra värdar,
   IP-adresser, andra portar och okrypterad HTTP får 403. Leveranspaketet innehåller filerna.
 

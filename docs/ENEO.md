@@ -90,9 +90,11 @@ följer omdirigeringar bara mellan dem (aldrig från https till http), men näte
   utan utgång, och trafiken går via en Squid-proxy (`egress/`, Ubuntu 24.04) som bara släpper fram HTTPS till de
   sex värdarna. Andra värdar, IP-adresser, portar och okrypterad HTTP får 403. Proxyn ser bara värdnamnet, aldrig
   sökväg eller frågesträng. Byter ni från bara `docker-compose.fuzzy-mcp.yml`: kör `docker compose … down` med båda
-  filerna först, så att nätet skapas om som internt. Kräver organisationen en egen proxy: avkommentera `cache_peer`
-  i `egress/squid.conf` (proxyn skickar då vidare dit). Bakom en proxy vid bygget: `docker compose … build
-  --build-arg http_proxy=… --build-arg https_proxy=…`.
+  filerna först, så att nätet skapas om som internt. Kräver organisationen en egen proxy: avkommentera både
+  `cache_peer` (med er proxys värd och port) och `never_direct` i `egress/squid.conf` – utan `never_direct` går
+  anslutningarna fortfarande direkt. Filen monteras i containern, så en ändring gäller efter `docker restart
+  fuzzy-egress-proxy`. Bakom en proxy vid bygget: `docker compose … build --build-arg http_proxy=… --build-arg
+  https_proxy=…`.
 - **Alternativ:** organisationens proxy med motsvarande lista (`HTTPS_PROXY` i compose-filen), eller regler i
   kedjan `DOCKER-USER`. Observera att `ufw` (`default deny outgoing`) inte stoppar containertrafik på Ubuntu:
   den går genom `FORWARD`, där Dockers regler kommer först.
@@ -100,6 +102,7 @@ följer omdirigeringar bara mellan dem (aldrig från https till http), men näte
 Kontrollera spärren efter start:
 
 ```bash
+docker network inspect fuzzy-mcp_fuzzy_egress --format '{{.Internal}}'   # true – annars: down och up igen
 docker exec fuzzy-mcp python -c "import urllib.request as u; u.urlopen('https://example.com', timeout=5)"
 # väntat: ett fel med "Tunnel connection failed: 403" – example.com är inte tillåten
 docker logs --tail 5 fuzzy-egress-proxy   # TCP_DENIED/403 CONNECT example.com:443
@@ -244,7 +247,9 @@ verktyg avbryts (`avbröts efter`) och att proxyn (`docker logs fuzzy-egress-pro
 Från 0.1.2 till 0.2.0: tre nya verktyg (`ref_lookup_deso`, `ref_list_deso`, `scb_geodata_locate`) och flera ändrade
 beskrivningar och parametrar, bland annat för `scb_geodata_*`, `ref_*` och `skolverket_search_school_units`. Nya
 inställningar i compose-filen: `FUZZY_MCP_TOOL_TIMEOUT`, `FUZZY_MCP_CACHE_MAX_MB` och loggrotation; nytt tillägg för
-utgående trafik (avsnitt 2).
+utgående trafik (avsnitt 2). Kör `docker compose -f docker-compose.fuzzy-mcp.yml -f docker-compose.egress.yml down`
+före `up -d --build` första gången tillägget används, så att `fuzzy_egress` skapas om som internt nät, och gör
+kontrollen under [Utgående trafik](#utgående-trafik).
 
 ## 8. Säkerhet i korthet
 
@@ -256,8 +261,10 @@ utgående trafik (avsnitt 2).
 - Token på fil med snäva rättigheter, rotation enligt avsnitt 3.
 - fuzzy-mcp är skrivskyddad mot öppna API:er och ansluter inte till interna system. Den sparar inga svar på disk;
   svar från myndigheterna ligger i minnescachen högst `FUZZY_MCP_CACHE_TTL` (en timme).
-- Loggen (`docker logs fuzzy-mcp`) visar anropade verktyg som misslyckats och myndigheternas adresser, alltid utan
-  frågesträng – sökord och andra argument från användarnas frågor loggas inte. Loggen roteras (5 × 10 MB).
+- Loggen (`docker logs fuzzy-mcp`): anropen till myndigheterna loggas inte, och adresser skrivs alltid utan
+  frågesträng (`?…`), så sökord i anropen hamnar inte där. Ett verktyg som misslyckas loggas med sitt felmeddelande,
+  och det kan återge ett ogiltigt argument (t.ex. ett kommunnamn eller koordinater) eller myndighetens egen
+  feltext. Loggen roteras (5 × 10 MB).
 - `FUZZY_MCP_PERSONAL_DATA=off` tar bort de strukturerade fälten för personuppgifter (rektor, kontaktpersoner,
   e-postadresser). Fritext som utbildningsanordnare själva skrivit (t.ex. beskrivningar i Susa-navet) kan ändå
   innehålla namn eller kontaktuppgifter.
@@ -274,8 +281,9 @@ utgående trafik (avsnitt 2).
 | "… hann inte svara inom 50 s" | Myndighetens API är långsamt eller anropsgränsen nådd (`FUZZY_MCP_TOOL_TIMEOUT`). Gör mindre urval; upprepas det för en källa, kör `smoke_test.py --live` (DRIFT.md avsnitt 8) |
 | Alla verktyg från servern saknas i en minut | Eneos kretsbrytare (avsnitt 1): fem fel i rad. Se `docker logs fuzzy-mcp` för vilka verktyg som misslyckats och varför – ofta en myndighet som är nere, eller en modell som upprepar fel argument |
 | "Kunde inte nå API:t" i svaren | fuzzy-mcp saknar utgående nät – egress-nätet, brandvägg och proxy (DRIFT.md avsnitt 6) |
-| "Kunde inte nå API:t (ProxyError) … 403" | Egress-proxyn nekade värden. `docker logs fuzzy-egress-proxy` visar vilken; lägg bara till en värd i `egress/squid.conf` om den hör till en myndighet ni använder |
-| "Omdirigeringen till … stoppades" | Myndighetens API omdirigerade till en annan värd än myndigheternas egna. Inget hämtades därifrån. Rapportera adressen (SECURITY.md) |
+| "Kunde inte nå API:t (ProxyError) … 403" | Egress-proxyn nekade värden. `docker logs fuzzy-egress-proxy` visar vilken; lägg bara till en värd i `egress/squid.conf` om den hör till en myndighet ni använder, och kör `docker restart fuzzy-egress-proxy` |
+| "Omdirigeringen till … stoppades – … myndigheternas egna adresser" | Myndighetens API omdirigerade till en annan värd än myndigheternas egna. Inget hämtades därifrån. Rapportera adressen (SECURITY.md) |
+| "Omdirigeringen till http://… stoppades – … okrypterad adress" | Myndighetens API omdirigerade från https till http, ofta en server bakom TLS-avlastning som svarar med en http-adress. Servern följer aldrig sådana; rapportera det till myndigheten |
 | Nya verktyg syns inte, eller anrop ger parameterfel efter en uppdatering | Kör **Sync** och godkänn ändringarna i Eneo (avsnitt 7) |
 
 ## 10. Det här är inte provat

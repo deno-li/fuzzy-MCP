@@ -5,16 +5,19 @@
 #
 # fuzzy-mcp som container: streamable HTTP på port 8000, körs som icke-root, hälsokontroll mot /healthz.
 #
-#   docker build --build-arg VERSION=0.2.0 --build-arg VCS_REF=$(git rev-parse HEAD) -t fuzzy-mcp:0.2.0 .
+# Produktionsimagen kommer från leveranspaketet (scripts/build_release.py --with-image, docs/DRIFT.md avsnitt 5): dess
+# beroenden är kontrollerade mot requirements.lock. En image byggd direkt härifrån är för test och får en egen tagg:
+#
+#   docker build --build-arg VERSION=dev --build-arg VCS_REF=$(git rev-parse HEAD) -t fuzzy-mcp:dev .
 #   docker run -d -p 127.0.0.1:8000:8000 -e FUZZY_MCP_ALLOWED_HOSTS=mcp.kommun.se \
 #     -v /etc/fuzzy-mcp/token:/run/secrets/fuzzy_mcp_token:ro -e FUZZY_MCP_AUTH_TOKEN_FILE=/run/secrets/fuzzy_mcp_token \
-#     --read-only --cap-drop ALL --security-opt no-new-privileges fuzzy-mcp:0.2.0
+#     --read-only --cap-drop ALL --security-opt no-new-privileges fuzzy-mcp:dev
 #
 # Utan token startar servern inte (den lyssnar på 0.0.0.0). Tokenfilen ska vara läsbar för uid 10001.
 #
 # Bakom en proxy med TLS-inspektion: skicka med proxy och en komplett CA-bundle (publika rotcertifikat +
 # organisationens CA; den ersätter de inbyggda rotcertifikaten under bygget och hamnar inte i imagen):
-#   docker build --build-arg HTTPS_PROXY=http://proxy:8080 --secret id=ca,src=ca-bundle.pem -t fuzzy-mcp:0.2.0 .
+#   docker build --build-arg HTTPS_PROXY=http://proxy:8080 --secret id=ca,src=ca-bundle.pem -t fuzzy-mcp:dev .
 # Lås gärna basimagen till en digest i produktion: FROM python:3.12-slim@sha256:<digest>
 
 ARG PYTHON_VERSION=3.12

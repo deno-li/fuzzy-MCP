@@ -8,7 +8,7 @@ import anyio
 import httpx2
 import pytest
 
-from fuzzy_mcp.config import Settings
+from fuzzy_mcp.config import DEFAULT_BASE_URLS, Settings
 from fuzzy_mcp.errors import UpstreamError
 from fuzzy_mcp.http import HttpClient, RateLimit, SlidingWindowLimiter, TTLCache
 
@@ -292,3 +292,37 @@ async def test_redirect_keeps_the_rate_limit_of_the_target_host():
         client._limiters = {host: Counting(host) for host in ("api.skolverket.se", "statistikdatabasen.scb.se")}
         await client.get_json("skolverket", "https://api.skolverket.se/a")
     assert acquired == ["api.skolverket.se", "statistikdatabasen.scb.se"]
+
+
+async def test_downgrade_to_http_is_refused_with_its_own_message():
+    seen: list[str] = []
+    location = "http://api.skolverket.se/skolenhetsregistret/v2/x"
+    handler = _redirecting({"https://api.skolverket.se/": httpx2.Response(302, headers={"location": location})}, seen)
+    async with _client(handler) as client:
+        with pytest.raises(UpstreamError, match="aldrig en omdirigering från https till en okrypterad adress"):
+            await client.get_json("skolverket", "https://api.skolverket.se/skolenhetsregistret/v2/school-units/1")
+    assert len(seen) == 1
+
+
+async def test_http_mirror_may_redirect_over_http_but_never_back_down_from_https():
+    """With an http base URL (a mirror or test double) http is followed while every hop so far was http; once a hop
+    is https, a redirect back to http is refused."""
+    settings = Settings(max_retries=0, base_urls={**DEFAULT_BASE_URLS, "scb": "http://mirror.example.se/api/v2"})
+    seen: list[str] = []
+    handler = _redirecting(
+        {
+            "http://mirror.example.se/start": httpx2.Response(302, headers={"location": "/done"}),
+            "http://mirror.example.se/done": httpx2.Response(200, json={"ok": True}),
+            "http://mirror.example.se/up": httpx2.Response(301, headers={"location": "https://api.skolverket.se/b"}),
+            "https://api.skolverket.se/b": httpx2.Response(
+                302, headers={"location": "http://api.skolverket.se/c?q=user-text"}
+            ),
+        },
+        seen,
+    )
+    async with HttpClient(settings, transport=httpx2.MockTransport(handler), sleep=_no_sleep) as client:
+        res = await client.get_json("scb", "http://mirror.example.se/start")
+        assert res.data == {"ok": True}
+        with pytest.raises(UpstreamError, match="okrypterad"):
+            await client.get_json("scb", "http://mirror.example.se/up")
+    assert seen[-1] == "https://api.skolverket.se/b" and not any("user-text" in url for url in seen)

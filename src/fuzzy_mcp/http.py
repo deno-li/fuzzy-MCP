@@ -415,19 +415,28 @@ class HttpClient:
 
     async def _follow_redirects(self, source: str, url: str, response: httpx2.Response) -> httpx2.Response:
         """Follow at most MAX_REDIRECTS redirects, only to the agencies' hosts (the configured base URLs and the host
-        first asked) and never from https to http. Any other target stops the call with an error naming only its
-        scheme and host; nothing from that target is fetched."""
-        origin = httpx2.URL(url)
-        allowed = self._allowed_hosts | {origin.host}
+        first asked) and never from https to http: plain http is followed only while every hop so far was http (a
+        mirror or test double). Any other target stops the call with an error naming only its scheme and host;
+        nothing from that target is fetched."""
+        allowed = self._allowed_hosts | {httpx2.URL(url).host}
         for _ in range(MAX_REDIRECTS):
             target = response.next_request
             if target is None:
                 return response
-            if target.url.host not in allowed or target.url.scheme not in ("https", origin.scheme):
+            where = f"{target.url.scheme}://{target.url.host}"
+            if target.url.host not in allowed:
                 raise UpstreamError(
                     source,
-                    f"Omdirigeringen till {target.url.scheme}://{target.url.host} stoppades – servern följer bara "
-                    "omdirigeringar till myndigheternas egna adresser",
+                    f"Omdirigeringen till {where} stoppades – servern följer bara omdirigeringar till myndigheternas "
+                    "egna adresser",
+                    status=response.status_code,
+                    url=url,
+                )
+            if target.url.scheme != "https" and (response.request.url.scheme == "https" or target.url.scheme != "http"):
+                raise UpstreamError(
+                    source,
+                    f"Omdirigeringen till {where} stoppades – servern följer aldrig en omdirigering från https till "
+                    "en okrypterad adress",
                     status=response.status_code,
                     url=url,
                 )
