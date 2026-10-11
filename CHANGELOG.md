@@ -38,7 +38,6 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 - docs/ENEO.md avsnitt 5.1 om lokal modell (t.ex. vLLM): mät verktygens verkliga tokenkostnad, välj profil efter
   kontextfönstret och anpassa `FUZZY_MCP_MAX_OUTPUT_CHARS`; acceptanstest 8 (skolenhet → DeSO/RegSO);
   återställning till en tidigare version med godkännande i Eneo.
-
 - `scb_geodata_locate`: DeSO- och RegSO-kod för en punkt (SWEREF 99 TM eller WGS84) eller för en skolenhet
   (skolenhetskod → besöksadressens koordinater ur Skolenhetsregistret), genom punktsökning (INTERSECTS) i SCB:s
   WFS-lager. Tillhörigheten räknas bara ur koordinater, aldrig ur namn eller adresstext. Svaret anger vilken adress
@@ -110,7 +109,6 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
   stoppar containertrafik, loggarnas innehåll, cachens minne, vilka data som lämnar servern och vad
   `FUZZY_MCP_PERSONAL_DATA=off` inte täcker (fritext).
 - `scripts/generate_tool_docs.py` fyller även profiltabellen i docs/ENEO.md och kontrollerar den med `--check`.
-
 - Verifierade uppgifter från Källkontroll 2026-10-10 i entitetskatalogen, kopplingsnycklarna, informationsmodellen,
   README, prompten `omradesprofil`, serverinstruktionen och Eneo-assistentinstruktionen: lagernamnen `DeSO_2018`,
   `DeSO_2025`, `RegSO_2020`, `RegSO_2025` och attributen `desokod`, `regsokod`, `regsonamn`, `kommunkod`, `lanskod`,
@@ -137,7 +135,6 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
   inte i Eneo 2.2.0 eller 2.2.1. Tokensiffran för alla verktyg (28 500) stämde inte med verktygsprofiler.md (29 000).
 - DRIFT.md lovade att servern bara anropar de fasta adresserna och att loggen saknar frågesträngar; det stämde inte
   för omdirigeringar och för httpx2:s loggrader, och gör det nu.
-
 - Kodlistorna för DeSO/RegSO i Statistikdatabasen: entitetskatalogen påstod utan belägg att tabellerna på
   DeSO/RegSO-nivå använder `vs_DeSO*`/`vs_RegSO*`. Uppgiften togs bort i #5 och återinförs nu med de verifierade
   namnen (2026-10-10, TAB6680 har alla fyra) och suffixregeln: koderna i `vs_DeSO2025`/`vs_RegSO2025` har suffix
