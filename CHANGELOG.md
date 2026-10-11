@@ -33,9 +33,10 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
   `DeSO_2018`, `RegSO_2020` och `RegSO_2025` samt de parameterkombinationer servern skickar: `startIndex` + `sortBy`
   med `CQL_FILTER`, `sortBy` på `regsokod` och `propertyName` med geometri tillsammans med `srsName`
   (`wfs.intersects.srid4326*`, `wfs.intersects.y_x.<lager>`, `wfs.sida.filter`, `wfs.sida.regso`,
-  `wfs.crs.propertyName`). Körningen 2026-10-11 visade att allt fungerar och att GeoServer läser `SRID=4326` som
-  lon lat; punktsökningen är därmed verifierad för alla fyra DeSO-/RegSO-lagren. SCB-sidorna namnges med de två
-  sista sökvägssegmenten så att två sidor som slutar lika inte får samma namn.
+  `wfs.crs.propertyName`). Körningen 2026-10-11 gav status 200 och väntat innehåll för alla åtta nya kontroller
+  (var och en mot ett lager) och visade att GeoServer läser `SRID=4326` som lon lat (lon lat träffade DeSO 0180C4040,
+  lat lon gav 0 objekt); punktsökningen är därmed verifierad för alla fyra DeSO-/RegSO-lagren. SCB-sidorna namnges
+  med de två sista sökvägssegmenten så att två sidor som slutar lika inte får samma namn.
 - Arbetsflödet Källkontroll (`.github/workflows/verify-sources.yml`) och `scripts/verify_sources.py`: en fast lista
   med läsande anrop som kontrollerar API-kontrakten för SCB:s geodata (DeSO/RegSO), SCB:s statistikdatabas, SCB:s
   DeSO-sidor och nyckelfiler samt Socialstyrelsens statistikdatabas. Svaren skrivs i jobbloggen. Startas för hand,

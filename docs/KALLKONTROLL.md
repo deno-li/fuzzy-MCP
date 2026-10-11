@@ -18,9 +18,11 @@ från:
 Körning 2 lade till åtta geodatakontroller (EWKT i CQL, punktsökning i de tre övriga DeSO-/RegSO-lagren, sidning
 med filter, `sortBy=regsokod`, `propertyName` med geometri och `srsName`) och skiljer de två DeSO-sidorna på scb.se
 åt. Alla kontroller som fanns i körning 1 gav samma status, innehållstyp och sammanfattning i körning 2. Körning 1
-kördes dessutom om 2026-10-11 (`run_attempt` 2, knappen *Re-run all jobs*) med identiskt resultat; bara
-`timeStamp` i WFS-svaren skilde. En omkörning kör skriptet från den ursprungliga committen, så nya kontroller
-kräver *Run workflow*.
+kördes dessutom om 2026-10-11 (`run_attempt` 2, knappen *Re-run all jobs*) med samma status, innehållstyp och
+sammanfattning för alla kontroller; sha256 skilde för WFS-svaren (i de fyra loggade JSON-kropparna bara
+`timeStamp`, för övriga WFS-svar är orsaken inte loggad) och för Socialstyrelsens dokumentationssida
+`sdb.dokumentation` (HTML med oförändrad text och oförändrade länkar). En omkörning kör skriptet från den
+ursprungliga committen, så nya kontroller kräver *Run workflow*.
 
 Det här dokumentet är en läsning av körningarnas loggar (raderna `VERIFY`, `BODY`, `TEXT` och `B64`). Uppgifterna
 nedan är det som faktiskt stod i svaren; tal, fältnamn och koder är källornas egna. Uppgifter som bara körning 2 gav
@@ -70,7 +72,8 @@ alla anrop 200 utom det avsiktliga felanropet (404).
   0114R004.
 - **(Körning 2)** `propertyName=desokod,sp_geometry` tillsammans med `srsName=EPSG:4326` och `maxFeatures=1` gav
   `crs` `urn:ogc:def:crs:EPSG::4326`, första koordinat `[13.09577306, 55.5417832]` och `desokod` 1280C1070 – samma
-  svar som utan `propertyName`.
+  `crs`, koordinat och kod som `wfs.crs.EPSG:4326` utan `propertyName`; svaret är mindre (2 875 mot 3 106 byte)
+  eftersom bara `desokod` och geometrin ingår.
 - `outputFormat=csv` (`text/csv`), `shape-zip` (`application/zip`) och `geopackage`
   (`application/geopackage+sqlite3`) fungerar. `propertyName` fungerar för csv: rubriken blir
   `FID,objectid,objektidentitet,objekttyp,desokod,regsokod,lanskod,kommunkod,version,ansvarig_organisation,referensdatum`
@@ -140,15 +143,17 @@ alla anrop 200 utom det avsiktliga felanropet (404).
   `https://www.scb.se/contentassets/302de7b6076847e08e260d112475dfc5/scbs-oppna-geodata-via-wms-och-wfs-tjanster_20250303.pdf`
   (länken registrerad, filen inte hämtad).
 - I körning 1 fick två sidor samma loggnamn (`scb.sida.demografiska-statistikomraden-deso`, båda sökvägarna slutar
-  så) och bara den ena sidans text fanns kvar i loggen. **(Körning 2)** Sidorna namnges med de två sista
+  så). Loggen innehöll båda sidornas `VERIFY`- och `TEXT`-rader, men en läsning per kontrollnamn blandar ihop dem
+  (den ena sidans del `1/1` skriver över den andras del `1/2`). **(Körning 2)** Sidorna namnges med de två sista
   sökvägssegmenten och alla fem finns med:
   - `regionala-indelningar.demografiska-statistikomraden-deso` (4 404 tecken; länkar "Ny version av Demografiska
     statistikområden (pdf)");
   - `demografiska-statistikomraden-deso.deso-tabellerna-i-ssd--information-och-instruktioner` (6 777 tecken, inga
     fillänkar);
   - `oppna-geodata.demografiska-statistikomraden-deso` (2 285 tecken; de tre nyckelfilerna och WFS-guiden);
-  - `regionala-indelningar.regionala-statistikomraden-regso` (3 740 tecken; samma pdf om ny version samt tre
-    pdf-rapporter om områdesindelning för uppföljning av segregation);
+  - `regionala-indelningar.regionala-statistikomraden-regso` (3 740 tecken; en pdf med samma länktext "Ny version av
+    Demografiska statistikområden (pdf)" som på DeSO-sidan men en annan URL – ingen av dem är hämtad – samt tre
+    pdf-rapporter om områdesindelning för uppföljning av segregation, varav en länkad två gånger);
   - `regionala-statistikomraden-regso.regso-tabellerna-i-statistikdatabasen---information-och-instruktioner`
     (6 656 tecken, inga fillänkar).
 
