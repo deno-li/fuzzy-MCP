@@ -390,7 +390,7 @@ datakvalitet och aggregerade jämförelsevärden) och vilka verktyg och nycklar 
 | `FUZZY_MCP_MAX_RETRIES` | `3` | omförsök vid 429/502/503/504 och nätverksfel |
 | `FUZZY_MCP_FOHM_API_VERSION`, `FUZZY_MCP_SKOLVERKET_STATISTIK_API_VERSION` | `v1` | `v2` när installationen fått PxWebApi 2 (kräver motsvarande `_BASE_URL`) |
 | `FUZZY_MCP_CACHE_TTL` | `3600` | sekunder i minnescachen (0 = av) |
-| `FUZZY_MCP_CACHE_MAX_ENTRIES`, `FUZZY_MCP_CACHE_MAX_MB` | `512`, `64` | tak för cachen (antal svar och megabyte; svar större än en fjärdedel cachas inte) |
+| `FUZZY_MCP_CACHE_MAX_ENTRIES`, `FUZZY_MCP_CACHE_MAX_MB` | `512`, `64` | tak för cachen (antal svar och megabyte svarsdata, som tar 3–5 gånger mer minne; svar större än en fjärdedel cachas inte) |
 | `FUZZY_MCP_MAX_ROWS` | `1000` | tak för rader per datasvar |
 | `FUZZY_MCP_TRANSPORT`, `FUZZY_MCP_HOST`, `FUZZY_MCP_PORT` | `stdio`, `127.0.0.1`, `8000` | transportinställningar |
 | `FUZZY_MCP_ALLOWED_HOSTS`, `FUZZY_MCP_ALLOWED_ORIGINS` | – | skydd mot DNS-rebinding för HTTP-transporterna: tillåtna `Host`- och `Origin`-värden (localhost tillåts alltid). Ange dem när servern binds till annat än localhost. |
@@ -399,6 +399,7 @@ datakvalitet och aggregerade jämförelsevärden) och vilka verktyg och nycklar 
 | `FUZZY_MCP_STATELESS` | `false` | Streamable HTTP utan sessioner |
 | `FUZZY_MCP_PERSONAL_DATA` | `opt-in` | `off` stänger av alla parametrar för personuppgifter |
 | `FUZZY_MCP_MAX_OUTPUT_CHARS` | `0` | tak för ett verktygssvar i tecken (Eneo: `30000`) |
+| `FUZZY_MCP_TOOL_TIMEOUT` | `0` | sekunder per verktygsanrop, sedan ett tydligt fel (0 = av; Eneo: `50`) |
 
 Anropsgränser per värd följer det myndigheterna publicerar: SCB 30 och Skolverkets statistikdatabas 10 anrop per
 10 sekunder. `fuzzy_api_notices` visar `Deprecation`- och `Sunset`-huvuden som API:erna skickat, enligt
@@ -438,9 +439,9 @@ konfiguration, tjänst (Windows/systemd), container, nätverk, säkerhet, överv
 
 ### Eneo
 
-[docs/ENEO.md](docs/ENEO.md) beskriver hur servern kopplas till [Eneo](https://github.com/eneo-ai/eneo): token,
-nätverk bredvid Eneos backend, rekommenderade inställningar, verktygsprofiler per assistent, acceptanstest och
-felsökning. `scripts/eneo_check.py` kontrollerar servern med Eneos eget MCP-klientbibliotek (SDK 1.x) och kan köras
+[docs/ENEO.md](docs/ENEO.md) beskriver hur servern kopplas till [Eneo](https://github.com/eneo-ai/eneo) (granskat mot
+Eneo 2.2.1): token, nätverk bredvid Eneos backend med en proxy som bara släpper fram myndigheternas värdar,
+rekommenderade inställningar, verktygsprofiler per assistent, lokal modell (vLLM), acceptanstest och felsökning. `scripts/eneo_check.py` kontrollerar servern med Eneos eget MCP-klientbibliotek (SDK 1.x) och kan köras
 direkt i Eneos backend-container. Färdig assistentinstruktion: [docs/eneo/assistentinstruktion.md](docs/eneo/assistentinstruktion.md).
 
 ## Utveckling och bidrag

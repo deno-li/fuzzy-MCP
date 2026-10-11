@@ -55,7 +55,9 @@ MAX_LIMIT_SCHOOL_UNITS = 300
 MAX_LIMIT_ORGANIZERS = 300
 MAX_LIMIT_EDUCATION_PROVIDERS = 200
 MAX_LIMIT_CONTRACTS = 150
-MAX_DETAIL_ROWS = 25
+# The list call plus one detail call per row fit in api.skolverket.se's budget of 20 calls per 10 s
+# (server.DEFAULT_RATE_LIMITS), so a search with details does not wait for the rate limiter.
+MAX_DETAIL_ROWS = 19
 DETAIL_CONCURRENCY = 4
 # skolverket_school_unit_changes queries up to four registers in one call; their rows share this budget
 # (compact JSON bytes of the returned items), split evenly between the requested registers.

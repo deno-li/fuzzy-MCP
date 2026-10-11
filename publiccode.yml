@@ -5,8 +5,8 @@
 publiccodeYmlVersion: "0.4"
 name: fuzzy-mcp
 url: "https://github.com/deno-li/fuzzy-MCP.git"
-releaseDate: "2026-10-08"
-softwareVersion: "0.1.2"
+releaseDate: "2026-10-11"
+softwareVersion: "0.2.0"
 developmentStatus: beta
 softwareType: standalone/backend
 platforms:

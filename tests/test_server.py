@@ -105,3 +105,47 @@ async def test_healthz_route_on_http_transport():
         # Open without a token, so it reveals nothing but the status (no version or sources).
         assert response.json() == {"status": "ok"}
         assert (await http.post("/healthz")).status_code == 405
+
+
+async def test_tool_timeout_answers_before_the_client_gives_up(caplog):
+    """FUZZY_MCP_TOOL_TIMEOUT: a slow agency gives a clear error in time (Eneo waits 60 s), and the pending upstream
+    call is cancelled."""
+    import anyio
+    import httpx2
+
+    finished: list[str] = []
+
+    async def slow(request: httpx2.Request) -> httpx2.Response:
+        await anyio.sleep(5)
+        finished.append(str(request.url))
+        return httpx2.Response(200, json={})
+
+    settings = Settings(enabled_sources=frozenset({"scb"}), tool_timeout_seconds=0.2, max_retries=0)
+    server = build_server(settings, transport=httpx2.MockTransport(slow), rate_limits={})
+    async with Client(server, raise_exceptions=False) as client:
+        start = anyio.current_time()
+        result = await client.call_tool("scb_search_tables", {"query": "folkmängd"})
+        elapsed = anyio.current_time() - start
+    text = "".join(getattr(c, "text", "") for c in result.content)
+    assert result.is_error and "scb_search_tables hann inte svara inom 0.2 s" in text
+    assert elapsed < 2 and not finished
+    assert any("avbröts efter 0.2 s" in r.getMessage() for r in caplog.records)
+
+
+async def test_tool_timeout_is_off_by_default_and_leaves_fast_tools_alone():
+    async with Client(build_server(Settings(tool_timeout_seconds=30), rate_limits={})) as client:
+        result = await client.call_tool("ref_lookup_region", {"query": "Gävle"})
+    assert not result.is_error and "2180" in "".join(getattr(c, "text", "") for c in result.content)
+    assert Settings().tool_timeout_seconds == 0
+
+
+@pytest.mark.parametrize("value", ["-1", "abc", "nan", "inf"])
+def test_tool_timeout_must_be_seconds(monkeypatch, value):
+    monkeypatch.setenv("FUZZY_MCP_TOOL_TIMEOUT", value)
+    with pytest.raises(ValueError, match="FUZZY_MCP_TOOL_TIMEOUT"):
+        Settings.from_env()
+
+
+def test_tool_timeout_from_environment(monkeypatch):
+    monkeypatch.setenv("FUZZY_MCP_TOOL_TIMEOUT", "50")
+    assert Settings.from_env().tool_timeout_seconds == 50

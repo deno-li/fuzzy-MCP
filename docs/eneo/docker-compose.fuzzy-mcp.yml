@@ -3,20 +3,29 @@
 # SPDX-License-Identifier: CC0-1.0
 #
 # fuzzy-mcp bredvid Eneo (se docs/ENEO.md). Förutsätter att Eneo redan körs och att dess interna nät heter
-# eneo_module_net (kontrollera med `docker network ls`). Imagen: docker load -i fuzzy-mcp-0.1.2-image.tar.gz
-# (leveranspaketet) eller i repot: docker build --build-arg VERSION=0.1.2 -t fuzzy-mcp:0.1.2 . (se DRIFT.md). Registrera sedan http://fuzzy-mcp:8000/mcp
-# med Bearer-token i Eneo.
+# eneo_module_net (kontrollera med `docker network ls`). Imagen kommer från leveranspaketet:
+# docker load -i fuzzy-mcp-0.2.0-image.tar.gz (jämför image-id med releasesidan, ENEO.md avsnitt 2). En image som
+# byggs själv från repot ska ha en egen tagg (t.ex. fuzzy-mcp:dev) och används bara för test. Registrera sedan
+# http://fuzzy-mcp:8000/mcp med Bearer-token i Eneo.
 #
-# eneo_module_net delas med Eneos backend, Traefik och eventuella andra moduler – alla där når fuzzy-mcp:8000,
-# därför krävs token. Vill ni begränsa ytterligare: skapa ett eget internt nät (docker network create --internal
-# fuzzy_mcp_net), anslut bara eneo_backend och fuzzy-mcp till det och byt eneo_module_net nedan mot det nätet.
+# Utgående trafik: med bara den här filen når fuzzy-mcp internet och det lokala nätet via fuzzy_egress. Lägg till
+# docker-compose.egress.yml (proxy som bara släpper fram myndigheternas värdar) eller spärra i brandväggen enligt
+# DRIFT.md avsnitt 6 (`down` först om fuzzy-mcp redan körts utan tillägget, så att nätet skapas om som internt):
+#   docker compose -f docker-compose.fuzzy-mcp.yml -f docker-compose.egress.yml down
+#   docker compose -f docker-compose.fuzzy-mcp.yml -f docker-compose.egress.yml up -d --build
+#
+# eneo_module_net delas med Eneos backend, Traefik och eventuella moduler – alla där når fuzzy-mcp:8000, därför
+# krävs token. Vill ni begränsa ytterligare: skapa ett eget internt nät (docker network create --internal
+# fuzzy_mcp_net), byt eneo_module_net nedan mot det och lägg nätet på Eneos backend med en docker-compose.override.yml
+# bredvid Eneos docker-compose.yml (ENEO.md avsnitt 2). Använd inte `docker network connect` – den anslutningen
+# försvinner när backend-containern skapas om, t.ex. vid en Eneo-uppgradering.
 
 # Eget projektnamn så att `docker compose down` här aldrig rör Eneos egna tjänster.
 name: fuzzy-mcp
 
 services:
   fuzzy-mcp:
-    image: fuzzy-mcp:0.1.2
+    image: fuzzy-mcp:0.2.0
     container_name: fuzzy-mcp
     restart: unless-stopped
     read_only: true
@@ -35,8 +44,13 @@ services:
       FUZZY_MCP_PERSONAL_DATA: "off"
       FUZZY_MCP_HTTP_TIMEOUT: "20"
       FUZZY_MCP_MAX_RETRIES: "1"
+      # Svar inom Eneos 60 s även när en myndighet är långsam (ett tydligt fel i stället för Eneos timeout).
+      FUZZY_MCP_TOOL_TIMEOUT: "50"
+      # Cachen räknar svarens storlek; i minnet tar de 3–5 gånger mer, så 24 MB håller sig under mem_limit.
+      FUZZY_MCP_CACHE_MAX_MB: "24"
       FUZZY_MCP_SOURCES: scb,skolverket,fohm,reference
-      # Utgående proxy, om sådan krävs (NO_PROXY behövs inte här: fuzzy-mcp anropar bara myndigheterna):
+      # Utgående proxy, om sådan krävs (NO_PROXY behövs inte här: fuzzy-mcp anropar bara myndigheterna).
+      # Med docker-compose.egress.yml sätts den till egress-proxyn:
       # HTTPS_PROXY: http://proxy.kommun.se:8080
       # Vid TLS-inspektion: en komplett CA-bundle (publika rotcertifikat + organisationens CA), inte bara CA:n
       # SSL_CERT_FILE: /certs/ca-bundle.pem
@@ -44,7 +58,13 @@ services:
     #   - /etc/ssl/certs/ca-certificates.crt:/certs/ca-bundle.pem:ro
     secrets: [fuzzy_mcp_token]
     networks: [eneo_module_net, fuzzy_egress]
-    # Inga publicerade portar: bara Eneos backend (på eneo_module_net) når tjänsten.
+    # Inga publicerade portar och inga traefik-etiketter. Alla på eneo_module_net (Eneos backend, Traefik, eventuella
+    # moduler) når tjänsten – därför krävs token.
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "5"
 
 secrets:
   fuzzy_mcp_token:

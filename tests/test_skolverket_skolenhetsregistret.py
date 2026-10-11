@@ -784,3 +784,16 @@ async def test_school_unit_changes_byte_budget(router, make_client):
     assert "kortades" in notes
     assert 'skolverket_search_contracts({"modified_since": "2025-01-01", "offset": ' in notes
     assert '"status": ["AKTIV", "VILANDE", "UPPHORT", "PLANERAD"]' in notes
+
+
+async def test_search_with_details_fits_the_rate_limit(router, make_client):
+    """The list call and one detail call per row stay within api.skolverket.se's 20 calls per 10 s."""
+    from fuzzy_mcp.server import DEFAULT_RATE_LIMITS
+    from fuzzy_mcp.sources.skolverket.skolenhetsregistret import MAX_DETAIL_ROWS
+
+    assert DEFAULT_RATE_LIMITS["api.skolverket.se"].calls >= 1 + MAX_DETAIL_ROWS
+    router.add("GET", LIST_UNITS, load_fixture("skolenhetsregistret_school_units.json"))
+    detail_router(router, {"43038662": "skolenhetsregistret_school_unit_minimal.json"})
+    async with make_client("skolverket") as client:
+        result = await call(client, "skolverket_search_school_units", {"limit": 50, "with_details": True})
+    assert f"with_details begränsar limit till {MAX_DETAIL_ROWS}." in result["notes"]

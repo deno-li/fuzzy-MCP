@@ -15,7 +15,7 @@ För IT-drift som installerar och kör servern. Utvecklare läser [DEVELOPMENT.m
 | --- | --- |
 | Vad | MCP-server (Model Context Protocol) som ger AI-assistenter läsåtkomst till öppna data från SCB, Skolverket, Folkhälsomyndigheten och Sveriges dataportal |
 | Körning | En Python-process. Transport `stdio` (startas av klienten) eller `streamable-http` (tjänst på en port) |
-| Data | Bara läsning från öppna API:er. Ingen databas, inga filer skrivs. Cache i minnet (högst 64 MB) |
+| Data | Bara läsning från öppna API:er. Ingen databas, inga filer skrivs. Cache i minnet (högst 64 MB svarsdata, vilket tar 3–5 gånger mer minne; `FUZZY_MCP_CACHE_MAX_MB`) |
 | Hemligheter | En token som HTTP-klienterna skickar (fil, `FUZZY_MCP_AUTH_TOKEN_FILE`). Inga nycklar eller konton mot myndigheternas API:er |
 | Autentisering | Statisk token för HTTP (`Authorization: Bearer` eller API-nyckelheader) – sätt `FUZZY_MCP_AUTH_TOKEN_FILE` |
 | Personuppgifter | Returneras inte som standard. Namn på enskilda (t.ex. rektor) bara när en klient uttryckligen ber om det |
@@ -177,12 +177,13 @@ Allt styrs med miljövariabler (eller motsvarande flaggor till `fuzzy-mcp`). Ing
 | `FUZZY_MCP_STATELESS` | `false` | `true` = Streamable HTTP utan sessioner (flera instanser utan sticky sessions; rekommenderas för Eneo) |
 | `FUZZY_MCP_PERSONAL_DATA` | `opt-in` | `off` = inga namn på enskilda personer, även om en klient ber om det |
 | `FUZZY_MCP_MAX_OUTPUT_CHARS` | `0` (av) | tak för ett verktygssvar i tecken; servern kortar listor och behåller giltig JSON (Eneo: `30000`) |
+| `FUZZY_MCP_TOOL_TIMEOUT` | `0` (av) | sekunder per verktygsanrop; därefter ett tydligt fel och återstående anrop mot myndigheterna avbryts. Sätt den under klientens egen gräns (Eneo: `50`, Eneo väntar 60 s) |
 | `FUZZY_MCP_SOURCES` | alla | begränsa källorna, t.ex. `scb,skolverket,reference` (delkällor: `scb.statistik`, `scb.geodata`, `skolverket.statistik`, `skolverket.skolenhetsregistret`, `skolverket.syllabus`, `skolverket.planerad`, `skolverket.susa`) |
 | `FUZZY_MCP_LANGUAGE` | `sv` | `sv` eller `en` |
 | `FUZZY_MCP_HTTP_TIMEOUT` | `30` | sekunder per anrop mot myndigheterna |
 | `FUZZY_MCP_MAX_RETRIES` | `3` | omförsök vid 429/502/503/504 och nätverksfel |
 | `FUZZY_MCP_CACHE_TTL` | `3600` | sekunder i minnescachen, 0 = av |
-| `FUZZY_MCP_CACHE_MAX_ENTRIES` / `FUZZY_MCP_CACHE_MAX_MB` | `512` / `64` | tak för cachen |
+| `FUZZY_MCP_CACHE_MAX_ENTRIES` / `FUZZY_MCP_CACHE_MAX_MB` | `512` / `64` | tak för cachen. MB räknas på svarens storlek; tolkade svar tar 3–5 gånger mer minne, så räkna med det mot en minnesgräns (Eneo-compose: `24` med 512 MB) |
 | `FUZZY_MCP_MAX_ROWS` | `1000` | tak för rader per datasvar |
 | `FUZZY_MCP_<KÄLLA>_BASE_URL` | se `config.py` | byt adress till en myndighets API (t.ex. ny version) |
 | `FUZZY_MCP_FOHM_API_VERSION`, `FUZZY_MCP_SKOLVERKET_STATISTIK_API_VERSION` | `v1` | `v2` när myndigheten publicerat PxWebApi 2 (kräver ny `_BASE_URL`) |
@@ -277,14 +278,29 @@ sudo sh -c 'umask 077; /opt/fuzzy-mcp/venv/bin/python -c "import secrets; print(
 systemctl daemon-reload && systemctl enable --now fuzzy-mcp && journalctl -u fuzzy-mcp -f
 ```
 
-**Container** – `Dockerfile` i repot. Imagen kör som icke-root (uid 10001), har `HEALTHCHECK` mot `/healthz`,
-installerar beroendena med hashkontroll och innehåller inte pip. Bara byggsteget behöver nätet (Docker Hub och PyPI):
+**Container** – imagen kör som icke-root (uid 10001), har `HEALTHCHECK` mot `/healthz` och innehåller inte pip.
+Använd i drift imagen från leveranspaketet (byggt med `--with-image`): dess Python-paket är kontrollerade mot
+`requirements.lock`, så paketets SBOM och `audit.txt` beskriver den. Jämför image-id med raden "Container-image" på
+releasesidan:
 
 ```bash
-docker build --build-arg VERSION=0.1.2 --build-arg VCS_REF=$(git rev-parse HEAD) -t fuzzy-mcp:0.1.2 .   # etiketterna: version och commit
+docker load -i fuzzy-mcp-0.2.0-image.tar.gz
+docker image inspect --format '{{.Id}}' fuzzy-mcp:0.2.0     # samma som på releasesidan
+```
+
+`Dockerfile` i repot bygger en image för test. Den löser beroendena på nytt vid varje bygge (med hashkontroll inom
+bygget, men inte mot paketets låsfil), så ge den en egen tagg. Bara byggsteget behöver nätet (Docker Hub och PyPI):
+
+```bash
+docker build --build-arg VERSION=dev --build-arg VCS_REF=$(git rev-parse HEAD) -t fuzzy-mcp:dev .   # etiketterna: version och commit
 # bakom proxy med TLS-inspektion – en komplett CA-bundle (publika rotcertifikat + organisationens CA), som bara
 # används under bygget och inte hamnar i imagen:
-docker build --build-arg HTTPS_PROXY=http://proxy.kommun.se:8080 --secret id=ca,src=ca-bundle.pem -t fuzzy-mcp:0.1.2 .
+docker build --build-arg HTTPS_PROXY=http://proxy.kommun.se:8080 --secret id=ca,src=ca-bundle.pem -t fuzzy-mcp:dev .
+```
+
+Starta containern (här imagen från paketet):
+
+```bash
 
 # token: läsbar bara för containerns tjänstekonto (uid 10001)
 sudo mkdir -m 755 -p /etc/fuzzy-mcp
@@ -294,7 +310,7 @@ sudo chown 10001:10001 /etc/fuzzy-mcp/token && sudo chmod 0400 /etc/fuzzy-mcp/to
 docker run -d --name fuzzy-mcp -p 127.0.0.1:8000:8000 \
   -e FUZZY_MCP_ALLOWED_HOSTS=mcp.kommun.se \
   -v /etc/fuzzy-mcp/token:/run/secrets/fuzzy_mcp_token:ro -e FUZZY_MCP_AUTH_TOKEN_FILE=/run/secrets/fuzzy_mcp_token \
-  --read-only --cap-drop ALL --security-opt no-new-privileges fuzzy-mcp:0.1.2
+  --read-only --cap-drop ALL --security-opt no-new-privileges fuzzy-mcp:0.2.0
 docker inspect --format '{{.State.Health.Status}}' fuzzy-mcp     # healthy
 ```
 
@@ -318,7 +334,14 @@ på RHEL, `/etc/ssl/certs/ca-certificates.crt` på Debian/Ubuntu). En fil med ba
 | `statistikdatabasen.skolverket.se` | Skolverkets statistikdatabas |
 | `admin.dataportal.se` | Sveriges dataportal |
 
-Källor som stängts av med `FUZZY_MCP_SOURCES` anropas inte.
+Källor som stängts av med `FUZZY_MCP_SOURCES` anropas inte. Servern följer omdirigeringar bara mellan de här
+värdarna (och en värd som satts med `FUZZY_MCP_<KÄLLA>_BASE_URL`), aldrig från https till http och högst fem i
+rad; en annan adress stoppar anropet utan att något hämtas därifrån.
+
+Spärra ändå i nätet. **Container på Ubuntu (och andra Linux med Docker):** regler i `ufw` (`default deny
+outgoing`) gäller trafik från värden själv, inte från containrar – den går genom `FORWARD`, där Dockers regler kommer
+först. Använd i stället en proxy med listan ovan (för Eneo finns en färdig Squid-proxy, ENEO.md avsnitt 2),
+organisationens proxy via `HTTPS_PROXY`, eller regler i kedjan `DOCKER-USER`.
 
 **Inkommande** – bara HTTP-transporten lyssnar. Endpoints:
 
@@ -341,11 +364,16 @@ Källor som stängts av med `FUZZY_MCP_SOURCES` anropas inte.
   Okända `Host` ger 421 och okända `Origin` 403 på `/mcp`. `/healthz` svarar på alla värdnamn, men visar bara
   `{"status": "ok"}`. Lyssnar servern på `0.0.0.0` utan värdlista skriver den en varning och skyddet är av –
   undvik det.
-- **Inga skrivoperationer, inga godtyckliga URL:er.** Verktygen anropar bara de fasta adresserna ovan, och id:n
-  valideras innan de hamnar i en URL.
+- **Inga skrivoperationer, inga godtyckliga URL:er.** Verktygen anropar bara de konfigurerade adresserna i avsnitt
+  6 (`FUZZY_MCP_<KÄLLA>_BASE_URL` kan ändra dem), och id:n valideras innan de hamnar i en URL. Omdirigeringar följs
+  bara mellan de värdarna och aldrig från https till http.
 - **Personuppgifter** (namn på rektor, c/o-namn, kontaktpersoner) visas bara om klienten anger en parameter märkt
-  "personuppgift", och aldrig med `FUZZY_MCP_PERSONAL_DATA=off`. Servern sparar inga svar; åtkomstloggen
-  innehåller däremot klienternas IP-adresser (avsnitt 8).
+  "personuppgift", och aldrig med `FUZZY_MCP_PERSONAL_DATA=off`. Det gäller de strukturerade fälten: fritext som
+  en utbildningsanordnare själv skrivit (t.ex. en kursbeskrivning) kan ändå innehålla namn eller kontaktuppgifter.
+  Servern sparar inga svar på disk (bara i minnescachen, högst `FUZZY_MCP_CACHE_TTL`); åtkomstloggen innehåller
+  däremot klienternas IP-adresser (avsnitt 8).
+- **Data som lämnar servern:** verktygens argument – som modellen härleder ur användarnas frågor (sökord, koder,
+  koordinater) – skickas i anropen till myndigheterna, via er proxy om ni har en.
 - **Beroenden:** granska `sbom.cdx.json` och `audit.txt`; kör `pip-audit` igen vid behov.
 
 ## 8. Övervakning och loggar
@@ -356,6 +384,11 @@ Källor som stängts av med `FUZZY_MCP_SOURCES` anropas inte.
 - **Loggar:** allt skrivs till stderr (åtkomstlogg och fel). Inga loggfiler skrivs av servern själv.
   Åtkomstloggen innehåller klientens IP-adress (bakom en proxy på samma värd: den ursprungliga klientens, från
   `X-Forwarded-For`) och anropad sökväg utan frågesträng (visas som `?…`), men aldrig token eller andra headers.
+  Anropen till myndigheterna loggas inte. Ett verktyg som misslyckas ger en rad `Tool '<namn>' failed: …` med
+  felet och myndighetens adress, och ett verktyg som avbryts av `FUZZY_MCP_TOOL_TIMEOUT` en rad `Verktyget <namn>
+  avbröts efter …`. Alla adresser i loggen skrivs utan frågesträng (`?…`), så sökord i anropen hamnar inte där.
+  Felmeddelandet kan däremot återge ett ogiltigt argument (t.ex. ett kommunnamn eller koordinater) eller
+  myndighetens egen feltext.
   MCP-biblioteket skriver `Terminating session: …` när en session avslutas (med `FUZZY_MCP_STATELESS=true`:
   `None` efter varje anrop) – det är normalt, och sessions-id:t räcker inte för att anropa servern utan token. Ett
   försök att öppna en WebSocket ger `Unsupported upgrade request` och ett tips om `uvicorn[standard]`; servern har
@@ -383,7 +416,7 @@ Källor som stängts av med `FUZZY_MCP_SOURCES` anropas inte.
    & {
    $ErrorActionPreference = "Stop"
    $py = "3.14"                         # samma som paketnamnet
-   $venv = "C:\fuzzy-mcp\venv-0.1.2"     # den nya versionen
+   $venv = "C:\fuzzy-mcp\venv-0.2.0"     # den nya versionen
    if (Test-Path $venv) { throw "$venv finns redan – efter ett avbrutet försök: Remove-Item -Recurse -Force $venv och kör blocket igen (inte den miljö som tjänsten använder nu)" }
    py -$py -m venv $venv
    if ($LASTEXITCODE) { throw "Kunde inte skapa $venv med Python $py" }
@@ -402,7 +435,7 @@ Källor som stängts av med `FUZZY_MCP_SOURCES` anropas inte.
    & {
    $ErrorActionPreference = "Stop"
    $nssm = "C:\Program Files\nssm\nssm.exe"
-   $venv = "C:\fuzzy-mcp\venv-0.1.2"
+   $venv = "C:\fuzzy-mcp\venv-0.2.0"
    & $nssm set fuzzy-mcp Application "$venv\Scripts\fuzzy-mcp.exe"
    if ($LASTEXITCODE) { throw "nssm set misslyckades" }
    & $nssm restart fuzzy-mcp
@@ -429,6 +462,8 @@ Källor som stängts av med `FUZZY_MCP_SOURCES` anropas inte.
 | `421 Misdirected Request` | `Host` saknas i `FUZZY_MCP_ALLOWED_HOSTS` |
 | `403` med `Origin` | webbklientens origin saknas i `FUZZY_MCP_ALLOWED_ORIGINS` |
 | `400 Missing session ID` på `/mcp` | normalt för `GET` utan MCP-session; använd `/healthz` för hälsokontroll |
+| Verktyg svarar "… hann inte svara inom N s" | `FUZZY_MCP_TOOL_TIMEOUT` nåddes: myndighetens API är långsamt eller anropsgränsen nådd. Gör ett mindre urval; kontrollera myndigheten med `smoke_test.py --live` |
+| Verktyg svarar "Omdirigeringen till … stoppades" | myndighetens API omdirigerade till en värd utanför listan i avsnitt 6 ("… myndigheternas egna adresser"; rapportera adressen enligt SECURITY.md) eller från https till http ("… okrypterad adress", ofta en server bakom TLS-avlastning; rapportera till myndigheten). Inget hämtades därifrån |
 | Verktyg svarar "Kunde inte nå API:t (ProxyError/ConnectError)" | utgående trafik blockeras – kontrollera brandvägg, `HTTPS_PROXY` och listan i avsnitt 6. Kräver proxyn NTLM/Kerberos-inloggning: be om undantag för värdarna |
 | "HTTP 429" från en källa | myndighetens anropsgräns; servern försöker igen själv, minska samtidiga klienter |
 | Certifikatfel mot myndigheterna | proxy med TLS-inspektion och en CA som saknas i operativsystemet: installera organisationens rotcertifikat där, eller sätt `SSL_CERT_FILE` till en komplett CA-bundle. Pekar `SSL_CERT_FILE` på en fil med bara organisationens CA blir det certifikatfel mot alla värdar som inte inspekteras |

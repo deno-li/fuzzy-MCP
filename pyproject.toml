@@ -8,7 +8,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fuzzy-mcp"
-version = "0.1.2"
+version = "0.2.0"
 description = "MCP-server för svensk öppen data: SCB (PxWebApi 2), Skolverket, Folkhälsomyndigheten och Sveriges dataportal."
 readme = "README.md"
 license = "MIT AND CC0-1.0"

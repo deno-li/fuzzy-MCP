@@ -7,6 +7,7 @@
 import argparse
 import logging
 import os
+import re
 import sys
 from typing import TYPE_CHECKING, Any, NoReturn
 
@@ -149,6 +150,7 @@ def main(argv: list[str] | None = None) -> None:
         raise SystemExit(2) from exc
 
     server = build_server(settings)
+    quiet_logging()
     if args.transport == "stdio":
         server.run("stdio")
         return
@@ -258,6 +260,45 @@ class LogWithoutQuery(logging.Filter):
 
 def _without_query(value: object) -> object:
     return value.split("?", 1)[0] + "?…" if isinstance(value, str) and "?" in value else value
+
+
+# The query runs to the next quote, "|", angle bracket or line end, spaces included: a decoded query such as
+# "CQL_FILTER=POINT(6580822 674032)" must not leak its second half. The query part is optional so that a URL without
+# one is consumed in a single match: a required "?" would make a long run of URL-like text (e.g. "https://https://…")
+# take quadratic time on every log line.
+_URL_QUERY = re.compile(r"(https?://[^\s?#\"'|<>]+)(\?[^\"'|<>\r\n]*)?")
+
+
+def _redact_query(match: re.Match[str]) -> str:
+    query = match[2]
+    if query is None:
+        return match[0]
+    return f"{match[1]}?…{query[len(query.rstrip()) :]}"  # keep the space before a following "| …"
+
+
+class RedactUrlQueries(logging.Filter):
+    """Drop the query string of every URL in a log line. Tool arguments derived from users' questions (search text,
+    names, coordinates) travel in the agencies' query strings, and the MCP SDK logs a failed tool call with its
+    error text, which names the upstream URL."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        try:
+            message = record.getMessage()
+        except Exception:  # a malformed record: the handler reports it (handleError), as without the filter
+            return True
+        redacted = _URL_QUERY.sub(_redact_query, message)
+        if redacted != message:
+            record.msg, record.args = redacted, None
+        return True
+
+
+def quiet_logging() -> None:
+    """Keep users' questions out of the log. MCPServer sets up logging at INFO, and httpx2 then logs every upstream
+    request with its full URL; only its warnings are kept. Every other line passes RedactUrlQueries."""
+    logging.getLogger("httpx2").setLevel(logging.WARNING)
+    for handler in logging.getLogger().handlers:
+        if not any(isinstance(f, RedactUrlQueries) for f in handler.filters):
+            handler.addFilter(RedactUrlQueries())
 
 
 LOCAL_HOSTS = ("127.0.0.1:*", "localhost:*", "[::1]:*")

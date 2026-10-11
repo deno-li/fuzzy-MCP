@@ -320,3 +320,56 @@ def test_unusable_ca_settings_are_configuration_errors(monkeypatch, capsys, tmp_
     monkeypatch.setenv("SSL_CERT_DIR", os.pathsep.join([str(tmp_path / "saknas"), str(tmp_path)]))
     cli.main(["--sources", "reference"])
     assert served == ["stdio", "stdio"]
+
+
+def test_log_lines_keep_users_questions_out(monkeypatch, caplog):
+    """Search text, names and coordinates travel in the agencies' query strings: httpx2's request lines are dropped
+    and every other line (e.g. the SDK's 'Tool … failed: …' with the upstream URL) loses its query strings."""
+    import logging
+
+    from fuzzy_mcp import __main__ as cli
+
+    monkeypatch.setattr(cli, "serve_http", lambda *a: None)
+    monkeypatch.delenv("FUZZY_MCP_AUTH_TOKEN_FILE", raising=False)
+    monkeypatch.setenv("FUZZY_MCP_AUTH_TOKEN", TOKEN)
+    caplog.set_level(logging.INFO)
+    cli.main(["--transport", "streamable-http", "--sources", "reference"])
+    assert not logging.getLogger("httpx2").isEnabledFor(logging.INFO)
+    logging.getLogger("mcp.server.mcpserver.server").info(
+        "Tool %r failed: %r",
+        "scb_search_tables",
+        "[scb] Ogiltig förfrågan | HTTP 400 | https://statistikdatabasen.scb.se/api/v2/tables?query=mitt+barn&lang=sv"
+        " | detalj: x",
+    )
+    logging.getLogger("fuzzy_mcp").warning("a https://geodata.scb.se/wfs?CQL_FILTER=POINT(6580822 674032) b")
+    messages = [record.getMessage() for record in caplog.records]
+    assert not any("barn" in m or "6580822" in m for m in messages), messages
+    assert any("https://statistikdatabasen.scb.se/api/v2/tables?… | detalj: x" in m for m in messages)
+    assert any(m == "a https://geodata.scb.se/wfs?…" for m in messages)  # a decoded query is removed whole
+
+
+def test_url_query_filter_leaves_other_lines_alone():
+    import logging
+
+    from fuzzy_mcp.__main__ import RedactUrlQueries
+
+    plain = logging.LogRecord("x", logging.INFO, __file__, 1, "Uppslag %s klart (%d ms)", ("/mcp?x", 12), None)
+    assert RedactUrlQueries().filter(plain) and plain.getMessage() == "Uppslag /mcp?x klart (12 ms)"
+    two = logging.LogRecord(
+        "x", logging.INFO, __file__, 1, "%s och %s", ("'http://a.se/p?q=1'", "https://b.se/?x=2&y=3"), None
+    )
+    assert RedactUrlQueries().filter(two) and two.getMessage() == "'http://a.se/p?…' och https://b.se/?…"
+
+
+def test_url_query_filter_is_linear_and_tolerates_malformed_records():
+    import logging
+    import time
+
+    from fuzzy_mcp.__main__ import RedactUrlQueries
+
+    long = logging.LogRecord("x", logging.INFO, __file__, 1, "%s", ("https://" * 50_000,), None)
+    start = time.perf_counter()
+    assert RedactUrlQueries().filter(long)
+    assert time.perf_counter() - start < 1  # the earlier pattern took minutes on this line
+    broken = logging.LogRecord("x", logging.INFO, __file__, 1, "%(missing)s", ({"other": 1},), None)
+    assert RedactUrlQueries().filter(broken)  # left to the handler's handleError, as without the filter
