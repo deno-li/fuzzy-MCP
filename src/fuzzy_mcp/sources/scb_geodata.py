@@ -13,9 +13,9 @@ Attribute names are read from ``DescribeFeatureType`` at runtime instead of
 being assumed, and geometry is left out unless asked for, so that results
 stay small (DeSO has over 6 000 polygons).
 
-Verified against the live service on 2026-10-10 (verifierat uttag; tests/fixtures/scb_geodata_describe_*.json and
-scb_geodata_features.json are answers from that run, scb_geodata_intersects.json and scb_geodata_features_wgs84.json
-are shaped like them):
+Verified against the live service on 2026-10-10 and 2026-10-11 (Källkontroll runs 1 and 2, see docs/KALLKONTROLL.md;
+tests/fixtures/scb_geodata_describe_*.json and scb_geodata_features.json are answers from run 1,
+scb_geodata_intersects.json and scb_geodata_features_wgs84.json are shaped like them):
 
 * DeSO layers carry ``objectid, objektidentitet, objekttyp, desokod, regsokod, lanskod, kommunkod, version,
   ansvarig_organisation, referensdatum`` and the geometry ``sp_geometry`` (gml:Polygon); RegSO layers have
@@ -26,7 +26,10 @@ are shaped like them):
 * ``srsName=EPSG:4326`` is verified for the JSON output only; coordinates then come as ``[lon, lat]``.
 * In CQL filters against the EPSG:3006 layers the axis order is NORTHING EASTING, i.e. ``POINT(N E)``:
   ``INTERSECTS(sp_geometry,POINT(674032 6580822))`` matched nothing while
-  ``INTERSECTS(sp_geometry,POINT(6580822 674032))`` returned DeSO 0180C4040.
+  ``INTERSECTS(sp_geometry,POINT(6580822 674032))`` returned DeSO 0180C4040. The same point found DeSO_2018
+  0180C4040 and RegSO_2020/RegSO_2025 0180R047 on 2026-10-11, so the point search is verified for all four layers.
+* GeoServer also accepts EWKT in CQL, ``SRID=4326;POINT(lon lat)`` (2026-10-11); it is not used here, because the
+  one code path (convert to SWEREF 99 TM, query POINT(N E)) is the one the tests and Källkontroll cover.
 """
 
 import json
@@ -271,7 +274,8 @@ def point_cql(geometry_attribute_name: str, east: float, north: float) -> str:
     Observed against geodata.scb.se on 2026-10-10 (WFS 1.1.0, layer CRS urn:x-ogc:def:crs:EPSG:3006):
     POINT(674032 6580822) (E N) matched nothing, POINT(6580822 674032) (N E) returned DeSO 0180C4040 (Stockholm).
     GeoServer reads the CQL point in the axis order of the layer CRS (northing first for EPSG:3006 in WFS 1.1.0);
-    the order here follows that observation, and the Källkontroll checks wfs.intersects.* guard it.
+    the order here follows that observation, and the Källkontroll checks wfs.intersects.* guard it. Confirmed for
+    DeSO_2018, RegSO_2020 and RegSO_2025 with the same point on 2026-10-11 (RegSO 0180R047).
     """
     return f"INTERSECTS({geometry_attribute_name},POINT({coordinate_text(north)} {coordinate_text(east)}))"
 

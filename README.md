@@ -348,7 +348,7 @@ Relaterade källor som inte är anslutna som verktyg: SCB:s sida om DeSO under �
 och SCB:s Regina (<https://regina.scb.se/indelningar>) för historiska regionala indelningar sedan 1952 (webbplats
 utan dokumenterat API). Nyckelfilernas adresser kan ändras när SCB publicerar nya versioner; arbetsflödet
 Källkontroll visar de aktuella fil-URL:erna och deras sha256, och [docs/KALLKONTROLL.md](docs/KALLKONTROLL.md)
-redovisar körningen 2026-10-10 (sha256 för de tre filerna var då identiska med kodlistornas).
+redovisar körningarna 2026-10-10 och 2026-10-11 (sha256 för de tre filerna var då identiska med kodlistornas).
 
 Varje post i kodlistorna har fältet `verifiering` som anger hur posten är kontrollerad:
 
@@ -410,8 +410,8 @@ Anropsgränser per värd följer det myndigheterna publicerar: SCB 30 och Skolve
 - **Kontrollerat mot officiella specifikationer, delvis mot live-uttag.** API-kontrakten bygger på myndigheternas
   egna OpenAPI-specifikationer och PxWeb-källkoden, kompletterade med verifierade uttag från 25–28 september 2026.
   SCB:s geodata (WFS), Statistikdatabasens DeSO-/RegSO-kodlistor, SCB:s nyckelfiler och Socialstyrelsens
-  statistikdatabas kontrollerades 2026-10-10 med arbetsflödet Källkontroll; resultatet och det som fortfarande är
-  overifierat står i [docs/KALLKONTROLL.md](docs/KALLKONTROLL.md).
+  statistikdatabas kontrollerades 2026-10-10 och 2026-10-11 med arbetsflödet Källkontroll; resultatet och det som
+  fortfarande är overifierat står i [docs/KALLKONTROLL.md](docs/KALLKONTROLL.md).
   Kör `FUZZY_MCP_LIVE_TESTS=1 pytest -m live` från en miljö med internetåtkomst innan du tar servern i drift.
 - **SCB:s v1-API** (`api.scb.se/OV0104/v1`) stängs runt årsskiftet 2026/2027 och används inte.
 - **Stora svar** kortas för att hålla sig under ungefär 25 000 token (gränsen i t.ex. Claude Code): svaren
