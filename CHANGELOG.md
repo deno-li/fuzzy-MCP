@@ -26,14 +26,17 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
   (`vs_DeSO2018`/`vs_RegSO2020` rena koder t.o.m. referensår 2023, `vs_DeSO2025`/`vs_RegSO2025` med suffix
   `_DeSO2025`/`_RegSO2025` fr.o.m. referensår 2024), och en kopplingsnyckel `koordinat (SWEREF 99 TM / WGS84)` i
   entitetskatalogen.
-- `docs/KALLKONTROLL.md`: resultatet av Källkontroll-körningen 2026-10-10 (geodata, Statistikdatabasen, SCB:s sidor
-  och nyckelfiler, Socialstyrelsens statistikdatabas) och det som fortfarande är overifierat.
-- Källkontroll: två kontroller av om GeoServer tar emot EWKT (`SRID=4326;POINT(...)`) i CQL, i båda axelordningarna;
-  punktsökning mot `DeSO_2018`, `RegSO_2020` och `RegSO_2025` (bara `DeSO_2025` är kontrollerat) samt de
-  parameterkombinationer servern skickar men som inte prövats: `startIndex` + `sortBy` med `CQL_FILTER`, `sortBy` på
-  `regsokod` och `propertyName` med geometri tillsammans med `srsName` (`wfs.intersects.y_x.<lager>`, `wfs.sida.filter`,
-  `wfs.sida.regso`, `wfs.crs.propertyName`);
-  SCB-sidorna namnges med de två sista sökvägssegmenten så att två sidor som slutar lika inte får samma namn.
+- `docs/KALLKONTROLL.md`: resultatet av Källkontroll-körningarna 2026-10-10 och 2026-10-11 (geodata,
+  Statistikdatabasen, SCB:s sidor och nyckelfiler, Socialstyrelsens statistikdatabas) och det som fortfarande är
+  overifierat.
+- Källkontroll: kontroller av EWKT (`SRID=4326;POINT(...)`) i CQL i båda axelordningarna, punktsökning mot
+  `DeSO_2018`, `RegSO_2020` och `RegSO_2025` samt de parameterkombinationer servern skickar: `startIndex` + `sortBy`
+  med `CQL_FILTER`, `sortBy` på `regsokod` och `propertyName` med geometri tillsammans med `srsName`
+  (`wfs.intersects.srid4326*`, `wfs.intersects.y_x.<lager>`, `wfs.sida.filter`, `wfs.sida.regso`,
+  `wfs.crs.propertyName`). Körningen 2026-10-11 gav status 200 och väntat innehåll för alla åtta nya kontroller
+  (var och en mot ett lager) och visade att GeoServer läser `SRID=4326` som lon lat (lon lat träffade DeSO 0180C4040,
+  lat lon gav 0 objekt); punktsökningen är därmed verifierad för alla fyra DeSO-/RegSO-lagren. SCB-sidorna namnges
+  med de två sista sökvägssegmenten så att två sidor som slutar lika inte får samma namn.
 - Arbetsflödet Källkontroll (`.github/workflows/verify-sources.yml`) och `scripts/verify_sources.py`: en fast lista
   med läsande anrop som kontrollerar API-kontrakten för SCB:s geodata (DeSO/RegSO), SCB:s statistikdatabas, SCB:s
   DeSO-sidor och nyckelfiler samt Socialstyrelsens statistikdatabas. Svaren skrivs i jobbloggen. Startas för hand,

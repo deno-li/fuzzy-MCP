@@ -83,10 +83,11 @@ python scripts/verify_sources.py --group scb-geodata
 HTTP-fel och tomma svar är resultat, inte bevis för att data saknas. Skriptet avslutas med fel bara om inget anrop
 fick något svar alls.
 
-Resultatet av körningen 2026-10-10 – verifierade lager, attribut, kodlistor, suffixregler, referensår, nyckelfilernas
-sha256 och Socialstyrelsens API-former, samt det som fortfarande är overifierat – står i
-[docs/KALLKONTROLL.md](docs/KALLKONTROLL.md). Uppdatera det dokumentet när en ny körning ändrar bilden, och skriv
-bara det loggen faktiskt visar.
+Resultatet av körningarna 2026-10-10 och 2026-10-11 – verifierade lager, attribut, punktsökning, kodlistor,
+suffixregler, referensår, nyckelfilernas sha256 och Socialstyrelsens API-former, samt det som fortfarande är
+overifierat – står i [docs/KALLKONTROLL.md](docs/KALLKONTROLL.md). Uppdatera det dokumentet när en ny körning ändrar
+bilden, och skriv bara det loggen faktiskt visar. Starta nya kontroller med *Run workflow*; *Re-run all jobs* kör
+den gamla körningens commit.
 
 ## Arkitektur
 
