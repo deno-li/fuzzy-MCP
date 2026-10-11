@@ -132,11 +132,20 @@ async def test_scb_geodata_live():
 
 async def test_scb_geodata_locate_live():
     """INTERSECTS(sp_geometry,POINT(N E)) for east=674032, north=6580822 (Stockholm) gave DeSO 0180C4040 with
-    regsokod 0180R047 on 2026-10-10. If SCB republishes the layer the point may land elsewhere; then this fails."""
+    regsokod 0180R047 on 2026-10-10, and RegSO_2025 0180R047 (Klara-Jacob) on 2026-10-11 (Källkontroll run 2). If
+    SCB republishes the layers the point may land elsewhere; then this fails."""
     async with live_client() as client:
-        result = await call(client, "scb_geodata_locate", {"east": 674032, "north": 6580822, "layers": ["DeSO_2025"]})
+        result = await call(
+            client,
+            "scb_geodata_locate",
+            {"east": 674032, "north": 6580822, "layers": ["DeSO_2025", "RegSO_2025"]},
+        )
         assert result["punkt"]["sweref99tm"] == {"east": 674032.0, "north": 6580822.0}
         hits = [hit for hit in result["traffar"] if hit["layer"] == "DeSO_2025"]
         if hits:
             assert hits[0]["properties"]["desokod"] == "0180C4040"
             assert hits[0]["properties"]["regsokod"] == "0180R047"
+        regso = [hit for hit in result["traffar"] if hit["layer"] == "RegSO_2025"]
+        if regso:
+            assert regso[0]["properties"]["regsokod"] == "0180R047"
+            assert regso[0]["properties"]["regsonamn"] == "Klara-Jacob"

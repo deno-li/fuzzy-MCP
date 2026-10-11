@@ -6,15 +6,27 @@ SPDX-License-Identifier: CC0-1.0
 
 # Källkontroll – resultat
 
-**Datum:** 2026-10-10. **Körning:** <https://github.com/deno-li/fuzzy-MCP/actions/runs/38048135516> (arbetsflödet
-**Källkontroll**, fyra jobb – `scb-geodata`, `scb-pxweb`, `scb-nycklar`, `socialstyrelsen` – alla gröna).
-**Skript:** `scripts/verify_sources.py` i commit `943a582` på `main` (körningens `head_sha`
-`943a58231c2df8d47f2e69a3e9feae8b5d222aed`).
+Två körningar av arbetsflödet **Källkontroll** (fyra jobb vardera – `scb-geodata`, `scb-pxweb`, `scb-nycklar`,
+`socialstyrelsen` – alla gröna), med `scripts/verify_sources.py` från den commit på `main` som körningen utgick
+från:
 
-Det här dokumentet är en läsning av körningens logg (raderna `VERIFY`, `BODY`, `TEXT` och `B64`). Uppgifterna nedan
-är det som faktiskt stod i svaren; tal, fältnamn och koder är källornas egna. Det som inte kontrollerades står under
-[Inte verifierat](#inte-verifierat). Ett tomt svar eller ett HTTP-fel hade varit ett resultat att redovisa, inte ett
-bevis för att något saknas – i den här körningen gav alla anrop 200 utom det avsiktliga felanropet (404).
+| Körning | Datum | Commit (`head_sha`) | HTTP-anrop |
+| --- | --- | --- | --- |
+| [1](https://github.com/deno-li/fuzzy-MCP/actions/runs/38048135516) | 2026-10-10 | `943a582` (`943a58231c2df8d47f2e69a3e9feae8b5d222aed`) | 116 |
+| [2](https://github.com/deno-li/fuzzy-MCP/actions/runs/38140545201) | 2026-10-11 | `213bd0c` (`213bd0c030c23fbe8a9dccb0e9ce08104f716a76`) | 124 |
+
+Körning 2 lade till åtta geodatakontroller (EWKT i CQL, punktsökning i de tre övriga DeSO-/RegSO-lagren, sidning
+med filter, `sortBy=regsokod`, `propertyName` med geometri och `srsName`) och skiljer de två DeSO-sidorna på scb.se
+åt. Alla kontroller som fanns i körning 1 gav samma status, innehållstyp och sammanfattning i körning 2. Körning 1
+kördes dessutom om 2026-10-11 (`run_attempt` 2, knappen *Re-run all jobs*) med identiskt resultat; bara
+`timeStamp` i WFS-svaren skilde. En omkörning kör skriptet från den ursprungliga committen, så nya kontroller
+kräver *Run workflow*.
+
+Det här dokumentet är en läsning av körningarnas loggar (raderna `VERIFY`, `BODY`, `TEXT` och `B64`). Uppgifterna
+nedan är det som faktiskt stod i svaren; tal, fältnamn och koder är källornas egna. Uppgifter som bara körning 2 gav
+är märkta **(körning 2)**. Det som inte kontrollerades står under [Inte verifierat](#inte-verifierat). Ett tomt svar
+eller ett HTTP-fel hade varit ett resultat att redovisa, inte ett bevis för att något saknas – i båda körningarna gav
+alla anrop 200 utom det avsiktliga felanropet (404).
 
 ## SCB:s öppna geodata (WFS) – `scb-geodata`
 
@@ -44,6 +56,21 @@ bevis för att något saknas – i den här körningen gav alla anrop 200 utom d
 - Axelordning i CQL för EPSG:3006 (WFS 1.1.0): `INTERSECTS(sp_geometry,POINT(674032 6580822))` (E N) gav **0**
   objekt; `INTERSECTS(sp_geometry,POINT(6580822 674032))` (N E) gav DeSO **0180C4040** (RegSO 0180R047). En punkt
   anges alltså `POINT(N E)`. CSV-formatets WKT skriver också N E (`POLYGON ((6156729.8055 379844.1709, …))`).
+- **(Körning 2)** Samma punkt `POINT(6580822 674032)` i de tre övriga lagren: `DeSO_2018` gav DeSO **0180C4040**
+  (`version` `2018_v3`, `regsokod` 0180R047), `RegSO_2020` gav RegSO **0180R047** `Klara-Jacob` (`2020_v3`) och
+  `RegSO_2025` gav RegSO **0180R047** `Klara-Jacob` (`2025_v2`). Punktsökningen är därmed verifierad för alla fyra
+  DeSO-/RegSO-lagren. För just de här objekten är `objektidentitet` densamma i båda versionerna (`745c9219-…` för
+  DeSO:t i 2018 och 2025, `fdcf18d6-…` för RegSO:t i 2020 och 2025) – en observation för två objekt, ingen regel.
+- **(Körning 2)** EWKT i CQL godtas: `INTERSECTS(sp_geometry,SRID=4326;POINT(18.06 59.33))` (lon lat) gav DeSO
+  **0180C4040**, `INTERSECTS(sp_geometry,SRID=4326;POINT(59.33 18.06))` (lat lon) gav **0** objekt; båda status
+  200. GeoServer läser alltså `SRID=4326` som lon lat. Servern använder inte EWKT (den räknar om till SWEREF 99 TM
+  och frågar med `POINT(N E)`), men vägen finns.
+- **(Körning 2)** `startIndex=2&maxFeatures=2&sortBy=desokod` tillsammans med `CQL_FILTER=kommunkod='0180'` gav
+  0180C1030, 0180C1040. `sortBy=regsokod` på `RegSO_2025` med `startIndex=2&maxFeatures=2` gav 0114R003,
+  0114R004.
+- **(Körning 2)** `propertyName=desokod,sp_geometry` tillsammans med `srsName=EPSG:4326` och `maxFeatures=1` gav
+  `crs` `urn:ogc:def:crs:EPSG::4326`, första koordinat `[13.09577306, 55.5417832]` och `desokod` 1280C1070 – samma
+  svar som utan `propertyName`.
 - `outputFormat=csv` (`text/csv`), `shape-zip` (`application/zip`) och `geopackage`
   (`application/geopackage+sqlite3`) fungerar. `propertyName` fungerar för csv: rubriken blir
   `FID,objectid,objektidentitet,objekttyp,desokod,regsokod,lanskod,kommunkod,version,ansvarig_organisation,referensdatum`
@@ -85,7 +112,7 @@ bevis för att något saknas – i den här körningen gav alla anrop 200 utom d
 ## SCB:s sidor och nyckelfiler – `scb-nycklar`
 
 - Fem sidor på scb.se lästes som text: DeSO och RegSO under regionala indelningar, deras informationssidor om
-  tabellerna i Statistikdatabasen, och DeSO under öppna geodata. Citat ur texterna:
+  tabellerna i Statistikdatabasen, och DeSO under öppna geodata. Citat ur texterna (alla återfinns i körning 2):
   - "DeSO har inga namn utan endast en kod. Det är den koden du behöver känna till för att kunna använda
     statistiken."
   - "Statistik som publiceras under 2025 är på den nya versionen DeSO 2025 och består av 6 160 områden."
@@ -93,6 +120,9 @@ bevis för att något saknas – i den här körningen gav alla anrop 200 utom d
     som öppen data på den gamla versionen."
   - "RegSO delar in Sverige i 3 363 områden med en befolkning mellan cirka 650 och 23 000 invånare. Antalet RegSO i
     kommunerna varierar från två till 147 områden."
+  - **(Körning 2)** Sidan under öppna geodata: "DeSO är en rikstäckande indelning som följer läns- och
+    kommungränserna som gällde vid publicering, nuvarande avser 2025-01-01." Sidan länkar också geopackage-filer
+    för 2025 och 2018 (länkarna registrerades inte av skriptet, bara texten).
 - Nyckelfilerna är länkade från sidan om DeSO under öppna geodata, i katalogen
   `https://www.scb.se/contentassets/923c3627a8a042a5b9215e8ff3bde0a3/`:
 
@@ -104,14 +134,23 @@ bevis för att något saknas – i den här körningen gav alla anrop 200 utom d
 
   Alla tre sha256 är **identiska** med `fil.sha256` i kodlistorna `deso_forandringar`, `deso_regso_2018` och
   `deso_regso_2025`: den medföljande referensdatan är byggd ur exakt de filer SCB publicerade vid körningen.
-  Fil-URL:erna kan ändras när SCB publicerar nya versioner; en ny körning visar de aktuella.
+  Körning 2 gav samma URL:er, sha256 och `Last-Modified`. Fil-URL:erna kan ändras när SCB publicerar nya
+  versioner; en ny körning visar de aktuella.
 - Samma sida länkar WFS-guiden
   `https://www.scb.se/contentassets/302de7b6076847e08e260d112475dfc5/scbs-oppna-geodata-via-wms-och-wfs-tjanster_20250303.pdf`
   (länken registrerad, filen inte hämtad).
-- I den här körningen fick två sidor samma loggnamn (`scb.sida.demografiska-statistikomraden-deso`, båda sökvägarna
-  slutar så). Skriptet namnger nu sidorna med de två sista sökvägssegmenten
-  (`regionala-indelningar.demografiska-statistikomraden-deso` respektive
-  `oppna-geodata.demografiska-statistikomraden-deso`).
+- I körning 1 fick två sidor samma loggnamn (`scb.sida.demografiska-statistikomraden-deso`, båda sökvägarna slutar
+  så) och bara den ena sidans text fanns kvar i loggen. **(Körning 2)** Sidorna namnges med de två sista
+  sökvägssegmenten och alla fem finns med:
+  - `regionala-indelningar.demografiska-statistikomraden-deso` (4 404 tecken; länkar "Ny version av Demografiska
+    statistikområden (pdf)");
+  - `demografiska-statistikomraden-deso.deso-tabellerna-i-ssd--information-och-instruktioner` (6 777 tecken, inga
+    fillänkar);
+  - `oppna-geodata.demografiska-statistikomraden-deso` (2 285 tecken; de tre nyckelfilerna och WFS-guiden);
+  - `regionala-indelningar.regionala-statistikomraden-regso` (3 740 tecken; samma pdf om ny version samt tre
+    pdf-rapporter om områdesindelning för uppföljning av segregation);
+  - `regionala-statistikomraden-regso.regso-tabellerna-i-statistikdatabasen---information-och-instruktioner`
+    (6 656 tecken, inga fillänkar).
 
 ## Socialstyrelsens statistikdatabas (API v1) – `socialstyrelsen`
 
@@ -146,28 +185,20 @@ bevis för att något saknas – i den här körningen gav alla anrop 200 utom d
 Påstå inte något av det här förrän en körning visat det:
 
 - `srsName` för andra format än JSON (csv, shape-zip, geopackage).
-- Att GeoServer tar emot EWKT (`SRID=4326;POINT(...)`) i CQL. Kontrollerna `wfs.intersects.srid4326`
-  (`POINT(lon lat)`) och `wfs.intersects.srid4326_latlon` (`POINT(lat lon)`) finns med från och med nästa körning:
-  en träff i exakt en av dem visar vilken ordning som läses, en felstatus att syntaxen inte godtas.
+- EWKT med andra SRID än 4326 (t.ex. `SRID=3006;POINT(...)`) och EWKT i andra operatorer än `INTERSECTS`.
 - Enheterna för `DWithin`.
 - WFS 2.0.0 för annat än `resultType=hits`.
-- Punktsökning (`INTERSECTS`) mot andra lager än `DeSO_2025`. `scb_geodata_locate` söker som standard även
-  `RegSO_2025` och tillåter `DeSO_2018`, `RegSO_2020` och andra polygonlager, men körningen (och
-  `test_scb_geodata_locate_live`) prövade bara `DeSO_2025`. Kontrollerna `wfs.intersects.y_x.<lager>` för de tre
-  andra DeSO-/RegSO-lagren finns med från och med nästa körning, med samma punkt `POINT(6580822 674032)`; DeSO-träffen
-  anger `regsokod` 0180R047, så det är det väntade svaret från `RegSO_2025`.
-- Parameterkombinationer som `scb_geodata_get_features` skickar men körningen inte prövade: `startIndex` + `sortBy`
-  tillsammans med `CQL_FILTER` (sidningskontrollen hade inget filter), `sortBy` på andra attribut än `desokod`
-  (servern sorterar RegSO-lager på `regsokod` vid `offset`) och `propertyName` med geometrin tillsammans med
-  `srsName` (`wfs.crs.*` hade inget `propertyName`). Kontrollerna `wfs.sida.filter`, `wfs.sida.regso` och
-  `wfs.crs.propertyName` finns med från och med nästa körning.
-- Innehållet i nyckelfilerna är kontrollerat via sha256 mot kodlistorna, inte läst på nytt; WFS-guiden (pdf) är
-  inte läst maskinellt.
+- Punktsökning i andra polygonlager än de fyra DeSO-/RegSO-lagren (`scb_geodata_locate` tillåter dem).
+- `sortBy` på andra attribut än `desokod` och `regsokod`, och sidning med filter mot andra lager än `DeSO_2025`.
+- Att `objektidentitet` är stabil mellan versioner för andra objekt än de två som punktsökningen träffade.
+- Innehållet i nyckelfilerna är kontrollerat via sha256 mot kodlistorna, inte läst på nytt; WFS-guiden och de
+  pdf-rapporter sidorna länkar är inte lästa maskinellt.
 
 ## Köra om och läsa loggen
 
 1. Actions → **Källkontroll** → **Run workflow** (från `main` eller en gren). Varje grupp är ett eget jobb, och
-   körningens sammanfattning visar status per kontroll.
+   körningens sammanfattning visar status per kontroll. *Re-run all jobs* på en gammal körning kör skriptet från
+   den körningens commit, utan kontroller som lagts till senare.
 2. Jobbloggen innehåller detaljerna, en post per rad:
    - `VERIFY {json}` – ett anrop: `check`, `url`, `status`, `content_type`, `bytes`, `sha256`, eventuella
      `headers` (Deprecation, Sunset, Last-Modified, ETag …) och `summary`; vid nätverksfel `error` i stället.

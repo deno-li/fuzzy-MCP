@@ -221,7 +221,7 @@ def test_scb_geodata_group_with_stubbed_answers(monkeypatch: pytest.MonkeyPatch,
     assert checks["wfs.sida.jamforelse"]["start0_max4"] == codes
     assert checks["wfs.intersects.x_y"]["summary"]["filter"] == f"INTERSECTS({geometry},POINT(674032 6580822))"
     assert checks["wfs.intersects.y_x"]["summary"]["filter"] == f"INTERSECTS({geometry},POINT(6580822 674032))"
-    # EWKT variants (unverified so far): both orders are tried so the next run tells which one, if any, works.
+    # EWKT variants: verified 2026-10-11 (lon lat hits, lat lon does not); both orders stay in the run.
     assert checks["wfs.intersects.srid4326"]["summary"]["filter"] == (
         f"INTERSECTS({geometry},SRID=4326;POINT(18.06 59.33))"
     )
@@ -232,8 +232,8 @@ def test_scb_geodata_group_with_stubbed_answers(monkeypatch: pytest.MonkeyPatch,
         isinstance(checks[f"wfs.intersects.{label}"]["summary"]["egenskaper"], list)
         for label in ("x_y", "y_x", "srid4326", "srid4326_latlon")
     )
-    # Not yet verified against the live service: the point search in the other three layers and the parameter
-    # combinations the server sends (filter + paging, sortBy=regsokod, propertyName with geometry + srsName).
+    # Verified against the live service 2026-10-11 (run 2): the point search in the other three layers and the
+    # parameter combinations the server sends (filter + paging, sortBy=regsokod, propertyName with geometry + srsName).
     for other in ("DeSO_2018", "RegSO_2020", "RegSO_2025"):
         assert checks[f"wfs.intersects.y_x.{other}"]["summary"]["filter"] == (
             f"INTERSECTS({geometry},POINT(6580822 674032))"

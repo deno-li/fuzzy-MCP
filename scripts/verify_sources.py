@@ -66,7 +66,8 @@ SAMPLE_MUNICIPALITY = "0180"  # Stockholm; a neutral example
 # A point in central Stockholm in SWEREF 99 TM (EPSG:3006): easting, northing. Verified 2026-10-10: GeoServer reads
 # POINT(N E) for EPSG:3006 in CQL (the "y_x" variant hit DeSO 0180C4040, "x_y" hit nothing).
 SAMPLE_POINT = (674032, 6580822)
-# The same neighbourhood in WGS84 (lon, lat), for the EWKT variants SRID=4326;POINT(...) – not yet verified.
+# The same neighbourhood in WGS84 (lon, lat), for the EWKT variants SRID=4326;POINT(...). Verified 2026-10-11:
+# GeoServer reads SRID=4326 as lon lat ("srid4326" hit DeSO 0180C4040, "srid4326_latlon" hit nothing).
 SAMPLE_POINT_WGS84 = (18.06, 59.33)
 SRS_VARIANTS = ("EPSG:3006", "EPSG:4326", "urn:ogc:def:crs:EPSG::4326")
 
@@ -485,21 +486,21 @@ def check_scb_geodata() -> None:
     if geometry[layer]:
         for label, point in (("x_y", f"{x} {y}"), ("y_x", f"{y} {x}")):
             record_intersects(label, layer, f"INTERSECTS({geometry[layer]},POINT({point}))")
-        # Does GeoServer accept EWKT (an SRID prefix) in CQL, and in which axis order? Unverified so far: a hit in
-        # exactly one of the two says which order it reads; an error status says the syntax is not accepted.
+        # EWKT (an SRID prefix) in CQL, both axis orders. Verified 2026-10-11: lon lat hits, lat lon does not; both
+        # stay in the run so a change at the server shows up.
         lon, lat = SAMPLE_POINT_WGS84
         for label, point in (("srid4326", f"{lon} {lat}"), ("srid4326_latlon", f"{lat} {lon}")):
             record_intersects(label, layer, f"INTERSECTS({geometry[layer]},SRID=4326;POINT({point}))")
     # The server's point search (scb_geodata_locate) also runs against RegSO_2025 by default and allows DeSO_2018 and
-    # RegSO_2020; only DeSO_2025 was verified on 2026-10-10. Same point in N E order; the DeSO hit carries regsokod
-    # 0180R047, which is the expected RegSO_2025 answer.
+    # RegSO_2020. Same point in N E order. Verified 2026-10-11: DeSO_2018 gave 0180C4040, RegSO_2020 and RegSO_2025
+    # gave 0180R047 (Klara-Jacob), the regsokod the DeSO hit carries.
     for other in DESO_LAYERS:
         if other != layer and geometry[other]:
             record_intersects(f"y_x.{other}", other, f"INTERSECTS({geometry[other]},POINT({y} {x}))")
 
-    # Parameter combinations scb_geodata_get_features sends but the first run did not try: startIndex + sortBy with
-    # a CQL_FILTER, sortBy on regsokod (the default sort key of RegSO layers) and propertyName with the geometry
-    # together with srsName.
+    # Parameter combinations scb_geodata_get_features sends: startIndex + sortBy with a CQL_FILTER, sortBy on
+    # regsokod (the default sort key of RegSO layers) and propertyName with the geometry together with srsName.
+    # Verified 2026-10-11 (run 2): all three answered as expected.
     def codes_of(body: Any, attribute: str) -> list[Any]:
         features = as_list(as_dict(parse_json(body or b"")).get("features"))
         return [as_dict(as_dict(f).get("properties")).get(attribute) for f in features]
