@@ -26,7 +26,8 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
   misslyckas eller inte hittar något utelämnas adressen (även i `raw` och `attribution`) med en notis. Ett fel vid
   sökning med en privatpersons utgivarfilter återger inte längre anropsadressen.
 - Med `FUZZY_MCP_PERSONAL_DATA=off` ersätter Susa-navet även e-postadresser och `mailto:`-länkar i fritext och HTML
-  (beskrivningar, ansökningsinstruktioner) med `[e-post utelämnad]`, också i `raw`.
+  (beskrivningar, ansökningsinstruktioner) med `[e-post utelämnad]`, också i `raw` och när adressen är dold med
+  teckenreferenser som `&#64;`.
 - `fuzzy_api_notices` visar varje notis en gång, så att upprepade anrop till ett API inte trycker undan andra
   källors notiser.
 - En omdirigering med ogiltig `Location` och en `Retry-After` som inte är ett ändligt tal (`nan`, `inf`) ger ett

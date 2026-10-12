@@ -73,9 +73,12 @@ EMAIL_WITHHELD_NOTE = (
 )
 # A bare e-mail address or a mailto: link (no ':' or '/' before '@', so URLs with user info do not match).
 _EMAIL_VALUE = re.compile(r"(?i)(?:mailto:\S*|[^@\s/:<>]+@[^@\s/<>]+\.[^@\s/<>]+)")
-# An e-mail address or mailto: link inside free text or HTML (descriptions, application instructions).
-_EMBEDDED_EMAIL = re.compile(r"(?i)mailto:[^\s\"'<>]*|[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+# An e-mail address or mailto: link inside free text or HTML (descriptions, application instructions). The local part
+# starts only where a run of address characters starts, so a search stays linear on long runs without an '@'.
+_EMBEDDED_EMAIL = re.compile(r"(?i)mailto:[^\s\"'<>]*|(?<![\w.+-])[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
 EMAIL_PLACEHOLDER = "[e-post utelämnad]"
+# Character references (&#64;, &#x40;, &commat;, &period;, ...) that HTML pages use to obscure an address.
+_CHAR_REF = re.compile(r"&(?:#[0-9]{1,7}|#[xX][0-9a-fA-F]{1,6}|[A-Za-z][A-Za-z0-9]{1,31});?")
 # Ids are opaque (e.g. e.uoh.kth.dd1420.60090.20251, p.sv.68897220). The first character must be a letter or digit
 # so that "." and ".." – dot segments that the HTTP client normalises away, which changes the request path – can never
 # be sent; path/query separators and whitespace are rejected too. Everything else is percent-encoded.
@@ -1118,13 +1121,27 @@ def is_email_value(value: Any) -> bool:
     return isinstance(value, str) and _EMAIL_VALUE.fullmatch(value.strip()) is not None
 
 
+def _decode_address_refs(text: str) -> str:
+    """Decode the character references that stand for letters, digits or ``@.+-_:``. HTML gives them the same meaning
+    as the plain character, so the markup is unchanged, but an obscured address becomes visible to the pattern (the
+    flattened text is unescaped later and would show it)."""
+
+    def plain(match: re.Match[str]) -> str:
+        char = html.unescape(match.group(0))
+        return char if len(char) == 1 and (char.isalnum() or char in "@.+-_:") else match.group(0)
+
+    return _CHAR_REF.sub(plain, text) if "&" in text else text
+
+
 def contains_email(value: Any) -> bool:
     """True when the record holds an e-mail address (under an e-mail key, as a bare/mailto value or in free text)."""
     if isinstance(value, dict):
         return any((is_email_key(k) and v not in (None, "", [], {})) or contains_email(v) for k, v in value.items())
     if isinstance(value, list):
         return any(contains_email(v) for v in value)
-    return is_email_value(value) or (isinstance(value, str) and _EMBEDDED_EMAIL.search(value) is not None)
+    return is_email_value(value) or (
+        isinstance(value, str) and _EMBEDDED_EMAIL.search(_decode_address_refs(value)) is not None
+    )
 
 
 def without_emails(value: Any) -> Any:
@@ -1135,7 +1152,8 @@ def without_emails(value: Any) -> Any:
     if isinstance(value, list):
         return [without_emails(v) for v in value if not is_email_value(v)]
     if isinstance(value, str):
-        return _EMBEDDED_EMAIL.sub(EMAIL_PLACEHOLDER, value)
+        decoded = _decode_address_refs(value)
+        return _EMBEDDED_EMAIL.sub(EMAIL_PLACEHOLDER, decoded) if _EMBEDDED_EMAIL.search(decoded) else value
     return value
 
 

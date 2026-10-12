@@ -5,6 +5,7 @@
 import copy
 import json
 import re
+import time
 from typing import Any
 
 import httpx2
@@ -24,6 +25,7 @@ from fuzzy_mcp.sources.skolverket.susa_navet import (
     text_of,
     texts_of,
     url_of,
+    without_emails,
 )
 
 from .conftest import call, call_error, load_fixture
@@ -444,6 +446,28 @@ async def test_emails_in_free_text_withheld_when_personal_data_off(router, make_
     assert result["description"] == "Kursansvarig: Anna Andersson, [e-post utelämnad]."
     assert result["application"]["instruction"] == "Frågor? Mejla [e-post utelämnad]."
     assert result["notes"] == [EMAIL_WITHHELD_NOTE]
+
+
+@pytest.mark.parametrize(
+    "value,expected",
+    [
+        ("<p>anna&#64;kth.se</p>", "<p>[e-post utelämnad]</p>"),
+        ("anna&#x40;kth&period;se", "[e-post utelämnad]"),
+        ('<a href="&#109;ailto:anna@kth.se">Mejla</a>', '<a href="[e-post utelämnad]">Mejla</a>'),
+        ("Skriv till anna@kth.se.", "Skriv till [e-post utelämnad]."),
+        ("a &lt; b &amp; c", "a &lt; b &amp; c"),  # markup is untouched without an address
+        ("https://medium.com/@kth.se", "https://medium.com/@kth.se"),
+    ],
+)
+def test_without_emails_finds_obscured_addresses_and_keeps_other_text(value, expected):
+    assert without_emails({"value": value}) == {"value": expected}
+
+
+def test_embedded_email_search_is_linear_on_long_runs():
+    long_run = "a" * 1_000_000
+    started = time.perf_counter()
+    assert without_emails({"value": long_run})["value"] is long_run
+    assert time.perf_counter() - started < 2  # a quadratic pattern needs hours here
 
 
 async def test_emails_returned_by_default(router, make_client):
