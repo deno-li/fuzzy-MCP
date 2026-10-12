@@ -220,6 +220,51 @@ async def test_pagination_returns_each_feature_once_from_unordered_source(
     assert {request.url.params["sortBy"] for request in _get_feature_requests(router)} == {sort_by or code_attribute}
 
 
+@pytest.mark.parametrize("max_output_chars", [0, 30000])
+async def test_paging_with_next_offset_returns_every_feature_once(router, make_client, max_output_chars):
+    """A municipality with more DeSO than one answer holds (Stockholm: 569) is read completely by following
+    next_offset, also when the server caps answers; the tool cuts whole features itself (issue #21)."""
+    records = [{**DESO_0180C4040, "objectid": n, "desokod": f"0180C{n:04d}"} for n in range(569)]
+
+    def get_features(request):
+        params = request.url.params
+        start = int(params.get("startIndex", 0))
+        page = sorted(records, key=lambda item: item[params["sortBy"]])[start : start + int(params["maxFeatures"])]
+        return httpx2.Response(
+            200,
+            json={
+                "type": "FeatureCollection",
+                "totalFeatures": len(records),
+                "features": [{"properties": r} for r in page],
+            },
+        )
+
+    router.add("GET", r"request=DescribeFeatureType", _describe)
+    router.add("GET", r"request=GetFeature", get_features)
+    seen: list[str] = []
+    pages = []
+    args = {"layer": "DeSO_2025", "filters": {"kommunkod": "0180"}, "limit": 1000}
+    async with make_client("scb.geodata", max_output_chars=max_output_chars) as client:
+        offset = 0
+        while offset is not None and len(pages) < 20:
+            result = await client.call_tool("scb_geodata_get_features", {**args, "offset": offset})
+            text = "".join(getattr(block, "text", "") for block in result.content)
+            page = json.loads(text)
+            pages.append((page, text))
+            seen += [feature["desokod"] for feature in page["features"]]
+            offset = page.get("next_offset")
+    assert seen == [record["desokod"] for record in records]  # every feature once, in order
+    assert len(pages) > 1 and pages[-1][0]["truncated"] is False
+    for page, text in pages:
+        assert page["returned"] == len(page["features"])
+        assert "_kortat" not in page  # the tool, not the server's generic cap, decided where the page ends
+        if max_output_chars:
+            assert len(json.dumps(text, ensure_ascii=False)) + 100 <= max_output_chars
+        if page["truncated"]:
+            assert page["next_offset"] == page["offset"] + page["returned"]
+            assert any(f"offset={page['next_offset']}" in note for note in page["notes"])
+
+
 async def test_geometry_srs(router, make_client):
     _routes(router, "scb_geodata_features_wgs84.json")
     async with make_client("scb.geodata") as client:

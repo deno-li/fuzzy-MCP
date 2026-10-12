@@ -7,6 +7,15 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ## [Unreleased]
 
+### Rättat
+
+- `scb_geodata_get_features` anger `next_offset` när fler objekt finns, och notisen säger vilket `offset` nästa
+  anrop ska använda. Tidigare hoppade bläddring med `offset += limit` över objekt när svaret kortats till
+  teckenbudgeten (447 av Stockholms 569 DeSO). Med `FUZZY_MCP_MAX_OUTPUT_CHARS` kortar verktyget själv vid hela
+  objekt inom taket, så att serverns generella kortning inte behöver korta en sida som inte går att fortsätta från
+  ([#21](https://github.com/deno-li/fuzzy-MCP/issues/21)). Utdataschemat har ett nytt fält: synkronisera verktygen
+  i Eneo efter uppgraderingen.
+
 ## [0.2.2] - 2026-10-12
 
 ### Rättat

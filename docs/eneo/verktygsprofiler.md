@@ -20,9 +20,9 @@ kostnaden beror på modellen.
 | Skolor och skolenheter | `skolverket.skolenhetsregistret,skolverket.planerad,reference` | 33 | 47 497 byte | 12 000 |
 | Läroplaner, ämnen och kurser | `skolverket.syllabus,reference` | 23 | 25 787 byte | 6 500 |
 | Vuxen- och högre utbildning | `skolverket.susa,skolverket.planerad,reference` | 30 | 45 461 byte | 11 500 |
-| Geodata och dataset | `scb.geodata,dataportal,reference` | 18 | 19 733 byte | 5 000 |
-| Områdesstatistik (DeSO och RegSO) | `scb.statistik,scb.geodata,reference` | 23 | 20 864 byte | 5 000 |
-| Allt | alla | 84 | 115 252 byte | 29 000 |
+| Geodata och dataset | `scb.geodata,dataportal,reference` | 18 | 19 784 byte | 5 000 |
+| Områdesstatistik (DeSO och RegSO) | `scb.statistik,scb.geodata,reference` | 23 | 20 915 byte | 5 000 |
+| Allt | alla | 84 | 115 303 byte | 29 000 |
 
 ## Statistik
 
