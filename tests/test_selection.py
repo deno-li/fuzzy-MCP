@@ -6,6 +6,7 @@ import pytest
 
 from fuzzy_mcp.errors import InvalidInputError, TooLargeError
 from fuzzy_mcp.pxweb.selection import PxValue, PxVariable, expand_token, resolve_selection
+from fuzzy_mcp.pxweb.v1 import build_v1_query
 
 
 def var(code, codes, **kw):
@@ -95,6 +96,29 @@ def test_opaque_variable_passes_codes_through_and_marks_unknown_cells():
     assert res.cells == -1
     with pytest.raises(InvalidInputError, match="saknar värdelista"):
         resolve_selection([level, tid], {})
+
+
+@pytest.mark.parametrize("token", ["TOP(2)", "TOP( 2 )", "top (2)"])
+def test_opaque_top_expression_becomes_v1_top_filter(token):
+    level = PxVariable(code="level", label="huvudman/skolenhet", values=[], opaque=True)
+    resolved = resolve_selection([level], {"level": [token]})
+    query = build_v1_query(resolved.values, raw_variables=set(resolved.unvalidated))
+    assert query["query"] == [{"code": "level", "selection": {"filter": "top", "values": ["2"]}}]
+    assert resolved.cells == -1
+
+
+@pytest.mark.parametrize("token", ["TOP(0)", "TOP(02)", "TOP(+2)", "TOP(2,1)"])
+def test_opaque_top_normalization_keeps_invalid_arguments_rejected(token):
+    level = PxVariable(code="level", label="huvudman/skolenhet", values=[], opaque=True)
+    with pytest.raises(InvalidInputError):
+        resolve_selection([level], {"level": [token]})
+
+
+def test_explicit_top_value_code_remains_a_literal():
+    level = var("level", ["TOP( 2 )"])
+    resolved = resolve_selection([level], {"level": ["TOP( 2 )"]})
+    query = build_v1_query(resolved.values, raw_variables=set(resolved.unvalidated))
+    assert query["query"] == [{"code": "level", "selection": {"filter": "item", "values": ["TOP( 2 )"]}}]
 
 
 def test_large_mandatory_variable_must_be_chosen():

@@ -120,7 +120,8 @@ async def test_layers_describe_and_features(router, make_client):
     assert params["typeName"] == "stat:DeSO_2025" and params["outputFormat"] == "application/json"
     assert params["propertyName"] == DESO_DATA
     assert params["CQL_FILTER"] == "(kommunkod = '2180')" and params["maxFeatures"] == "2"
-    assert not {"startIndex", "sortBy", "srsName"} & set(params.keys())
+    assert params["sortBy"] == "desokod"
+    assert not {"startIndex", "srsName"} & set(params.keys())
     assert result["total"] == 6160 and result["returned"] == 1 and result["truncated"] is True
     assert result["offset"] == 0 and "srs" not in result
     assert result["features"][0] == {
@@ -178,6 +179,45 @@ async def test_attributes_offset_and_sorting(router, make_client):
         assert "Attributet 'sp_geometry' är lagrets geometri" in err
         err = await call_error(client, "scb_geodata_get_features", {"layer": "DeSO_2025", "offset": -1})
         assert "offset måste vara 0 eller större" in err
+
+
+@pytest.mark.parametrize(
+    ("layer", "code_attribute", "sort_by"),
+    [("DeSO_2025", "desokod", None), ("RegSO_2025", "regsokod", None), ("DeSO_2025", "desokod", "objectid")],
+)
+async def test_pagination_returns_each_feature_once_from_unordered_source(
+    router, make_client, layer, code_attribute, sort_by
+):
+    codes = [f"0180C000{n}" if code_attribute == "desokod" else f"0180R00{n}" for n in (3, 1, 2, 4)]
+    records = [{code_attribute: code, "objectid": objectid} for objectid, code in zip((4, 2, 1, 3), codes, strict=True)]
+
+    def get_features(request):
+        params = request.url.params
+        ordered = sorted(records, key=lambda item: item[params["sortBy"]]) if "sortBy" in params else records
+        start = int(params.get("startIndex", 0))
+        cap = int(params["maxFeatures"])
+        return httpx2.Response(
+            200,
+            json={
+                "type": "FeatureCollection",
+                "totalFeatures": len(records),
+                "features": [{"properties": record} for record in ordered[start : start + cap]],
+            },
+        )
+
+    router.add("GET", r"request=DescribeFeatureType", _describe)
+    router.add("GET", r"request=GetFeature", get_features)
+    args = {"layer": layer, "limit": 2, **({"sort_by": sort_by} if sort_by else {})}
+    async with make_client("scb.geodata") as client:
+        direct_second = await call(client, "scb_geodata_get_features", {**args, "offset": 2})
+        first = await call(client, "scb_geodata_get_features", args)
+        second = await call(client, "scb_geodata_get_features", {**args, "offset": 2})
+
+    expected_order = sorted(records, key=lambda item: item[sort_by or code_attribute])
+    assert first["features"] + second["features"] == expected_order
+    assert direct_second["features"] == expected_order[2:]
+    assert first["truncated"] is True and second["truncated"] is False
+    assert {request.url.params["sortBy"] for request in _get_feature_requests(router)} == {sort_by or code_attribute}
 
 
 async def test_geometry_srs(router, make_client):
