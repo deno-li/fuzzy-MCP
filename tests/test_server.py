@@ -27,6 +27,54 @@ async def test_meta_tools_and_sources_resource():
         assert "Skolenhetsregistret" in res.contents[0].text
 
 
+async def test_lifecycle_history_does_not_reveal_another_clients_query():
+    import httpx2
+
+    secret = "private-user-question-123"
+
+    def handler(request):
+        assert request.url.params["query"] == secret
+        return httpx2.Response(
+            200,
+            json={"tables": []},
+            headers={
+                "Deprecation": secret,
+                "Sunset": "Wed, 30 Jun 2027 00:00:00 GMT",
+                "Warning": f'299 example.se "{secret}"',
+                "Link": f'<https://example.se/{secret}?q={secret}>; rel="deprecation"',
+            },
+        )
+
+    server = build_server(
+        Settings(enabled_sources=frozenset({"scb.statistik"})),
+        transport=httpx2.MockTransport(handler),
+        rate_limits={},
+    )
+    services = server.fuzzy_services
+    services.acquire()  # HTTP serving keeps the shared services alive between connections.
+    try:
+        async with Client(server) as first:
+            await call(first, "scb_search_tables", {"query": secret})
+            async with Client(server) as second:
+                simultaneous = await call(second, "fuzzy_api_notices")
+        async with Client(server) as later:
+            sequential = await call(later, "fuzzy_api_notices")
+    finally:
+        await services.release()
+    assert (
+        simultaneous
+        == sequential
+        == {
+            "notices": [
+                "scb: Deprecation: mottagen, datum kunde inte valideras",
+                "scb: Sunset: 2027-06-30T00:00:00Z",
+            ],
+            "count": 2,
+        }
+    )
+    assert secret not in str(sequential)
+
+
 async def test_sub_sources_can_be_enabled_individually():
     from fuzzy_mcp.config import SUB_SOURCES
 

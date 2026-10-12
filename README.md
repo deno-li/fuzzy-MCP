@@ -132,7 +132,7 @@ Servern har **84 verktyg**, 11 resurser och 6 promptar.
 | Verktyg | Beskrivning |
 | --- | --- |
 | `fuzzy_list_sources` | Lista alla datakällor (myndighet, API, bas-URL, licens, verktygsprefix) och om de är aktiverade. |
-| `fuzzy_api_notices` | Visa Deprecation/Sunset-varningar som API:erna skickat under sessionen (DIGG:s REST API-profil). |
+| `fuzzy_api_notices` | Visa gemensamma Deprecation/Sunset-notiser från serverns drifttid (DIGG:s REST API-profil). |
 
 #### Referensdata (lokalt, utan nätverk)
 
@@ -416,7 +416,9 @@ Anropsgränser per värd följer det myndigheterna publicerar: SCB 30 och Skolve
 - **SCB:s v1-API** (`api.scb.se/OV0104/v1`) stängs runt årsskiftet 2026/2027 och används inte.
 - **Stora svar** kortas för att hålla sig under ungefär 25 000 token (gränsen i t.ex. Claude Code): svaren
   markerar då `truncated` och säger hur man bläddrar vidare. Klienter med hårdare gräns (t.ex. Eneo) sätter
-  `FUZZY_MCP_MAX_OUTPUT_CHARS`; servern kortar då listor och text och anger det i fältet `_kortat`. Geometrier från geodata begränsas till tio objekt;
+  `FUZZY_MCP_MAX_OUTPUT_CHARS`; servern kortar då listor och text och anger det i fältet `_kortat`. Frågerecept från
+  `*_build_query` behålls däremot hela: om receptet inte ryms får klienten ett fel och behöver minska urvalet.
+  Geometrier från geodata begränsas till tio objekt;
   hämta hela lager via `scb_geodata_download_url`.
 - **Folkhälsomyndigheten** anger ingen licens i API:et. Ange "Källa: Folkhälsomyndigheten" och tabell.
 - **Skolverkets statistikdatabas** är inte officiell statistik. Värden med `..` är sekretessmarkerade, och sex

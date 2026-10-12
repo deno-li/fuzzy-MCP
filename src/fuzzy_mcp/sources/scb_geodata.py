@@ -561,11 +561,11 @@ def register(server: MCPServer[Any], services: Services) -> None:
         cap = clamp(limit, 1, MAX_GEOMETRY_FEATURES if include_geometry else MAX_FEATURES)
         params: dict[str, Any] = {"maxFeatures": cap + 1}
         notes: list[str] = []
-        sort_attribute = resolve_attribute(sort_by, described) if sort_by else None
+        sort_attribute = resolve_attribute(sort_by, described) if sort_by else default_sort_attribute(described)
+        params["sortBy"] = sort_attribute.name
         if offset > 0:
             params["startIndex"] = offset
-            if sort_attribute is None:
-                sort_attribute = default_sort_attribute(described)
+            if not sort_by:
                 notes.append(f"Sortering vid offset: {sort_attribute.name} (standard; ange sort_by för annan ordning)")
             else:
                 notes.append(f"Sortering vid offset: {sort_attribute.name} (sort_by)")
@@ -573,8 +573,6 @@ def register(server: MCPServer[Any], services: Services) -> None:
                     "Bläddring är stabil bara om sort_by är unikt per objekt (som desokod/regsokod); annars kan "
                     "objekt saknas eller upprepas mellan sidorna."
                 )
-        if sort_attribute is not None:
-            params["sortBy"] = sort_attribute.name
         if include_geometry:
             if selected is not None:
                 params["propertyName"] = ",".join(

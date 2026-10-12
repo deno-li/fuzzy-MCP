@@ -540,6 +540,42 @@ async def test_emails_returned_by_default(router, make_client):
     assert all("notes" not in result for result in results)
 
 
+@pytest.mark.parametrize(
+    ("fixture", "path", "tool", "args"),
+    [
+        (
+            "skolenhetsregistret_school_unit.json",
+            "/v2/school-units/12345678",
+            "skolverket_get_school_unit",
+            {"school_unit_code": "12345678"},
+        ),
+        (
+            "skolenhetsregistret_organizer.json",
+            "/v2/organizers/2120000126",
+            "skolverket_get_organizer",
+            {"organization_number": "2120000126"},
+        ),
+    ],
+)
+@pytest.mark.parametrize("url", ["mailto:named.person@example.se", "named.person@example.se", "https://example.se"])
+async def test_website_and_raw_urls_follow_personal_data_policy(router, make_client, fixture, path, tool, args, url):
+    payload = load_fixture(fixture)
+    payload["data"]["attributes"]["url"] = url
+    router.add("GET", path, payload)
+    for allowed in (False, True):
+        async with make_client("skolverket.skolenhetsregistret", allow_personal_data=allowed) as client:
+            result = await call(client, tool, {**args, "include_raw": True, "include_personal_data": allowed})
+        expected_url = url if allowed or url.startswith("https://") else None
+        assert result.get("website") == expected_url
+        assert result["raw"]["data"]["attributes"].get("url") == expected_url
+        if allowed:
+            assert result["raw"] == payload
+            assert "notes" not in result
+        else:
+            assert "named.person@example.se" not in json.dumps(result)
+            assert any("FUZZY_MCP_PERSONAL_DATA=off" in note for note in result["notes"])
+
+
 def test_redact_personal_emails_keeps_names_when_asked():
     payload = {"attributes": {"headMaster": "Förnamn", "email": "a@b.se", "url": "mailto:c@d.se", "x": ["e@f.se", "g"]}}
     assert redact_personal(payload, names=False, emails=True) == {"attributes": {"headMaster": "Förnamn", "x": ["g"]}}

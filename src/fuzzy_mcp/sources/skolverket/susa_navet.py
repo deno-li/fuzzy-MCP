@@ -21,8 +21,8 @@ syncs see deletions. Rows that a client-side filter cannot test (missing locatio
 values are ``{"type", "code"}`` objects.
 
 E-mail addresses (``application.email``, ``emailAddresses``, mailto: links, e-mail keys in extensions) can be a named
-person's address: with ``FUZZY_MCP_PERSONAL_DATA=off`` the by-id tools withhold them, also in ``raw``, and say so in
-``notes``. Phone numbers and web addresses are always returned.
+person's address: with ``FUZZY_MCP_PERSONAL_DATA=off`` search and by-id tools withhold them, also in ``raw``, and say
+so in ``notes``. Phone numbers and web addresses are always returned.
 """
 
 import html
@@ -32,7 +32,7 @@ import unicodedata
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from datetime import date, datetime
-from typing import Annotated, Any
+from typing import Annotated, Any, TypeVar
 from urllib.parse import quote
 
 from mcp.server.mcpserver import MCPServer
@@ -79,6 +79,7 @@ _EMAIL_VALUE = re.compile(r"(?i)(?:mailto:\S*|[^@\s/:<>]+@[^@\s/<>]+\.[^@\s/<>]+
 ID_PATTERN = re.compile(r"^[^\W_][^\s/\\?#]{0,255}$")
 
 Item = dict[str, Any]
+EmailData = TypeVar("EmailData", Item, list[Item])
 
 # ---------------------------------------------------------------------------
 # Code lists (spec §4). Labels marked "tolkning" are inferred, not documented.
@@ -358,6 +359,7 @@ class SearchCoverage(BaseModel):
         default=None, description="Poster som inte kunde prövas mot klientfiltren för att uppgifter saknas"
     )
     hint: str | None = None
+    notes: list[str] | None = None
 
 
 class EventRow(BaseModel):
@@ -1132,8 +1134,8 @@ def without_emails(value: Any) -> Any:
     return value
 
 
-def withhold_emails(data: Item, emails: bool) -> tuple[Item, list[str]]:
-    """The record to flatten (and to return as ``raw``) plus notes: unchanged when ``emails`` is allowed, otherwise
+def withhold_emails(data: EmailData, emails: bool) -> tuple[EmailData, list[str]]:
+    """Records to flatten (and to return as ``raw``) plus notes: unchanged when ``emails`` is allowed, otherwise
     without e-mail addresses and with a note when there was one (FUZZY_MCP_PERSONAL_DATA=off)."""
     if emails or not contains_email(data):
         return data, []
@@ -1818,7 +1820,8 @@ def register(server: MCPServer[Any], services: Services) -> None:
             "/educationEvents", "educationEvents", params, event_check(filters), filtering=filters.active, paging=paging
         )
         prefer = _prefer(services)
-        rows = [event_row(item, prefer) for item in result.matches]
+        matches, withheld = withhold_emails(result.matches, services.settings.allow_personal_data)
+        rows = [event_row(item, prefer) for item in matches]
         applied = {
             "school_type": school_types,
             "provider_id": provider,
@@ -1831,7 +1834,9 @@ def register(server: MCPServer[Any], services: Services) -> None:
             "distance_only": filters.distance_only or None,
             "language": filters.language,
         }
-        return structured(EventSearchResult(events=rows, **coverage(result, applied, len(rows), "tillfällen")))
+        return structured(
+            EventSearchResult(events=rows, notes=withheld or None, **coverage(result, applied, len(rows), "tillfällen"))
+        )
 
     @server.tool(
         name="skolverket_susa_search_education_infos",
@@ -1876,9 +1881,12 @@ def register(server: MCPServer[Any], services: Services) -> None:
             paging=paging,
         )
         prefer = _prefer(services)
-        rows = [info_row(item, prefer) for item in result.matches]
+        matches, withheld = withhold_emails(result.matches, services.settings.allow_personal_data)
+        rows = [info_row(item, prefer) for item in matches]
         applied = {"school_type": school_types, "updated_since": since, "text": text.strip() if text else None}
-        return structured(InfoSearchResult(infos=rows, **coverage(result, applied, len(rows), "utbildningar")))
+        return structured(
+            InfoSearchResult(infos=rows, notes=withheld or None, **coverage(result, applied, len(rows), "utbildningar"))
+        )
 
     @server.tool(
         name="skolverket_susa_search_education_providers",
@@ -1929,7 +1937,8 @@ def register(server: MCPServer[Any], services: Services) -> None:
             paging=paging,
         )
         prefer = _prefer(services)
-        rows = [provider_row(item, prefer) for item in result.matches]
+        matches, withheld = withhold_emails(result.matches, services.settings.allow_personal_data)
+        rows = [provider_row(item, prefer) for item in matches]
         applied = {
             "school_type": school_types,
             "updated_since": since,
@@ -1937,7 +1946,11 @@ def register(server: MCPServer[Any], services: Services) -> None:
             "municipality_codes": filters.municipalities,
             "county_codes": filters.counties,
         }
-        return structured(ProviderSearchResult(providers=rows, **coverage(result, applied, len(rows), "anordnare")))
+        return structured(
+            ProviderSearchResult(
+                providers=rows, notes=withheld or None, **coverage(result, applied, len(rows), "anordnare")
+            )
+        )
 
     @server.tool(
         name="skolverket_susa_get_education_event",

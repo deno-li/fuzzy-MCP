@@ -127,6 +127,16 @@ def tool_errors(fn: Callable[P, Awaitable[R]]) -> Callable[P, Awaitable[R]]:
     return wrapper
 
 
+def preserve_output(fn: Callable[P, Awaitable[R]]) -> Callable[P, Awaitable[R]]:
+    """Mark a tool's answer as indivisible: reject it if it exceeds the configured output cap.
+
+    Query recipes contain executable code and selections whose meaning must not change. The server reads this
+    marker before applying its output wrapper; functools.wraps preserves it through other tool decorators.
+    """
+    fn.__dict__["_fuzzy_preserve_output"] = True
+    return fn
+
+
 def dump(model: BaseModel | Mapping[str, Any]) -> dict[str, Any]:
     if isinstance(model, BaseModel):
         return model.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -261,14 +271,20 @@ def fit_to_limit(data: dict[str, Any], limit: int) -> tuple[dict[str, Any] | Non
     return ({**work, TRUNCATION_KEY: note}, True) if fits() else (None, True)
 
 
-def too_large_result(size: int, limit: int) -> CallToolResult:
+def too_large_result(size: int, limit: int, *, preserve_output: bool = False) -> CallToolResult:
     """Error answer when even a shortened answer cannot fit the client's limit."""
+    reason = (
+        "Svaret innehåller en återanvändbar fråga och får inte kortas eftersom urval eller körbar kod då kan ändras. "
+        if preserve_output
+        else "Svaret ryms inte ens efter kortning. "
+    )
     return CallToolResult(
         content=[
             TextContent(
                 type="text",
-                text=f"Svaret är för stort ({size} tecken) för klientens gräns ({limit} tecken) även efter kortning. "
-                "Begränsa urvalet (färre värden, perioder eller rader) och försök igen.",
+                text=f"Svaret är för stort ({size} tecken) för klientens gräns ({limit} tecken). "
+                + reason
+                + "Begränsa urvalet (färre värden, perioder eller rader) och försök igen.",
             )
         ],
         is_error=True,

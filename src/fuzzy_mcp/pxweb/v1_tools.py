@@ -18,7 +18,7 @@ from mcp.server.mcpserver import MCPServer
 from mcp.types import CallToolResult
 from pydantic import BaseModel, Field
 
-from ..core import READ_ONLY_OPEN, Services, clamp, structured, tool_errors
+from ..core import READ_ONLY_OPEN, Services, clamp, preserve_output, structured, tool_errors
 from ..errors import InvalidInputError, UpstreamError
 from .jsonstat import jsonstat_to_table
 from .models import DataResult, TableMetadataView, to_view
@@ -300,6 +300,7 @@ def register_pxweb_v1_source(server: MCPServer[Any], services: Services, spec: P
         "Power BI/Excel och ett curl-kommando. Hämtar ingen data, bara metadata för att validera urvalet.",
         annotations=READ_ONLY_OPEN,
     )
+    @preserve_output
     @tool_errors
     async def build_query(
         table_path: Annotated[str, Field(description="Tabellens sökväg, URL eller tabellfil")],

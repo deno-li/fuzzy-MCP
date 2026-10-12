@@ -4,7 +4,7 @@
 #
 # fuzzy-mcp bredvid Eneo (se docs/ENEO.md). Förutsätter att Eneo redan körs och att dess interna nät heter
 # eneo_module_net (kontrollera med `docker network ls`). Imagen kommer från leveranspaketet:
-# docker load -i fuzzy-mcp-0.2.1-image.tar.gz (jämför image-id med releasesidan, ENEO.md avsnitt 2). En image som
+# docker load -i fuzzy-mcp-0.2.2-image.tar.gz (jämför image-id med releasesidan, ENEO.md avsnitt 2). En image som
 # byggs själv från repot ska ha en egen tagg (t.ex. fuzzy-mcp:dev) och används bara för test. Registrera sedan
 # http://fuzzy-mcp:8000/mcp med Bearer-token i Eneo.
 #
@@ -27,7 +27,7 @@ name: fuzzy-mcp
 
 services:
   fuzzy-mcp:
-    image: fuzzy-mcp:0.2.1
+    image: fuzzy-mcp:0.2.2
     container_name: fuzzy-mcp
     restart: unless-stopped
     read_only: true

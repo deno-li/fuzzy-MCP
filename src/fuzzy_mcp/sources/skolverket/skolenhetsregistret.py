@@ -896,6 +896,9 @@ def flatten_school_unit(
 ) -> SchoolUnitDetail:
     """Flatten a school-unit detail. ``personal`` opts in to the principal's name and c/o names; ``emails=False``
     (FUZZY_MCP_PERSONAL_DATA=off) withholds the e-mail address."""
+    notes = email_notes(payload, emails)
+    if notes:
+        payload = redact_personal(payload, names=False, emails=True)
     data = as_dict(payload.get("data"))
     attrs = as_dict(data.get("attributes"))
     visit, others, lat, lon = split_addresses(attrs.get("addresses"), personal)
@@ -933,7 +936,7 @@ def flatten_school_unit(
         end_date=text_or_none(attrs.get("endDate")) or text_or_none(attrs.get("enddate")),
         meta=parse_meta(payload.get("meta")),
         self_url=text_or_none(as_dict(payload.get("links")).get("href")),
-        notes=email_notes(payload, emails),
+        notes=notes,
     )
 
 
@@ -1011,6 +1014,9 @@ def related_contracts(relationships: Any) -> list[ContractRef]:
 def flatten_organizer(
     payload: dict[str, Any], number: str, personal: bool = False, emails: bool = True
 ) -> OrganizerDetail:
+    notes = email_notes(payload, emails)
+    if notes:
+        payload = redact_personal(payload, names=False, emails=True)
     data = as_dict(payload.get("data"))
     attrs = as_dict(data.get("attributes"))
     org_type = text_or_none(attrs.get("organizerType"))
@@ -1039,13 +1045,16 @@ def flatten_organizer(
         contracts=related_contracts(data.get("relationships")),
         meta=parse_meta(payload.get("meta")),
         self_url=text_or_none(as_dict(payload.get("links")).get("href")),
-        notes=email_notes(payload, emails),
+        notes=notes,
     )
 
 
 def flatten_education_provider(
     payload: dict[str, Any], code: str, personal: bool = False, emails: bool = True
 ) -> EducationProviderDetail:
+    notes = email_notes(payload, emails)
+    if notes:
+        payload = redact_personal(payload, names=False, emails=True)
     data = as_dict(payload.get("data"))
     attrs = as_dict(data.get("attributes"))
     parts = str_list(attrs.get("schoolTypeParts"))
@@ -1069,7 +1078,7 @@ def flatten_education_provider(
         contracts=related_contracts(data.get("relationships")),
         meta=parse_meta(payload.get("meta")),
         self_url=text_or_none(as_dict(payload.get("links")).get("href")),
-        notes=email_notes(payload, emails),
+        notes=notes,
     )
 
 

@@ -197,12 +197,17 @@ def _limit_output(tool: Any, limit: int) -> None:
     """Per-server size cap (FUZZY_MCP_MAX_OUTPUT_CHARS): shorten structured answers so a client that cuts long
     results (Eneo: 32 768 characters) still receives valid JSON; report an error if even that cannot fit."""
     fn = tool.fn
+    preserve_output = bool(getattr(fn, "_fuzzy_preserve_output", False))
 
     @functools.wraps(fn)
     async def wrapper(*args: Any, **kwargs: Any) -> Any:
         result = await fn(*args, **kwargs)
         if not isinstance(result, CallToolResult) or result.is_error:
             return result
+        if preserve_output:
+            # Keep the whole recipe, including nested selections, URLs, M and curl, unchanged or fail explicitly.
+            size = client_size("".join(getattr(block, "text", "") for block in result.content))
+            return result if size <= limit else too_large_result(size, limit, preserve_output=True)
         data = result.structured_content
         if not isinstance(data, dict):
             text = "".join(getattr(block, "text", "") for block in result.content)

@@ -15,7 +15,8 @@ import time
 from collections import OrderedDict, deque
 from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass, field
-from email.utils import parsedate_to_datetime
+from datetime import UTC, datetime
+from email.utils import format_datetime, parsedate_to_datetime
 from typing import Any
 
 import anyio
@@ -205,6 +206,34 @@ def lifecycle_notices(response: httpx2.Response) -> list[str]:
     return notices
 
 
+def _shared_lifecycle_notices(response: httpx2.Response) -> list[str]:
+    """Only validated lifecycle dates belong in the process-wide history, visible to every client.
+
+    Request URLs and arbitrary header text (including Warning and Link) can echo a user's input. Keep those
+    details in the originating call's ApiResponse.notices, never in the shared history. Invalid dates reveal only
+    that the lifecycle header was present, not its value.
+    """
+    notices: list[str] = []
+    for name in ("deprecation", "sunset"):
+        if name not in response.headers:
+            continue
+        raw = response.headers[name].strip()
+        when = None
+        try:
+            if name == "deprecation" and re.fullmatch(r"@-?[0-9]{1,15}", raw):
+                when = datetime.fromtimestamp(int(raw[1:]), UTC)
+            elif name == "sunset" and len(raw) == 29:
+                candidate = parsedate_to_datetime(raw)
+                # Accept a complete IMF-fixdate only, without comments or appended user text.
+                if format_datetime(candidate, usegmt=True) == raw:
+                    when = candidate
+        except (ValueError, TypeError, OverflowError, OSError):
+            pass
+        date = when.isoformat().replace("+00:00", "Z") if when is not None else "mottagen, datum kunde inte valideras"
+        notices.append(f"{name.title()}: {date}")
+    return notices
+
+
 class HttpClient:
     """Thin wrapper around :class:`httpx2.AsyncClient` used by every source."""
 
@@ -307,8 +336,8 @@ class HttpClient:
 
         response = await self._send_with_retries(source, method, url, cleaned, json_body, request_headers)
         notices = lifecycle_notices(response)
-        for notice in notices:
-            self.recent_notices.append(f"{source}: {notice} ({response.request.url})")
+        for notice in _shared_lifecycle_notices(response):
+            self.recent_notices.append(f"{source}: {notice}")
 
         content_type = response.headers.get("content-type", "")
         data: Any

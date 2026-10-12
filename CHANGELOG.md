@@ -7,8 +7,23 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-10-12
+
 ### Rättat
 
+- Serverns gemensamma API-notishistorik innehåller bara källans identifierare och säker livscykelinformation.
+  Anropsadresser och råa headervärden delas inte mellan klienter; detaljer i ett enskilt anrops svar behålls.
+- Frågerecept från `scb_build_query`, `fohm_build_query` och `skolverket_stat_build_query` kortas inte längre
+  när `FUZZY_MCP_MAX_OUTPUT_CHARS` är satt. Ett för stort recept ger ett tydligt fel så att urvalet kan minskas;
+  URL, frågekropp, Power Query och curl förblir överens om hela urvalet när receptet ryms.
+- `scb_geodata_get_features` använder samma standardsortering från första sidan, så att bläddring inte byter
+  ordning mellan `offset=0` och senare sidor. Dataportalens utgivarfilter använder samma URI-upplösning på alla
+  sidor, även när anropet börjar med `offset>0`.
+- Personuppgiftsfiltreringen hanterar även personliga `mailto:`-adresser i strukturerade sökresultat och i
+  Dataportalens RDF-subjekt och referenser. Sökresultat, detaljsvar och rådata följer samma val för personuppgifter.
+- Containerbygget skickar proxyvariablernas namn till Docker, som hämtar värdena ur miljön, så att byggkommandot
+  och dess återgivning vid fel inte innehåller proxyinloggning.
+- Giltiga `TOP`-uttryck med blanksteg normaliseras före PxWeb v1-anrop även när metadata saknar värdelista.
 - Eneos separata testklient använder AnyIO 4.14.2 i stället för 4.14.1, som omfattas av
   GHSA-82r6-8w77-94w6, GHSA-3w57-8xmc-8v26 och GHSA-5p39-cfhj-2xmp. Dokumentationen skiljer denna
   säkerhetsuppdaterade klientprofil (även PyJWT 2.15.0) från Eneo 2.2.2:s ursprungliga låsfil.

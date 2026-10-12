@@ -149,7 +149,8 @@ def expand_token(token: str, variable: PxVariable) -> list[str]:
                     f"{token!r} stöds inte för variabeln {variable.code!r} som saknar värdelista – bara TOP(n), "
                     "koder och '*'-mönster"
                 )
-            _parse_int(args[0], token, positive=True)
+            count = _parse_int(args[0], token, positive=True)
+            return [f"TOP({count})"]
         return [token]
     codes = variable.codes()
     if token in codes:
