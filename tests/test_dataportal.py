@@ -237,7 +237,7 @@ async def test_search_datasets_builds_exact_query_and_parses_rows(router, make_c
         + ' AND (metadata.predicate.literal_s.b5d28d0a:"text/csv"'
         + ' OR related.metadata.predicate.literal_s.b5d28d0a:"text/csv")'
     )
-    first = router.requests[0]
+    first = router.requests[1]  # organisation-number URI resolution precedes the dataset page
     assert str(first.url).startswith(
         f"{STORE}/search?type=solr&query=rdfType%3Ahttp%5C%3A%5C%2F%5C%2Fwww.w3.org%5C%2Fns%5C%2Fdcat%23Dataset"
         "+AND+public%3Atrue+AND+"
@@ -245,8 +245,8 @@ async def test_search_datasets_builds_exact_query_and_parses_rows(router, make_c
     assert first.headers["accept"] == "application/json"
     assert params(first) == {"type": "solr", "query": expected, "limit": "10", "offset": "20", "sort": "score desc"}
     # Publisher names are resolved with one resource lookup (only URI publishers).
-    assert searches(router)[1] == {"type": "solr", "query": SCB_LOOKUP, "limit": "100", "offset": "0"}
-    assert len(router.requests) == 2
+    assert searches(router)[2] == {"type": "solr", "query": SCB_LOOKUP, "limit": "100", "offset": "0"}
+    assert len(router.requests) == 3
 
     assert result["solr_query"] == expected
     assert (result["total"], result["offset"], result["limit"], result["returned"]) == (57, 20, 10, 2)
@@ -315,7 +315,7 @@ async def test_search_publisher_forms_without_text(router, make_client, publishe
         result = await call(
             client, "dataportal_search_datasets", {"publisher": publisher, "resolve_publisher_names": False}
         )
-    assert len(router.requests) == 1
+    assert len(router.requests) == (1 if publisher.startswith("http") else 2)
     assert params(router.last()) == {
         "type": "solr",
         "query": f"{DATASET} AND {clause}",
@@ -509,7 +509,7 @@ async def test_publisher_name_errors(router, make_client):
         assert "Hittade ingen utgivare" in err
 
 
-async def test_publisher_facet_fallback_for_org_number(router, make_client):
+async def test_publisher_facet_resolves_org_number_before_search(router, make_client):
     variant = "https://dataportal.se/organisation/SE2021004185"
     facets = {
         "resource": {"children": []},
@@ -539,16 +539,7 @@ async def test_publisher_facet_fallback_for_org_number(router, make_client):
     async with make_client("dataportal") as client:
         result = await call(client, "dataportal_list_publisher_datasets", {"publisher": "skolverket"})
 
-    first, facet, retry = searches(router)[:3]
-    assert first == {
-        "type": "solr",
-        "query": DATASET
-        + r" AND metadata.predicate.uri.9259d4c1:(http\:\/\/dataportal.se\/organisation\/SE2021004185"
-        + r" OR http\:\/\/id.kb.se\/organisations\/SE2021004185)",
-        "limit": "25",
-        "offset": "0",
-        "sort": MODIFIED_SORT,
-    }
+    facet, search = searches(router)[:2]
     assert facet == {
         "type": "solr",
         "query": DATASET,
@@ -558,10 +549,158 @@ async def test_publisher_facet_fallback_for_org_number(router, make_client):
         "facetLimit": "1000",
         "facetMatches": ".*202100-?4185.*",
     }
-    assert retry["query"].endswith(r" OR https\:\/\/dataportal.se\/organisation\/SE2021004185)")
+    assert search["query"].endswith(r" OR https\:\/\/dataportal.se\/organisation\/SE2021004185)")
     assert result["publisher_uris"][-1] == variant and len(result["publisher_uris"]) == 3
     assert any("utgivarfacetten" in n for n in result["notes"])
     assert result["returned"] == 2 and result["datasets"][0]["publisher_name"] == "Statistiska centralbyrån"
+
+
+@pytest.mark.parametrize("tool", ["dataportal_search_datasets", "dataportal_list_publisher_datasets"])
+async def test_publisher_variants_keep_the_same_dataset_set_on_every_page(router, make_client, tool):
+    standard = "http://dataportal.se/organisation/SE2021004185"
+    variant = standard + "-custom"
+    field = "metadata.predicate.uri.9259d4c1"
+
+    def search(request: httpx2.Request) -> httpx2.Response:
+        p = params(request)
+        if "facetFields" in p:
+            assert p["query"] == DATASET  # independent of the user's text/theme and page
+            return httpx2.Response(200, json={"facetFields": [{"name": field, "values": [{"name": variant}]}]})
+        if p["query"].startswith("public:true"):
+            return httpx2.Response(200, json=EMPTY)  # optional publisher-name lookup
+        publishers = [standard, variant, standard, variant]
+        rows = [
+            child(
+                "1",
+                str(i),
+                f"https://example.org/dataset/{i}",
+                {f"https://example.org/dataset/{i}": {DCT + "title": [literal(f"Data {i}")]}},
+            )
+            for i, publisher in enumerate(publishers)
+            if esc(publisher) in p["query"]
+        ]
+        offset, limit = int(p["offset"]), int(p["limit"])
+        return httpx2.Response(
+            200, json={"results": len(rows), "resource": {"children": rows[offset : offset + limit]}}
+        )
+
+    router.add("GET", r"/store/search\?", search)
+    args = {"publisher": "skolverket", "limit": 2, "query": "data", "theme": "ENVI"}
+    async with make_client("dataportal") as client:
+        first = await call(client, tool, args)
+        second = await call(client, tool, {**args, "offset": first["next_offset"]})
+    # A fresh server must resolve the same set when the first request starts on a later page.
+    async with make_client("dataportal") as client:
+        direct = await call(client, tool, {**args, "offset": 2})
+    assert first["total"] == second["total"] == direct["total"] == 4
+    assert [row["entry_id"] for row in first["datasets"] + second["datasets"]] == ["0", "1", "2", "3"]
+    assert second["datasets"] == direct["datasets"]
+    assert first["solr_query"] == second["solr_query"] == direct["solr_query"]
+    assert first["publisher_uris"] == second["publisher_uris"] == direct["publisher_uris"]
+    assert second["truncated"] is False
+
+
+async def test_failed_publisher_resolution_does_not_silently_narrow_the_search(router, make_client):
+    solr(
+        router,
+        (lambda p: "facetFields" in p, httpx2.Response(503, json={"error": "Unavailable"})),
+        (lambda p: True, load_fixture("dataportal_search_datasets.json")),
+    )
+    async with make_client("dataportal") as client:
+        error = await call_error(client, "dataportal_search_datasets", {"publisher": "skolverket", "offset": 20})
+        exact = await call(
+            client,
+            "dataportal_search_datasets",
+            {"publisher": "http://dataportal.se/organisation/SE2021004185", "resolve_publisher_names": False},
+        )
+    assert "HTTP 503" in error and "exakt utgivar-URI" in error
+    assert len(searches(router)) == 2 and "facetFields" in searches(router)[0]
+    assert exact["returned"] == 2
+
+
+@pytest.mark.parametrize("metadata_location", ["inline", "lookup"])
+@pytest.mark.parametrize("allow_personal_data", [False, True])
+async def test_search_hides_private_mailto_publishers_but_keeps_organizational_contacts(
+    router, make_client, metadata_location, allow_personal_data
+):
+    private = "mailto:private.person@example.org"
+    organization = "mailto:kontakt@example.org"
+    public_identifier = "https://example.org/private-publisher"
+    agents = {
+        private: {DCT + "type": [uri(PRIVATE)], FOAF_NAME: [literal("Private Person")]},
+        public_identifier: {DCT + "type": [uri(PRIVATE)], FOAF_NAME: [literal("Another Person")]},
+        organization: {
+            DCT + "type": [uri("http://purl.org/adms/publishertype/Company")],
+            FOAF_NAME: [literal("Kontaktcenter")],
+        },
+    }
+    datasets = []
+    for i, publisher in enumerate((private, organization, public_identifier)):
+        resource = f"https://example.org/dataset/{i}"
+        graph = {resource: {DCT + "title": [literal("Data")], DCT + "publisher": [uri(publisher)]}}
+        if metadata_location == "inline":
+            graph[publisher] = agents[publisher]
+        datasets.append(child("1", str(i), resource, graph))
+    solr(
+        router,
+        (lambda p: p["query"].startswith(DATASET), results(*datasets)),
+        (
+            lambda p: True,
+            results(
+                *(child("2", str(i), resource, {resource: node}) for i, (resource, node) in enumerate(agents.items()))
+            ),
+        ),
+    )
+    args = {"resolve_publisher_names": metadata_location == "lookup"}
+    async with make_client("dataportal", allow_personal_data=allow_personal_data) as client:
+        default = await call(client, "dataportal_search_datasets", args)
+        if allow_personal_data:
+            opted = await call(client, "dataportal_search_datasets", {**args, "include_personal_data": True})
+            assert opted["datasets"][0]["publisher_uri"] == private
+    text = json.dumps(default, ensure_ascii=False)
+    assert "private.person" not in text and "Private Person" not in text and "Another Person" not in text
+    assert default["datasets"][0]["publisher_name_redacted"] is True
+    assert default["datasets"][1]["publisher_uri"] == organization
+    assert default["datasets"][2]["publisher_uri"] == public_identifier
+    if metadata_location == "inline":
+        assert all(p["query"].startswith(DATASET) for p in searches(router))
+
+
+@pytest.mark.parametrize("private", [False, True])
+@pytest.mark.parametrize("allow_personal_data", [False, True])
+async def test_publisher_name_resolution_redacts_personal_filter_diagnostics(
+    router, make_client, private, allow_personal_data
+):
+    publisher = "mailto:publisher@example.org"
+    kind = PRIVATE if private else "http://purl.org/adms/publishertype/Company"
+    agent = {publisher: {DCT + "type": [uri(kind)], FOAF_NAME: [literal("Exempel")]}}
+    dataset = {"https://example.org/data": {DCT + "title": [literal("Data")], DCT + "publisher": [uri(publisher)]}}
+    solr(
+        router,
+        (lambda p: "title:Exempel" in p["query"], results(child("1", "1", publisher, agent))),
+        (lambda p: p["query"].startswith(DATASET), results(child("1", "2", "https://example.org/data", dataset))),
+    )
+    async with make_client("dataportal", allow_personal_data=allow_personal_data) as client:
+        default = await call(client, "dataportal_search_datasets", {"publisher": "Exempel"})
+        if allow_personal_data:
+            opted = await call(
+                client,
+                "dataportal_search_datasets",
+                {"publisher": "Exempel", "include_personal_data": True},
+            )
+            assert opted["publisher_uris"] == [publisher]
+            assert esc(publisher) in opted["solr_query"]
+    # Privacy only changes the output diagnostics, never the actual selection sent upstream.
+    sent = [p for p in searches(router) if p["query"].startswith(DATASET)]
+    assert sent and all(esc(publisher) in p["query"] for p in sent)
+    assert default["returned"] == 1
+    if private:
+        assert "publisher@example.org" not in json.dumps(default, ensure_ascii=False)
+        assert "solr_query" not in default and not default.get("publisher_uris")
+        assert any("solr_query" in note and "utelämnades" in note for note in default["notes"])
+    else:
+        assert default["publisher_uris"] == [publisher]
+        assert esc(publisher) in default["solr_query"]
 
 
 async def test_search_validation_errors(router, make_client):
@@ -977,6 +1116,80 @@ async def test_get_dataset_personal_data_off_notes_do_not_suggest_opt_in(router,
     redaction_notes = [n for n in detail["notes"] if "personuppgift" in n]
     assert len(redaction_notes) == 2
     assert all("FUZZY_MCP_PERSONAL_DATA=off" in n and "include_personal_data" not in n for n in redaction_notes)
+
+
+@pytest.mark.parametrize("allow_personal_data", [False, True])
+async def test_get_dataset_redacts_personal_mailto_subjects_and_references(router, make_client, allow_personal_data):
+    graph = _personal_graph()
+    personal = "mailto:anna.andersson@example.org"
+    organizational = "mailto:kontakt@example.org"
+    graph[personal] = graph.pop(SKARA + "3")
+    graph[organizational] = {
+        RDF_TYPE: [uri(VCARD + "Organization")],
+        VCARD + "fn": [literal("Kontaktcenter")],
+        VCARD + "hasEmail": [uri(organizational)],
+    }
+    graph[SKARA + "9"]["http://www.w3.org/ns/dcat#contactPoint"] = [uri(personal), uri(organizational)]
+    skara_routes(router, graph)
+    async with make_client("dataportal", allow_personal_data=allow_personal_data) as client:
+        default = await call(client, "dataportal_get_dataset", {"dataset": "83_9", "include_raw": True})
+        if allow_personal_data:
+            opted = await call(
+                client,
+                "dataportal_get_dataset",
+                {"dataset": "83_9", "include_raw": True, "include_personal_data": True},
+            )
+            assert personal in opted["raw"]
+            assert opted["contact_points"][0]["email"] == "anna.andersson@example.org"
+    text = json.dumps(default, ensure_ascii=False)
+    assert "anna.andersson" not in text and "Anna Andersson" not in text
+    assert default["contact_points"][0] == {"redacted": True}
+    assert default["contact_points"][1]["email"] == "kontakt@example.org"
+    assert organizational in default["raw"]
+    assert default["raw"][SKARA + "9"]["http://www.w3.org/ns/dcat#contactPoint"] == [uri(organizational)]
+
+
+@pytest.mark.parametrize(
+    "publisher_uri", ["http://dataportal.se/organisation/SE2120001702", "mailto:private@example.org"]
+)
+async def test_get_dataset_checks_all_publisher_types_for_personal_data(router, make_client, publisher_uri):
+    graph = _personal_graph()
+    agent = graph.pop("http://dataportal.se/organisation/SE2120001702")
+    graph[publisher_uri] = agent
+    graph[SKARA + "9"][DCT + "publisher"] = [uri(publisher_uri)]
+    agent[DCT + "type"].insert(0, uri("http://purl.org/adms/publishertype/Company"))
+    skara_routes(router, graph)
+    async with make_client("dataportal", allow_personal_data=False) as client:
+        default = await call(client, "dataportal_get_dataset", {"dataset": "83_9", "include_raw": True})
+    assert "Per Persson" not in json.dumps(default, ensure_ascii=False)
+    assert default["publisher"]["name_redacted"] is True
+    if publisher_uri.startswith("mailto:"):
+        assert publisher_uri not in json.dumps(default, ensure_ascii=False)
+    async with make_client("dataportal") as client:
+        opted = await call(client, "dataportal_get_dataset", {"dataset": "83_9", "include_personal_data": True})
+    assert opted["publisher"]["name"] == "Per Persson"
+    assert opted["publisher"]["uri"] == publisher_uri
+
+
+@pytest.mark.parametrize("allow_personal_data", [False, True])
+async def test_get_dataset_redacts_mailto_publisher_identified_by_separate_lookup(
+    router, make_client, allow_personal_data
+):
+    private = "mailto:private@example.org"
+    graph = load_fixture("dataportal_metadata_recursive.json")
+    graph[SKARA + "9"][DCT + "publisher"] = [uri(private)]
+    graph[private] = {}  # present in recursive metadata, but type/name only available from agent lookup
+    skara_routes(router, graph)
+    agent = {private: {DCT + "type": [uri(PRIVATE)], FOAF_NAME: [literal("Private Person")]}}
+    solr(router, (lambda p: True, results(child("2", "1", private, agent))))
+    async with make_client("dataportal", allow_personal_data=allow_personal_data) as client:
+        default = await call(client, "dataportal_get_dataset", {"dataset": "83_9", "include_raw": True})
+        if allow_personal_data:
+            opted = await call(client, "dataportal_get_dataset", {"dataset": "83_9", "include_personal_data": True})
+            assert opted["publisher"] == {"uri": private, "name": "Private Person"}
+    assert default["publisher"]["name_redacted"] is True
+    text = json.dumps(default, ensure_ascii=False)
+    assert "private@example.org" not in text and "Private Person" not in text
 
 
 def _big_graph(count: int) -> dict[str, Any]:

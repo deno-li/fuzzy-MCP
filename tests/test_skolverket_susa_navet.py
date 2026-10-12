@@ -4,6 +4,7 @@
 
 import copy
 import json
+import re
 from typing import Any
 
 import httpx2
@@ -434,6 +435,67 @@ async def test_emails_returned_by_default(router, make_client):
     assert info["extensions"][1]["contact"] == "mailto:studievagledning@uu.se" and info["raw"] == fixtures["info"]
     assert provider["email_addresses"] == ["info@kth.se"] and provider["raw"] == fixtures["provider"]
     assert all("notes" not in result for result in (event, info, provider))
+
+
+@pytest.mark.parametrize(
+    ("endpoint", "fixture", "result_key", "search_tool", "detail_tool", "id_argument"),
+    [
+        (
+            "educationEvents",
+            "susa_navet_event.json",
+            "events",
+            "skolverket_susa_search_education_events",
+            "skolverket_susa_get_education_event",
+            "event_id",
+        ),
+        (
+            "educationInfos",
+            "susa_navet_info.json",
+            "infos",
+            "skolverket_susa_search_education_infos",
+            "skolverket_susa_get_education_info",
+            "education_id",
+        ),
+        (
+            "educationProviders",
+            "susa_navet_provider.json",
+            "providers",
+            "skolverket_susa_search_education_providers",
+            "skolverket_susa_get_education_provider",
+            "provider_id",
+        ),
+    ],
+)
+async def test_search_and_detail_urls_follow_personal_data_policy(
+    router, make_client, endpoint, fixture, result_key, search_tool, detail_tool, id_argument
+):
+    urls = ["mailto:named.person@example.se", "named.person@example.se", "https://www.example.se/program"]
+    rows = []
+    for index, url in enumerate(urls):
+        row = load_fixture(fixture)
+        row["id"] = row["content"]["identifier"] = f"{row['id']}.url{index}"
+        row["content"]["url"] = {"urls": [{"lang": "swe", "value": url}]}
+        rows.append(row)
+        router.add("GET", re.escape(f"{BASE_PATH}/{endpoint}/{row['id']}") + "$", row)
+    router.add("GET", rf"/{endpoint}\?", {endpoint: rows, "page": {"totalElements": 3, "totalPages": 1}})
+
+    for allowed in (False, True):
+        async with make_client("skolverket.susa", allow_personal_data=allowed) as client:
+            result = await call(client, search_tool, {"limit": 3})
+            details = [await call(client, detail_tool, {id_argument: row["id"], "include_raw": True}) for row in rows]
+        assert [row["id"] for row in result[result_key]] == [row["id"] for row in rows]
+        assert result["returned"] == result["matched"] == result["total_upstream"] == 3
+        assert result["complete_scan"] is True and result["truncated"] is False
+        expected_urls = [urls[0], "https://named.person@example.se", urls[2]] if allowed else [None, None, urls[2]]
+        assert [row.get("url") for row in result[result_key]] == expected_urls
+        assert [detail.get("url") for detail in details] == expected_urls
+        if allowed:
+            assert "notes" not in result
+            assert [detail["raw"] for detail in details] == rows
+        else:
+            assert result["notes"] == [EMAIL_WITHHELD_NOTE]
+            assert "named.person@example.se" not in json.dumps([result, *details])
+            assert all(detail["notes"] == [EMAIL_WITHHELD_NOTE] for detail in details[:2])
 
 
 async def test_search_education_infos(router, make_client):

@@ -654,16 +654,30 @@ def reachable_bnodes(graph: Graph, start: list[str]) -> set[str]:
     return seen
 
 
-def redact_graph(graph: Graph) -> Graph:
+def redact_graph(graph: Graph, *, personal_subjects: set[str] | None = None) -> Graph:
     """Raw graph without personuppgifter: contact persons (vcard:Individual) and private-individual
-    publishers keep only their rdf:type/dcterms:type; blank nodes hanging off them are dropped."""
-    personal = [s for s, node in graph.items() if is_individual_contact(node) or is_private_agent(node)]
+    publishers keep only their rdf:type/dcterms:type. Their blank nodes and personal mailto identifiers
+    are dropped along with incoming references to the dropped subjects."""
+    personal = {s for s, node in graph.items() if is_individual_contact(node) or is_private_agent(node)}
+    personal.update(personal_subjects or ())
     if not personal:
         return graph
-    dropped = reachable_bnodes(graph, personal) - set(personal)
+    dropped = reachable_bnodes(graph, list(personal)) - personal
+    # A contact's identifier can itself be its email address. Removing its properties alone
+    # leaves that address both as a subject and in incoming references from the dataset.
+    dropped.update(s for s in personal if s.lower().startswith("mailto:"))
     kept = (RDF_TYPE, DCT + "type")
     return {
-        subject: ({p: v for p, v in node.items() if p in kept} if subject in personal else node)
+        subject: {
+            predicate: safe
+            for predicate, values in node.items()
+            if subject not in personal or predicate in kept
+            if (
+                safe := [
+                    obj for obj in values if obj.get("type") not in ("uri", "bnode") or str(obj["value"]) not in dropped
+                ]
+            )
+        }
         for subject, node in graph.items()
         if subject not in dropped
     }
@@ -728,7 +742,9 @@ class DatasetSearchResult(BaseModel):
     publisher_uris: list[str] = Field(default_factory=list, description="Utgivar-URI:er som filtret matchade")
     theme: str | None = None
     media_types: list[str] = Field(default_factory=list)
-    solr_query: str
+    solr_query: str | None = Field(
+        default=None, description="Den skickade sökfrågan; utelämnas om den röjer en maskerad personlig utgivar-URI"
+    )
     sort: str
     datasets: list[DatasetSummary] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)
@@ -850,6 +866,7 @@ class PublisherFilter:
     orgnr: str | None = None
     names: list[str] = field(default_factory=list)
     hidden_private: int = 0  # matched private individuals whose names are not shown
+    personal_uris: list[str] = field(default_factory=list)  # known private mailto identifiers, never output by default
 
 
 @dataclass(frozen=True)
@@ -978,10 +995,15 @@ class DataportalService:
         for uri, info in chosen.items():
             self._agents[uri] = (now, info)
         hidden = sum(1 for i in chosen.values() if i.private and not include_personal_data)
-        return PublisherFilter(uris=list(chosen), names=shown(list(chosen.values())), hidden_private=hidden)
+        return PublisherFilter(
+            uris=list(chosen),
+            names=shown(list(chosen.values())),
+            hidden_private=hidden,
+            personal_uris=[uri for uri, info in chosen.items() if info.private and uri.lower().startswith("mailto:")],
+        )
 
     async def publisher_uris_from_facet(self, orgnr: str) -> list[str]:
-        """Runtime fallback: publisher URIs in the facet that contain the organisation number
+        """Publisher URIs in the facet that contain the organisation number
         (covers suffixed URIs such as ``…/SE<orgnr>-xyz`` and other URI patterns)."""
         pattern = f"{orgnr[:6]}-?{orgnr[6:]}"
         data = await self.search(
@@ -1016,6 +1038,10 @@ class DataportalService:
             obj = publisher[0]
             if obj.get("type") == "uri":
                 publisher_uri = str(obj["value"])
+                if is_private_agent(graph.get(publisher_uri)) and not include_personal_data:
+                    redacted = True
+                    if publisher_uri.lower().startswith("mailto:"):
+                        publisher_uri = None
             elif obj.get("type") == "bnode":
                 agent = graph.get(str(obj["value"]))
                 if is_private_agent(agent) and not include_personal_data:
@@ -1064,6 +1090,24 @@ class DataportalService:
         pub = (
             await self.resolve_publisher(publisher, include_personal_data) if publisher and publisher.strip() else None
         )
+        if pub and pub.orgnr:
+            # Resolve the same URI union before every page, including a direct offset. Facet
+            # requests share the HTTP client's bounded TTL cache and do not depend on filters.
+            try:
+                resolved = await self.publisher_uris_from_facet(pub.orgnr)
+            except UpstreamError as exc:
+                raise UpstreamError(
+                    SOURCE,
+                    "Utgivarens URI:er kunde inte slås upp. Försök igen eller ange en exakt utgivar-URI "
+                    "som publisher i stället för organisationsnummer/genväg.",
+                    status=exc.status,
+                    url=exc.url,
+                    detail=exc.message,
+                ) from exc
+            extra = [u for u in resolved if u not in pub.uris]
+            if extra:
+                pub.uris.extend(extra)
+                notes.append("Utgivar-URI:er hittades via utgivarfacetten: " + ", ".join(extra))
         has_text = bool(tokens)
         if sort == "relevance" and has_text:
             sort_param = RELEVANCE_SORT
@@ -1087,18 +1131,14 @@ class DataportalService:
 
         query = dataset_query()
         data = await self.search(query, limit=limit, offset=offset, sort=sort_param)
-        if pub and pub.orgnr and not children_of(data) and offset == 0:
-            extra = [u for u in await self.publisher_uris_from_facet(pub.orgnr) if u not in pub.uris]
-            if extra:
-                pub.uris.extend(extra)
-                notes.append("Utgivar-URI:er hittades via utgivarfacetten: " + ", ".join(extra))
-                query = dataset_query()
-                data = await self.search(query, limit=limit, offset=offset, sort=sort_param)
-
         # Never more rows than asked for, even if the server ignores the limit (output size).
         rows = [self.summarize(child, include_personal_data) for child in children_of(data)[:limit]]
         if resolve_names:
-            wanted = [r.publisher_uri for r in rows if r.publisher_uri and not r.publisher_name]
+            wanted = [
+                r.publisher_uri
+                for r in rows
+                if r.publisher_uri and not r.publisher_name and not r.publisher_name_redacted
+            ]
             if wanted:
                 try:
                     infos = await self.publisher_info(wanted)
@@ -1107,10 +1147,12 @@ class DataportalService:
                     notes.append(f"Utgivarnamn kunde inte slås upp: {exc.message}")
                 for row in rows:
                     info = infos.get(row.publisher_uri or "")
-                    if info is None or row.publisher_name:
+                    if info is None or row.publisher_name or row.publisher_name_redacted:
                         continue
                     if info.private and not include_personal_data:
                         row.publisher_name_redacted = True
+                        if (row.publisher_uri or "").lower().startswith("mailto:"):
+                            row.publisher_uri = None
                     else:
                         row.publisher_name = info.name
         if any(r.publisher_name_redacted for r in rows):
@@ -1130,6 +1172,12 @@ class DataportalService:
             notes.append(
                 f"{pub.hidden_private} matchande utgivare är privatpersoner; namnen visas inte (personuppgift)."
             )
+        hidden_uris = set(pub.personal_uris) if pub and not include_personal_data else set()
+        if hidden_uris:
+            notes.append(
+                "Sökfrågan (solr_query) och personliga e-postadresser i publisher_uris utelämnades "
+                "eftersom de röjer personuppgifter. Sökningen använde ändå alla matchande utgivar-URI:er."
+            )
         return DatasetSearchResult(
             total=total,
             offset=offset,
@@ -1139,10 +1187,10 @@ class DataportalService:
             next_offset=offset + len(rows) if more and rows else None,
             query=text.strip() if text and text.strip() else None,
             publisher=publisher.strip() if publisher and publisher.strip() else None,
-            publisher_uris=pub.uris if pub else [],
+            publisher_uris=[uri for uri in pub.uris if uri not in hidden_uris] if pub else [],
             theme=theme_code,
             media_types=list(media_types or []),
-            solr_query=query,
+            solr_query=None if hidden_uris else query,
             sort=sort_param,
             datasets=rows,
             notes=notes,
@@ -1306,6 +1354,7 @@ class DataportalService:
         data_services = [self._data_service(graph, uri, prefer) for uri in dict.fromkeys(service_uris) if uri in graph]
 
         publisher = self._publisher(graph, root, prefer, include_personal_data)
+        personal_subjects: set[str] = set()
         if (
             publisher
             and publisher.uri
@@ -1316,7 +1365,10 @@ class DataportalService:
             with contextlib.suppress(UpstreamError):  # the name is a nicety; never fail the tool for it
                 info = (await self.publisher_info([publisher.uri])).get(publisher.uri) or AgentInfo()
                 if info.private and not include_personal_data:
+                    personal_subjects.add(publisher.uri)
                     publisher.name_redacted = True
+                    if publisher.uri.lower().startswith("mailto:"):
+                        publisher.uri = None
                 else:
                     publisher.name = info.name
         allowed = self.services.settings.allow_personal_data
@@ -1387,7 +1439,11 @@ class DataportalService:
             notes=notes,
         )
         if include_raw:
-            self._attach_raw(detail, graph if include_personal_data else redact_graph(graph), root_uri)
+            self._attach_raw(
+                detail,
+                graph if include_personal_data else redact_graph(graph, personal_subjects=personal_subjects),
+                root_uri,
+            )
         return detail
 
     @staticmethod
@@ -1463,9 +1519,9 @@ class DataportalService:
             return Publisher(name=value)
         node = graph.get(value)
         kind = first_value(node, DCT + "type")
-        private = is_private_individual(kind) and not include_personal_data
+        private = is_private_agent(node) and not include_personal_data
         return Publisher(
-            uri=None if value.startswith("_:") else value,
+            uri=None if value.startswith("_:") or (private and value.lower().startswith("mailto:")) else value,
             name=None if private else literal(node, FOAF + "name", prefer),
             type=code_of(kind, PUBLISHER_TYPE_PREFIX) if kind else None,
             name_redacted=True if private else None,
