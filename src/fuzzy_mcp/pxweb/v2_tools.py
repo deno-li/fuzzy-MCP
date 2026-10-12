@@ -20,7 +20,7 @@ from mcp.server.mcpserver import MCPServer
 from mcp.types import CallToolResult
 from pydantic import BaseModel, Field
 
-from ..core import READ_ONLY_OPEN, Services, clamp, personal_data, structured, tool_errors
+from ..core import READ_ONLY_OPEN, Services, clamp, personal_data, preserve_output, structured, tool_errors
 from ..errors import InvalidInputError, UpstreamError
 from .jsonstat import jsonstat_to_table
 from .models import DataResult, TableMetadataView, to_view
@@ -600,6 +600,7 @@ def register_pxweb_v2_source(server: MCPServer[Any], services: Services, spec: P
         "validera urvalet.",
         annotations=READ_ONLY_OPEN,
     )
+    @preserve_output
     @tool_errors
     async def build_query(
         table_id: Annotated[str, table_id_field],

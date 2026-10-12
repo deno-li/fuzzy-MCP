@@ -95,7 +95,37 @@ async def test_lifecycle_headers_are_reported():
         res = await client.get_json("skolverket", "https://example.se/v1/x")
     assert any(n.startswith("Deprecation") for n in res.notices)
     assert any(n.startswith("Sunset") for n in res.notices)
-    assert len(client.recent_notices) == 2
+    assert list(client.recent_notices) == [
+        "skolverket: Deprecation: 2026-01-01T00:00:00Z",
+        "skolverket: Sunset: 2027-06-30T00:00:00Z",
+    ]
+
+
+@pytest.mark.parametrize(
+    "headers",
+    [
+        {"Deprecation": "private-question", "Sunset": "private-question"},
+        {"Deprecation": "@1767225600 private-question", "Sunset": "Wed, 30 Jun 2027 00:00:00 GMT private-question"},
+        {"Deprecation": "@999999999999999", "Sunset": "Wed, 99 Jun 2027 00:00:00 GMT"},
+        {
+            "Warning": '299 example.se "private-question"',
+            "Link": '<https://example.se/private-question>; rel="deprecation"',
+        },
+    ],
+)
+async def test_shared_notices_do_not_copy_unvalidated_headers_or_request_urls(headers):
+    def handler(request):
+        return httpx2.Response(200, json={}, headers=headers)
+
+    async with _client(handler) as client:
+        res = await client.get_json("test", "https://example.se/private-question", params={"q": "private-question"})
+        cached = await client.get_json("test", "https://example.se/private-question", params={"q": "private-question"})
+    assert res.notices and cached.notices == res.notices  # originating callers keep their detailed diagnostics
+    assert cached.from_cache
+    shared = list(client.recent_notices)
+    assert len(shared) == sum(name in headers for name in ("Deprecation", "Sunset"))
+    assert all(notice.endswith("mottagen, datum kunde inte valideras") for notice in shared)
+    assert "private-question" not in str(shared) and "https://" not in str(shared)
 
 
 async def test_non_json_content_is_returned_as_text():

@@ -148,7 +148,8 @@ def register(server: MCPServer[Any], services: Services) -> None:
 
     @server.tool(name="fuzzy_api_notices", title="API-livscykelnotiser", annotations=READ_ONLY_LOCAL)
     async def fuzzy_api_notices() -> dict[str, Any]:
-        """Visa Deprecation/Sunset-varningar som API:erna skickat under sessionen (DIGG:s REST API-profil).
+        """Visa gemensamma Deprecation/Sunset-notiser från serverns drifttid (DIGG:s REST API-profil).
+        Visar källa och validerade datum, utan klienternas sökfrågor eller API:ernas fritext.
         Används för att upptäcka när en API-version håller på att fasas ut."""
         notices = list(services.http.recent_notices) if services._http is not None else []
         return {"notices": notices, "count": len(notices)}
