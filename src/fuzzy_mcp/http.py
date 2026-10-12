@@ -10,6 +10,7 @@ only within the agencies' hosts and capture of API lifecycle headers
 import hashlib
 import html
 import json
+import math
 import re
 import time
 from collections import OrderedDict, deque
@@ -29,6 +30,7 @@ RETRY_STATUSES = frozenset({429, 502, 503, 504})
 LIFECYCLE_HEADERS = ("deprecation", "sunset", "warning")
 MAX_RETRY_AFTER_SECONDS = 30.0
 MAX_REDIRECTS = 5
+MAX_SHARED_NOTICES = 50
 
 QueryParams = Mapping[str, str | int | float | bool | list[str] | None]
 
@@ -152,9 +154,12 @@ def _retry_after_seconds(response: httpx2.Response) -> float | None:
     if not raw:
         return None
     try:
-        return min(float(raw), MAX_RETRY_AFTER_SECONDS)
+        seconds = float(raw)
     except ValueError:
         pass
+    else:
+        # "nan"/"inf" parse as floats but are no delay; anyio.sleep(nan) raises.
+        return max(0.0, min(seconds, MAX_RETRY_AFTER_SECONDS)) if math.isfinite(seconds) else None
     try:
         when = parsedate_to_datetime(raw)
     except (TypeError, ValueError):
@@ -260,7 +265,8 @@ class HttpClient:
         )
         self._limiters = {host: SlidingWindowLimiter(limit) for host, limit in (rate_limits or {}).items()}
         self._sleep = sleep
-        self.recent_notices: deque[str] = deque(maxlen=50)
+        # Unique shared notices, most recent last: repeated calls to one API must not push out other sources' notices.
+        self.recent_notices: OrderedDict[str, None] = OrderedDict()
 
     @property
     def cache(self) -> TTLCache:
@@ -337,7 +343,11 @@ class HttpClient:
         response = await self._send_with_retries(source, method, url, cleaned, json_body, request_headers)
         notices = lifecycle_notices(response)
         for notice in _shared_lifecycle_notices(response):
-            self.recent_notices.append(f"{source}: {notice}")
+            entry = f"{source}: {notice}"
+            self.recent_notices[entry] = None
+            self.recent_notices.move_to_end(entry)
+            while len(self.recent_notices) > MAX_SHARED_NOTICES:
+                self.recent_notices.popitem(last=False)
 
         content_type = response.headers.get("content-type", "")
         data: Any
@@ -413,8 +423,9 @@ class HttpClient:
                     url=url,
                     detail=str(exc) or None,
                 ) from exc
-            except httpx2.RequestError as exc:
-                # TooManyRedirects, DecodingError (corrupt gzip) and the like: not worth retrying.
+            except (httpx2.RequestError, httpx2.InvalidURL) as exc:
+                # TooManyRedirects, DecodingError (corrupt gzip), a malformed Location header and the like: not worth
+                # retrying.
                 raise UpstreamError(
                     source,
                     f"Anropet misslyckades ({type(exc).__name__})",

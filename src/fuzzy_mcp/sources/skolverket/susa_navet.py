@@ -20,9 +20,9 @@ syncs see deletions. Rows that a client-side filter cannot test (missing locatio
 ``{"strings": [{"lang", "value", "content"}]}`` where ``content == "HTML"`` (3.0.4+) marks HTML in ``value``; coded
 values are ``{"type", "code"}`` objects.
 
-E-mail addresses (``application.email``, ``emailAddresses``, mailto: links, e-mail keys in extensions) can be a named
-person's address: with ``FUZZY_MCP_PERSONAL_DATA=off`` search and by-id tools withhold them, also in ``raw``, and say
-so in ``notes``. Phone numbers and web addresses are always returned.
+E-mail addresses (``application.email``, ``emailAddresses``, mailto: links, e-mail keys in extensions, addresses in
+free text) can be a named person's address: with ``FUZZY_MCP_PERSONAL_DATA=off`` search and by-id tools withhold them,
+also in ``raw``, and say so in ``notes``. Phone numbers and web addresses are always returned.
 """
 
 import html
@@ -73,6 +73,9 @@ EMAIL_WITHHELD_NOTE = (
 )
 # A bare e-mail address or a mailto: link (no ':' or '/' before '@', so URLs with user info do not match).
 _EMAIL_VALUE = re.compile(r"(?i)(?:mailto:\S*|[^@\s/:<>]+@[^@\s/<>]+\.[^@\s/<>]+)")
+# An e-mail address or mailto: link inside free text or HTML (descriptions, application instructions).
+_EMBEDDED_EMAIL = re.compile(r"(?i)mailto:[^\s\"'<>]*|[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+EMAIL_PLACEHOLDER = "[e-post utelämnad]"
 # Ids are opaque (e.g. e.uoh.kth.dd1420.60090.20251, p.sv.68897220). The first character must be a letter or digit
 # so that "." and ".." – dot segments that the HTTP client normalises away, which changes the request path – can never
 # be sent; path/query separators and whitespace are rejected too. Everything else is percent-encoded.
@@ -1116,21 +1119,23 @@ def is_email_value(value: Any) -> bool:
 
 
 def contains_email(value: Any) -> bool:
-    """True when the record holds an e-mail address (under an e-mail key or as a bare/mailto value)."""
+    """True when the record holds an e-mail address (under an e-mail key, as a bare/mailto value or in free text)."""
     if isinstance(value, dict):
         return any((is_email_key(k) and v not in (None, "", [], {})) or contains_email(v) for k, v in value.items())
     if isinstance(value, list):
         return any(contains_email(v) for v in value)
-    return is_email_value(value)
+    return is_email_value(value) or (isinstance(value, str) and _EMBEDDED_EMAIL.search(value) is not None)
 
 
 def without_emails(value: Any) -> Any:
-    """Deep copy without e-mail keys and e-mail values (bare addresses, mailto: links), wherever they occur.
-    Never mutates the (cached) input."""
+    """Deep copy without e-mail keys and e-mail values (bare addresses, mailto: links), wherever they occur; addresses
+    inside free text and HTML are replaced by a placeholder. Never mutates the (cached) input."""
     if isinstance(value, dict):
         return {k: without_emails(v) for k, v in value.items() if not (is_email_key(k) or is_email_value(v))}
     if isinstance(value, list):
         return [without_emails(v) for v in value if not is_email_value(v)]
+    if isinstance(value, str):
+        return _EMBEDDED_EMAIL.sub(EMAIL_PLACEHOLDER, value)
     return value
 
 

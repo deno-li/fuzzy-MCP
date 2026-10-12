@@ -24,7 +24,8 @@ egress-blocked during research: shapes come from the EntryStore source and commu
 
 Privacy: names and e-mail addresses of contact persons (``vcard:Individual``) and names of
 publishers of type ``PrivateIndividual(s)`` are personuppgifter. They are left out of the output and
-redacted from ``raw`` unless the caller opts in with ``include_personal_data``.
+redacted from ``raw`` unless the caller opts in with ``include_personal_data``. A ``mailto:`` identifier
+that no metadata classifies is treated the same way (fail closed).
 """
 
 import contextlib
@@ -640,6 +641,19 @@ def is_individual_contact(node: dict[str, list[dict[str, Any]]] | None) -> bool:
     return VCARD_INDIVIDUAL in all_values(node, RDF_TYPE)
 
 
+def is_mailto(uri: str | None) -> bool:
+    return bool(uri) and uri.lower().startswith("mailto:")
+
+
+def unclassified_mailto_note(count: int, allow_personal_data: bool) -> str:
+    """Note for mailto: identifiers left out because no metadata showed whether they belong to a person."""
+    text = (
+        f"{count} utgivare eller kontaktpunkt(er) anges bara med en e-postadress som inte kunde klassificeras; "
+        "adressen visas inte eftersom den kan vara en personuppgift."
+    )
+    return text + (" include_personal_data=true visar den." if allow_personal_data else f" {PERSONAL_DATA_OFF_NOTE}")
+
+
 def reachable_bnodes(graph: Graph, start: list[str]) -> set[str]:
     seen: set[str] = set()
     stack = list(start)
@@ -1130,10 +1144,17 @@ class DataportalService:
             return query
 
         query = dataset_query()
-        data = await self.search(query, limit=limit, offset=offset, sort=sort_param)
-        # Never more rows than asked for, even if the server ignores the limit (output size).
-        rows = [self.summarize(child, include_personal_data) for child in children_of(data)[:limit]]
         hidden_uris = set(pub.personal_uris) if pub and not include_personal_data else set()
+        try:
+            data = await self.search(query, limit=limit, offset=offset, sort=sort_param)
+        except UpstreamError as exc:
+            if not hidden_uris:
+                raise
+            # The request URL (and an error body echoing it) holds a private publisher's e-mail address.
+            raise UpstreamError(SOURCE, exc.message, status=exc.status) from None
+        # Never more rows than asked for, even if the server ignores the limit (output size).
+        hits = children_of(data)[:limit]
+        rows = [self.summarize(child, include_personal_data) for child in hits]
         # Name-filter resolution already classified these identifiers. Apply that knowledge even
         # when the caller disables the optional publisher-name enrichment below.
         for row in rows:
@@ -1141,28 +1162,54 @@ class DataportalService:
                 row.publisher_uri = None
                 row.publisher_name = None
                 row.publisher_name_redacted = True
-        if resolve_names:
-            wanted = [
-                r.publisher_uri
-                for r in rows
-                if r.publisher_uri and not r.publisher_name and not r.publisher_name_redacted
-            ]
-            if wanted:
-                try:
-                    infos = await self.publisher_info(wanted)
-                except UpstreamError as exc:
-                    infos = {}
-                    notes.append(f"Utgivarnamn kunde inte slås upp: {exc.message}")
-                for row in rows:
-                    info = infos.get(row.publisher_uri or "")
-                    if info is None or row.publisher_name or row.publisher_name_redacted:
-                        continue
-                    if info.private and not include_personal_data:
-                        row.publisher_name_redacted = True
-                        if (row.publisher_uri or "").lower().startswith("mailto:"):
-                            row.publisher_uri = None
-                    else:
-                        row.publisher_name = info.name
+        # Search hits rarely include the publisher's agent, so a mailto: identifier is usually unclassified here. It
+        # may be a private individual's address: look it up even without name enrichment and show it only when the
+        # agent is known not to be private (fail closed). Identifiers from the caller's own filter are known to them;
+        # an agent node within the hit was already classified by summarize().
+        known = set(pub.uris) - hidden_uris if pub else set()
+        known.update(
+            row.publisher_uri
+            for row, child in zip(rows, hits, strict=True)
+            if row.publisher_uri and as_graph(child.get("metadata")).get(row.publisher_uri)
+        )
+        unclassified = {
+            r.publisher_uri
+            for r in rows
+            if not include_personal_data
+            and is_mailto(r.publisher_uri)
+            and not r.publisher_name_redacted
+            and r.publisher_uri not in known
+        }
+        wanted = [
+            r.publisher_uri
+            for r in rows
+            if r.publisher_uri
+            and not r.publisher_name
+            and not r.publisher_name_redacted
+            and (resolve_names or r.publisher_uri in unclassified)
+        ]
+        infos: dict[str, AgentInfo] = {}
+        if wanted:
+            try:
+                infos = await self.publisher_info(wanted)
+            except UpstreamError as exc:
+                notes.append(f"Utgivarnamn kunde inte slås upp: {exc.message}")
+        hidden_unclassified = 0
+        for row in rows:
+            if not row.publisher_uri or row.publisher_name or row.publisher_name_redacted:
+                continue
+            info = infos.get(row.publisher_uri)
+            if info is not None and info.private and not include_personal_data:
+                row.publisher_name_redacted = True
+                if is_mailto(row.publisher_uri):
+                    row.publisher_uri = None
+            elif row.publisher_uri in unclassified and not (info and info.name):
+                row.publisher_uri = None
+                hidden_unclassified += 1
+            elif resolve_names and info is not None:
+                row.publisher_name = info.name
+        if hidden_unclassified:
+            notes.append(unclassified_mailto_note(hidden_unclassified, self.services.settings.allow_personal_data))
         if any(r.publisher_name_redacted for r in rows):
             notes.append(
                 "Utgivare som är privatpersoner visas utan namn (personuppgift); include_personal_data=true visar dem."
@@ -1362,22 +1409,34 @@ class DataportalService:
 
         publisher = self._publisher(graph, root, prefer, include_personal_data)
         personal_subjects: set[str] = set()
-        if (
-            publisher
-            and publisher.uri
-            and not publisher.name
-            and not publisher.name_redacted
-            and publisher.uri not in looked_up
-        ):
-            with contextlib.suppress(UpstreamError):  # the name is a nicety; never fail the tool for it
-                info = (await self.publisher_info([publisher.uri])).get(publisher.uri) or AgentInfo()
-                if info.private and not include_personal_data:
-                    personal_subjects.add(publisher.uri)
-                    publisher.name_redacted = True
-                    if publisher.uri.lower().startswith("mailto:"):
-                        publisher.uri = None
-                else:
-                    publisher.name = info.name
+        if publisher and publisher.uri and not publisher.name and not publisher.name_redacted:
+            info = None
+            if publisher.uri not in looked_up:
+                with contextlib.suppress(UpstreamError):  # the name is a nicety; never fail the tool for it
+                    info = (await self.publisher_info([publisher.uri])).get(publisher.uri)
+            if info is not None and info.private and not include_personal_data:
+                personal_subjects.add(publisher.uri)
+                publisher.name_redacted = True
+                if is_mailto(publisher.uri):
+                    publisher.uri = None
+            elif info is not None and info.name:
+                publisher.name = info.name
+        # A mailto: identifier without metadata (absent or empty in the graph, lookup failed or found nothing)
+        # may be a private individual's address: leave it out unless the caller opted in (fail closed).
+        unclassified = (
+            set()
+            if include_personal_data
+            else {
+                ref
+                for ref in [*contact_refs, *([publisher.uri] if publisher and publisher.uri else [])]
+                if is_mailto(ref) and not graph.get(ref)
+            }
+        )
+        if publisher and publisher.uri in unclassified and not publisher.name:
+            publisher.uri = None
+        else:
+            unclassified.discard(publisher.uri if publisher else None)
+        personal_subjects |= unclassified
         allowed = self.services.settings.allow_personal_data
         if publisher and publisher.name_redacted:
             notes.append(
@@ -1385,8 +1444,15 @@ class DataportalService:
                 if allowed
                 else f"Utgivaren är en privatperson; namnet visas inte (personuppgift). {PERSONAL_DATA_OFF_NOTE}"
             )
-        contacts = [self._contact(graph, ref, prefer, include_personal_data) for ref in contact_refs]
-        if any(c.redacted for c in contacts):
+        contacts = [
+            ContactPoint(redacted=True)
+            if ref in unclassified
+            else self._contact(graph, ref, prefer, include_personal_data)
+            for ref in contact_refs
+        ]
+        if unclassified:
+            notes.append(unclassified_mailto_note(len(unclassified), allowed))
+        if any(c.redacted for ref, c in zip(contact_refs, contacts, strict=True) if ref not in unclassified):
             notes.append(
                 "Kontaktpersoners namn och e-post (vcard:Individual) visas inte (personuppgift, "
                 "se include_personal_data)."
@@ -1538,8 +1604,9 @@ class DataportalService:
     def _contact(graph: Graph, ref: str, prefer: tuple[str, ...], include_personal_data: bool) -> ContactPoint:
         node = graph.get(ref)
         uri = None if ref.startswith("_:") else ref
-        if is_individual_contact(node) and not include_personal_data:
-            # A named person: vcard:fn and the e-mail address are personuppgifter.
+        if (is_individual_contact(node) or is_private_agent(node)) and not include_personal_data:
+            # A named person (also a private-individual agent used as contact, as in redact_graph): vcard:fn and the
+            # e-mail address are personuppgifter.
             return ContactPoint(uri=None if (uri or "").lower().startswith("mailto:") else uri, redacted=True)
         email = first_value(node, VCARD + "hasEmail")
         if email and email.lower().startswith("mailto:"):

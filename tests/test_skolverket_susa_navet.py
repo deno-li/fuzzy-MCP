@@ -424,6 +424,28 @@ async def test_emails_withheld_when_personal_data_off(router, make_client):
     assert provider["url"] == "https://www.kth.se"
 
 
+async def test_emails_in_free_text_withheld_when_personal_data_off(router, make_client):
+    event = load_fixture("susa_navet_event.json")
+    event["content"]["description"]["strings"][0]["value"] = (
+        '<p>Kursansvarig: Anna Andersson, <a href="mailto:anna.andersson@kth.se">anna.andersson@kth.se</a>.</p>'
+    )
+    event["content"]["application"]["instruction"] = {
+        "strings": [{"lang": "swe", "value": "Frågor? Mejla anna.andersson@kth.se."}]
+    }
+    router.add("GET", r"/emil3/educationEvents/[^?]+$", event)
+    async with make_client("skolverket", allow_personal_data=False) as client:
+        result = await call(
+            client,
+            "skolverket_susa_get_education_event",
+            {"event_id": "e.uoh.kth.dd1420.60090.20251", "include_raw": True},
+        )
+    text = json.dumps(result, ensure_ascii=False)
+    assert "anna.andersson" not in text and "mailto" not in text
+    assert result["description"] == "Kursansvarig: Anna Andersson, [e-post utelämnad]."
+    assert result["application"]["instruction"] == "Frågor? Mejla [e-post utelämnad]."
+    assert result["notes"] == [EMAIL_WITHHELD_NOTE]
+
+
 async def test_emails_returned_by_default(router, make_client):
     fixtures = _susa_email_routes(router)
     async with make_client("skolverket") as client:

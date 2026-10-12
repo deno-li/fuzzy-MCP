@@ -21,6 +21,16 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
   sidor, även när anropet börjar med `offset>0`.
 - Personuppgiftsfiltreringen hanterar även personliga `mailto:`-adresser i strukturerade sökresultat och i
   Dataportalens RDF-subjekt och referenser. Sökresultat, detaljsvar och rådata följer samma val för personuppgifter.
+- Dataportalen visar en utgivares eller kontaktpunkts `mailto:`-identifierare bara när metadata visar att den inte
+  tillhör en privatperson. Klassificeringen görs även med `resolve_publisher_names=false`, och när uppslaget
+  misslyckas eller inte hittar något utelämnas adressen (även i `raw` och `attribution`) med en notis. Ett fel vid
+  sökning med en privatpersons utgivarfilter återger inte längre anropsadressen.
+- Med `FUZZY_MCP_PERSONAL_DATA=off` ersätter Susa-navet även e-postadresser och `mailto:`-länkar i fritext och HTML
+  (beskrivningar, ansökningsinstruktioner) med `[e-post utelämnad]`, också i `raw`.
+- `fuzzy_api_notices` visar varje notis en gång, så att upprepade anrop till ett API inte trycker undan andra
+  källors notiser.
+- En omdirigering med ogiltig `Location` och en `Retry-After` som inte är ett ändligt tal (`nan`, `inf`) ger ett
+  vanligt källfel respektive standardväntetid i stället för ett oväntat undantag.
 - Containerbygget skickar proxyvariablernas namn till Docker, som hämtar värdena ur miljön, så att byggkommandot
   och dess återgivning vid fel inte innehåller proxyinloggning.
 - Giltiga `TOP`-uttryck med blanksteg normaliseras före PxWeb v1-anrop även när metadata saknar värdelista.

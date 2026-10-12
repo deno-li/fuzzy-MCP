@@ -708,6 +708,78 @@ async def test_publisher_name_resolution_redacts_personal_filter_diagnostics(
         assert default["datasets"][0]["publisher_uri"] == publisher
 
 
+@pytest.mark.parametrize("lookup", ["private", "organization", "not_found", "error"])
+@pytest.mark.parametrize("resolve_names", [False, True])
+async def test_search_shows_mailto_publishers_only_when_classified_as_organizations(
+    router, make_client, lookup, resolve_names
+):
+    publisher = "mailto:anna.andersson@example.org"
+    kind = PRIVATE if lookup == "private" else "http://purl.org/adms/publishertype/Company"
+    agent = {publisher: {DCT + "type": [uri(kind)], FOAF_NAME: [literal("Anna Andersson")]}}
+    dataset = {"https://example.org/data": {DCT + "title": [literal("Data")], DCT + "publisher": [uri(publisher)]}}
+    agent_answer = {
+        "private": results(child("2", "1", publisher, agent)),
+        "organization": results(child("2", "1", publisher, agent)),
+        "not_found": EMPTY,
+        "error": httpx2.Response(503, json={"error": "unavailable"}),
+    }[lookup]
+    solr(
+        router,
+        (lambda p: p["query"].startswith(DATASET), results(child("1", "1", "https://example.org/data", dataset))),
+        (lambda p: True, agent_answer),
+    )
+    args = {"query": "data", "resolve_publisher_names": resolve_names}
+    async with make_client("dataportal") as client:
+        default = await call(client, "dataportal_search_datasets", args)
+        opted = await call(client, "dataportal_search_datasets", {**args, "include_personal_data": True})
+    row = default["datasets"][0]
+    # Search hits do not carry the agent: the identifier is looked up even without name enrichment.
+    assert any(not p["query"].startswith(DATASET) for p in searches(router))
+    assert opted["datasets"][0]["publisher_uri"] == publisher
+    if lookup == "organization":
+        assert row["publisher_uri"] == publisher
+        assert row.get("publisher_name") == ("Anna Andersson" if resolve_names else None)
+        return
+    assert "anna.andersson" not in json.dumps(default, ensure_ascii=False)
+    if lookup == "private":
+        assert row["publisher_name_redacted"] is True
+    else:
+        assert "publisher_name_redacted" not in row
+        assert any("inte kunde klassificeras" in note for note in default["notes"])
+
+
+async def test_search_reuses_cached_private_classification_without_name_enrichment(router, make_client):
+    publisher = "mailto:anna.andersson@example.org"
+    agent = {publisher: {DCT + "type": [uri(PRIVATE)], FOAF_NAME: [literal("Anna Andersson")]}}
+    dataset = {"https://example.org/data": {DCT + "title": [literal("Data")], DCT + "publisher": [uri(publisher)]}}
+    solr(
+        router,
+        (lambda p: p["query"].startswith(DATASET), results(child("1", "1", "https://example.org/data", dataset))),
+        (lambda p: True, results(child("2", "1", publisher, agent))),
+    )
+    async with make_client("dataportal") as client:
+        await call(client, "dataportal_search_datasets", {"query": "data"})
+        lookups = len(searches(router))
+        second = await call(client, "dataportal_search_datasets", {"query": "data", "resolve_publisher_names": False})
+    assert len(searches(router)) == lookups + 1  # only the dataset search; the agent came from the cache
+    assert second["datasets"][0]["publisher_name_redacted"] is True
+    assert "anna.andersson" not in json.dumps(second, ensure_ascii=False)
+
+
+async def test_search_error_with_private_publisher_filter_omits_the_request_url(router, make_client):
+    publisher = "mailto:anna.andersson@example.org"
+    agent = {publisher: {DCT + "type": [uri(PRIVATE)], FOAF_NAME: [literal("Anna Andersson")]}}
+    solr(
+        router,
+        (lambda p: "title:(Anna AND Andersson)" in p["query"], results(child("1", "1", publisher, agent))),
+        (lambda p: True, httpx2.Response(503, json={"error": f"query failed: {publisher}"})),
+    )
+    async with make_client("dataportal") as client:
+        err = await call_error(client, "dataportal_search_datasets", {"publisher": "Anna Andersson"})
+    assert "HTTP 503" in err
+    assert "anna.andersson" not in err and "example.org" not in err
+
+
 async def test_search_validation_errors(router, make_client):
     async with make_client("dataportal") as client:
         err = await call_error(client, "dataportal_search_datasets", {"theme": "XYZ"})
@@ -1195,6 +1267,46 @@ async def test_get_dataset_redacts_mailto_publisher_identified_by_separate_looku
     assert default["publisher"]["name_redacted"] is True
     text = json.dumps(default, ensure_ascii=False)
     assert "private@example.org" not in text and "Private Person" not in text
+
+
+@pytest.mark.parametrize("lookup", ["error", "not_found"])
+async def test_get_dataset_leaves_out_unclassified_mailto_identifiers(router, make_client, lookup):
+    publisher = "mailto:anna.andersson@example.org"
+    contact = "mailto:per.persson@example.org"
+    graph = load_fixture("dataportal_metadata_recursive.json")
+    graph.pop("http://dataportal.se/organisation/SE2120001702")
+    graph[SKARA + "9"][DCT + "publisher"] = [uri(publisher)]
+    graph[SKARA + "9"]["http://www.w3.org/ns/dcat#contactPoint"] = [uri(contact)]
+    skara_routes(router, graph)
+    solr(router, (lambda p: True, httpx2.Response(503, json={"error": "x"}) if lookup == "error" else EMPTY))
+    async with make_client("dataportal") as client:
+        default = await call(client, "dataportal_get_dataset", {"dataset": "83_9", "include_raw": True})
+        opted = await call(
+            client, "dataportal_get_dataset", {"dataset": "83_9", "include_raw": True, "include_personal_data": True}
+        )
+    text = json.dumps(default, ensure_ascii=False)
+    assert "anna.andersson" not in text and "per.persson" not in text
+    assert "utgivare: okänd" in default["attribution"]
+    assert default["contact_points"] == [{"redacted": True}]
+    assert any("inte kunde klassificeras" in note for note in default["notes"])
+    assert opted["publisher"]["uri"] == publisher
+    assert opted["contact_points"][0]["uri"] == contact
+    assert opted["raw"][SKARA + "9"][DCT + "publisher"] == [uri(publisher)]
+
+
+async def test_get_dataset_hides_private_publisher_address_also_used_as_contact(router, make_client):
+    private = "mailto:anna.andersson@example.org"
+    graph = load_fixture("dataportal_metadata_recursive.json")
+    graph.pop("http://dataportal.se/organisation/SE2120001702")
+    graph[SKARA + "9"][DCT + "publisher"] = [uri(private)]
+    graph[SKARA + "9"]["http://www.w3.org/ns/dcat#contactPoint"] = [uri(private)]
+    skara_routes(router, graph)
+    agent = {private: {DCT + "type": [uri(PRIVATE)], FOAF_NAME: [literal("Anna Andersson")]}}
+    solr(router, (lambda p: True, results(child("2", "1", private, agent))))
+    async with make_client("dataportal") as client:
+        default = await call(client, "dataportal_get_dataset", {"dataset": "83_9", "include_raw": True})
+    assert "anna.andersson" not in json.dumps(default, ensure_ascii=False)
+    assert default["contact_points"] == [{"redacted": True}]
 
 
 def _big_graph(count: int) -> dict[str, Any]:
