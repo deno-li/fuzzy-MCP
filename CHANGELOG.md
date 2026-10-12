@@ -7,7 +7,13 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ## [Unreleased]
 
-## [0.2.0] - 2026-10-11
+### Rättat
+
+- 0.2.0 publicerades 2026-10-12; `publiccode.yml` och rubriken nedan angav 2026-10-11.
+- DRIFT.md och ENEO.md: med Docker som lagrar images i containerd visar `docker image inspect` manifestets digest i
+  stället för image-id på releasesidan. Dokumenten visar hur digesten läses ur arkivets `index.json`.
+
+## [0.2.0] - 2026-10-12
 
 ### Säkerhet
 
