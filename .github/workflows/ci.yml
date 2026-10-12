@@ -41,6 +41,7 @@ jobs:
   package:
     name: Paket, installation och röktest
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -61,20 +62,97 @@ jobs:
         run: /tmp/venv/bin/python scripts/smoke_test.py --stdio -- --sources reference
       - name: Röktest över HTTP och /healthz (utan token startar servern inte)
         run: |
-          if /tmp/venv/bin/fuzzy-mcp --transport streamable-http --port 8000 --sources reference; then exit 1; fi
-          python -c "import secrets; print(secrets.token_urlsafe(48))" > /tmp/token-http.txt
-          FUZZY_MCP_AUTH_TOKEN_FILE=/tmp/token-http.txt \
+          token=$(mktemp "$RUNNER_TEMP/fuzzy-http-token.XXXXXX")
+          server_pid=""
+          cleanup() {
+            status=$?
+            trap - EXIT
+            if [ -n "$server_pid" ]; then kill "$server_pid" 2>/dev/null || true; wait "$server_pid" 2>/dev/null || true; fi
+            rm -f -- "$token" || true
+            exit "$status"
+          }
+          trap cleanup EXIT
+          rc=0
+          timeout 30 /tmp/venv/bin/fuzzy-mcp --transport streamable-http --port 8000 --sources reference || rc=$?
+          if [ "$rc" -ne 2 ]; then echo "::error::Servern utan token avslutades med kod $rc (väntade 2)"; exit 1; fi
+          python -c "import secrets; print(secrets.token_urlsafe(48))" > "$token"
+          FUZZY_MCP_AUTH_TOKEN_FILE="$token" \
             /tmp/venv/bin/fuzzy-mcp --transport streamable-http --port 8000 --sources reference &
-          for _ in $(seq 1 30); do curl -sf http://127.0.0.1:8000/healthz && break; sleep 1; done
-          /tmp/venv/bin/python scripts/smoke_test.py --url http://127.0.0.1:8000/mcp --token-file /tmp/token-http.txt
-      - name: Eneo-kompatibilitet (Eneos klient, MCP SDK 1.28.1, med token och storleksgräns)
+          server_pid=$!
+          ready=0
+          for _ in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:8000/healthz; then ready=1; break; fi
+            sleep 1
+          done
+          test "$ready" -eq 1
+          /tmp/venv/bin/python scripts/smoke_test.py --url http://127.0.0.1:8000/mcp --token-file "$token"
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        id: eneo-python
+        with:
+          python-version: "3.11"
+      - name: Eneo 2.2.2-kompatibilitet (låst klient, samtliga källor, token och storleksgräns)
+        env:
+          ENEO_PYTHON: ${{ steps.eneo-python.outputs.python-path }}
         run: |
-          python -c "import secrets; print(secrets.token_urlsafe(48))" > /tmp/token.txt
-          FUZZY_MCP_AUTH_TOKEN_FILE=/tmp/token.txt FUZZY_MCP_MAX_OUTPUT_CHARS=30000 \
+          "$ENEO_PYTHON" -m venv "$RUNNER_TEMP/eneo-client"
+          "$RUNNER_TEMP/eneo-client/bin/python" -m pip install --only-binary=:all: --require-hashes -r scripts/eneo_client_requirements.txt
+          token=$(mktemp "$RUNNER_TEMP/fuzzy-eneo-token.XXXXXX")
+          server_pid=""
+          cleanup() {
+            status=$?
+            trap - EXIT
+            if [ -n "$server_pid" ]; then kill "$server_pid" 2>/dev/null || true; wait "$server_pid" 2>/dev/null || true; fi
+            rm -f -- "$token" || true
+            exit "$status"
+          }
+          trap cleanup EXIT
+          python -c "import secrets; print(secrets.token_urlsafe(48))" > "$token"
+          FUZZY_MCP_AUTH_TOKEN_FILE="$token" FUZZY_MCP_MAX_OUTPUT_CHARS=30000 \
             /tmp/venv/bin/fuzzy-mcp --transport streamable-http --port 8001 --stateless &
-          for _ in $(seq 1 30); do curl -sf http://127.0.0.1:8001/healthz && break; sleep 1; done
-          python -m venv /tmp/eneo && /tmp/eneo/bin/python -m pip install "mcp==1.28.1" "httpx==0.28.1"
-          /tmp/eneo/bin/python scripts/eneo_check.py --url http://127.0.0.1:8001/mcp --token-file - < /tmp/token.txt
+          server_pid=$!
+          ready=0
+          for _ in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:8001/healthz; then ready=1; break; fi
+            sleep 1
+          done
+          test "$ready" -eq 1
+          "$RUNNER_TEMP/eneo-client/bin/python" scripts/eneo_check.py --url http://127.0.0.1:8001/mcp --token-file - < "$token"
+
+  windows_package:
+    name: Windows – wheel, installation och stdio
+    runs-on: windows-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+      - name: Bygg wheel, installera i en ren miljö och kör stdio-test
+        run: |
+          python -m pip install build
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m build --wheel --outdir dist
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $venv = Join-Path $env:RUNNER_TEMP "package-venv"
+          python -m venv $venv
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $python = Join-Path $venv "Scripts/python.exe"
+          $wheels = @(Get-ChildItem dist -Filter "*.whl")
+          if ($wheels.Count -ne 1) { throw "Väntade exakt en fuzzy-mcp-wheel" }
+          & $python -m pip install $wheels[0].FullName
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $expected = python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $reported = & (Join-Path $venv "Scripts/fuzzy-mcp.exe") --version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($reported -ne "fuzzy-mcp $expected") { throw "Oväntad version: $reported" }
+          & $python scripts/smoke_test.py --stdio -- --sources reference
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
   reuse:
     name: REUSE-licensinformation

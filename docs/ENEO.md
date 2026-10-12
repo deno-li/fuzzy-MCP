@@ -15,12 +15,15 @@ Eneo backend ──(internt nät, Bearer-token)──▶ fuzzy-mcp :8000/mcp ─
 
 ## 1. Det här vet vi om Eneos MCP-klient
 
-Underlag: Eneos publika källkod (`eneo-ai/eneo`), taggen **`v2.2.1`** (2026-10-09; 2.2.0 kom 2026-10-07), och
-dokumentationen för 2.2 (docs.eneo.ai/v2.2, samma tagg), båda granskade 2026-10-11. Där dokumentationen och koden
-skiljer sig gäller koden. Tidigare versioner av det här dokumentet byggde på commit `d305507` på grenen `develop`,
-som inte ingår i 2.2. **Er installerade Eneo-version kan skilja sig** – kontrollera den med
-`curl -s https://<eneo-domän>/version` (Eneos referens-compose använder `:latest`) och kör kontrollen i avsnitt 4
-från er egen Eneo-backend; den visar också backendens MCP-SDK-version (1.28.1 i 2.2.1).
+Underlag: Eneos publika källkod (`eneo-ai/eneo`), taggen **`v2.2.2`**, commit
+`af647d28b1902af76503c1711ff51217deee7141`, och dokumentationen för 2.2 (docs.eneo.ai/v2.2, samma tagg), granskade
+2026-10-12. Där dokumentationen och koden skiljer sig gäller koden. MCP-klienten, dess inställningar och
+backendens låsfil är oförändrade från 2.2.1. Kontrollen i avsnitt 4 har passerat mot den levererade fuzzy-mcp
+0.2.0-imagen med klientberoenden låsta till Eneo 2.2.2; en full Eneo-installation har inte körts (avsnitt 10).
+Tidigare versioner av det här dokumentet byggde på commit `d305507` på grenen `develop`, som inte ingår i 2.2.
+**Er installerade Eneo-version kan skilja sig** – kontrollera den med `curl -s https://<eneo-domän>/version`
+(Eneos referens-compose använder `:latest`) och kör kontrollen i avsnitt 4 från er egen Eneo-backend; den visar
+också backendens MCP-SDK-version (1.28.1 i 2.2.2).
 
 Inställningarna som börjar på `MCP_` nedan är Eneos egna (miljövariabler i Eneos backend); värdena är standardvärden.
 
@@ -67,11 +70,11 @@ Kommandona körs från leveranspaketets rot och lägger compose-filerna och toke
 # Imagen från leveranspaketet (byggt med --with-image). Jämför image-id med raden "Container-image" på
 # releasesidan (https://github.com/deno-li/fuzzy-MCP/releases) – då kör ni exakt den granskade imagen.
 # Det är en kontrollsumma från samma releasesida, ingen signatur.
-docker load -i fuzzy-mcp-0.2.0-image.tar.gz
-docker image inspect --format '{{.Id}}' fuzzy-mcp:0.2.0
+docker load -i fuzzy-mcp-0.2.1-image.tar.gz
+docker image inspect --format '{{.Id}}' fuzzy-mcp:0.2.1
 # Använder Docker containerd för att lagra images (förvalt i nyare installationer) visar kommandot i stället
 # manifestets digest. Den står i arkivets index.json, som SHA256SUMS redan har kontrollerat:
-tar -xzOf fuzzy-mcp-0.2.0-image.tar.gz index.json | python3 -c "import json,sys; print(json.load(sys.stdin)['manifests'][0]['digest'])"
+tar -xzOf fuzzy-mcp-0.2.1-image.tar.gz index.json | python3 -c "import json,sys; print(json.load(sys.stdin)['manifests'][0]['digest'])"
 
 sudo mkdir -m 755 -p /opt/fuzzy-mcp
 sudo cp -r docs/eneo/docker-compose.fuzzy-mcp.yml docs/eneo/docker-compose.egress.yml docs/eneo/egress /opt/fuzzy-mcp/
@@ -90,8 +93,8 @@ skilja sig från paketets `requirements.lock`, SBOM och sårbarhetskontroll. En 
 tagg (t.ex. `fuzzy-mcp:dev`) och används bara för test.
 
 Paketets `sbom.cdx.json` och `audit.txt` gäller Python-beroendena, inte basimagen och inte egress-proxyn (DRIFT.md
-avsnitt 2). Skanna båda imagerna före drift och efter varje ombyggnad, t.ex. `trivy image fuzzy-mcp:0.2.0` och
-`trivy image fuzzy-mcp-egress-proxy:local` (SBOM för hela imagen: `syft fuzzy-mcp:0.2.0 -o cyclonedx-json`).
+avsnitt 2). Skanna båda imagerna före drift och efter varje ombyggnad, t.ex. `trivy image fuzzy-mcp:0.2.1` och
+`trivy image fuzzy-mcp-egress-proxy:local` (SBOM för hela imagen: `syft fuzzy-mcp:0.2.1 -o cyclonedx-json`).
 Egress-imagen byggs lokalt från `ubuntu:24.04` med de Squid-paket Ubuntu har vid byggtillfället; lås gärna basimagen
 till en digest (kommentaren i `egress/Dockerfile`).
 
@@ -353,6 +356,17 @@ docker-compose.egress.yml down` och därefter `up -d`, så att `fuzzy_egress` sk
 kontrollerna under [Utgående trafik](#utgående-trafik). En `HTTPS_PROXY` eller `SSL_CERT_FILE` i den gamla
 compose-filen: se samma avsnitt.
 
+Från 0.2.0 till 0.2.1: paketet får de rättade driftinstruktionerna och `docs/KALLKONTROLL.md`. Inga verktyg eller
+MCP-inställningar ändras, och token behålls. Jämför och kopiera de uppdaterade compose-filerna och `egress/` som i
+steg 1; behåll era egna proxy- och certifikatinställningar enligt avsnitt 2.
+
+**Eneo 2.2.1 → 2.2.2:** CORS-ändringarna gäller inkommande trafik till Eneos API, bland annat Eneos egna
+`sk_`-nycklar. Backendens utgående MCP-anrop till fuzzy-mcp är oförändrade; behåll Streamable HTTP, token och
+`FUZZY_MCP_ALLOWED_HOSTS`. Uppgraderingen kräver inget nytt `FUZZY_MCP_ALLOWED_ORIGINS` för Eneo-backenden. Med
+frontend och backend på olika värdar behöver Eneo fortfarande rätt frontend-origin i sin tillåtelselista.
+Kör kontrollen i avsnitt 4 från den återskapade backend-containern och acceptanstestet med kommunkoden för Gävle
+(avsnitt 6). Har ni ett eget nät: kontrollera att nätverks-override fortfarande ansluter backend (avsnitt 2).
+
 ## 8. Säkerhet i korthet
 
 - `ENCRYPTION_KEY` satt i Eneos backend. Eneo kräver den bara med `FEDERATION_ENABLED` eller
@@ -392,7 +406,7 @@ compose-filen: se samma avsnitt.
   raderas med samtalet enligt **Gallring av konversationshistorik** för assistenten eller spacet; utan sådan
   inställning sparas de tills samtalet tas bort. Eneos granskningslogg innehåller inga verktygsanrop. Är utökad
   loggning (`logging_enabled`) påslagen för en assistent sparas dessutom hela meddelandelistan i en egen tabell som
-  gallringen i 2.2.1 inte raderar – slå bara på den tillfälligt.
+  gallringen i 2.2.2 inte raderar – slå bara på den tillfälligt.
 
 ## 9. Felsökning
 
@@ -416,9 +430,11 @@ compose-filen: se samma avsnitt.
 
 ## 10. Det här är inte provat
 
-- En riktig Eneo-installation. Kontrollerna ovan använder Eneos klientbibliotek (SDK 1.28.1) mot fuzzy-mcp, och
-  avsnitt 1–9 bygger på källkoden och dokumentationen för v2.2.1 (där de skiljer sig gäller koden), men inte på en
-  körande Eneo-backend, modell eller ett gränssnitt. Kör avsnitt 4 och 6 i er miljö.
+- En riktig Eneo-installation. Kontrollen med den levererade 0.2.0-imagen använder Eneo 2.2.2:s låsta
+  klientberoenden (bl.a. SDK 1.28.1, httpx 0.28.1, anyio 4.14.1 och pydantic 2.13.4) mot fuzzy-mcp: Bearer-token,
+  protokoll, alla 84 verktyg, scheman, referensuppslag och svarsstorlek passerade. Avsnitt 1–9 bygger på källkoden
+  och dokumentationen för v2.2.2 (där de skiljer sig gäller koden), men inte på en körande Eneo-backend, databas,
+  modell eller ett gränssnitt. Kör avsnitt 4 och 6 i er miljö.
 - Egress-imagen (`egress/Dockerfile`) är inte byggd i CI. `egress/squid.conf` är provad med Squid 6.14 på Ubuntu
   24.04 som användaren `proxy`: myndigheternas värdar släpps igenom (även via en överordnad proxy), andra värdar,
   IP-adresser, portar och okrypterad HTTP får 403.

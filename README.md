@@ -440,9 +440,12 @@ konfiguration, tjänst (Windows/systemd), container, nätverk, säkerhet, överv
 ### Eneo
 
 [docs/ENEO.md](docs/ENEO.md) beskriver hur servern kopplas till [Eneo](https://github.com/eneo-ai/eneo) (granskat mot
-Eneo 2.2.1): token, nätverk bredvid Eneos backend med en proxy som bara släpper fram myndigheternas värdar,
-rekommenderade inställningar, verktygsprofiler per assistent, lokal modell (vLLM), acceptanstest och felsökning. `scripts/eneo_check.py` kontrollerar servern med Eneos eget MCP-klientbibliotek (SDK 1.x) och kan köras
-direkt i Eneos backend-container. Färdig assistentinstruktion: [docs/eneo/assistentinstruktion.md](docs/eneo/assistentinstruktion.md).
+Eneo 2.2.2, 2026-10-12): token, nätverk bredvid Eneos backend med en proxy som bara släpper fram myndigheternas värdar,
+rekommenderade inställningar, verktygsprofiler per assistent, lokal modell (vLLM), acceptanstest och felsökning.
+`scripts/eneo_check.py` kontrollerar servern med Eneos eget MCP-klientbibliotek (SDK 1.x) och kan köras direkt i
+Eneos backend-container. Kontrollen har passerat med Eneo 2.2.2:s låsta klientberoenden; en full Eneo-installation
+och modellflödet återstår att prova i er miljö. Färdig assistentinstruktion:
+[docs/eneo/assistentinstruktion.md](docs/eneo/assistentinstruktion.md).
 
 ## Utveckling och bidrag
 

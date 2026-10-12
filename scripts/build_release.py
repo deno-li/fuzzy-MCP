@@ -68,6 +68,7 @@ PACKAGE_DOCS = [
     "REUSE.toml",
     "docs/DRIFT.md",
     "docs/ENEO.md",
+    "docs/KALLKONTROLL.md",
     "docs/eneo/assistentinstruktion.md",
     "docs/eneo/docker-compose.fuzzy-mcp.yml",
     "docs/eneo/docker-compose.egress.yml",

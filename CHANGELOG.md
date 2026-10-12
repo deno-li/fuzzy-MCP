@@ -7,6 +7,25 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-12
+
+### Tillagt
+
+- `docs/KALLKONTROLL.md` ingår nu i både Windows- och Linux-leveranspaketet, så länkarna från README och
+  DEVELOPMENT fungerar även i de uppackade paketen.
+- Release-kontrollerna verifierar de färdiga arkivens kontrollsummor och innehåll och testar de uppackade paketen.
+  Den exporterade container-imagen läses tillbaka med `docker load` och provas med och utan token. Eneo-kontrollen
+  körs med klientberoenden låsta till Eneo 2.2.2, och Windows-paketet installeras utan nät och röktestas på en
+  Windows-runner innan release-utkastet skapas.
+
+### Ändrat
+
+- Version 0.2.1; driftens image- och venv-exempel använder den nya versionen.
+- Eneo-guiden är granskad mot v2.2.2, commit `af647d28b1902af76503c1711ff51217deee7141`, 2026-10-12.
+  MCP-klienten och dess låsta beroenden är oförändrade från 2.2.1. Kontrollen med klientberoendena passerade mot den
+  levererade 0.2.0-imagen, men ersätter inte acceptanstest i en full Eneo-installation. Uppgraderingsnoteringen
+  skiljer Eneos inkommande API-trafik och CORS från backendens utgående MCP-anrop; transport och token behålls.
+
 ### Rättat
 
 - 0.2.0 publicerades 2026-10-12; `publiccode.yml` och rubriken nedan angav 2026-10-11.
