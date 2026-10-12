@@ -412,8 +412,8 @@ Kör kontrollen i avsnitt 4 från den återskapade backend-containern och accept
   och det kan återge ett ogiltigt argument (t.ex. ett kommunnamn eller koordinater) eller myndighetens egen
   feltext. Loggen roteras (5 × 10 MB).
 - `FUZZY_MCP_PERSONAL_DATA=off` tar bort de strukturerade fälten för personuppgifter (rektor, kontaktpersoner,
-  e-postadresser). Fritext som utbildningsanordnare själva skrivit (t.ex. beskrivningar i Susa-navet) kan ändå
-  innehålla namn eller kontaktuppgifter.
+  e-postadresser, även i Susa-navets fritext). Fritext som utbildningsanordnare själva skrivit (t.ex. beskrivningar
+  i Susa-navet) kan ändå innehålla namn eller telefonnummer.
 - **Eneo sparar verktygsanropen.** Varje anrop – argumenten (t.ex. sökord) och fuzzy-mcp:s svarstext efter Eneos
   kapning – sparas med samtalet i Eneos databas, visas i chatten och skickas till modellen igen i senare turer. De
   raderas med samtalet enligt **Gallring av konversationshistorik** för assistenten eller spacet; utan sådan

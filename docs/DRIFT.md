@@ -376,7 +376,8 @@ organisationens proxy via `HTTPS_PROXY`, eller regler i kedjan `DOCKER-USER`.
   bara mellan de värdarna och aldrig från https till http.
 - **Personuppgifter** (namn på rektor, c/o-namn, kontaktpersoner) visas bara om klienten anger en parameter märkt
   "personuppgift", och aldrig med `FUZZY_MCP_PERSONAL_DATA=off`. Det gäller de strukturerade fälten: fritext som
-  en utbildningsanordnare själv skrivit (t.ex. en kursbeskrivning) kan ändå innehålla namn eller kontaktuppgifter.
+  en utbildningsanordnare själv skrivit (t.ex. en kursbeskrivning) kan ändå innehålla namn eller telefonnummer.
+  E-postadresser i Susa-navets fritext ersätts med `[e-post utelämnad]` när personuppgifter är avstängda.
   Servern sparar inga svar på disk (bara i minnescachen, högst `FUZZY_MCP_CACHE_TTL`); åtkomstloggen innehåller
   däremot klienternas IP-adresser (avsnitt 8).
 - **Data som lämnar servern:** verktygens argument – som modellen härleder ur användarnas frågor (sökord, koder,

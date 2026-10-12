@@ -20,9 +20,9 @@ syncs see deletions. Rows that a client-side filter cannot test (missing locatio
 ``{"strings": [{"lang", "value", "content"}]}`` where ``content == "HTML"`` (3.0.4+) marks HTML in ``value``; coded
 values are ``{"type", "code"}`` objects.
 
-E-mail addresses (``application.email``, ``emailAddresses``, mailto: links, e-mail keys in extensions) can be a named
-person's address: with ``FUZZY_MCP_PERSONAL_DATA=off`` search and by-id tools withhold them, also in ``raw``, and say
-so in ``notes``. Phone numbers and web addresses are always returned.
+E-mail addresses (``application.email``, ``emailAddresses``, mailto: links, e-mail keys in extensions, addresses in
+free text) can be a named person's address: with ``FUZZY_MCP_PERSONAL_DATA=off`` search and by-id tools withhold them,
+also in ``raw``, and say so in ``notes``. Phone numbers and web addresses are always returned.
 """
 
 import html
@@ -73,6 +73,20 @@ EMAIL_WITHHELD_NOTE = (
 )
 # A bare e-mail address or a mailto: link (no ':' or '/' before '@', so URLs with user info do not match).
 _EMAIL_VALUE = re.compile(r"(?i)(?:mailto:\S*|[^@\s/:<>]+@[^@\s/<>]+\.[^@\s/<>]+)")
+# An e-mail address or mailto: link inside free text or HTML (descriptions, application instructions). A mailto: link
+# ends before a closing parenthesis or trailing punctuation. The local part starts only where a run of address
+# characters starts (so a search stays linear on long runs without an '@') and never right after a '/' (a URL path such
+# as logo@2x.png); the domain ends with a top-level label of letters (not a version such as react@18.2.0).
+_EMBEDDED_EMAIL = re.compile(
+    r"(?i)mailto:[^\s\"'<>()]*[^\s\"'<>().,;:!?]"
+    r"|(?<![\w.+/-])[\w.+-]+@[\w-]+(?:\.[\w-]+)*\.[^\W\d_]{2,}(?![\w-])"
+)
+EMAIL_PLACEHOLDER = "[e-post utelämnad]"
+# Character references (&#64;, &#x40;, &commat;, &period;, ...) that HTML pages use to obscure an address.
+_CHAR_REF = re.compile(r"&(?:#[0-9]{1,7}|#[xX][0-9a-fA-F]{1,6}|[A-Za-z][A-Za-z0-9]{1,31});?")
+# Soft hyphen and zero-width characters: invisible to a reader, so they can split an address without hiding it.
+_INVISIBLE = "\u00ad\u200b\u200c\u200d\u2060\ufeff"
+_INVISIBLE_CHARS = re.compile(f"[{_INVISIBLE}]")
 # Ids are opaque (e.g. e.uoh.kth.dd1420.60090.20251, p.sv.68897220). The first character must be a letter or digit
 # so that "." and ".." – dot segments that the HTTP client normalises away, which changes the request path – can never
 # be sent; path/query separators and whitespace are rejected too. Everything else is percent-encoded.
@@ -1115,22 +1129,53 @@ def is_email_value(value: Any) -> bool:
     return isinstance(value, str) and _EMAIL_VALUE.fullmatch(value.strip()) is not None
 
 
+def _decode_address_refs(text: str) -> str:
+    """Decode the character references that stand for letters, digits or ``@.+-_:`` and drop invisible characters (and
+    references to them). HTML gives them the same meaning as the plain character, so the markup is unchanged, but an
+    obscured address becomes visible to the pattern (the flattened text is unescaped later and would show it)."""
+
+    def plain(match: re.Match[str]) -> str:
+        char = html.unescape(match.group(0))
+        if len(char) == 1 and char in _INVISIBLE:
+            return ""
+        return char if len(char) == 1 and (char.isalnum() or char in "@.+-_:") else match.group(0)
+
+    return _INVISIBLE_CHARS.sub("", _CHAR_REF.sub(plain, text) if "&" in text else text)
+
+
+def _without_embedded_emails(text: str) -> str | None:
+    """The text with every address replaced by the placeholder, or None when it holds none. An address that only
+    inline markup splits (``anna@<wbr>kth.se``) is found in the text as flattened later; that text, without its
+    markup, replaces the value."""
+    decoded = _decode_address_refs(text)
+    if _EMBEDDED_EMAIL.search(decoded):
+        return _EMBEDDED_EMAIL.sub(EMAIL_PLACEHOLDER, decoded)
+    if "<" in decoded:
+        rendered = _ANY_TAG.sub("", _LI_TAG.sub("\n- ", _BLOCK_TAG.sub("\n", decoded)))
+        if _EMBEDDED_EMAIL.search(rendered):
+            return _EMBEDDED_EMAIL.sub(EMAIL_PLACEHOLDER, rendered)
+    return None
+
+
 def contains_email(value: Any) -> bool:
-    """True when the record holds an e-mail address (under an e-mail key or as a bare/mailto value)."""
+    """True when the record holds an e-mail address (under an e-mail key, as a bare/mailto value or in free text)."""
     if isinstance(value, dict):
         return any((is_email_key(k) and v not in (None, "", [], {})) or contains_email(v) for k, v in value.items())
     if isinstance(value, list):
         return any(contains_email(v) for v in value)
-    return is_email_value(value)
+    return is_email_value(value) or (isinstance(value, str) and _without_embedded_emails(value) is not None)
 
 
 def without_emails(value: Any) -> Any:
-    """Deep copy without e-mail keys and e-mail values (bare addresses, mailto: links), wherever they occur.
-    Never mutates the (cached) input."""
+    """Deep copy without e-mail keys and e-mail values (bare addresses, mailto: links), wherever they occur; addresses
+    inside free text and HTML are replaced by a placeholder. Never mutates the (cached) input."""
     if isinstance(value, dict):
         return {k: without_emails(v) for k, v in value.items() if not (is_email_key(k) or is_email_value(v))}
     if isinstance(value, list):
         return [without_emails(v) for v in value if not is_email_value(v)]
+    if isinstance(value, str):
+        redacted = _without_embedded_emails(value)
+        return value if redacted is None else redacted
     return value
 
 

@@ -21,6 +21,21 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
   sidor, även när anropet börjar med `offset>0`.
 - Personuppgiftsfiltreringen hanterar även personliga `mailto:`-adresser i strukturerade sökresultat och i
   Dataportalens RDF-subjekt och referenser. Sökresultat, detaljsvar och rådata följer samma val för personuppgifter.
+- Dataportalen visar en `mailto:`-identifierare för en utgivare, upphovsperson eller kontakt (även en datatjänsts)
+  bara när metadata visar att den inte tillhör en privatperson. Klassificeringen görs även med
+  `resolve_publisher_names=false`, och när uppslaget misslyckas eller inte hittar något utelämnas adressen (även i
+  `raw` och `attribution`) med en notis. En privatpersons eller kontaktpersons kända adress och namn tas också bort
+  ur andra fält: en kontaktpunkt av organisationstyp med samma adress eller namn, distributionernas och
+  datatjänsternas adresser, `dataset_uri` för en agentpost och `raw`. Ett fel vid sökning med en privatpersons
+  utgivarfilter återger inte längre anropsadressen.
+- Med `FUZZY_MCP_PERSONAL_DATA=off` ersätter Susa-navet även e-postadresser och `mailto:`-länkar i fritext och HTML
+  (beskrivningar, ansökningsinstruktioner) med `[e-post utelämnad]`, också i `raw`. Det gäller även adresser som
+  döljs med teckenreferenser (`&#64;`), osynliga tecken eller inbäddad markup (`anna@<wbr>kth.se`), medan `@` i en
+  URL-sökväg (`logo@2x.png`) eller en version (`react@18.2.0`) lämnas orört.
+- `fuzzy_api_notices` visar varje notis en gång, så att upprepade anrop till ett API inte trycker undan andra
+  källors notiser.
+- En omdirigering med en `Location` som inte går att tolka ger ett vanligt källfel utan omförsök, och
+  `Retry-After: nan` ger standardväntetid i stället för ett oväntat undantag.
 - Containerbygget skickar proxyvariablernas namn till Docker, som hämtar värdena ur miljön, så att byggkommandot
   och dess återgivning vid fel inte innehåller proxyinloggning.
 - Giltiga `TOP`-uttryck med blanksteg normaliseras före PxWeb v1-anrop även när metadata saknar värdelista.

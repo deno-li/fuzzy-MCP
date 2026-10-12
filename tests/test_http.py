@@ -59,6 +59,28 @@ async def test_retries_on_429_then_succeeds():
     assert res.data == [1, 2] and attempts["n"] == 3
 
 
+@pytest.mark.parametrize("value,expected", [("nan", 0.5), ("inf", 30.0), ("-5", 0.0)])
+async def test_unusable_retry_after_falls_back_to_a_finite_delay(value, expected):
+    delays: list[float] = []
+
+    async def sleep(seconds: float) -> None:
+        delays.append(seconds)
+        await anyio.sleep(0 if seconds == seconds else seconds)  # anyio rejects NaN (NaN != NaN)
+
+    attempts = {"n": 0}
+
+    def handler(request):
+        attempts["n"] += 1
+        if attempts["n"] == 1:
+            return httpx2.Response(503, headers={"Retry-After": value}, json={})
+        return httpx2.Response(200, json=[1])
+
+    async with HttpClient(Settings(max_retries=1), transport=httpx2.MockTransport(handler), sleep=sleep) as client:
+        res = await client.get_json("scb", "https://example.se/t")
+    assert res.data == [1]
+    assert delays == [expected]  # nan: the default backoff; inf: the maximum; negative: no wait
+
+
 async def test_error_detail_from_problem_document():
     def handler(request):
         return httpx2.Response(
@@ -98,6 +120,22 @@ async def test_lifecycle_headers_are_reported():
     assert list(client.recent_notices) == [
         "skolverket: Deprecation: 2026-01-01T00:00:00Z",
         "skolverket: Sunset: 2027-06-30T00:00:00Z",
+    ]
+
+
+async def test_shared_notices_are_unique_so_one_api_cannot_push_out_another():
+    def handler(request):
+        if request.url.host == "fohm.example.se":
+            return httpx2.Response(200, json={}, headers={"Sunset": "Wed, 30 Jun 2027 00:00:00 GMT"})
+        return httpx2.Response(200, json={}, headers={"Deprecation": "@1767225600"})
+
+    async with _client(handler) as client:
+        await client.get_json("fohm", "https://fohm.example.se/x")
+        for i in range(60):
+            await client.get_json("scb", f"https://scb.example.se/t{i}")
+    assert list(client.recent_notices) == [
+        "fohm: Sunset: 2027-06-30T00:00:00Z",
+        "scb: Deprecation: 2026-01-01T00:00:00Z",
     ]
 
 
@@ -251,6 +289,17 @@ async def test_redirect_outside_the_agencies_is_refused(location):
     target = httpx2.URL(location)
     assert f"{target.scheme}://{target.host}" in message and target.path not in message
     assert len(seen) == 1  # the target was never requested, and the refusal is not retried
+
+
+@pytest.mark.parametrize("location", ["https:evil.example/x", "https://api.skolverket.se:abc/x", "http://[::1/x"])
+async def test_malformed_redirect_location_becomes_upstream_error_without_retries(location):
+    seen: list[str] = []
+    handler = _redirecting({"https://api.skolverket.se/": httpx2.Response(302, headers={"location": location})}, seen)
+    async with _client(handler) as client:
+        with pytest.raises(UpstreamError) as info:
+            await client.get_json("skolverket", "https://api.skolverket.se/skolenhetsregistret/v2/school-units/1")
+    assert info.value.message.startswith("Anropet misslyckades")
+    assert len(seen) == 1
 
 
 async def test_redirect_within_an_agency_host_and_to_another_agency_is_followed():

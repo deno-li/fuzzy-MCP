@@ -5,6 +5,7 @@
 import copy
 import json
 import re
+import time
 from typing import Any
 
 import httpx2
@@ -24,6 +25,7 @@ from fuzzy_mcp.sources.skolverket.susa_navet import (
     text_of,
     texts_of,
     url_of,
+    without_emails,
 )
 
 from .conftest import call, call_error, load_fixture
@@ -422,6 +424,62 @@ async def test_emails_withheld_when_personal_data_off(router, make_client):
     assert "email_addresses" not in provider and "emailAddresses" not in provider["raw"]["content"]
     assert provider["phones"] == [{"number": "08-790 60 00", "function": "Växel"}]
     assert provider["url"] == "https://www.kth.se"
+
+
+async def test_emails_in_free_text_withheld_when_personal_data_off(router, make_client):
+    event = load_fixture("susa_navet_event.json")
+    event["content"]["description"]["strings"][0]["value"] = (
+        '<p>Kursansvarig: Anna Andersson, <a href="mailto:anna.andersson@kth.se">anna.andersson@kth.se</a>.</p>'
+    )
+    event["content"]["application"]["instruction"] = {
+        "strings": [{"lang": "swe", "value": "Frågor? Mejla anna.andersson@kth.se."}]
+    }
+    router.add("GET", r"/emil3/educationEvents/[^?]+$", event)
+    async with make_client("skolverket", allow_personal_data=False) as client:
+        result = await call(
+            client,
+            "skolverket_susa_get_education_event",
+            {"event_id": "e.uoh.kth.dd1420.60090.20251", "include_raw": True},
+        )
+    text = json.dumps(result, ensure_ascii=False)
+    assert "anna.andersson" not in text and "mailto" not in text
+    assert result["description"] == "Kursansvarig: Anna Andersson, [e-post utelämnad]."
+    assert result["application"]["instruction"] == "Frågor? Mejla [e-post utelämnad]."
+    assert result["notes"] == [EMAIL_WITHHELD_NOTE]
+
+
+@pytest.mark.parametrize(
+    "value,expected",
+    [
+        ("<p>anna&#64;kth.se</p>", "<p>[e-post utelämnad]</p>"),
+        ("anna&#x40;kth&period;se", "[e-post utelämnad]"),
+        ('<a href="&#109;ailto:anna@kth.se">Mejla</a>', '<a href="[e-post utelämnad]">Mejla</a>'),
+        ("Skriv till anna@kth.se.", "Skriv till [e-post utelämnad]."),
+        ("a &lt; b &amp; c", "a &lt; b &amp; c"),  # markup is untouched without an address
+        ("https://medium.com/@kth.se", "https://medium.com/@kth.se"),
+        # Split by inline markup or invisible characters, yet joined again in the flattened text.
+        ("<p>Kursansvarig: anna.andersson@<wbr>kth.se</p>", "Kursansvarig: [e-post utelämnad]\n"),
+        ("<strong>anna</strong>@kth.se", "[e-post utelämnad]"),
+        ("Mejla anna&shy;@kth.se", "Mejla [e-post utelämnad]"),
+        ("Mejla anna\u200b@kth.se", "Mejla [e-post utelämnad]"),
+        ("<p>anna</p><p>@kth.se</p>", "<p>anna</p><p>@kth.se</p>"),  # separate lines: no address
+        # Not addresses: an '@' in a URL path, a version, a URL with user info.
+        ('<img src="https://www.kth.se/img/logo@2x.png">', '<img src="https://www.kth.se/img/logo@2x.png">'),
+        ("Vi använder react@18.2.0 och node@20.11", "Vi använder react@18.2.0 och node@20.11"),
+        ("https://user@host.se/path", "https://user@host.se/path"),
+        # A mailto: link keeps the punctuation around it.
+        ("[Mejla oss](mailto:anna@kth.se).", "[Mejla oss]([e-post utelämnad])."),
+    ],
+)
+def test_without_emails_finds_obscured_addresses_and_keeps_other_text(value, expected):
+    assert without_emails({"value": value}) == {"value": expected}
+
+
+def test_embedded_email_search_is_linear_on_long_runs():
+    long_run = "a" * 1_000_000
+    started = time.perf_counter()
+    assert without_emails({"value": long_run})["value"] is long_run
+    assert time.perf_counter() - started < 2  # a quadratic pattern needs hours here
 
 
 async def test_emails_returned_by_default(router, make_client):
