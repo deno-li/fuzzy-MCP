@@ -7,7 +7,7 @@
     python scripts/build_release.py --platform windows            # Windows x64, Python 3.14 (standard för Windows)
     python scripts/build_release.py --platform linux              # Linux x86_64, Python 3.12 (standard för Linux)
     python scripts/build_release.py --platform linux --python 3.11  # t.ex. Debian 12
-    python scripts/build_release.py --skip-audit                   # offline-ish build without pip-audit
+    python scripts/build_release.py --skip-audit                   # local test build only (not final release package)
     python scripts/build_release.py --platform linux --with-image  # also a container image (docker save)
 
 Creates release/fuzzy-mcp-<version>-<platform>-py<python>/ and a .zip (Windows) or .tar.gz (Linux) next to it:
@@ -264,7 +264,11 @@ def main() -> int:
         "3.12 för Linux, t.ex. Ubuntu 24.04 och RHEL 9.4+)",
     )
     parser.add_argument("--out", default="release", help="Utkatalog (relativt repot)")
-    parser.add_argument("--skip-audit", action="store_true", help="Hoppa över pip-audit")
+    parser.add_argument(
+        "--skip-audit",
+        action="store_true",
+        help="Hoppa över pip-audit (endast lokalt testbygge; slutlig release kräver audit.txt)",
+    )
     parser.add_argument("--with-image", action="store_true", help="Bygg även container-imagen (kräver docker)")
     parser.add_argument(
         "--ca-file",

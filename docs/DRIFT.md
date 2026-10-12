@@ -27,6 +27,9 @@ För IT-drift som installerar och kör servern. Utvecklare läser [DEVELOPMENT.m
 Paketet byggs med `python scripts/build_release.py --platform windows|linux` (Python 3.14 för Windows och 3.12 för
 Linux som standard; annan version med `--python`) och innehåller:
 
+Bygg leveranspaket utan `--skip-audit` när de ska driftsättas eller publiceras. Flaggan är bara för lokala
+testbyggen; utan audit-steget skapas ingen `audit.txt`, och `scripts/verify_release.py` underkänner paketet.
+
 | Fil | Syfte |
 | --- | --- |
 | `dist/fuzzy_mcp-<version>-py3-none-any.whl` | servern |
