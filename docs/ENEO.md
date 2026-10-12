@@ -344,7 +344,7 @@ verktyg avbryts (`avbröts efter`) och att proxyn (`docker logs fuzzy-egress-pro
 
 Från 0.1.2 till 0.2.0: tre nya verktyg (`ref_lookup_deso`, `ref_list_deso`, `scb_geodata_locate`) – slå på dem
 efter godkännandet (steg 3) i de assistenter vars profil har dem: `ref_lookup_deso` och `ref_list_deso` finns i alla
-profiler, `scb_geodata_locate` i Geodata och dataset och i Områdesstatistik
+profiler, `scb_geodata_locate` i Geodata och dataset, Områdesstatistik och Allt
 ([eneo/verktygsprofiler.md](eneo/verktygsprofiler.md)) – och flera ändrade beskrivningar och parametrar, bland annat för
 `scb_geodata_*`, `ref_*` och `skolverket_search_school_units`. Nya inställningar i compose-filen:
 `FUZZY_MCP_TOOL_TIMEOUT`, `FUZZY_MCP_CACHE_MAX_MB` och loggrotation; nytt tillägg för utgående trafik (avsnitt 2).
