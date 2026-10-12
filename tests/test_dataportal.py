@@ -668,8 +668,9 @@ async def test_search_hides_private_mailto_publishers_but_keeps_organizational_c
 
 @pytest.mark.parametrize("private", [False, True])
 @pytest.mark.parametrize("allow_personal_data", [False, True])
+@pytest.mark.parametrize("resolve_names", [False, True])
 async def test_publisher_name_resolution_redacts_personal_filter_diagnostics(
-    router, make_client, private, allow_personal_data
+    router, make_client, private, allow_personal_data, resolve_names
 ):
     publisher = "mailto:publisher@example.org"
     kind = PRIVATE if private else "http://purl.org/adms/publishertype/Company"
@@ -680,19 +681,22 @@ async def test_publisher_name_resolution_redacts_personal_filter_diagnostics(
         (lambda p: "title:Exempel" in p["query"], results(child("1", "1", publisher, agent))),
         (lambda p: p["query"].startswith(DATASET), results(child("1", "2", "https://example.org/data", dataset))),
     )
+    args = {"publisher": "Exempel", "resolve_publisher_names": resolve_names}
     async with make_client("dataportal", allow_personal_data=allow_personal_data) as client:
-        default = await call(client, "dataportal_search_datasets", {"publisher": "Exempel"})
+        default = await call(client, "dataportal_search_datasets", args)
         if allow_personal_data:
             opted = await call(
                 client,
                 "dataportal_search_datasets",
-                {"publisher": "Exempel", "include_personal_data": True},
+                {**args, "include_personal_data": True},
             )
             assert opted["publisher_uris"] == [publisher]
             assert esc(publisher) in opted["solr_query"]
+            assert opted["datasets"][0]["publisher_uri"] == publisher
     # Privacy only changes the output diagnostics, never the actual selection sent upstream.
     sent = [p for p in searches(router) if p["query"].startswith(DATASET)]
     assert sent and all(esc(publisher) in p["query"] for p in sent)
+    assert len(searches(router)) == (4 if allow_personal_data else 2)  # no extra privacy-resolution requests
     assert default["returned"] == 1
     if private:
         assert "publisher@example.org" not in json.dumps(default, ensure_ascii=False)
@@ -701,6 +705,7 @@ async def test_publisher_name_resolution_redacts_personal_filter_diagnostics(
     else:
         assert default["publisher_uris"] == [publisher]
         assert esc(publisher) in default["solr_query"]
+        assert default["datasets"][0]["publisher_uri"] == publisher
 
 
 async def test_search_validation_errors(router, make_client):

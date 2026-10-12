@@ -1133,6 +1133,14 @@ class DataportalService:
         data = await self.search(query, limit=limit, offset=offset, sort=sort_param)
         # Never more rows than asked for, even if the server ignores the limit (output size).
         rows = [self.summarize(child, include_personal_data) for child in children_of(data)[:limit]]
+        hidden_uris = set(pub.personal_uris) if pub and not include_personal_data else set()
+        # Name-filter resolution already classified these identifiers. Apply that knowledge even
+        # when the caller disables the optional publisher-name enrichment below.
+        for row in rows:
+            if row.publisher_uri in hidden_uris:
+                row.publisher_uri = None
+                row.publisher_name = None
+                row.publisher_name_redacted = True
         if resolve_names:
             wanted = [
                 r.publisher_uri
@@ -1172,7 +1180,6 @@ class DataportalService:
             notes.append(
                 f"{pub.hidden_private} matchande utgivare är privatpersoner; namnen visas inte (personuppgift)."
             )
-        hidden_uris = set(pub.personal_uris) if pub and not include_personal_data else set()
         if hidden_uris:
             notes.append(
                 "Sökfrågan (solr_query) och personliga e-postadresser i publisher_uris utelämnades "
