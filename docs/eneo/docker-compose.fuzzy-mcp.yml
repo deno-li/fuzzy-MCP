@@ -10,9 +10,11 @@
 #
 # Utgående trafik: med bara den här filen når fuzzy-mcp internet och det lokala nätet via fuzzy_egress. Lägg till
 # docker-compose.egress.yml (proxy som bara släpper fram myndigheternas värdar) eller spärra i brandväggen enligt
-# DRIFT.md avsnitt 6 (`down` först om fuzzy-mcp redan körts utan tillägget, så att nätet skapas om som internt):
+# DRIFT.md avsnitt 6 (`build` först, så att den gamla versionen kör vidare om bygget misslyckas, och `down` om
+# fuzzy-mcp redan körts utan tillägget, så att nätet skapas om som internt):
+#   docker compose -f docker-compose.fuzzy-mcp.yml -f docker-compose.egress.yml build
 #   docker compose -f docker-compose.fuzzy-mcp.yml -f docker-compose.egress.yml down
-#   docker compose -f docker-compose.fuzzy-mcp.yml -f docker-compose.egress.yml up -d --build
+#   docker compose -f docker-compose.fuzzy-mcp.yml -f docker-compose.egress.yml up -d
 #
 # eneo_module_net delas med Eneos backend, Traefik och eventuella moduler – alla där når fuzzy-mcp:8000, därför
 # krävs token. Vill ni begränsa ytterligare: skapa ett eget internt nät (docker network create --internal
