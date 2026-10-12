@@ -18,8 +18,10 @@ Eneo backend ──(internt nät, Bearer-token)──▶ fuzzy-mcp :8000/mcp ─
 Underlag: Eneos publika källkod (`eneo-ai/eneo`), taggen **`v2.2.2`**, commit
 `af647d28b1902af76503c1711ff51217deee7141`, och dokumentationen för 2.2 (docs.eneo.ai/v2.2, samma tagg), granskade
 2026-10-12. Där dokumentationen och koden skiljer sig gäller koden. MCP-klienten, dess inställningar och
-backendens låsfil är oförändrade från 2.2.1. Kontrollen i avsnitt 4 har passerat mot den levererade fuzzy-mcp
-0.2.0-imagen med klientberoenden låsta till Eneo 2.2.2; en full Eneo-installation har inte körts (avsnitt 10).
+backendens låsfil är oförändrade från 2.2.1. Kontrollen i avsnitt 4 har passerat mot den publicerade fuzzy-mcp
+0.2.1-imagen med Python 3.11 och klientberoenden låsta till Eneo 2.2.2, både i
+[releaseflödet](https://github.com/deno-li/fuzzy-MCP/actions/runs/38254615528) och efter nedladdning och återinläsning
+av den publicerade imagen. Ett fullständigt acceptanstest i er Eneo-installation återstår (avsnitt 10).
 Tidigare versioner av det här dokumentet byggde på commit `d305507` på grenen `develop`, som inte ingår i 2.2.
 **Er installerade Eneo-version kan skilja sig** – kontrollera den med `curl -s https://<eneo-domän>/version`
 (Eneos referens-compose använder `:latest`) och kör kontrollen i avsnitt 4 från er egen Eneo-backend; den visar
@@ -430,11 +432,13 @@ Kör kontrollen i avsnitt 4 från den återskapade backend-containern och accept
 
 ## 10. Det här är inte provat
 
-- En riktig Eneo-installation. Kontrollen med den levererade 0.2.0-imagen använder Eneo 2.2.2:s låsta
-  klientberoenden (bl.a. SDK 1.28.1, httpx 0.28.1, anyio 4.14.1 och pydantic 2.13.4) mot fuzzy-mcp: Bearer-token,
-  protokoll, alla 84 verktyg, scheman, referensuppslag och svarsstorlek passerade. Avsnitt 1–9 bygger på källkoden
-  och dokumentationen för v2.2.2 (där de skiljer sig gäller koden), men inte på en körande Eneo-backend, databas,
-  modell eller ett gränssnitt. Kör avsnitt 4 och 6 i er miljö.
+- Ett fullständigt acceptanstest i en riktig Eneo-installation. Den publicerade 0.2.1-imagen har kontrollerats med
+  Python 3.11 och Eneo 2.2.2:s 31 klientberoenden, låsta med versioner och SHA-256 (bl.a. SDK 1.28.1, httpx 0.28.1,
+  anyio 4.14.1 och pydantic 2.13.4). HTTP-röktestet och klientkontrollen passerade: Bearer-token, protokoll,
+  verktygskatalogen med 84 verktyg, scheman, referensuppslag och svarsstorlek. De använder lokala referensdata och verifierar inte
+  myndighetsåtkomst genom er egress-proxy eller hur er modell väljer verktyg och använder svaren. Avsnitt 1–9 bygger
+  på källkoden och dokumentationen för v2.2.2 (där de skiljer sig gäller koden) samt dessa klientkontroller.
+  Kör avsnitt 4 och 6 och kontrollerna under [Utgående trafik](#utgående-trafik) i er miljö.
 - Egress-imagen (`egress/Dockerfile`) är inte byggd i CI. `egress/squid.conf` är provad med Squid 6.14 på Ubuntu
   24.04 som användaren `proxy`: myndigheternas värdar släpps igenom (även via en överordnad proxy), andra värdar,
   IP-adresser, portar och okrypterad HTTP får 403.
