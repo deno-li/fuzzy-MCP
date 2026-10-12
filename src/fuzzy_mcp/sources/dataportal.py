@@ -648,10 +648,59 @@ def is_mailto(uri: str | None) -> bool:
 def unclassified_mailto_note(count: int, allow_personal_data: bool) -> str:
     """Note for mailto: identifiers left out because no metadata showed whether they belong to a person."""
     text = (
-        f"{count} utgivare eller kontaktpunkt(er) anges bara med en e-postadress som inte kunde klassificeras; "
+        f"{count} utgivare eller kontakt(er) anges bara med en e-postadress som inte kunde klassificeras; "
         "adressen visas inte eftersom den kan vara en personuppgift."
     )
     return text + (" include_personal_data=true visar den." if allow_personal_data else f" {PERSONAL_DATA_OFF_NOTE}")
+
+
+# Predicates whose object identifies an agent or contact; a mailto: object there without its own metadata is
+# unclassified. Attributes such as vcard:hasEmail belong to the (classified) node that holds them.
+AGENT_PREDICATES = frozenset(
+    {DCT + "publisher", DCT + "creator", DCT + "contributor", DCT + "rightsHolder", DCAT + "contactPoint"}
+)
+PERSONAL_EMAIL_PREDICATES = (VCARD + "hasEmail", FOAF + "mbox")
+PERSONAL_NAME_PREDICATES = (VCARD + "fn", FOAF + "name")
+
+
+def address_key(value: str | None) -> str | None:
+    """An e-mail address in comparable form (without ``mailto:``, query and case), else None."""
+    if not value:
+        return None
+    text = value.strip().lower()
+    if text.startswith("mailto:"):
+        text = text[len("mailto:") :].split("?", 1)[0]
+    return text if "@" in text and not any(c.isspace() or c in "/<>" for c in text) else None
+
+
+def personal_values(graph: Graph) -> tuple[set[str], set[str]]:
+    """Addresses (as :func:`address_key`) and names of contact persons and private-individual agents."""
+    addresses: set[str] = set()
+    names: set[str] = set()
+    for subject, node in graph.items():
+        if not (is_individual_contact(node) or is_private_agent(node)):
+            continue
+        candidates = [subject, *(v for p in PERSONAL_EMAIL_PREDICATES for v in all_values(node, p))]
+        addresses.update(key for key in map(address_key, candidates) if key)
+        names.update(
+            str(obj["value"])
+            for p in PERSONAL_NAME_PREDICATES
+            for obj in node.get(p, [])
+            if obj.get("type") == "literal"
+        )
+    return addresses, names
+
+
+def unclassified_mailtos(graph: Graph) -> set[str]:
+    """mailto: identifiers of agents or contacts without metadata of their own (absent or empty in the graph)."""
+    return {
+        value
+        for node in graph.values()
+        for predicate, values in node.items()
+        if predicate in AGENT_PREDICATES
+        for obj in values
+        if is_mailto(value := str(obj["value"])) and not graph.get(value)
+    }
 
 
 def reachable_bnodes(graph: Graph, start: list[str]) -> set[str]:
@@ -668,29 +717,38 @@ def reachable_bnodes(graph: Graph, start: list[str]) -> set[str]:
     return seen
 
 
-def redact_graph(graph: Graph, *, personal_subjects: set[str] | None = None) -> Graph:
+def redact_graph(
+    graph: Graph, *, personal_subjects: set[str] | None = None, personal_addresses: set[str] | None = None
+) -> Graph:
     """Raw graph without personuppgifter: contact persons (vcard:Individual) and private-individual
     publishers keep only their rdf:type/dcterms:type. Their blank nodes and personal mailto identifiers
-    are dropped along with incoming references to the dropped subjects."""
+    are dropped along with incoming references to the dropped subjects, and so is every other value that
+    is one of their e-mail addresses (or one of ``personal_addresses``)."""
     personal = {s for s, node in graph.items() if is_individual_contact(node) or is_private_agent(node)}
     personal.update(personal_subjects or ())
-    if not personal:
+    addresses = personal_values(graph)[0] | set(personal_addresses or ())
+    addresses.update(key for key in map(address_key, personal) if key)
+    if not personal and not addresses:
         return graph
     dropped = reachable_bnodes(graph, list(personal)) - personal
     # A contact's identifier can itself be its email address. Removing its properties alone
     # leaves that address both as a subject and in incoming references from the dataset.
     dropped.update(s for s in personal if s.lower().startswith("mailto:"))
+    dropped.update(s for s in graph if address_key(s) in addresses)
     kept = (RDF_TYPE, DCT + "type")
+
+    def keep(obj: dict[str, Any]) -> bool:
+        value = str(obj["value"])
+        if obj.get("type") in ("uri", "bnode") and value in dropped:
+            return False
+        return address_key(value) not in addresses
+
     return {
         subject: {
             predicate: safe
             for predicate, values in node.items()
             if subject not in personal or predicate in kept
-            if (
-                safe := [
-                    obj for obj in values if obj.get("type") not in ("uri", "bnode") or str(obj["value"]) not in dropped
-                ]
-            )
+            if (safe := [obj for obj in values if keep(obj)])
         }
         for subject, node in graph.items()
         if subject not in dropped
@@ -1193,8 +1251,9 @@ class DataportalService:
             try:
                 infos = await self.publisher_info(wanted)
             except UpstreamError as exc:
-                notes.append(f"Utgivarnamn kunde inte slås upp: {exc.message}")
-        hidden_unclassified = 0
+                if resolve_names:  # otherwise the note on unclassified addresses below says what was left out
+                    notes.append(f"Utgivarnamn kunde inte slås upp: {exc.message}")
+        hidden_unclassified: set[str] = set()
         for row in rows:
             if not row.publisher_uri or row.publisher_name or row.publisher_name_redacted:
                 continue
@@ -1204,12 +1263,12 @@ class DataportalService:
                 if is_mailto(row.publisher_uri):
                     row.publisher_uri = None
             elif row.publisher_uri in unclassified and not (info and info.name):
+                hidden_unclassified.add(row.publisher_uri)
                 row.publisher_uri = None
-                hidden_unclassified += 1
             elif resolve_names and info is not None:
                 row.publisher_name = info.name
         if hidden_unclassified:
-            notes.append(unclassified_mailto_note(hidden_unclassified, self.services.settings.allow_personal_data))
+            notes.append(unclassified_mailto_note(len(hidden_unclassified), self.services.settings.allow_personal_data))
         if any(r.publisher_name_redacted for r in rows):
             notes.append(
                 "Utgivare som är privatpersoner visas utan namn (personuppgift); include_personal_data=true visar dem."
@@ -1409,6 +1468,8 @@ class DataportalService:
 
         publisher = self._publisher(graph, root, prefer, include_personal_data)
         personal_subjects: set[str] = set()
+        private_names: set[str] = set()
+        known_public: set[str] = set()  # mailto identifiers a lookup classified as organisations
         if publisher and publisher.uri and not publisher.name and not publisher.name_redacted:
             info = None
             if publisher.uri not in looked_up:
@@ -1416,27 +1477,28 @@ class DataportalService:
                     info = (await self.publisher_info([publisher.uri])).get(publisher.uri)
             if info is not None and info.private and not include_personal_data:
                 personal_subjects.add(publisher.uri)
+                private_names.update([info.name] if info.name else [])
                 publisher.name_redacted = True
                 if is_mailto(publisher.uri):
                     publisher.uri = None
             elif info is not None and info.name:
                 publisher.name = info.name
-        # A mailto: identifier without metadata (absent or empty in the graph, lookup failed or found nothing)
-        # may be a private individual's address: leave it out unless the caller opted in (fail closed).
-        unclassified = (
-            set()
-            if include_personal_data
-            else {
-                ref
-                for ref in [*contact_refs, *([publisher.uri] if publisher and publisher.uri else [])]
-                if is_mailto(ref) and not graph.get(ref)
-            }
-        )
-        if publisher and publisher.uri in unclassified and not publisher.name:
-            publisher.uri = None
-        else:
-            unclassified.discard(publisher.uri if publisher else None)
-        personal_subjects |= unclassified
+                known_public.add(publisher.uri)
+        # A mailto: identifier of an agent or contact without metadata (absent or empty in the graph, lookup failed
+        # or found nothing) may be a private individual's address: leave it out unless the caller opted in (fail
+        # closed), wherever it occurs. Known personal addresses and names are left out of every other field too.
+        unclassified: set[str] = set()
+        addresses: set[str] = set()
+        names: set[str] = set()
+        if not include_personal_data:
+            unclassified = unclassified_mailtos(graph) | {r for r in contact_refs if is_mailto(r) and not graph.get(r)}
+            unclassified -= known_public
+            if publisher and publisher.uri in unclassified:
+                publisher.uri = None
+            personal_subjects |= unclassified
+            addresses, names = personal_values(graph)
+            addresses.update(key for key in map(address_key, personal_subjects) if key)
+            names |= private_names
         allowed = self.services.settings.allow_personal_data
         if publisher and publisher.name_redacted:
             notes.append(
@@ -1444,12 +1506,28 @@ class DataportalService:
                 if allowed
                 else f"Utgivaren är en privatperson; namnet visas inte (personuppgift). {PERSONAL_DATA_OFF_NOTE}"
             )
-        contacts = [
-            ContactPoint(redacted=True)
-            if ref in unclassified
-            else self._contact(graph, ref, prefer, include_personal_data)
-            for ref in contact_refs
-        ]
+        contacts: list[ContactPoint] = []
+        for ref in contact_refs:
+            contact = (
+                ContactPoint(redacted=True)
+                if ref in unclassified
+                else self._contact(graph, ref, prefer, include_personal_data)
+            )
+            if not contact.redacted and (
+                address_key(contact.email) in addresses
+                or address_key(contact.uri) in addresses
+                or contact.name in names
+            ):
+                # An organisation-typed contact that is the private publisher or a contact person (same address/name).
+                contact = ContactPoint(uri=None if is_mailto(contact.uri) else contact.uri, redacted=True)
+                personal_subjects.add(ref)
+            contacts.append(contact)
+        if addresses:
+            for distribution in distributions:
+                distribution.access_urls = [u for u in distribution.access_urls if address_key(u) not in addresses]
+                distribution.download_urls = [u for u in distribution.download_urls if address_key(u) not in addresses]
+            for service in data_services:
+                service.endpoint_urls = [u for u in service.endpoint_urls if address_key(u) not in addresses]
         if unclassified:
             notes.append(unclassified_mailto_note(len(unclassified), allowed))
         if any(c.redacted for ref, c in zip(contact_refs, contacts, strict=True) if ref not in unclassified):
@@ -1478,7 +1556,10 @@ class DataportalService:
             entry_id=eid,
             portal_url=portal_url(ctx, eid, portal_path(root_types)),
             metadata_url=f"{self.base}/{ctx}/metadata/{eid}",
-            dataset_uri=root_uri if not root_uri.startswith("_:") else None,
+            # An agent or contact entry can be looked up too; its identifier may be a person's address.
+            dataset_uri=None
+            if root_uri.startswith("_:") or (is_mailto(root_uri) and not include_personal_data)
+            else root_uri,
             types=[curie(t) for t in root_types],
             title=literal(root, DCT + "title", prefer),
             description=shorten(description, DETAIL_DESCRIPTION_CHARS),
@@ -1493,8 +1574,8 @@ class DataportalService:
             licenses=licenses,
             languages=[code_of(v, LANGUAGE_PREFIX) for v in all_values(root, DCT + "language")],
             conforms_to=all_values(root, DCT + "conformsTo"),
-            landing_pages=all_values(root, DCAT + "landingPage"),
-            documentation=all_values(root, FOAF + "page"),
+            landing_pages=[u for u in all_values(root, DCAT + "landingPage") if address_key(u) not in addresses],
+            documentation=[u for u in all_values(root, FOAF + "page") if address_key(u) not in addresses],
             hvd_categories=[
                 self._code(v, HVD_PREFIX, HVD_CATEGORIES) for v in all_values(root, DCATAP + "hvdCategory")
             ],
@@ -1502,7 +1583,7 @@ class DataportalService:
             in_series=all_values(root, DCAT + "inSeries"),
             temporal=[self._period(graph, o) for o in objs(root, DCT + "temporal")],
             spatial=[self._spatial(graph, o) for o in objs(root, DCT + "spatial")],
-            endpoint_urls=all_values(root, DCAT + "endpointURL"),
+            endpoint_urls=[u for u in all_values(root, DCAT + "endpointURL") if address_key(u) not in addresses],
             endpoint_descriptions=all_values(root, DCAT + "endpointDescription"),
             distributions=distributions,
             distributions_total=len(dist_refs),
@@ -1514,7 +1595,9 @@ class DataportalService:
         if include_raw:
             self._attach_raw(
                 detail,
-                graph if include_personal_data else redact_graph(graph, personal_subjects=personal_subjects),
+                graph
+                if include_personal_data
+                else redact_graph(graph, personal_subjects=personal_subjects, personal_addresses=addresses),
                 root_uri,
             )
         return detail

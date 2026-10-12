@@ -158,13 +158,18 @@ def _retry_after_seconds(response: httpx2.Response) -> float | None:
     except ValueError:
         pass
     else:
-        # "nan"/"inf" parse as floats but are no delay; anyio.sleep(nan) raises.
-        return max(0.0, min(seconds, MAX_RETRY_AFTER_SECONDS)) if math.isfinite(seconds) else None
+        # "nan" parses as a float but is no delay (anyio.sleep(nan) raises); "inf" gets the maximum.
+        return None if math.isnan(seconds) else max(0.0, min(seconds, MAX_RETRY_AFTER_SECONDS))
     try:
         when = parsedate_to_datetime(raw)
     except (TypeError, ValueError):
         return None
     return max(0.0, min(when.timestamp() - time.time(), MAX_RETRY_AFTER_SECONDS))
+
+
+def _invalid_location(exc: Exception) -> bool:
+    """httpx2 reports a Location it cannot parse (e.g. a bad port) as a RemoteProtocolError, a TransportError."""
+    return isinstance(exc, httpx2.RemoteProtocolError) and "location header" in str(exc).lower()
 
 
 _HTML_TITLE = re.compile(r"<(title|h1|h2)[^>]*>(.*?)</\1>", re.IGNORECASE | re.DOTALL)
@@ -413,6 +418,11 @@ class HttpClient:
                 )
                 response = await self._follow_redirects(source, url, response)
             except httpx2.TransportError as exc:
+                if _invalid_location(exc):
+                    # Retrying cannot fix the answer; fail like the other malformed redirects below.
+                    raise UpstreamError(
+                        source, f"Anropet misslyckades ({type(exc).__name__})", url=url, detail=str(exc) or None
+                    ) from exc
                 last_error = exc
                 if attempt + 1 < attempts:
                     await self._sleep(min(0.5 * 2**attempt, 8.0))

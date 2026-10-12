@@ -457,6 +457,18 @@ async def test_emails_in_free_text_withheld_when_personal_data_off(router, make_
         ("Skriv till anna@kth.se.", "Skriv till [e-post utelämnad]."),
         ("a &lt; b &amp; c", "a &lt; b &amp; c"),  # markup is untouched without an address
         ("https://medium.com/@kth.se", "https://medium.com/@kth.se"),
+        # Split by inline markup or invisible characters, yet joined again in the flattened text.
+        ("<p>Kursansvarig: anna.andersson@<wbr>kth.se</p>", "Kursansvarig: [e-post utelämnad]\n"),
+        ("<strong>anna</strong>@kth.se", "[e-post utelämnad]"),
+        ("Mejla anna&shy;@kth.se", "Mejla [e-post utelämnad]"),
+        ("Mejla anna\u200b@kth.se", "Mejla [e-post utelämnad]"),
+        ("<p>anna</p><p>@kth.se</p>", "<p>anna</p><p>@kth.se</p>"),  # separate lines: no address
+        # Not addresses: an '@' in a URL path, a version, a URL with user info.
+        ('<img src="https://www.kth.se/img/logo@2x.png">', '<img src="https://www.kth.se/img/logo@2x.png">'),
+        ("Vi använder react@18.2.0 och node@20.11", "Vi använder react@18.2.0 och node@20.11"),
+        ("https://user@host.se/path", "https://user@host.se/path"),
+        # A mailto: link keeps the punctuation around it.
+        ("[Mejla oss](mailto:anna@kth.se).", "[Mejla oss]([e-post utelämnad])."),
     ],
 )
 def test_without_emails_finds_obscured_addresses_and_keeps_other_text(value, expected):

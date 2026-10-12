@@ -59,13 +59,13 @@ async def test_retries_on_429_then_succeeds():
     assert res.data == [1, 2] and attempts["n"] == 3
 
 
-@pytest.mark.parametrize("value", ["nan", "inf", "-5"])
-async def test_unusable_retry_after_falls_back_to_a_finite_delay(value):
+@pytest.mark.parametrize("value,expected", [("nan", 0.5), ("inf", 30.0), ("-5", 0.0)])
+async def test_unusable_retry_after_falls_back_to_a_finite_delay(value, expected):
     delays: list[float] = []
 
     async def sleep(seconds: float) -> None:
         delays.append(seconds)
-        await anyio.sleep(seconds)  # anyio rejects NaN
+        await anyio.sleep(0 if seconds == seconds else seconds)  # anyio rejects NaN (NaN != NaN)
 
     attempts = {"n": 0}
 
@@ -78,7 +78,7 @@ async def test_unusable_retry_after_falls_back_to_a_finite_delay(value):
     async with HttpClient(Settings(max_retries=1), transport=httpx2.MockTransport(handler), sleep=sleep) as client:
         res = await client.get_json("scb", "https://example.se/t")
     assert res.data == [1]
-    assert len(delays) == 1 and 0.0 <= delays[0] <= 30.0
+    assert delays == [expected]  # nan: the default backoff; inf: the maximum; negative: no wait
 
 
 async def test_error_detail_from_problem_document():
@@ -291,15 +291,14 @@ async def test_redirect_outside_the_agencies_is_refused(location):
     assert len(seen) == 1  # the target was never requested, and the refusal is not retried
 
 
-async def test_malformed_redirect_location_becomes_upstream_error():
+@pytest.mark.parametrize("location", ["https:evil.example/x", "https://api.skolverket.se:abc/x", "http://[::1/x"])
+async def test_malformed_redirect_location_becomes_upstream_error_without_retries(location):
     seen: list[str] = []
-    handler = _redirecting(
-        {"https://api.skolverket.se/": httpx2.Response(302, headers={"location": "https:evil.example/x"})}, seen
-    )
+    handler = _redirecting({"https://api.skolverket.se/": httpx2.Response(302, headers={"location": location})}, seen)
     async with _client(handler) as client:
         with pytest.raises(UpstreamError) as info:
             await client.get_json("skolverket", "https://api.skolverket.se/skolenhetsregistret/v2/school-units/1")
-    assert "InvalidURL" in info.value.message
+    assert info.value.message.startswith("Anropet misslyckades")
     assert len(seen) == 1
 
 
