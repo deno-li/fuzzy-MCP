@@ -69,6 +69,9 @@ Kommandona körs från leveranspaketets rot och lägger compose-filerna och toke
 # Det är en kontrollsumma från samma releasesida, ingen signatur.
 docker load -i fuzzy-mcp-0.2.0-image.tar.gz
 docker image inspect --format '{{.Id}}' fuzzy-mcp:0.2.0
+# Använder Docker containerd för att lagra images (förvalt i nyare installationer) visar kommandot i stället
+# manifestets digest. Den står i arkivets index.json, som SHA256SUMS redan har kontrollerat:
+tar -xzOf fuzzy-mcp-0.2.0-image.tar.gz index.json | python3 -c "import json,sys; print(json.load(sys.stdin)['manifests'][0]['digest'])"
 
 sudo mkdir -m 755 -p /opt/fuzzy-mcp
 sudo cp -r docs/eneo/docker-compose.fuzzy-mcp.yml docs/eneo/docker-compose.egress.yml docs/eneo/egress /opt/fuzzy-mcp/
@@ -293,8 +296,8 @@ verktyg avbryts (`avbröts efter`) och att proxyn (`docker logs fuzzy-egress-pro
 
 ## 7. Uppdatera fuzzy-mcp
 
-1. Läs in den nya imagen (`docker load -i fuzzy-mcp-<version>-image.tar.gz`) och jämför image-id med releasesidan
-   (avsnitt 2). Kopiera den nya versionens compose-filer och `egress/` till `/opt/fuzzy-mcp` (jämför först med era
+1. Läs in den nya imagen (`docker load -i fuzzy-mcp-<version>-image.tar.gz`) och jämför image-id med releasesidan,
+   eller med manifestets digest om Docker använder containerd för images (avsnitt 2). Kopiera den nya versionens compose-filer och `egress/` till `/opt/fuzzy-mcp` (jämför först med era
    egna ändringar), kontrollera `image:` och kör `sudo docker compose -f docker-compose.fuzzy-mcp.yml -f
    docker-compose.egress.yml up -d --build` i `/opt/fuzzy-mcp`. Vänta på `healthy` (`docker inspect …`, avsnitt 2).
    Behåll den tidigare imagen tills den nya har fungerat en tid. Utan container: DRIFT.md avsnitt 10.

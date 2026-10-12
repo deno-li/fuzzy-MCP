@@ -281,11 +281,14 @@ systemctl daemon-reload && systemctl enable --now fuzzy-mcp && journalctl -u fuz
 **Container** – imagen kör som icke-root (uid 10001), har `HEALTHCHECK` mot `/healthz` och innehåller inte pip.
 Använd i drift imagen från leveranspaketet (byggt med `--with-image`): dess Python-paket är kontrollerade mot
 `requirements.lock`, så paketets SBOM och `audit.txt` beskriver den. Jämför image-id med raden "Container-image" på
-releasesidan:
+releasesidan. Använder Docker containerd för att lagra images (förvalt i nyare installationer) visar
+`docker image inspect` i stället manifestets digest, som står i arkivets `index.json` (arkivet är redan kontrollerat
+via `SHA256SUMS`):
 
 ```bash
 docker load -i fuzzy-mcp-0.2.0-image.tar.gz
-docker image inspect --format '{{.Id}}' fuzzy-mcp:0.2.0     # samma som på releasesidan
+docker image inspect --format '{{.Id}}' fuzzy-mcp:0.2.0     # samma som på releasesidan, eller som raden nedan
+tar -xzOf fuzzy-mcp-0.2.0-image.tar.gz index.json | python3 -c "import json,sys; print(json.load(sys.stdin)['manifests'][0]['digest'])"
 ```
 
 `Dockerfile` i repot bygger en image för test. Den löser beroendena på nytt vid varje bygge (med hashkontroll inom
