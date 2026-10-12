@@ -432,6 +432,8 @@ konfiguration, tjänst (Windows/systemd), container, nätverk, säkerhet, överv
 
 - `python scripts/build_release.py --platform windows|linux` bygger leveranspaketet (Windows: Python 3.14, Linux: 3.12; wheel,
   låsta beroenden med SHA-256, hjul för offlineinstallation, SBOM, sårbarhetskontroll och kontrollsummor).
+  Använd inte `--skip-audit` för paket som ska levereras eller publiceras; flaggan är bara för lokala testbyggen och
+  sådana paket underkänns av `scripts/verify_release.py` eftersom `audit.txt` saknas.
   `scripts/build_release.ps1` och `scripts/build_release.sh` är genvägar.
 - `Dockerfile` bygger en container som kör som icke-root med hälsokontroll.
 - `GET /healthz` svarar på HTTP-transporterna utan att anropa myndigheterna.
