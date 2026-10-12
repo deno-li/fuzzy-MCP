@@ -27,6 +27,12 @@ Tidigare versioner av det här dokumentet byggde på commit `d305507` på grenen
 (Eneos referens-compose använder `:latest`) och kör kontrollen i avsnitt 4 från er egen Eneo-backend; den visar
 också backendens MCP-SDK-version (1.28.1 i 2.2.2).
 
+Efter 0.2.1 använder CI och kommande releasebyggen en säkerhetsuppdaterad klientprofil baserad på Eneo 2.2.2.
+`scripts/eneo_client_requirements.txt` låser versioner och SHA-256, men AnyIO har höjts från 4.14.1 till 4.14.2
+och PyJWT från 2.13.0 till 2.15.0. Den profilen återger därför inte exakt Eneos ursprungliga låsfil.
+Den tidigare verifieringen av 0.2.1 ovan gäller fortfarande den ursprungliga klientprofilen; nya CI-resultat
+gäller den uppdaterade profilen. Detta ändrar inte beroendena i er installerade Eneo-backend.
+
 Inställningarna som börjar på `MCP_` nedan är Eneos egna (miljövariabler i Eneos backend); värdena är standardvärden.
 
 | Eneo gör så här | Vad det betyder för fuzzy-mcp |

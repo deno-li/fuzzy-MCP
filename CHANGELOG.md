@@ -9,6 +9,9 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ### Rättat
 
+- Eneos separata testklient använder AnyIO 4.14.2 i stället för 4.14.1, som omfattas av
+  GHSA-82r6-8w77-94w6, GHSA-3w57-8xmc-8v26 och GHSA-5p39-cfhj-2xmp. Dokumentationen skiljer denna
+  säkerhetsuppdaterade klientprofil (även PyJWT 2.15.0) från Eneo 2.2.2:s ursprungliga låsfil.
 - Eneo-guiden redovisar verifieringen av den publicerade 0.2.1-imagen med Eneo 2.2.2:s hash-låsta klientberoenden
   och Python 3.11, med länk till releasekörningen. Acceptanstest med modell och myndighetsåtkomst i driftmiljön
   skiljs från de godkända klientkontrollerna.

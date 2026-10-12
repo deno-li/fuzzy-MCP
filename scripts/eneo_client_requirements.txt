@@ -2,10 +2,12 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 #
-# Eneo v2.2.2 MCP client dependencies for Linux CPython 3.11.
+# Security-patched Eneo v2.2.2 MCP client profile for Linux CPython 3.11.
 # Source: https://github.com/eneo-ai/eneo/blob/af647d28b1902af76503c1711ff51217deee7141/backend/uv.lock
 # Keep this SDK 1.x client separate from fuzzy-MCP's SDK 2.x environment.
-# Pins and hashes come from Eneo's lockfile; update when reviewing a new Eneo release.
+# Baseline pins and hashes come from Eneo's lockfile; review new Eneo releases separately.
+# Security updates may advance pins: anyio 4.14.1 -> 4.14.2, pyjwt 2.13.0 -> 2.15.0.
+# This profile is not an exact reproduction of the original Eneo lockfile.
 
 annotated-doc==0.0.4 \
     --hash=sha256:571ac1dc6991c450b25a9c2d84a3705e2ae7a53467b5d111c24fa8baabbed320 \
