@@ -180,7 +180,7 @@ Allt styrs med miljövariabler (eller motsvarande flaggor till `fuzzy-mcp`). Ing
 | `FUZZY_MCP_AUTH_HEADER` | `X-API-Key` | header för API-nyckel som alternativ till `Authorization: Bearer` |
 | `FUZZY_MCP_STATELESS` | `false` | `true` = Streamable HTTP utan sessioner (flera instanser utan sticky sessions; rekommenderas för Eneo) |
 | `FUZZY_MCP_PERSONAL_DATA` | `opt-in` | `off` = inga namn på enskilda personer, även om en klient ber om det |
-| `FUZZY_MCP_MAX_OUTPUT_CHARS` | `0` (av) | tak för ett verktygssvar i tecken; servern kortar listor och behåller giltig JSON (Eneo: `30000`) |
+| `FUZZY_MCP_MAX_OUTPUT_CHARS` | `0` (av) | tak för ett verktygssvar i tecken; servern kortar listor och behåller giltig JSON (Eneo: `30000`). Frågerecept från `*_build_query` kortas aldrig: för stora recept ger fel med uppmaning att minska urvalet |
 | `FUZZY_MCP_TOOL_TIMEOUT` | `0` (av) | sekunder per verktygsanrop; därefter ett tydligt fel och återstående anrop mot myndigheterna avbryts. Sätt den under klientens egen gräns (Eneo: `50`, Eneo väntar 60 s) |
 | `FUZZY_MCP_SOURCES` | alla | begränsa källorna, t.ex. `scb,skolverket,reference` (delkällor: `scb.statistik`, `scb.geodata`, `skolverket.statistik`, `skolverket.skolenhetsregistret`, `skolverket.syllabus`, `skolverket.planerad`, `skolverket.susa`) |
 | `FUZZY_MCP_LANGUAGE` | `sv` | `sv` eller `en` |
@@ -290,9 +290,9 @@ releasesidan. Använder Docker containerd för att lagra images (förvalt i nyar
 via `SHA256SUMS`):
 
 ```bash
-docker load -i fuzzy-mcp-0.2.1-image.tar.gz
-docker image inspect --format '{{.Id}}' fuzzy-mcp:0.2.1     # samma som på releasesidan, eller som raden nedan
-tar -xzOf fuzzy-mcp-0.2.1-image.tar.gz index.json | python3 -c "import json,sys; print(json.load(sys.stdin)['manifests'][0]['digest'])"
+docker load -i fuzzy-mcp-0.2.2-image.tar.gz
+docker image inspect --format '{{.Id}}' fuzzy-mcp:0.2.2     # samma som på releasesidan, eller som raden nedan
+tar -xzOf fuzzy-mcp-0.2.2-image.tar.gz index.json | python3 -c "import json,sys; print(json.load(sys.stdin)['manifests'][0]['digest'])"
 ```
 
 `Dockerfile` i repot bygger en image för test. Den löser beroendena på nytt vid varje bygge (med hashkontroll inom
@@ -317,7 +317,7 @@ sudo chown 10001:10001 /etc/fuzzy-mcp/token && sudo chmod 0400 /etc/fuzzy-mcp/to
 docker run -d --name fuzzy-mcp -p 127.0.0.1:8000:8000 \
   -e FUZZY_MCP_ALLOWED_HOSTS=mcp.kommun.se \
   -v /etc/fuzzy-mcp/token:/run/secrets/fuzzy_mcp_token:ro -e FUZZY_MCP_AUTH_TOKEN_FILE=/run/secrets/fuzzy_mcp_token \
-  --read-only --cap-drop ALL --security-opt no-new-privileges fuzzy-mcp:0.2.1
+  --read-only --cap-drop ALL --security-opt no-new-privileges fuzzy-mcp:0.2.2
 docker inspect --format '{{.State.Health.Status}}' fuzzy-mcp     # healthy
 ```
 
@@ -423,7 +423,7 @@ organisationens proxy via `HTTPS_PROXY`, eller regler i kedjan `DOCKER-USER`.
    & {
    $ErrorActionPreference = "Stop"
    $py = "3.14"                         # samma som paketnamnet
-   $venv = "C:\fuzzy-mcp\venv-0.2.1"     # den nya versionen
+   $venv = "C:\fuzzy-mcp\venv-0.2.2"     # den nya versionen
    if (Test-Path $venv) { throw "$venv finns redan – efter ett avbrutet försök: Remove-Item -Recurse -Force $venv och kör blocket igen (inte den miljö som tjänsten använder nu)" }
    py -$py -m venv $venv
    if ($LASTEXITCODE) { throw "Kunde inte skapa $venv med Python $py" }
@@ -442,7 +442,7 @@ organisationens proxy via `HTTPS_PROXY`, eller regler i kedjan `DOCKER-USER`.
    & {
    $ErrorActionPreference = "Stop"
    $nssm = "C:\Program Files\nssm\nssm.exe"
-   $venv = "C:\fuzzy-mcp\venv-0.2.1"
+   $venv = "C:\fuzzy-mcp\venv-0.2.2"
    & $nssm set fuzzy-mcp Application "$venv\Scripts\fuzzy-mcp.exe"
    if ($LASTEXITCODE) { throw "nssm set misslyckades" }
    & $nssm restart fuzzy-mcp

@@ -42,7 +42,7 @@ Inställningarna som börjar på `MCP_` nedan är Eneos egna (miljövariabler i 
 | Token krypteras i Eneos databas **bara om `ENCRYPTION_KEY` är satt** – Eneos guide säger att den alltid krypteras, men koden sparar den i klartext utan nyckel, och Eneo startar utan nyckel utan varning. De sista 4 tecknen visas för alla i tenanten | Kräv `ENCRYPTION_KEY` i Eneo och kontrollera krypteringen enligt avsnitt 8. Använd en lång slumpad token |
 | Kan skicka `X-Eneo-User-Id`, `X-Eneo-User-Email`, `X-Eneo-User-Name`, `X-Eneo-Tenant-Id`, `X-Eneo-Tenant-Name` och `X-Eneo-Role` om **Vidarebefordra identitet** slås på | Låt det vara **avstängt** – fuzzy-mcp behöver ingen identitet och läser inte headerna. Påslaget hämtar Eneo dessutom verktygslistan före varje svar (upp till 60 s), och misslyckas det döljs serverns verktyg i det svaret |
 | Ingen spärr mot interna adresser; URL:en används som den skrivs | Nätsegmentering är den tekniska spärren (avsnitt 2) |
-| Läser innehållsblocken i verktygssvar (text – och bilder och inbäddade resurser, som fuzzy-mcp inte använder) men **aldrig `structuredContent`**, och kapar mitt i texten vid **32 768 tecken** efter JSON-kodning (`MCP_TOOL_OUTPUT_MAX_CHARS`) | Sätt `FUZZY_MCP_MAX_OUTPUT_CHARS=30000` – servern kortar då själv och behåller giltig JSON. Har Eneo-driften ändrat `MCP_TOOL_OUTPUT_MAX_CHARS`: sätt fuzzy-mcp:s tak cirka 10 % under det värdet |
+| Läser innehållsblocken i verktygssvar (text – och bilder och inbäddade resurser, som fuzzy-mcp inte använder) men **aldrig `structuredContent`**, och kapar mitt i texten vid **32 768 tecken** efter JSON-kodning (`MCP_TOOL_OUTPUT_MAX_CHARS`) | Sätt `FUZZY_MCP_MAX_OUTPUT_CHARS=30000` – servern kortar då själv och behåller giltig JSON. Frågerecept från `*_build_query` kortas aldrig utan ger fel om de inte ryms. Har Eneo-driften ändrat `MCP_TOOL_OUTPUT_MAX_CHARS`: sätt fuzzy-mcp:s tak cirka 10 % under det värdet |
 | Verktygssvaren i en tur får tillsammans ta högst **hälften av modellens Max indatatokens** i Eneo (Eneos tokenräkning); svar därefter ersätts med en notis. Svaren sparas med samtalet och skickas med **i sin helhet** i senare turer; de fyra senaste turerna tas alltid med | Med en lokal modell med litet kontextfönster: sänk `FUZZY_MCP_MAX_OUTPUT_CHARS` och börja ett nytt samtal för en ny fråga (avsnitt 5.1) |
 | Högst **10 verktygsrundor** per svar (en runda kan ha flera parallella anrop); därefter måste modellen svara utan verktyg | Instruktionen i avsnitt 5 och få, väl valda urval håller frågorna inom gränsen |
 | Modellen ser verktygen som `<servernamn>__<verktyg>`; servernamnet skrivs med gemener, och tecken utanför a–z, 0–9, `_` och `-` (t.ex. å, ä, ö och mellanslag) blir `_`. Krockar två namn får modellen bara det först registrerade. Många modell-API:er tillåter högst 64 tecken | Använd ett kort servernamn i Eneo, **högst 19 tecken** (t.ex. `oppnadata`) |
@@ -78,11 +78,11 @@ Kommandona körs från leveranspaketets rot och lägger compose-filerna och toke
 # Imagen från leveranspaketet (byggt med --with-image). Jämför image-id med raden "Container-image" på
 # releasesidan (https://github.com/deno-li/fuzzy-MCP/releases) – då kör ni exakt den granskade imagen.
 # Det är en kontrollsumma från samma releasesida, ingen signatur.
-docker load -i fuzzy-mcp-0.2.1-image.tar.gz
-docker image inspect --format '{{.Id}}' fuzzy-mcp:0.2.1
+docker load -i fuzzy-mcp-0.2.2-image.tar.gz
+docker image inspect --format '{{.Id}}' fuzzy-mcp:0.2.2
 # Använder Docker containerd för att lagra images (förvalt i nyare installationer) visar kommandot i stället
 # manifestets digest. Den står i arkivets index.json, som SHA256SUMS redan har kontrollerat:
-tar -xzOf fuzzy-mcp-0.2.1-image.tar.gz index.json | python3 -c "import json,sys; print(json.load(sys.stdin)['manifests'][0]['digest'])"
+tar -xzOf fuzzy-mcp-0.2.2-image.tar.gz index.json | python3 -c "import json,sys; print(json.load(sys.stdin)['manifests'][0]['digest'])"
 
 sudo mkdir -m 755 -p /opt/fuzzy-mcp
 sudo cp -r docs/eneo/docker-compose.fuzzy-mcp.yml docs/eneo/docker-compose.egress.yml docs/eneo/egress /opt/fuzzy-mcp/
@@ -101,8 +101,8 @@ skilja sig från paketets `requirements.lock`, SBOM och sårbarhetskontroll. En 
 tagg (t.ex. `fuzzy-mcp:dev`) och används bara för test.
 
 Paketets `sbom.cdx.json` och `audit.txt` gäller Python-beroendena, inte basimagen och inte egress-proxyn (DRIFT.md
-avsnitt 2). Skanna båda imagerna före drift och efter varje ombyggnad, t.ex. `trivy image fuzzy-mcp:0.2.1` och
-`trivy image fuzzy-mcp-egress-proxy:local` (SBOM för hela imagen: `syft fuzzy-mcp:0.2.1 -o cyclonedx-json`).
+avsnitt 2). Skanna båda imagerna före drift och efter varje ombyggnad, t.ex. `trivy image fuzzy-mcp:0.2.2` och
+`trivy image fuzzy-mcp-egress-proxy:local` (SBOM för hela imagen: `syft fuzzy-mcp:0.2.2 -o cyclonedx-json`).
 Egress-imagen byggs lokalt från `ubuntu:24.04` med de Squid-paket Ubuntu har vid byggtillfället; lås gärna basimagen
 till en digest (kommentaren i `egress/Dockerfile`).
 
@@ -367,6 +367,11 @@ compose-filen: se samma avsnitt.
 Från 0.2.0 till 0.2.1: paketet får de rättade driftinstruktionerna och `docs/KALLKONTROLL.md`. Inga verktyg eller
 MCP-inställningar ändras, och token behålls. Jämför och kopiera de uppdaterade compose-filerna och `egress/` som i
 steg 1; behåll era egna proxy- och certifikatinställningar enligt avsnitt 2.
+
+Från 0.2.1 till 0.2.2: rättningar av API-notishistorik, personuppgiftsfiltrering, sidning och frågerecept.
+Inga verktyg tillkommer. Synkronisera verktygen och granska ändrade beskrivningar och svarsformat enligt steg 3.
+Ett frågerecept som överskrider `FUZZY_MCP_MAX_OUTPUT_CHARS` ger nu ett fel i stället för ett förkortat recept; minska urvalet
+och försök igen. Transport, token och nätverksinställningar behålls.
 
 **Eneo 2.2.1 → 2.2.2:** CORS-ändringarna gäller inkommande trafik till Eneos API, bland annat Eneos egna
 `sk_`-nycklar. Backendens utgående MCP-anrop till fuzzy-mcp är oförändrade; behåll Streamable HTTP, token och
