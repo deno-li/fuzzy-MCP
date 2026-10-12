@@ -130,16 +130,18 @@ följer omdirigeringar bara mellan dem (aldrig från https till http), men näte
 - **Rekommenderat:** tillägget `docker-compose.egress.yml` (kommandona ovan). `fuzzy_egress` blir ett internt nät
   utan utgång, och trafiken går via en Squid-proxy (`egress/`, Ubuntu 24.04) som bara släpper fram HTTPS till de
   sex värdarna. Andra värdar, IP-adresser, portar och okrypterad HTTP får 403. Proxyn ser bara värdnamnet, aldrig
-  sökväg eller frågesträng. Byter ni från bara `docker-compose.fuzzy-mcp.yml`: kör `docker compose … down` med båda
-  filerna först, så att nätet skapas om som internt. Kräver organisationen en egen proxy: avkommentera både
-  `cache_peer` (med er proxys värd och port, och `login=…` om proxyn kräver inloggning) och `never_direct` i
-  `egress/squid.conf` – utan `never_direct` går anslutningarna fortfarande direkt. Filen monteras i containern, så
-  en ändring gäller efter `docker restart fuzzy-egress-proxy`. En egen `HTTPS_PROXY` i `docker-compose.fuzzy-mcp.yml`
-  ersätts av tillägget, som pekar den på Squid; ta bort `https_proxy` med gemener om den finns, eftersom den går före
-  och leder trafiken förbi Squid. Squid tunnlar bara TLS: gör er proxy TLS-inspektion ska `SSL_CERT_FILE` och
-  CA-bundlen vara kvar i compose-filen. Bakom en proxy vid bygget: `--build-arg http_proxy=… --build-arg
-  https_proxy=…` på raden med `docker compose … build` (`up` tar inte `--build-arg`); Docker-daemonen behöver
-  också proxy för att hämta `ubuntu:24.04`.
+  sökväg eller frågesträng. Byter ni från bara `docker-compose.fuzzy-mcp.yml`: kör `docker compose … build`, sedan
+  `docker compose … down` med båda filerna och därefter `up -d`, så att nätet skapas om som internt (avsnitt 7).
+  Kräver organisationen en egen proxy: avkommentera både `cache_peer` (med er proxys värd och port) och
+  `never_direct` i `egress/squid.conf` – utan `never_direct` går anslutningarna fortfarande direkt. Kräver proxyn
+  inloggning: be om ett undantag för de sex värdarna (DRIFT.md avsnitt 4). Filen monteras i containern, så en ändring
+  gäller efter `docker restart fuzzy-egress-proxy`. En egen `HTTPS_PROXY` i `docker-compose.fuzzy-mcp.yml` ersätts
+  av tillägget, som pekar den på Squid; ta bort `https_proxy` med gemener om den finns: den går före `HTTPS_PROXY`,
+  så anropen går till er proxy i stället för till Squid och misslyckas, eftersom nätet saknar utgång. Squid tunnlar
+  bara TLS: gör er proxy TLS-inspektion ska `SSL_CERT_FILE` och CA-bundlen vara kvar i compose-filen. Bakom en proxy
+  vid bygget: `--build-arg http_proxy=… --build-arg https_proxy=…` på raden med `docker compose … build` (`up` tar
+  inte `--build-arg`); Docker-daemonen behöver också proxy för att hämta `ubuntu:24.04` och `docker/dockerfile:1`
+  (raden `# syntax=` i `egress/Dockerfile`).
 - **Alternativ:** organisationens proxy med motsvarande lista (`HTTPS_PROXY` i compose-filen), eller regler i
   kedjan `DOCKER-USER`. Observera att `ufw` (`default deny outgoing`) inte stoppar containertrafik på Ubuntu:
   den går genom `FORWARD`, där Dockers regler kommer först.
@@ -152,10 +154,11 @@ docker network inspect fuzzy-mcp_fuzzy_egress --format '{{.Internal}}'   # true 
 docker exec fuzzy-mcp python -c "import urllib.request as u; u.urlopen('https://example.com', timeout=5)"
 # väntat: ett fel med "Tunnel connection failed: 403" – example.com är inte tillåten
 docker exec fuzzy-mcp python -c "import urllib.request as u; print(u.urlopen('https://statistikdatabasen.scb.se/api/v2/config', timeout=15).status)"
-# väntat: 200. CERTIFICATE_VERIFY_FAILED: CA-bundlen saknas vid TLS-inspektion; 403: proxyn nekade; 503: proxyn når inte ut
+# väntat: 200. CERTIFICATE_VERIFY_FAILED: CA-bundlen saknas vid TLS-inspektion; 403: proxyn nekade;
+# 407: er proxy kräver inloggning; 503: proxyn når inte ut; namnuppslag eller nätfel: en https_proxy med gemener
 docker logs --tail 5 fuzzy-egress-proxy
 # väntat: TCP_DENIED/403 för example.com och, när förbindelsen stängts, TCP_TUNNEL/200 för
-# statistikdatabasen.scb.se (med cache_peer: FIRSTUP_PARENT/<er proxy>, inte HIER_DIRECT)
+# statistikdatabasen.scb.se (med cache_peer: FIRSTUP_PARENT/<er proxys IP-adress>, inte HIER_DIRECT)
 ```
 
 ### Rekommenderad konfiguration för Eneo
@@ -313,9 +316,11 @@ verktyg avbryts (`avbröts efter`) och att proxyn (`docker logs fuzzy-egress-pro
    filerna), kör `sudo chmod -R a+rX /opt/fuzzy-mcp/egress` och kontrollera `image:`. Bygg egress-proxyn innan den
    gamla versionen stoppas – misslyckas bygget fortsätter den att köra: `sudo docker compose -f
    docker-compose.fuzzy-mcp.yml -f docker-compose.egress.yml build` i `/opt/fuzzy-mcp` (bakom en proxy med
-   `--build-arg`, avsnitt 2). Kör sedan samma kommando med `up -d` i stället för `build`; avbrottet varar tills
-   containern är `healthy` (`docker inspect …`, avsnitt 2). Behåll den tidigare imagen tills den nya har fungerat en
-   tid. Utan container: DRIFT.md avsnitt 10.
+   `--build-arg`, avsnitt 2). Kör sedan `sudo docker compose -f docker-compose.fuzzy-mcp.yml -f
+   docker-compose.egress.yml up -d` (utan `--build-arg`); fuzzy-mcp är borta medan containern skapas om. Vänta på
+   `healthy` (`docker inspect …`, avsnitt 2; första hälsokontrollen körs efter 30 s). Första gången med
+   egress-tillägget, t.ex. från 0.1.2: `down` mellan `build` och `up -d` (stycket efter steg 4). Behåll den tidigare
+   imagen tills den nya har fungerat en tid. Utan container: DRIFT.md avsnitt 10.
 2. Kör `eneo_check.py` från backend igen (avsnitt 4) och kontrollerna under [Utgående trafik](#utgående-trafik).
 3. I Eneo: **Synkronisera verktyg** på MCP-servern under **Admin → Verktyg → MCP-servrar** (engelska: Sync Tools)
    och granska ändringarna (**Godkänn** per verktyg eller **Godkänn alla**):
@@ -337,8 +342,10 @@ verktyg avbryts (`avbröts efter`) och att proxyn (`docker logs fuzzy-egress-pro
    anrop som modellen bygger efter den nyare beskrivningen ger annars fel eller ofullständiga svar utan
    felmeddelande.
 
-Från 0.1.2 till 0.2.0: tre nya verktyg (`ref_lookup_deso`, `ref_list_deso`, `scb_geodata_locate`) – slå på dem i
-assistenterna efter godkännandet (steg 3) – och flera ändrade beskrivningar och parametrar, bland annat för
+Från 0.1.2 till 0.2.0: tre nya verktyg (`ref_lookup_deso`, `ref_list_deso`, `scb_geodata_locate`) – slå på dem
+efter godkännandet (steg 3) i de assistenter vars profil har dem: `ref_lookup_deso` och `ref_list_deso` finns i alla
+profiler, `scb_geodata_locate` i Geodata och dataset och i Områdesstatistik
+([eneo/verktygsprofiler.md](eneo/verktygsprofiler.md)) – och flera ändrade beskrivningar och parametrar, bland annat för
 `scb_geodata_*`, `ref_*` och `skolverket_search_school_units`. Nya inställningar i compose-filen:
 `FUZZY_MCP_TOOL_TIMEOUT`, `FUZZY_MCP_CACHE_MAX_MB` och loggrotation; nytt tillägg för utgående trafik (avsnitt 2).
 Första gången tillägget används: kör `build` som i steg 1, sedan `docker compose -f docker-compose.fuzzy-mcp.yml -f

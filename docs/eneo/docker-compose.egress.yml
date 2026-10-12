@@ -6,11 +6,13 @@
 # fuzzy_egress blir ett internt nät utan utgång, och all utgående trafik går via en Squid-proxy (egress/) som bara
 # släpper fram HTTPS till de sex värdarna. Lägg filen och mappen egress/ bredvid docker-compose.fuzzy-mcp.yml:
 #
+#   docker compose -f docker-compose.fuzzy-mcp.yml -f docker-compose.egress.yml build
 #   docker compose -f docker-compose.fuzzy-mcp.yml -f docker-compose.egress.yml down   # nätet måste skapas om
-#   docker compose -f docker-compose.fuzzy-mcp.yml -f docker-compose.egress.yml up -d --build
+#   docker compose -f docker-compose.fuzzy-mcp.yml -f docker-compose.egress.yml up -d
 #
-# `down` behövs när nätet tidigare skapats utan tillägget: annars ligger fuzzy_egress kvar som ett vanligt nät med
-# utgång. Kontrollera efteråt: docker network inspect fuzzy-mcp_fuzzy_egress --format '{{.Internal}}'  → true
+# Bygg först: misslyckas bygget kör den gamla versionen vidare. `down` behövs när nätet tidigare skapats utan
+# tillägget: annars ligger fuzzy_egress kvar som ett vanligt nät med utgång. Kontrollera efteråt:
+#   docker network inspect fuzzy-mcp_fuzzy_egress --format '{{.Internal}}'  → true
 #
 # Bygget hämtar ubuntu:24.04 och Squid; bakom en proxy: --build-arg http_proxy=… --build-arg https_proxy=… till
 # `docker compose build`. Kräver organisationen att all trafik går via en egen proxy: avkommentera både cache_peer

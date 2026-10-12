@@ -12,12 +12,13 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 - 0.2.0 publicerades 2026-10-12; `publiccode.yml` och rubriken nedan angav 2026-10-11.
 - DRIFT.md och ENEO.md: med Docker som lagrar images i containerd visar `docker image inspect` manifestets digest i
   stället för image-id på releasesidan. Dokumenten visar hur digesten läses ur arkivets `index.json`.
-- ENEO.md: egress-proxyn byggs med `docker compose … build` innan den gamla versionen stoppas, och `--build-arg` hör
-  till den raden (`up` tar inte flaggan). Nya verktyg är avslagna i befintliga assistenter i Eneo 2.2 även efter
-  godkännandet och måste slås på där. Kontrollen efter start visar också att en myndighet nås genom proxyn. Knappen
-  heter **Synkronisera verktyg** i Eneos svenska gränssnitt. `chmod` på `egress/` så att Squid kan läsa `squid.conf`
-  på servrar med snäv umask. Med organisationens proxy: `https_proxy` med gemener går förbi Squid, och vid
-  TLS-inspektion ska `SSL_CERT_FILE` vara kvar.
+- ENEO.md och kommentarerna i compose-filerna: egress-proxyn byggs med `docker compose … build` innan den gamla
+  versionen stoppas, och `--build-arg` hör till den raden (`up` tar inte flaggan). Nya verktyg är avslagna i
+  befintliga assistenter i Eneo 2.2 även efter godkännandet och måste slås på där. Kontrollen efter start visar också
+  att en myndighet nås genom proxyn. Knappen heter **Synkronisera verktyg** i Eneos svenska gränssnitt. `chmod` på
+  `egress/` så att Squid kan läsa `squid.conf` på servrar med snäv umask. Med organisationens proxy: en `https_proxy`
+  med gemener går före tilläggets `HTTPS_PROXY`, så anropen når inte Squid, och vid TLS-inspektion ska
+  `SSL_CERT_FILE` vara kvar.
 
 ## [0.2.0] - 2026-10-12
 
