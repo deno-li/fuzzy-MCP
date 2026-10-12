@@ -90,7 +90,7 @@ jobs:
         id: eneo-python
         with:
           python-version: "3.11"
-      - name: Eneo 2.2.2-kompatibilitet (låst klient, samtliga källor, token och storleksgräns)
+      - name: Eneo 2.2.2-kompatibilitet (säkerhetsuppdaterad klient, samtliga källor, token och storleksgräns)
         env:
           ENEO_PYTHON: ${{ steps.eneo-python.outputs.python-path }}
         run: |

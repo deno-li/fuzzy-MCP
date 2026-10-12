@@ -120,7 +120,7 @@ jobs:
         id: eneo-python
         with:
           python-version: "3.11"
-      - name: Installera Eneo 2.2.2:s låsta MCP-klient i en separat miljö
+      - name: Installera säkerhetsuppdaterad MCP-klient baserad på Eneo 2.2.2 i en separat miljö
         env:
           ENEO_PYTHON: ${{ steps.eneo-python.outputs.python-path }}
         run: |

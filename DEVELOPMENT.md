@@ -168,8 +168,10 @@ Låsningen görs för målplattformen: på Windows kräver MCP-SDK:n även `pywi
    kontrolleras innan paketen packas upp för test. Linux-paketet installeras utan nät från det uppackade
    slutarkivet; Windows-paketet installeras på samma sätt på en Windows-runner med paketets Python-version.
    Båda kör `fuzzy-mcp --version` och stdio-röktest. Den exporterade container-imagen läses tillbaka med
-   `docker load` och provas med och utan token; Eneo-kontrollen körs mot den med klientberoenden låsta till
-   den granskade Eneo-versionen (2.2.2). Först när alla dessa kontroller passerat skapar flödet ett
+   `docker load` och provas med och utan token; Eneo-kontrollen körs mot den med en säkerhetsuppdaterad
+   klientprofil baserad på den granskade Eneo-versionen (2.2.2). Versioner och SHA-256 är låsta i
+   `scripts/eneo_client_requirements.txt`, vars inledning anger avvikelser från Eneos ursprungliga låsfil.
+   Kontrollen ersätter inte ett test från den installerade Eneo-backenden. Först när alla dessa kontroller passerat skapar flödet ett
    release-**utkast** `vX.Y.Z` med paketen, deras `.sha256`-filer och en releasetext från
    CHANGELOG-avsnittet med kontrollsummor och spårbarhet (`scripts/release_notes.py`). Flödet stoppar om det inte
    startas från main, om taggen eller releasen redan finns, om CHANGELOG saknar versionen eller om ett paket inte är
