@@ -112,7 +112,9 @@ def build_image(out: Path, version: str, python: str, ca_file: str | None, lock:
         cmd += ["--build-arg", f"VCS_REF={commit}-dirty" if dirty else f"VCS_REF={commit}"]
     for var in ("HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY"):
         if os.environ.get(var):
-            cmd += ["--build-arg", f"{var}={os.environ[var]}"]
+            # Docker reads a valueless build argument from its inherited environment. Keep proxy credentials
+            # out of the process arguments and the command printed by run() or a failed build.
+            cmd += ["--build-arg", var]
     if ca_file:
         cmd += ["--secret", f"id=ca,src={Path(ca_file).resolve()}"]
     run([*cmd, "."])
