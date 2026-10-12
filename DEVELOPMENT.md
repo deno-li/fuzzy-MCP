@@ -150,6 +150,9 @@ docker build -t fuzzy-mcp:dev .
 python scripts/smoke_test.py --stdio -- --sources reference      # eller --url http://127.0.0.1:8000/mcp
 ```
 
+`--skip-audit` är bara för lokala testbyggen när `pip-audit` inte kan köras. Slutliga releasepaket ska byggas utan
+flaggan; annars saknas `audit.txt` och `scripts/verify_release.py` stoppar paketet.
+
 Låsningen görs för målplattformen: på Windows kräver MCP-SDK:n även `pywin32`. Se [docs/DRIFT.md](docs/DRIFT.md).
 
 ## Utgåvor
