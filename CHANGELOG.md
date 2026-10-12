@@ -7,6 +7,12 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ## [Unreleased]
 
+### Rättat
+
+- Eneo-guiden redovisar verifieringen av den publicerade 0.2.1-imagen med Eneo 2.2.2:s hash-låsta klientberoenden
+  och Python 3.11, med länk till releasekörningen. Acceptanstest med modell och myndighetsåtkomst i driftmiljön
+  skiljs från de godkända klientkontrollerna.
+
 ## [0.2.1] - 2026-10-12
 
 ### Tillagt
