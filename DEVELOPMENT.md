@@ -161,9 +161,13 @@ Låsningen görs för målplattformen: på Windows kräver MCP-SDK:n även `pywi
 3. Kör arbetsflödet **Release** från main (Actions → Release → Run workflow, *Use workflow from* `main`). Det bygger den
    commit som är senaste på main när flödet startar (`GITHUB_SHA`) och ingen annan, även om main flyttas under tiden; en
    äldre commit släpps med den manuella vägen nedan. Flödet kör lint och tester och bygger sedan Windows- och
-   Linux-paketen (med container-image). Paketen kontrolleras: kontrollsummor, installation utan nät (Linux på riktigt,
-   Windows med `pip --dry-run` för win_amd64), att `fuzzy-mcp --version` stämmer, röktest och containern med och utan
-   token. Sedan skapar det ett release-**utkast** `vX.Y.Z` med paketen, deras `.sha256`-filer och en releasetext från
+   Linux-paketen (med container-image). De färdiga arkivens externa och interna kontrollsummor och innehåll
+   kontrolleras innan paketen packas upp för test. Linux-paketet installeras utan nät från det uppackade
+   slutarkivet; Windows-paketet installeras på samma sätt på en Windows-runner med paketets Python-version.
+   Båda kör `fuzzy-mcp --version` och stdio-röktest. Den exporterade container-imagen läses tillbaka med
+   `docker load` och provas med och utan token; Eneo-kontrollen körs mot den med klientberoenden låsta till
+   den granskade Eneo-versionen (2.2.2). Först när alla dessa kontroller passerat skapar flödet ett
+   release-**utkast** `vX.Y.Z` med paketen, deras `.sha256`-filer och en releasetext från
    CHANGELOG-avsnittet med kontrollsummor och spårbarhet (`scripts/release_notes.py`). Flödet stoppar om det inte
    startas från main, om taggen eller releasen redan finns, om CHANGELOG saknar versionen eller om ett paket inte är
    byggt från rätt commit. Ett ofullständigt utkast tas bort automatiskt; finns ett kvar ändå, ta bort det (`gh release
@@ -174,6 +178,7 @@ Låsningen görs för målplattformen: på Windows kräver MCP-SDK:n även `pywi
    kontrollsummorna i releasetexten. Kontrollera efteråt att `gh api repos/deno-li/fuzzy-MCP/commits/vX.Y.Z --jq .sha`
    ger samma commit. DRIFT.md hänvisar till releasebeskrivningen som den separat publicerade kontrollsumman.
 
-Utan GitHub Actions: bygg med `build_release.py` (se ovan), skapa taggen och releasen för hand, bifoga paketen och
+Utan GitHub Actions: bygg med `build_release.py` (se ovan) och kör samma slutarkivs-, offline-, Windows-,
+container- och Eneo-kontroller som i flödet. Skapa därefter taggen och releasen för hand, bifoga paketen och
 `.sha256`-filerna och använd `python scripts/release_notes.py --version X.Y.Z --changelog CHANGELOG.md --release-dir
 release --commit <sha>` för releasetexten.

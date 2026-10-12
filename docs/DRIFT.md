@@ -39,6 +39,7 @@ Linux som standard; annan version med `--python`) och innehåller:
 | `eneo_check.py` | kontroll med Eneos MCP-klient, körs i Eneos backend (se `docs/ENEO.md`) |
 | `docs/DRIFT.md` | den här instruktionen |
 | `docs/ENEO.md`, `docs/eneo/` | Eneo-guide, assistentinstruktion, compose-fil och verktygsprofiler |
+| `docs/KALLKONTROLL.md` | verifierade API-kontrakt och källkontroller samt kvarvarande begränsningar |
 | `fuzzy-mcp-<version>-image.tar.gz` | färdig container-image (bara om paketet byggts med `--with-image`); `docker load -i …` |
 | `README.md`, `CHANGELOG.md`, `SECURITY.md`, `DEVELOPMENT.md` m.fl. | dokumentation, samma sökvägar som i repot |
 | `LICENSE`, `LICENSES/`, `REUSE.toml` | licenstexter och vilka filer som har vilken licens (MIT för koden, CC0 1.0 för kodlistor och dokument) |
@@ -286,9 +287,9 @@ releasesidan. Använder Docker containerd för att lagra images (förvalt i nyar
 via `SHA256SUMS`):
 
 ```bash
-docker load -i fuzzy-mcp-0.2.0-image.tar.gz
-docker image inspect --format '{{.Id}}' fuzzy-mcp:0.2.0     # samma som på releasesidan, eller som raden nedan
-tar -xzOf fuzzy-mcp-0.2.0-image.tar.gz index.json | python3 -c "import json,sys; print(json.load(sys.stdin)['manifests'][0]['digest'])"
+docker load -i fuzzy-mcp-0.2.1-image.tar.gz
+docker image inspect --format '{{.Id}}' fuzzy-mcp:0.2.1     # samma som på releasesidan, eller som raden nedan
+tar -xzOf fuzzy-mcp-0.2.1-image.tar.gz index.json | python3 -c "import json,sys; print(json.load(sys.stdin)['manifests'][0]['digest'])"
 ```
 
 `Dockerfile` i repot bygger en image för test. Den löser beroendena på nytt vid varje bygge (med hashkontroll inom
@@ -313,7 +314,7 @@ sudo chown 10001:10001 /etc/fuzzy-mcp/token && sudo chmod 0400 /etc/fuzzy-mcp/to
 docker run -d --name fuzzy-mcp -p 127.0.0.1:8000:8000 \
   -e FUZZY_MCP_ALLOWED_HOSTS=mcp.kommun.se \
   -v /etc/fuzzy-mcp/token:/run/secrets/fuzzy_mcp_token:ro -e FUZZY_MCP_AUTH_TOKEN_FILE=/run/secrets/fuzzy_mcp_token \
-  --read-only --cap-drop ALL --security-opt no-new-privileges fuzzy-mcp:0.2.0
+  --read-only --cap-drop ALL --security-opt no-new-privileges fuzzy-mcp:0.2.1
 docker inspect --format '{{.State.Health.Status}}' fuzzy-mcp     # healthy
 ```
 
@@ -419,7 +420,7 @@ organisationens proxy via `HTTPS_PROXY`, eller regler i kedjan `DOCKER-USER`.
    & {
    $ErrorActionPreference = "Stop"
    $py = "3.14"                         # samma som paketnamnet
-   $venv = "C:\fuzzy-mcp\venv-0.2.0"     # den nya versionen
+   $venv = "C:\fuzzy-mcp\venv-0.2.1"     # den nya versionen
    if (Test-Path $venv) { throw "$venv finns redan – efter ett avbrutet försök: Remove-Item -Recurse -Force $venv och kör blocket igen (inte den miljö som tjänsten använder nu)" }
    py -$py -m venv $venv
    if ($LASTEXITCODE) { throw "Kunde inte skapa $venv med Python $py" }
@@ -438,7 +439,7 @@ organisationens proxy via `HTTPS_PROXY`, eller regler i kedjan `DOCKER-USER`.
    & {
    $ErrorActionPreference = "Stop"
    $nssm = "C:\Program Files\nssm\nssm.exe"
-   $venv = "C:\fuzzy-mcp\venv-0.2.0"
+   $venv = "C:\fuzzy-mcp\venv-0.2.1"
    & $nssm set fuzzy-mcp Application "$venv\Scripts\fuzzy-mcp.exe"
    if ($LASTEXITCODE) { throw "nssm set misslyckades" }
    & $nssm restart fuzzy-mcp
