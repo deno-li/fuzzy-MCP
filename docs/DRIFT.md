@@ -25,7 +25,8 @@ För IT-drift som installerar och kör servern. Utvecklare läser [DEVELOPMENT.m
 ## 2. Leveransen
 
 Paketet byggs med `python scripts/build_release.py --platform windows|linux` (Python 3.14 för Windows och 3.12 för
-Linux som standard; annan version med `--python`) och innehåller:
+Linux som standard; annan version med `--python`, men container-imagen har alltid basimagens Python 3.12) och
+innehåller:
 
 | Fil | Syfte |
 | --- | --- |
@@ -43,7 +44,7 @@ Linux som standard; annan version med `--python`) och innehåller:
 | `fuzzy-mcp-<version>-image.tar.gz` | färdig container-image (bara om paketet byggts med `--with-image`); `docker load -i …` |
 | `README.md`, `CHANGELOG.md`, `SECURITY.md`, `DEVELOPMENT.md` m.fl. | dokumentation, samma sökvägar som i repot |
 | `LICENSE`, `LICENSES/`, `REUSE.toml` | licenstexter och vilka filer som har vilken licens (MIT för koden, CC0 1.0 för kodlistor och dokument) |
-| `BUILDINFO.txt` | vilken commit, plattform och vilka verktyg paketet byggts med |
+| `BUILDINFO.txt` | vilken commit, plattform och vilka verktyg paketet byggts med, och imagens bas med digest |
 | `SHA256SUMS` | kontrollsummor för filerna ovan |
 
 Bygg leveranspaket utan `--skip-audit` när de ska driftsättas eller publiceras. Flaggan är bara för lokala
@@ -52,7 +53,8 @@ testbyggen; utan audit-steget skapas ingen `audit.txt`, och `scripts/verify_rele
 `sbom.cdx.json` och `audit.txt` gäller paketets Python-beroenden. Container-imagen löser beroendena själv när den
 byggs; `build_release.py --with-image` kontrollerar att den fick exakt samma versioner som `requirements.lock` och
 skriver det i `BUILDINFO.txt`. En image som byggs direkt från repot med `docker build` låser sina beroenden själv
-och omfattas bara av image-skanningen. Imagens bas (Debian-paket och Python från `python:3.12-slim`) omfattas inte – skanna
+och omfattas bara av image-skanningen. Imagens bas (Debian-paket och Python från `python:3.12-slim`, låst till den
+digest som står på raden `Imagens bas` i `BUILDINFO.txt`) omfattas inte – skanna
 imagen med er vanliga verktygskedja (t.ex. Trivy eller Grype) före drift; samma verktyg (eller `syft`) kan ta fram
 en SBOM för hela imagen. Basimagens Debian-paket har sina egna licenser (bl.a. GPL), som etiketten
 `org.opencontainers.image.licenses` och `sbom.cdx.json` inte beskriver; etiketten gäller bara fuzzy-mcp. Källkoden till
@@ -73,6 +75,22 @@ i paketet. `smoke_test.py` och `eneo_check.py` ligger i paketets rot.
 **Kontrollera paketet före installation.** Jämför också kontrollsumman i `.sha256`-filen med den som publicerats
 separat – i releasebeskrivningen på GitHub (`https://github.com/deno-li/fuzzy-MCP/releases`) eller i meddelandet från
 den som levererade paketet. Filerna i samma leverans skyddar bara mot skadade filer, inte mot ett utbytt paket.
+
+**Kontrollera var paketet byggts (byggproveniens).** Releaser efter 0.2.2 har en attestering från GitHub för båda
+arkiven: en signerad uppgift om att arkivet byggts av repots Release-flöde från en viss commit på main. Den gäller
+själva filen, så den fungerar även när ni hämtat paketet från en intern spegel. Kontrollera arkivet innan ni packar upp
+det, med GitHub CLI (`gh`, inloggad med `gh auth login`) på en dator med nät mot GitHub. Byt `<version>`, `<python>`
+och `<commit>` mot värdena i releasetexten (i PowerShell: skriv kommandot på en rad, utan `\`):
+
+```bash
+gh attestation verify fuzzy-mcp-<version>-windows-py<python>.zip --repo deno-li/fuzzy-MCP \
+  --signer-workflow deno-li/fuzzy-MCP/.github/workflows/release.yml --source-ref refs/heads/main \
+  --source-digest <commit>
+```
+
+Linux-arkivet kontrolleras på samma sätt (`fuzzy-mcp-<version>-linux-py<python>.tar.gz`). Kontrollen misslyckas om
+filen har ändrats eller om den inte byggts av Release-flödet från den commiten. `SHA256SUMS` i arkivet täcker sedan
+varje fil i paketet, även container-imagen. Kontrollera kontrollsummorna och packa upp så här:
 
 ```powershell
 # Windows (som administratör) – i mappen där zip-filen ligger; lägg bara ett paket där. Klistra in hela blocket

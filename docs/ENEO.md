@@ -80,7 +80,8 @@ Kommandona körs från leveranspaketets rot och lägger compose-filerna och toke
 ```bash
 # Imagen från leveranspaketet (byggt med --with-image). Jämför image-id med raden "Container-image" på
 # releasesidan (https://github.com/deno-li/fuzzy-MCP/releases) – då kör ni exakt den granskade imagen.
-# Det är en kontrollsumma från samma releasesida, ingen signatur.
+# Image-id:t är en kontrollsumma. Att Linux-arkivet byggts av Release-flödet visar dess signerade byggproveniens
+# (gh attestation verify, DRIFT.md avsnitt 2), och arkivets SHA256SUMS täcker imagefilen.
 docker load -i fuzzy-mcp-0.2.2-image.tar.gz
 docker image inspect --format '{{.Id}}' fuzzy-mcp:0.2.2
 # Använder Docker containerd för att lagra images (förvalt i nyare installationer) visar kommandot i stället

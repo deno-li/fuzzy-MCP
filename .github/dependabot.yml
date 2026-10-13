@@ -20,3 +20,14 @@ updates:
     groups:
       github-actions:
         patterns: ["*"]
+  # Basimagen i Dockerfile (python:3.12-slim, låst till en digest). Dependabot föreslår nya digester för samma tagg;
+  # en ny Python-version byts medvetet, samtidigt som Linux-paketets standard i scripts/build_release.py.
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    ignore:
+      - dependency-name: python
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]

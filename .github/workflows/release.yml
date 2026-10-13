@@ -2,7 +2,8 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-# Bygger leveranspaketen, kontrollerar dem och skapar ett release-UTKAST med paket, kontrollsummor och releasetext.
+# Kör hela CI (ci.yml) för commiten, bygger leveranspaketen, kontrollerar dem, attesterar arkivens byggproveniens och
+# skapar ett release-UTKAST med paket, kontrollsummor och releasetext.
 # Startas för hand från main (Actions → Release → Run workflow). Alla jobb hämtar körningens commit (GITHUB_SHA,
 # senaste commit på main när flödet startades), så ingen annan kod körs här. Utkastet publiceras av en människa;
 # först då skapas taggen.
@@ -11,7 +12,8 @@ name: Release
 on:
   workflow_dispatch:
 
-# Actions är låsta till commit-SHA (Dependabot uppdaterar dem); jobbet release har skrivrätt.
+# Actions är låsta till commit-SHA (Dependabot uppdaterar dem). Bara jobbet attest får signera och bara jobbet
+# release har skrivrätt.
 permissions:
   contents: read
 
@@ -24,23 +26,19 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  test:
-    name: Lint och tester
+  main:
+    name: Starta från main
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 5
     steps:
-      - name: Starta från main
-        run: if [ "$GITHUB_REF" != refs/heads/main ]; then echo "::error::Starta flödet från main"; exit 1; fi
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.12"
-      - run: python -m pip install -e ".[dev]"
-      - run: ruff format --check src tests scripts
-      - run: ruff check src tests scripts
-      - run: python -m pytest -q
+      - run: if [ "$GITHUB_REF" != refs/heads/main ]; then echo "::error::Starta flödet från main"; exit 1; fi
+
+  # Samma CI som för pull requests, för just den här commiten: Python 3.11–3.14, lint, tester, verktygstabellen,
+  # REUSE, paket- och Eneo-kontrollerna. Releasen byggs bara om allt är grönt.
+  test:
+    name: CI för commiten
+    needs: main
+    uses: ./.github/workflows/ci.yml
 
   build:
     name: Bygg och kontrollera paketen
@@ -69,8 +67,9 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "commit=$commit" >> "$GITHUB_OUTPUT"
           echo "Bygger fuzzy-mcp $version från $commit"
-      - name: Byggverktyg
-        run: python -m pip install "uv==0.11.32"
+      - name: Byggverktyg (låsta med SHA-256)
+        run: |
+          python -m pip install --require-hashes --only-binary=:all: -r scripts/build_requirements.txt
       - name: Bygg Windows-paketet
         run: python scripts/build_release.py --platform windows
       - name: Bygg Linux-paketet med container-image
@@ -237,9 +236,32 @@ jobs:
           & $python "$package/smoke_test.py" --stdio -- --sources reference
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+  # Byggproveniens (SLSA) för arkiven som klarat alla kontroller: en signerad koppling arkiv → release.yml → commit,
+  # som går att kontrollera med `gh attestation verify` även för en fil från en spegel (docs/DRIFT.md avsnitt 2).
+  # Jobbet kör bara GitHubs egna actions, ingen kod från PyPI eller paketen, och är det enda som får signera.
+  attest:
+    name: Byggproveniens för arkiven
+    needs: [build, windows_test]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release
+          path: release
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            release/fuzzy-mcp-*.zip
+            release/fuzzy-mcp-*.tar.gz
+
   release:
     name: Skapa release-utkast
-    needs: [build, windows_test]
+    needs: [build, windows_test, attest]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:

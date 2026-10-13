@@ -18,25 +18,27 @@
 # Bakom en proxy med TLS-inspektion: skicka med proxy och en komplett CA-bundle (publika rotcertifikat +
 # organisationens CA; den ersätter de inbyggda rotcertifikaten under bygget och hamnar inte i imagen):
 #   docker build --build-arg HTTPS_PROXY=http://proxy:8080 --secret id=ca,src=ca-bundle.pem -t fuzzy-mcp:dev .
-# Lås gärna basimagen till en digest i produktion: FROM python:3.12-slim@sha256:<digest>
+#
+# Basimagen är låst till en digest (samma i båda FROM-raderna; Dependabot föreslår nya) och byggverktygen till SHA-256
+# i scripts/build_requirements.txt. Python-versionen är densamma som Linux-paketets standard i scripts/build_release.py.
 
-ARG PYTHON_VERSION=3.12
-
-FROM python:${PYTHON_VERSION}-slim AS build
+FROM python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1 AS build
 WORKDIR /src
 COPY pyproject.toml README.md LICENSE CHANGELOG.md ./
 COPY LICENSES ./LICENSES
 COPY src ./src
-# Bara det här steget använder nätet (PyPI). Beroendena låses med SHA-256 och hämtas som hjul.
+# Bara det här steget använder nätet (PyPI). Byggverktygen och beroendena låses med SHA-256 och hämtas som hjul.
 RUN --mount=type=secret,id=ca \
+    --mount=type=bind,source=scripts/build_requirements.txt,target=/tmp/build_requirements.txt \
     if [ -s /run/secrets/ca ]; then export PIP_CERT=/run/secrets/ca SSL_CERT_FILE=/run/secrets/ca; fi \
- && pip install --no-cache-dir --disable-pip-version-check "uv==0.11.32" \
- && uv build --wheel --out-dir /dist \
+ && pip install --no-cache-dir --disable-pip-version-check --require-hashes --only-binary=:all: \
+      -r /tmp/build_requirements.txt \
+ && uv build --wheel --out-dir /dist --build-constraints /tmp/build_requirements.txt --require-hashes \
  && uv pip compile pyproject.toml --generate-hashes --no-header --quiet -o /dist/requirements.lock \
  && pip download --no-cache-dir --disable-pip-version-check --no-deps --only-binary=:all: \
       -r /dist/requirements.lock -d /dist/wheels
 
-FROM python:${PYTHON_VERSION}-slim
+FROM python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 # Installation utan nät, med hashkontroll mot låsfilen. Basimagens pip installerar i en venv utan egen pip och
