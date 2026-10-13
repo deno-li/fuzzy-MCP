@@ -171,12 +171,13 @@ async def run(args: argparse.Namespace) -> int:
             result = await call_tool(session, report, "fuzzy_list_sources", {})
             if result is not None:
                 report.check("Verktygsanrop fuzzy_list_sources", not result.isError)
-        if "ref_list_municipalities" in names:
-            result = await call_tool(session, report, "ref_list_municipalities", {})
+        if "ref_get_code_list" in names:
+            # The whole code list (about 118 000 characters) fits only when the server shortens its answers.
+            result = await call_tool(session, report, "ref_get_code_list", {"name": "regioner"})
             text = "".join(getattr(block, "text", "") for block in result.content) if result else ""
             size = len(json.dumps(text, ensure_ascii=False)) + ENVELOPE_CHARS
             report.check(
-                "Stort svar ryms i Eneos gräns (ref_list_municipalities)",
+                "Stort svar ryms i Eneos gräns (ref_get_code_list regioner)",
                 result is not None and not result.isError and size <= MAX_RESULT_CHARS,
                 f"{size:,} tecken som Eneo räknar dem (gräns {MAX_RESULT_CHARS:,}); "
                 + ("ok" if size <= MAX_RESULT_CHARS else "sätt FUZZY_MCP_MAX_OUTPUT_CHARS=30000 på servern"),

@@ -7,6 +7,16 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ## [Unreleased]
 
+### Rättat
+
+- ENEO.md avsnitt 6: acceptanstestets rad 5 ber om hela kodlistan regioner (`ref_get_code_list`), som kortas med
+  `_kortat` vid `FUZZY_MCP_MAX_OUTPUT_CHARS=30000`. Sedan 0.3.0 ryms alla 290 kommuner i `ref_list_municipalities`
+  (cirka 26 600 tecken som Eneo räknar dem), så "Visa alla kommuner i Sverige." gav inget kortat svar. Rad 2 godtar
+  andra tabeller med folkmängd än TAB638, och rad 3 och 4 anger, som rad 8, vilken källa de kräver.
+- `eneo_check.py`: kontrollen "Stort svar" hämtar hela kodlistan regioner i stället för `ref_list_municipalities`,
+  som sedan 0.3.0 ryms även utan `FUZZY_MCP_MAX_OUTPUT_CHARS`. Saknas gränsen ger kontrollen fel igen, som ENEO.md
+  avsnitt 4 beskriver.
+
 ## [0.3.0] - 2026-10-13
 
 ### Säkerhet
