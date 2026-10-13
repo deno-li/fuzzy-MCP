@@ -405,3 +405,185 @@ async def test_http_mirror_may_redirect_over_http_but_never_back_down_from_https
         with pytest.raises(UpstreamError, match="okrypterad"):
             await client.get_json("scb", "http://mirror.example.se/up")
     assert seen[-1] == "https://api.skolverket.se/b" and not any("user-text" in url for url in seen)
+
+
+OTHER_HOST = "stoppades – servern följer bara omdirigeringar till myndigheternas egna adresser"
+OTHER_PORT = "stoppades – servern följer bara omdirigeringar till samma port och protokoll som i myndighetens adress"
+
+
+@pytest.mark.parametrize(
+    ("location", "where"),
+    [
+        ("https://api.skolverket.se:22/x", "https://api.skolverket.se:22"),  # ssh on an agency's host
+        ("https://API.Skolverket.SE:8443/x?q=user-text", "https://api.skolverket.se:8443"),
+        ("https://api.skolverket.se:022/x", "https://api.skolverket.se:22"),  # another spelling of port 22
+        ("https://statistikdatabasen.scb.se:80/api/v2", "https://statistikdatabasen.scb.se:80"),  # another agency
+        ("https://api.skolverket.se:0/x", "https://api.skolverket.se:0"),
+    ],
+)
+async def test_redirect_to_another_port_on_an_agency_host_is_refused(location, where):
+    seen: list[str] = []
+    handler = _redirecting({"https://api.skolverket.se/": httpx2.Response(302, headers={"location": location})}, seen)
+    async with _client(handler) as client:
+        with pytest.raises(UpstreamError) as info:
+            await client.get_json("skolverket", "https://api.skolverket.se/skolenhetsregistret/v2/school-units/1")
+    assert info.value.message == f"Omdirigeringen till {where} {OTHER_PORT}"
+    assert len(seen) == 1  # the target was never requested, and the refusal is not retried
+
+
+@pytest.mark.parametrize(
+    "location",
+    [
+        "https://api.skolverket.se:443/new",  # the default port written out is the same origin
+        "https://API.SKOLVERKET.SE/new",  # host names are case-insensitive
+        "/new",
+        "https://statistikdatabasen.scb.se:443/api/v2/x",  # another agency, default port written out
+    ],
+)
+async def test_redirect_to_an_agency_origin_is_followed_with_or_without_its_default_port(location):
+    seen: list[str] = []
+    handler = _redirecting(
+        {
+            "https://api.skolverket.se/old": httpx2.Response(301, headers={"location": location}),
+            "https://api.skolverket.se/new": httpx2.Response(200, json={"ok": True}),
+            "https://statistikdatabasen.scb.se/api/v2/x": httpx2.Response(200, json={"ok": True}),
+        },
+        seen,
+    )
+    async with _client(handler) as client:
+        res = await client.get_json("skolverket", "https://api.skolverket.se/old")
+    assert res.data == {"ok": True} and len(seen) == 2
+
+
+async def test_base_url_with_a_port_allows_that_port_only():
+    """A mirror at https://mirror.example.se:8443 (FUZZY_MCP_<KÄLLA>_BASE_URL) may be redirected to, from an agency
+    or from itself, on port 8443 only: its default port 443 and every other port on the host stay closed."""
+    settings = Settings(max_retries=0, base_urls={**DEFAULT_BASE_URLS, "scb": "https://mirror.example.se:8443/api/v2"})
+    seen: list[str] = []
+    handler = _redirecting(
+        {
+            "https://api.skolverket.se/to-mirror": httpx2.Response(
+                302, headers={"location": "https://mirror.example.se:8443/api/v2/x"}
+            ),
+            "https://api.skolverket.se/to-443": httpx2.Response(
+                302, headers={"location": "https://mirror.example.se/api/v2/x"}
+            ),
+            "https://mirror.example.se:8443/self": httpx2.Response(302, headers={"location": "/api/v2/x"}),
+            "https://mirror.example.se:8443/to-9000": httpx2.Response(
+                302, headers={"location": "https://mirror.example.se:9000/admin"}
+            ),
+            "https://mirror.example.se:8443/to-443": httpx2.Response(
+                302, headers={"location": "https://mirror.example.se/admin"}
+            ),
+            "https://mirror.example.se:8443/api/v2/x": httpx2.Response(200, json={"ok": True}),
+        },
+        seen,
+    )
+    async with HttpClient(settings, transport=httpx2.MockTransport(handler), sleep=_no_sleep) as client:
+        assert (await client.get_json("scb", "https://api.skolverket.se/to-mirror")).data == {"ok": True}
+        assert (await client.get_json("scb", "https://mirror.example.se:8443/self")).data == {"ok": True}
+        for start, where in [
+            ("https://api.skolverket.se/to-443", "https://mirror.example.se:443"),
+            ("https://mirror.example.se:8443/to-9000", "https://mirror.example.se:9000"),
+            ("https://mirror.example.se:8443/to-443", "https://mirror.example.se:443"),
+        ]:
+            with pytest.raises(UpstreamError) as info:
+                await client.get_json("scb", start)
+            assert info.value.message == f"Omdirigeringen till {where} {OTHER_PORT}"
+    assert all(url.startswith(("https://api.skolverket.se/", "https://mirror.example.se:8443/")) for url in seen)
+
+
+async def test_http_mirror_is_followed_on_its_own_origin_only():
+    """An http base URL allows plain http on its own origin only: not another port on the mirror, not https on the
+    mirror (port 443) and not http on an agency's host (port 80, where only https on 443 is allowed)."""
+    settings = Settings(max_retries=0, base_urls={**DEFAULT_BASE_URLS, "scb": "http://mirror.example.se/api/v2"})
+    seen: list[str] = []
+    handler = _redirecting(
+        {
+            "http://mirror.example.se/to-8080": httpx2.Response(
+                302, headers={"location": "http://mirror.example.se:8080/admin"}
+            ),
+            "http://mirror.example.se/to-https": httpx2.Response(
+                302, headers={"location": "https://mirror.example.se/api/v2/x"}
+            ),
+            "http://mirror.example.se/to-agency": httpx2.Response(
+                302, headers={"location": "http://api.skolverket.se/x"}
+            ),
+        },
+        seen,
+    )
+    async with HttpClient(settings, transport=httpx2.MockTransport(handler), sleep=_no_sleep) as client:
+        for start, where in [
+            ("http://mirror.example.se/to-8080", "http://mirror.example.se:8080"),
+            ("http://mirror.example.se/to-https", "https://mirror.example.se:443"),
+            ("http://mirror.example.se/to-agency", "http://api.skolverket.se:80"),
+        ]:
+            with pytest.raises(UpstreamError) as info:
+                await client.get_json("scb", start)
+            assert info.value.message == f"Omdirigeringen till {where} {OTHER_PORT}"
+    assert len(seen) == 3 and all(url.startswith("http://mirror.example.se/") for url in seen)
+
+
+@pytest.mark.parametrize(
+    ("location", "where"),
+    [
+        ("https://api.skolverket.se@evil.example/x", "https://evil.example"),  # userinfo, not the host
+        ("https://api.skolverket.se:443@evil.example/x", "https://evil.example"),
+        ("https://api.skolverket.se\\@evil.example/x", "https://evil.example"),
+        ("https://evil.example#@api.skolverket.se", "https://evil.example"),  # a fragment, not userinfo
+        ("https://user:secret@evil.example:8443/x", "https://evil.example:8443"),  # userinfo is never shown
+        ("https://api.skolverket.se.evil.example/x", "https://api.skolverket.se.evil.example"),
+        ("https://api.skolverket.se./x", "https://api.skolverket.se."),  # a trailing dot is another origin
+        ("https://[::1]/x", "https://[::1]"),
+        ("https://[0:0::1]:443/x", "https://[0:0::1]"),
+        ("https://[::ffff:169.254.169.254]:8080/x", "https://[::ffff:169.254.169.254]:8080"),
+        ("https://[fe80::1%25eth0]:22/x", "https://[fe80::1%25eth0]:22"),
+    ],
+)
+async def test_redirect_is_judged_by_the_host_actually_contacted(location, where):
+    seen: list[str] = []
+    handler = _redirecting({"https://api.skolverket.se/": httpx2.Response(302, headers={"location": location})}, seen)
+    async with _client(handler) as client:
+        with pytest.raises(UpstreamError) as info:
+            await client.get_json("skolverket", "https://api.skolverket.se/skolenhetsregistret/v2/school-units/1")
+    assert info.value.message == f"Omdirigeringen till {where} {OTHER_HOST}"
+    assert len(seen) == 1
+
+
+async def test_ipv6_mirror_is_compared_by_address_and_port():
+    """An IPv6 base URL matches every spelling of its address, on its own port only."""
+    settings = Settings(max_retries=0, base_urls={**DEFAULT_BASE_URLS, "scb": "http://[::1]:8080/api/v2"})
+    seen: list[str] = []
+    handler = _redirecting(
+        {
+            "http://[::1]:8080/a": httpx2.Response(302, headers={"location": "http://[0:0::1]:8080/b"}),
+            "http://[0:0::1]:8080/b": httpx2.Response(200, json={"ok": True}),
+            "http://[::1]:8080/c": httpx2.Response(302, headers={"location": "http://[::1]:8081/admin"}),
+        },
+        seen,
+    )
+    async with HttpClient(settings, transport=httpx2.MockTransport(handler), sleep=_no_sleep) as client:
+        assert (await client.get_json("scb", "http://[::1]:8080/a")).data == {"ok": True}
+        with pytest.raises(UpstreamError) as info:
+            await client.get_json("scb", "http://[::1]:8080/c")
+    assert info.value.message == f"Omdirigeringen till http://[::1]:8081 {OTHER_PORT}"
+    assert seen == ["http://[::1]:8080/a", "http://[0:0::1]:8080/b", "http://[::1]:8080/c"]
+
+
+async def test_base_url_without_scheme_does_not_stop_the_client():
+    """A misconfigured base URL (no https://) has no origin: it allows no redirects, but the client still starts."""
+    settings = Settings(max_retries=0, base_urls={**DEFAULT_BASE_URLS, "scb": "mirror.example.se/api/v2"})
+    seen: list[str] = []
+    handler = _redirecting(
+        {
+            "https://api.skolverket.se/a": httpx2.Response(302, headers={"location": "https://mirror.example.se/x"}),
+            "https://api.skolverket.se/b": httpx2.Response(302, headers={"location": "/c"}),
+            "https://api.skolverket.se/c": httpx2.Response(200, json={"ok": True}),
+        },
+        seen,
+    )
+    async with HttpClient(settings, transport=httpx2.MockTransport(handler), sleep=_no_sleep) as client:
+        with pytest.raises(UpstreamError) as info:
+            await client.get_json("scb", "https://api.skolverket.se/a")
+        assert info.value.message == f"Omdirigeringen till https://mirror.example.se {OTHER_HOST}"
+        assert (await client.get_json("scb", "https://api.skolverket.se/b")).data == {"ok": True}

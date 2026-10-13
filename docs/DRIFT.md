@@ -345,8 +345,10 @@ på RHEL, `/etc/ssl/certs/ca-certificates.crt` på Debian/Ubuntu). En fil med ba
 | `admin.dataportal.se` | Sveriges dataportal |
 
 Källor som stängts av med `FUZZY_MCP_SOURCES` anropas inte. Servern följer omdirigeringar bara mellan de här
-värdarna (och en värd som satts med `FUZZY_MCP_<KÄLLA>_BASE_URL`), aldrig från https till http och högst fem i
-rad; en annan adress stoppar anropet utan att något hämtas därifrån.
+värdarna (och en värd som satts med `FUZZY_MCP_<KÄLLA>_BASE_URL`), bara till samma port och protokoll som i
+adressen (443 för https utan port), aldrig från https till http och högst fem i rad; en annan adress stoppar anropet
+utan att något hämtas därifrån. Skickar en egen spegel med en http-adress vidare till https: ange spegelns
+https-adress i `FUZZY_MCP_<KÄLLA>_BASE_URL`.
 
 Spärra ändå i nätet. **Container på Ubuntu (och andra Linux med Docker):** regler i `ufw` (`default deny
 outgoing`) gäller trafik från värden själv, inte från containrar – den går genom `FORWARD`, där Dockers regler kommer
@@ -376,7 +378,7 @@ organisationens proxy via `HTTPS_PROXY`, eller regler i kedjan `DOCKER-USER`.
   undvik det.
 - **Inga skrivoperationer, inga godtyckliga URL:er.** Verktygen anropar bara de konfigurerade adresserna i avsnitt
   6 (`FUZZY_MCP_<KÄLLA>_BASE_URL` kan ändra dem), och id:n valideras innan de hamnar i en URL. Omdirigeringar följs
-  bara mellan de värdarna och aldrig från https till http.
+  bara mellan de värdarna, på samma port och protokoll som i adressen och aldrig från https till http.
 - **Personuppgifter** (namn på rektor, c/o-namn, kontaktpersoner) visas bara om klienten anger en parameter märkt
   "personuppgift", och aldrig med `FUZZY_MCP_PERSONAL_DATA=off`. Det gäller de strukturerade fälten: fritext som
   en utbildningsanordnare själv skrivit (t.ex. en kursbeskrivning) kan ändå innehålla namn eller telefonnummer.
@@ -474,7 +476,7 @@ organisationens proxy via `HTTPS_PROXY`, eller regler i kedjan `DOCKER-USER`.
 | `403` med `Origin` | webbklientens origin saknas i `FUZZY_MCP_ALLOWED_ORIGINS` |
 | `400 Missing session ID` på `/mcp` | normalt för `GET` utan MCP-session; använd `/healthz` för hälsokontroll |
 | Verktyg svarar "… hann inte svara inom N s" | `FUZZY_MCP_TOOL_TIMEOUT` nåddes: myndighetens API är långsamt eller anropsgränsen nådd. Gör ett mindre urval; kontrollera myndigheten med `smoke_test.py --live` |
-| Verktyg svarar "Omdirigeringen till … stoppades" | myndighetens API omdirigerade till en värd utanför listan i avsnitt 6 ("… myndigheternas egna adresser"; rapportera adressen enligt SECURITY.md) eller från https till http ("… okrypterad adress", ofta en server bakom TLS-avlastning; rapportera till myndigheten). Inget hämtades därifrån |
+| Verktyg svarar "Omdirigeringen till … stoppades" | myndighetens API omdirigerade till en värd utanför listan i avsnitt 6 ("… myndigheternas egna adresser"; rapportera adressen enligt SECURITY.md), till en annan port eller ett annat protokoll än i adressen ("… samma port och protokoll som i myndighetens adress"; rapportera adressen, eller ange spegelns rätta adress i `FUZZY_MCP_<KÄLLA>_BASE_URL`) eller från https till http ("… okrypterad adress", ofta en server bakom TLS-avlastning; rapportera till myndigheten). Inget hämtades därifrån |
 | Verktyg svarar "Kunde inte nå API:t (ProxyError/ConnectError)" | utgående trafik blockeras – kontrollera brandvägg, `HTTPS_PROXY` och listan i avsnitt 6. Kräver proxyn NTLM/Kerberos-inloggning: be om undantag för värdarna |
 | "HTTP 429" från en källa | myndighetens anropsgräns; servern försöker igen själv, minska samtidiga klienter |
 | Certifikatfel mot myndigheterna | proxy med TLS-inspektion och en CA som saknas i operativsystemet: installera organisationens rotcertifikat där, eller sätt `SSL_CERT_FILE` till en komplett CA-bundle. Pekar `SSL_CERT_FILE` på en fil med bara organisationens CA blir det certifikatfel mot alla värdar som inte inspekteras |

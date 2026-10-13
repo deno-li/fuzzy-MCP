@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 """Shared async HTTP layer: caching, per-host rate limiting, retries, redirects
-only within the agencies' hosts and capture of API lifecycle headers
+only within the agencies' origins and capture of API lifecycle headers
 (Deprecation/Sunset) as recommended by the DIGG REST API profile.
 """
 
@@ -172,6 +172,20 @@ def _invalid_location(exc: Exception) -> bool:
     return isinstance(exc, httpx2.RemoteProtocolError) and "location header" in str(exc).lower()
 
 
+def _origin(url: httpx2.URL) -> httpx2.Origin | None:
+    """Scheme, host and effective port of ``url`` (RFC 9110 origin), or None for a URL without a host.
+
+    httpx2 normalises it: the host is lower-cased (an IPv6 literal in its canonical form) and a missing port is the
+    scheme's default, so https://API.example.se:443/a and https://api.example.se/b share an origin. Userinfo, path
+    and fragment are not part of it: https://api.example.se@evil.example/ and https://evil.example#@api.example.se
+    both have the origin of evil.example.
+    """
+    try:
+        return url.origin
+    except ValueError:  # a relative URL, e.g. a base URL configured without https://
+        return None
+
+
 _HTML_TITLE = re.compile(r"<(title|h1|h2)[^>]*>(.*?)</\1>", re.IGNORECASE | re.DOTALL)
 _HTML_TAG = re.compile(r"<[^>]+>")
 
@@ -256,15 +270,17 @@ class HttpClient:
         sleep: Callable[[float], Awaitable[None]] = anyio.sleep,
     ) -> None:
         self.settings = settings
-        # Redirects are followed by _follow_redirects, which only goes to the agencies' hosts (never downgrading
-        # https), so a redirect can never make the server fetch an internal address.
+        # Redirects are followed by _follow_redirects, which only goes to the agencies' origins (scheme, host and port;
+        # never downgrading https), so a redirect can never make the server fetch an internal address.
         self._client = httpx2.AsyncClient(
             transport=transport,
             timeout=httpx2.Timeout(settings.timeout_seconds),
             headers={"User-Agent": settings.user_agent},
             follow_redirects=False,
         )
-        self._allowed_hosts = frozenset(httpx2.URL(url).host for url in settings.base_urls.values())
+        self._allowed_origins = frozenset(
+            origin for url in settings.base_urls.values() if (origin := _origin(httpx2.URL(url))) is not None
+        )
         self._cache = TTLCache(
             settings.cache_max_entries, settings.cache_ttl_seconds, max_bytes=settings.cache_max_bytes
         )
@@ -464,17 +480,24 @@ class HttpClient:
         raise UpstreamError(source, "Alla försök misslyckades", url=url, detail=str(last_error))
 
     async def _follow_redirects(self, source: str, url: str, response: httpx2.Response) -> httpx2.Response:
-        """Follow at most MAX_REDIRECTS redirects, only to the agencies' hosts (the configured base URLs and the host
-        first asked) and never from https to http: plain http is followed only while every hop so far was http (a
-        mirror or test double). Any other target stops the call with an error naming only its scheme and host;
-        nothing from that target is fetched."""
-        allowed = self._allowed_hosts | {httpx2.URL(url).host}
+        """Follow at most MAX_REDIRECTS redirects, only to the agencies' origins and never from https to http.
+
+        An origin is the scheme, host and port (a missing port is the scheme's default) of a configured base URL or of
+        the URL first asked, so no other port on an agency's host, or on an internal mirror's, is ever reached. Plain
+        http is followed only to an http origin and only while every hop so far was http (a mirror or test double).
+        Any other target stops the call with an error naming only its scheme, host and port; nothing from that target
+        is fetched."""
+        first = _origin(httpx2.URL(url))
+        allowed = self._allowed_origins if first is None else self._allowed_origins | {first}
+        allowed_hosts = {origin.host for origin in allowed}
         for _ in range(MAX_REDIRECTS):
             target = response.next_request
             if target is None:
                 return response
-            where = f"{target.url.scheme}://{target.url.host}"
-            if target.url.host not in allowed:
+            origin = _origin(target.url)
+            # netloc is host[:port] without userinfo, with an IPv6 literal in brackets and no default port.
+            where = f"{target.url.scheme}://{target.url.netloc.decode('ascii')}"
+            if origin is None or origin.host not in allowed_hosts:
                 raise UpstreamError(
                     source,
                     f"Omdirigeringen till {where} stoppades – servern följer bara omdirigeringar till myndigheternas "
@@ -487,6 +510,19 @@ class HttpClient:
                     source,
                     f"Omdirigeringen till {where} stoppades – servern följer aldrig en omdirigering från https till "
                     "en okrypterad adress",
+                    status=response.status_code,
+                    url=url,
+                )
+            if origin not in allowed:
+                # An agency's host on another port (or scheme) than its address, e.g. ssh on :22 or another service
+                # on an internal mirror's host. Name the port even when it is the default: an http mirror's redirect
+                # to https on the same host goes to port 443.
+                if target.url.port is None:
+                    where = f"{where}:{origin.port}"
+                raise UpstreamError(
+                    source,
+                    f"Omdirigeringen till {where} stoppades – servern följer bara omdirigeringar till samma port och "
+                    "protokoll som i myndighetens adress",
                     status=response.status_code,
                     url=url,
                 )
