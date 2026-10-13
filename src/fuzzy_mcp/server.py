@@ -23,6 +23,7 @@ from starlette.responses import JSONResponse
 from . import __version__
 from .config import Settings
 from .core import (
+    TRUNCATION_KEY,
     Services,
     client_size,
     compact_json,
@@ -198,6 +199,7 @@ def _limit_output(tool: Any, limit: int) -> None:
     results (Eneo: 32 768 characters) still receives valid JSON; report an error if even that cannot fit."""
     fn = tool.fn
     preserve_output = bool(getattr(fn, "_fuzzy_preserve_output", False))
+    cuts = tuple(getattr(fn, "_fuzzy_cuts", ()))
 
     @functools.wraps(fn)
     async def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -212,11 +214,17 @@ def _limit_output(tool: Any, limit: int) -> None:
         if not isinstance(data, dict):
             text = "".join(getattr(block, "text", "") for block in result.content)
             return result if client_size(text) <= limit else too_large_result(client_size(text), limit)
-        fitted, changed = fit_to_limit(data, limit)
+        fitted, changed = fit_to_limit(data, limit, cuts)
         if not changed:
             return result
         if fitted is None:
             return too_large_result(client_size(compact_json(data)), limit)
+        logger.info(
+            "Verktyget %s kortades för klientens gräns (%d tecken): %s",
+            tool.name,
+            limit,
+            ", ".join(str(entry.get("falt")) for entry in fitted[TRUNCATION_KEY]["kortade"]) or "raw",
+        )
         return CallToolResult(content=[TextContent(type="text", text=compact_json(fitted))], structured_content=fitted)
 
     tool.fn = wrapper
