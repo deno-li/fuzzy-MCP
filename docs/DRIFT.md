@@ -203,6 +203,9 @@ Ett ogiltigt värde i en `FUZZY_MCP_*`-variabel, en saknad token eller en CA-fil
 5 sekunder (`AppRestartDelay`), men avslutas processen inom 1,5 sekunder ökar NSSM väntan stegvis upp till 4 minuter
 och visar tjänsten som Pausad – rätta felet och kör `& "C:\Program Files\nssm\nssm.exe" restart fuzzy-mcp`.
 
+`nssm stop` (Ctrl+C), `systemctl stop` och `docker stop` (SIGTERM) stoppar servern med avslutskod 0. Har den anropat
+någon myndighet slutar loggen med `HTTP-klienten mot myndigheterna är stängd`.
+
 ## 5. Köra som tjänst
 
 **Windows** – med till exempel [NSSM](https://nssm.cc/) eller WinSW (tredjepartsverktyg, välj enligt er standard).

@@ -8,6 +8,7 @@ translation for MCP tools and small helpers."""
 import functools
 import inspect
 import json
+import logging
 from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass, field
 from typing import Any, ParamSpec, TypeVar
@@ -23,6 +24,8 @@ from .http import HttpClient, RateLimit
 
 P = ParamSpec("P")
 R = TypeVar("R")
+
+logger = logging.getLogger("fuzzy_mcp")
 
 # Read-only, open-world: every tool only reads public data from external APIs.
 READ_ONLY_OPEN = ToolAnnotations(readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=True)
@@ -60,6 +63,7 @@ class Services:
         if self._http is not None:
             await self._http.aclose()
             self._http = None
+            logger.info("HTTP-klienten mot myndigheterna är stängd")
 
 
 def inline_schema_refs(schema: dict[str, Any]) -> dict[str, Any]:
