@@ -7,6 +7,8 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-13
+
 ### Säkerhet
 
 - Omdirigeringar följs bara till myndigheternas egna ursprung: samma värd, port och protokoll som i en konfigurerad
@@ -485,7 +487,8 @@ och utgåvorna 0.1.0 och 0.1.1 finns bara där. Servern fungerar som i 0.1.1.
 - Med `FUZZY_MCP_PERSONAL_DATA=off` utelämnas även e-postadresser från Skolenhetsregistret och Susa-navet (fält,
   listor, `mailto:`-länkar och råsvar), med en notering om att uppgifter har utelämnats.
 
-[Unreleased]: https://github.com/deno-li/fuzzy-MCP/compare/v0.2.2...HEAD
+[Unreleased]: https://github.com/deno-li/fuzzy-MCP/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/deno-li/fuzzy-MCP/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/deno-li/fuzzy-MCP/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/deno-li/fuzzy-MCP/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/deno-li/fuzzy-MCP/compare/v0.1.2...v0.2.0
