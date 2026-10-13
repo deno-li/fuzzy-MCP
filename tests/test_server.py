@@ -233,15 +233,16 @@ async def test_tool_timeout_interrupts_a_slow_shortening(router, make_client, mo
     """FUZZY_MCP_TOOL_TIMEOUT also covers the output cap: the answer does not wait for the shortening to finish."""
     import anyio
 
-    _, release = _slow_shortening(router, monkeypatch)
+    started, release = _slow_shortening(router, monkeypatch)
     try:
-        async with make_client("scb", max_output_chars=3000, tool_timeout_seconds=0.2) as client:
+        async with make_client("scb", max_output_chars=3000, tool_timeout_seconds=0.5) as client:
             start = anyio.current_time()
             result = await client.call_tool("scb_search_tables", {"query": "x", "page_size": 100})
             elapsed = anyio.current_time() - start
     finally:
         release.set()  # the abandoned thread ends
-    assert result.is_error and "hann inte svara inom 0.2 s" in result.content[0].text and elapsed < 2
+    assert started.is_set(), "tidsgränsen nåddes innan kortningen började"
+    assert result.is_error and "hann inte svara inom 0.5 s" in result.content[0].text and elapsed < 3
 
 
 @pytest.mark.parametrize("value", ["-1", "abc", "nan", "inf"])
