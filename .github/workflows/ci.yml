@@ -8,6 +8,8 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Release-flödet kör samma kontroller för den commit det bygger (release.yml, jobbet test).
+  workflow_call:
 
 permissions:
   contents: read
@@ -51,6 +53,11 @@ jobs:
           python-version: "3.12"
       - name: Bygg sdist och wheel
         run: python -m pip install build && python -m build --outdir dist
+      - name: Byggverktygen för leveranspaketen installeras från låsfilen (SHA-256, alla beroenden)
+        run: |
+          python -m venv "$RUNNER_TEMP/build-tools"
+          "$RUNNER_TEMP/build-tools/bin/python" -m pip install --require-hashes --only-binary=:all: \
+            -r scripts/build_requirements.txt
       - name: REUSE-licensinformation i sdist
         run: |
           mkdir /tmp/sdist && tar xzf dist/*.tar.gz -C /tmp/sdist

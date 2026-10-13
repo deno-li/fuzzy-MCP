@@ -13,3 +13,5 @@ build
 tests
 docs
 scripts
+# Byggverktygen (låsta med SHA-256) installeras i Dockerfile:s byggsteg.
+!scripts/build_requirements.txt

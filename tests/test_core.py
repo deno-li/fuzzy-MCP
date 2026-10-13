@@ -411,3 +411,131 @@ def test_fit_to_limit_raw_only_note_does_not_ask_for_a_smaller_selection():
     out = _fit({"title": "t", "raw": {"rows": ["x" * 80] * 100}}, 600)
     assert out[TRUNCATION_KEY]["kortade"] == [] and out[TRUNCATION_KEY]["utelamnade_falt"] == ["raw"]
     assert "Begränsa urvalet" not in out[TRUNCATION_KEY]["meddelande"]
+
+
+# --- issue #23: shortening a large answer must not take seconds (it blocked every session) -------------------------
+
+LARGE_ANSWERS = {
+    "200 listor": lambda: {f"l{i}": [f"varde-{j:05d}" for j in range(500)] for i in range(200)},
+    "200 listor i en rad": lambda: {"rows": [{f"c{i}": [f"v{j}" for j in range(500)] for i in range(200)}]},
+    "50 listor i ett objekt": lambda: {"a": {f"l{i}": [f"varde-{j:05d}" for j in range(500)] for i in range(50)}},
+}
+
+
+@pytest.mark.parametrize("shape", LARGE_ANSWERS)
+def test_fit_to_limit_does_not_serialize_the_whole_answer_per_step(monkeypatch, shape):
+    """Every step used to serialize the whole answer (1.5 MB) again, thousands of times: 30 s for 200 lists of 500
+    values. The steps now measure only what they change. Counted, not timed, so that slow CI runners do not matter."""
+    from fuzzy_mcp import core
+
+    data = LARGE_ANSWERS[shape]()
+    full = len(core.compact_json(data))
+    serialize = core.compact_json
+    whole: list[int] = []
+
+    def counting(value):
+        text = serialize(value)
+        if len(text) > full // 10:
+            whole.append(len(text))
+        return text
+
+    monkeypatch.setattr(core, "compact_json", counting)
+    out, cut = core.fit_to_limit(data, 30000)
+    assert cut and core.client_size(serialize(out)) <= 30000
+    assert len(whole) <= 3, f"{len(whole)} serialiseringar av hela svaret"  # does it fit; first size of the copy
+
+
+def _varied_answers(rng):
+    """Small answers with the shapes fit_to_limit treats differently: records with lists of records inside (flags,
+    ``returned``, paging fields), values, numbers, rows, protected and positional lists, URLs, long strings that need
+    escaping, raw, the tool's own note and the paging contracts."""
+    from fuzzy_mcp.core import CodesCut, CursorCut, Cut, OffsetCut, PageCut
+
+    words = ["skola", "Göteborg", 'citat "x"', "back\\slash", "rad\nbrytning", "ctl\x01", "Ä€😀"]
+
+    def text(lo=1, hi=6):
+        return " ".join(rng.choice(words) for _ in range(rng.randint(lo, hi)))
+
+    def records(n, depth):
+        out = []
+        for i in range(n):
+            record = {"id": i, "code": f"K{i:03}", "name": text(), "truncated": False}
+            if depth:
+                key = rng.choice(["tags", "children"])
+                inner = records(rng.randint(0, 6), depth - 1) if rng.random() < 0.4 else [text() for _ in range(9)]
+                record.update({key: inner, f"{key}_truncated": False, "returned": len(inner)})
+            if rng.random() < 0.1:
+                record["next_offset"] = i + 1
+            out.append(record)
+        return out
+
+    parts = {
+        "items": lambda: records(rng.randint(2, 12), 2),
+        "groups": lambda: [{"documents": records(rng.randint(2, 6), 1), "truncated": False} for _ in range(3)],
+        "series": lambda: [{"name": text(), "values": [text() for _ in range(40)]} for _ in range(rng.randint(2, 6))],
+        "values": lambda: [text() for _ in range(rng.randint(2, 60))],
+        "numbers": lambda: [rng.random() for _ in range(20)] + ([text()] if rng.random() < 0.5 else []),
+        "rows": lambda: [[text(1, 2), i, 0.5] for i in range(rng.randint(2, 30))],
+        "description": lambda: text(30, 150),
+        "request_url": lambda: "https://x.se/?q=" + text(5, 20),
+        "notes": lambda: ["Svaret kortades till 50 rader.", text(5, 20)],
+        "coordinates": lambda: [[600000.5, 6700000.5]] * 5,
+        "variables": lambda: [{"code": "V", "values": [text() for _ in range(30)], "values_truncated": False}],
+        "raw": lambda: {"data": records(20, 0)},
+        "_kortat": lambda: {"meddelande": "Egen notis.", "kortade": [{"falt": "x", "fore": 9, "efter": 0}]},
+    }
+    contracts = [
+        OffsetCut("page.items", stale_notes=("Svaret kortades",)),
+        PageCut("page.items", size_argument="size"),
+        CursorCut("page.items"),
+        CodesCut("page.items", argument="codes"),
+        CodesCut("page.items", code="id", hint=" H."),
+        Cut("page.items", stale_notes=("Svaret kortades",)),
+    ]
+    for _ in range(50):
+        data = {key: make() for key, make in parts.items() if rng.random() < 0.4}
+        data.update(truncated=False, next_page=2)
+        if "items" in data and rng.random() < 0.5:  # two lists that returned counts, in the same object
+            data["values"] = [text() for _ in data["items"]]
+            data["returned"] = len(data["items"])
+        cuts: tuple = ()
+        if rng.random() < 0.5:
+            data["page"] = {"items": records(rng.randint(2, 40), 1), "offset": 40, "page": 2, "page_size": 50}
+            data["page"].update(start_page=1, skip_matches=3, next_page=3, next_skip_matches=1, complete_scan=True)
+            data["page"].update(returned=len(data["page"]["items"]), truncated=False, other=[text()] * 5)
+            data["page"]["hint"] = {"lista": [text() for _ in range(9)]} if rng.random() < 0.5 else "h"
+            cuts = (rng.choice(contracts),)
+        yield data, cuts
+
+
+def test_fit_to_limit_steps_match_measuring_the_whole_answer():
+    """The incremental sizes take exactly the steps that serializing the whole answer at every step takes (the
+    fallback, and fit_to_limit before #23): the same lists cut, flags, paging fields and note."""
+    import random
+
+    from fuzzy_mcp.core import _Shortening, client_size, compact_json
+
+    checked = 0
+    for data, cuts in _varied_answers(random.Random(23)):
+        full = client_size(compact_json(data))
+        for limit in sorted({2000, full // 4, full * 3 // 4}):
+            if limit >= full:
+                continue
+            fast, fast_size = _Shortening(data, limit, cuts, exact=False).run()
+            exact, exact_size = _Shortening(data, limit, cuts, exact=True).run()
+            assert compact_json(fast) == compact_json(exact) and fast_size == exact_size
+            assert exact_size == client_size(compact_json(exact))
+            checked += 1
+    assert checked > 100
+
+
+def test_fit_to_limit_measures_the_whole_answer_if_the_steps_were_off(monkeypatch, caplog):
+    """The result is measured whole once more; a disagreement redoes the shortening measuring every step whole."""
+    from fuzzy_mcp import core
+
+    data = {"items": [{"id": i, "t": "x" * 40} for i in range(100)], "returned": 100, "truncated": False}
+    expected, _ = core.fit_to_limit(data, 2000)
+    monkeypatch.setattr(core._Sizes, "answer", lambda self, note: 0)  # every step "fits"
+    out, cut = core.fit_to_limit(data, 2000)
+    assert cut and core.compact_json(out) == core.compact_json(expected)
+    assert any("full mätning" in record.getMessage() for record in caplog.records)

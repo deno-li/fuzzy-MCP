@@ -13,6 +13,7 @@ from contextlib import asynccontextmanager
 from typing import Any
 
 import anyio
+import anyio.to_thread
 import httpx2
 from mcp.server.mcpserver import MCPServer
 from mcp.types import CallToolResult, TextContent
@@ -219,7 +220,9 @@ def _limit_output(tool: Any, limit: int) -> None:
         if not isinstance(data, dict):
             text = "".join(getattr(block, "text", "") for block in result.content)
             return result if client_size(text) <= limit else too_large_result(client_size(text), limit)
-        fitted, changed = fit_to_limit(data, limit, cuts)
+        # In a worker thread: a large answer takes a while to shorten, and the event loop serves every session. If the
+        # call is cancelled (FUZZY_MCP_TOOL_TIMEOUT), the thread finishes on its own and its result is dropped.
+        fitted, changed = await anyio.to_thread.run_sync(fit_to_limit, data, limit, cuts, abandon_on_cancel=True)
         if not changed:
             return result
         if fitted is None:

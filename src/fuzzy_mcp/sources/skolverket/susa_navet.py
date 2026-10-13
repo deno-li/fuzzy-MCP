@@ -948,13 +948,14 @@ def normalize_municipality_codes(value: str | list[str] | None) -> list[str]:
                 raise InvalidInputError(f"Kommunkoden {item!r} ska ha fyra siffror, t.ex. 0180 (Stockholm)")
             code = item.zfill(4)
         else:
-            hits = region_codes.lookup_region(item, kind="kommun", limit=3)
-            if not hits or hits[0].get("likhet", 0) < 0.9:
+            # Same rule as ref_list_deso: a name must name one municipality, never just the best fuzzy hit.
+            match, hits = region_codes.match_municipality(item, limit=3)
+            if match is None:
                 suggestions = ", ".join(f"{h['kod']} {h['namn']}" for h in hits) or "inga"
                 raise InvalidInputError(
                     f"Kunde inte tolka {item!r} som en kommun. Ange kommunkod (4 siffror). Förslag: {suggestions}"
                 )
-            code = str(hits[0]["kod"])
+            code = str(match["kod"])
         if code not in out:
             out.append(code)
     return out

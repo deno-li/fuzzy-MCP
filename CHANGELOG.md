@@ -7,8 +7,59 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ## [Unreleased]
 
+### Säkerhet
+
+- Omdirigeringar följs bara till myndigheternas egna ursprung: samma värd, port och protokoll som i en konfigurerad
+  bas-URL eller den adress som anropades ([#28](https://github.com/deno-li/fuzzy-MCP/issues/28)). Tidigare jämfördes
+  bara värdnamnet, så `https://api.skolverket.se:22/x` följdes, och pekade en bas-URL på en intern spegel blev alla
+  portar på den värden nåbara via omdirigering. `https://värd:443` räknas som `https://värd`, och en bas-URL med egen
+  port (t.ex. `https://spegel:8443`) tillåter bara den porten. En annan port ger felet "Omdirigeringen till …
+  stoppades – servern följer bara omdirigeringar till samma port och protokoll som i myndighetens adress", och felen
+  namnger nu även målets port. En spegel med en http-adress följs inte längre till https på samma värd: ange spegelns
+  https-adress i `FUZZY_MCP_<KÄLLA>_BASE_URL`.
+- Releasearkiven får en signerad byggproveniens (`actions/attest-build-provenance`) som visar att arkivet byggts av
+  repots Release-flöde från en viss commit, även när filen hämtats från en spegel. Kontrollera den med
+  `gh attestation verify` enligt DRIFT.md avsnitt 2. Bara attesteringsjobbet får signera, och det kör ingen kod från
+  PyPI eller paketen ([#24](https://github.com/deno-li/fuzzy-MCP/issues/24)).
+- Basimagen i `Dockerfile` är låst till en digest (`python:3.12-slim@sha256:…`) som Dependabot uppdaterar, och
+  `BUILDINFO.txt` och releasetexten anger den (`Imagens bas`). Byggverktygen (uv, hatchling, pip, cyclonedx-bom och
+  pip-audit med beroenden) installeras med SHA-256-kontroll från `scripts/build_requirements.txt` i stället för att
+  lösas på nytt vid varje bygge, även i imagens byggsteg ([#25](https://github.com/deno-li/fuzzy-MCP/issues/25)).
+  Bygget är ännu inte reproducerbart byte för byte.
+- `skolverket_get_contract` tar bort e-post ur `raw` när personuppgifter är avstängda (`FUZZY_MCP_PERSONAL_DATA=off`),
+  som de andra detaljverktygen i Skolenhetsregistret ([#28](https://github.com/deno-li/fuzzy-MCP/issues/28)).
+
 ### Rättat
 
+- HTTP-transporterna avslutas med kod 0 när tjänsten stoppas med Ctrl+C (även `nssm stop`) eller SIGTERM
+  (`systemctl stop`, `docker stop`), och stänger då HTTP-klienten mot myndigheterna
+  ([#22](https://github.com/deno-li/fuzzy-MCP/issues/22)). Tidigare gav Ctrl+C `RuntimeError: Event loop is closed`
+  och avslutskod 1, och SIGTERM avslutade processen med 143 utan att stänga klienten. Loggen slutar nu med
+  `HTTP-klienten mot myndigheterna är stängd` när servern har anropat någon myndighet. En port som redan används
+  ger avslutskod 3 även med äldre uvicorn (0.31–0.44), som tidigare gav 1.
+- Med `FUZZY_MCP_MAX_OUTPUT_CHARS` kortas stora svar med många listor på en bråkdel av en sekund i stället för upp
+  till en halv minut, och kortningen stoppar inte längre andra sessioner
+  ([#23](https://github.com/deno-li/fuzzy-MCP/issues/23)). Servern mäter bara om det som ändrats i varje steg och
+  kortar i en egen tråd: 200 listor med 500 värden tar 0,3 s i stället för 33 s. `FUZZY_MCP_TOOL_TIMEOUT` avbryter nu
+  även kortningen. Svaren kortas exakt som förut.
+- `ref_list_deso` och `ref_lookup_region` tar kommunens officiella namn i genitiv: "Lunds kommun" ger Lund (1281),
+  "Göteborgs stad" Göteborg (1480), "Stockholms stad" Stockholm (0180) och "Falu kommun" Falun (2080). Namn som redan
+  slutar på s ("Borås stad", "Höganäs kommun") ger ingen felaktig träff
+  ([#26](https://github.com/deno-li/fuzzy-MCP/issues/26)).
+- Susa-navets kommunfilter (`municipality_code` med kommunnamn) tolkar namn som `ref_list_deso`: ett namn måste peka ut
+  en enda kommun. Tidigare valdes bästa träffen, så "Habo" gav Håbo (0305) och "Göte" gav Götene. Nu ger tvetydiga
+  namn och stavfel ett fel med förslag ([#26](https://github.com/deno-li/fuzzy-MCP/issues/26)).
+- `fohm_get_table_data` och `skolverket_stat_get_table_data` (PxWeb v1) avvisar `*x*` för variabler utan värdelista
+  i stället för att skicka det som `filter: all`. Bara `*`, `prefix*` och `*suffix` går, och felet säger det
+  ([#28](https://github.com/deno-li/fuzzy-MCP/issues/28)).
+- `skolverket_school_unit_changes` sätter `next_offset` till första posten som inte visades när svaret kortas för
+  storleken. Poster utan id kunde annars ge dubbletter på nästa sida
+  ([#28](https://github.com/deno-li/fuzzy-MCP/issues/28)).
+- Katalognoten om DeSO-förändringar anger rätt antal: 85 koder förekommer bara som mottagare i SCB:s förändringslogg,
+  och 84 av dem får "ändrad gräns" ([#27](https://github.com/deno-li/fuzzy-MCP/issues/27)).
+- Dokumentationen hänvisar till Eneo-kontrollen i releasekörningen för 0.2.2, versionsrubrikerna i CHANGELOG.md har
+  länkar, och några inaktuella rader i DRIFT.md, DEVELOPMENT.md och `scripts/verify_release.py` är rättade
+  ([#27](https://github.com/deno-li/fuzzy-MCP/issues/27)).
 - Med `FUZZY_MCP_MAX_OUTPUT_CHARS` säger ett kortat svar inte längre att det är komplett, och bläddring hoppar inte
   över poster ([#20](https://github.com/deno-li/fuzzy-MCP/issues/20)). Efter en kortning är `truncated`,
   `…_truncated` och `returned` rätt i objektet som håller listan och objekten ovanför; tabelldata (`*_get_table_data`)
@@ -40,6 +91,10 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
   `next_page`. `_kortat` kan innehålla `fortsatt`, `utelamnade` och `utelamnade_falt`, och `kortade` anger antal listor
   (`listor`) och tecken (`enhet`). `*_get_default_selection` och `scb_geodata_download_url` lämnas ut hela eller
   avvisas, som frågerecepten. Synkronisera verktygen i Eneo och uppdatera assistentinstruktionen.
+- Release-flödet kör hela CI (`ci.yml`) för commiten innan paketen byggs: Python 3.11–3.14, kontrollen av
+  verktygstabellen och REUSE ingår nu ([#28](https://github.com/deno-li/fuzzy-MCP/issues/28)).
+- `build_release.py --with-image` kräver basimagens Python-version (`--python 3.12`)
+  ([#25](https://github.com/deno-li/fuzzy-MCP/issues/25)).
 
 ## [0.2.2] - 2026-10-12
 
@@ -429,3 +484,9 @@ och utgåvorna 0.1.0 och 0.1.1 finns bara där. Servern fungerar som i 0.1.1.
 - Testdata innehåller inga riktiga efternamn som c/o-namn.
 - Med `FUZZY_MCP_PERSONAL_DATA=off` utelämnas även e-postadresser från Skolenhetsregistret och Susa-navet (fält,
   listor, `mailto:`-länkar och råsvar), med en notering om att uppgifter har utelämnats.
+
+[Unreleased]: https://github.com/deno-li/fuzzy-MCP/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/deno-li/fuzzy-MCP/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/deno-li/fuzzy-MCP/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/deno-li/fuzzy-MCP/compare/v0.1.2...v0.2.0
+[0.1.2]: https://github.com/deno-li/fuzzy-MCP/releases/tag/v0.1.2

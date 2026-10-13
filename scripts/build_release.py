@@ -21,13 +21,14 @@ Creates release/fuzzy-mcp-<version>-<platform>-py<python>/ and a .zip (Windows) 
     docs/                 DRIFT.md, ENEO.md and eneo/ (assistant instruction, compose file, tool profiles)
     README.md, CHANGELOG.md, SECURITY.md, … and LICENSE/LICENSES/ – same paths as in the repository, so links work
     fuzzy-mcp-<version>-image.tar.gz   with --with-image: `docker load -i …`
-    BUILDINFO.txt         git commit, platform, build time, command, tool versions and image id (traceability)
+    BUILDINFO.txt         git commit, platform, build time, command, tool versions, image id and base image
     SHA256SUMS            checksums of every file above
 
-Needs only uv (https://docs.astral.sh/uv/) and internet access to PyPI; pip, cyclonedx-py and pip-audit run
-through uvx in pinned versions (PIP, CYCLONEDX, PIP_AUDIT below).
+Needs only uv (https://docs.astral.sh/uv/) and internet access to PyPI. The uv on PATH only creates a temporary
+environment with the build tools from scripts/build_requirements.txt (uv, hatchling, pip, cyclonedx-py, pip-audit),
+where every file is pinned by SHA-256; the build runs with those tools.
 The lock is resolved for the TARGET platform: on Windows the MCP SDK also needs pywin32, which a lock
-resolved on Linux would miss.
+resolved on Linux would miss. The image's Python version is the one in the Dockerfile's base image.
 """
 
 import argparse
@@ -42,6 +43,7 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import tempfile
 import tomllib
 import zipfile
 from pathlib import Path
@@ -79,10 +81,11 @@ PACKAGE_DOCS = [
 # Copied to the package root, where the documentation runs them from.
 DEFAULT_PYTHON = {"windows": "3.14", "linux": "3.12"}
 PACKAGE_SCRIPTS = ["scripts/smoke_test.py", "scripts/eneo_check.py"]
-# Tools run through uvx, pinned so that a release build is repeatable (bump deliberately).
-PIP = "pip==26.2.1"
-CYCLONEDX = "cyclonedx-bom==7.5.0"
-PIP_AUDIT = "pip-audit==2.10.1"
+# The build tools with every file pinned by SHA-256, so that a new upstream release cannot change the package.
+BUILD_REQUIREMENTS = ROOT / "scripts" / "build_requirements.txt"
+# Every stage builds on the same base image, pinned by digest (Dependabot proposes new digests).
+DOCKERFILE = ROOT / "Dockerfile"
+EXE = ".exe" if os.name == "nt" else ""
 
 
 def run(cmd: list[str], **kwargs) -> subprocess.CompletedProcess:
@@ -98,15 +101,39 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def build_image(out: Path, version: str, python: str, ca_file: str | None, lock: Path) -> tuple[str, int]:
+def build_tools(directory: Path) -> Path:
+    """A new environment in directory with the tools from BUILD_REQUIREMENTS, every file checked against its SHA-256.
+    Returns its script directory. The uv on PATH only creates the environment."""
+    run(["uv", "venv", "--quiet", "--python", sys.executable, str(directory)])
+    run(
+        [
+            "uv", "pip", "install", "--quiet", "--python", str(directory), "--require-hashes", "--only-binary", ":all:",
+            "-r", str(BUILD_REQUIREMENTS),
+        ]
+    )  # fmt: skip
+    return directory / ("Scripts" if os.name == "nt" else "bin")
+
+
+def base_image() -> tuple[str, str]:
+    """The Dockerfile's base image (name:tag@sha256:digest) and its Python version. Every stage must use the same
+    python image, pinned by digest and written out in full, so that Dependabot can update it."""
+    lines = DOCKERFILE.read_text(encoding="utf-8").splitlines()
+    images = {line.split()[1] for line in lines if re.match(r"FROM\s", line, re.IGNORECASE)}
+    match = re.fullmatch(r"python:(\d+\.\d+)[\w.-]*@sha256:[0-9a-f]{64}", images.pop()) if len(images) == 1 else None
+    if not match:
+        raise SystemExit("Dockerfile ska bygga alla steg på samma python-image, låst till en digest (@sha256:…)")
+    return match[0], match[1]
+
+
+def build_image(out: Path, version: str, ca_file: str | None, lock: Path) -> tuple[str, int]:
     """docker build + docker save | gzip into the package (proxy settings are passed on from the environment).
     Returns the image id and the number of dependencies checked against the lock file."""
     if shutil.which("docker") is None:
         raise SystemExit("docker saknas – bygg utan --with-image")
     tag = f"fuzzy-mcp:{version}"
-    # --no-cache-filter: resolve the image's dependencies now, in the same run as requirements.lock.
-    cmd = ["docker", "build", "--no-cache-filter", "build", "-t", tag]
-    cmd += ["--build-arg", f"PYTHON_VERSION={python}", "--build-arg", f"VERSION={version}"]
+    # --no-cache-filter: resolve the image's dependencies now, in the same run as requirements.lock. The Python
+    # version comes from the Dockerfile's base image (main() checks that it is the package's).
+    cmd = ["docker", "build", "--no-cache-filter", "build", "-t", tag, "--build-arg", f"VERSION={version}"]
     commit, dirty = source_commit()
     if commit:
         cmd += ["--build-arg", f"VCS_REF={commit}-dirty" if dirty else f"VCS_REF={commit}"]
@@ -231,7 +258,9 @@ def _command_line(args: argparse.Namespace) -> str:
     return " ".join(parts)
 
 
-def build_info(version: str, args: argparse.Namespace, image_id: str = "", image_deps: int = 0) -> str:
+def build_info(
+    version: str, args: argparse.Namespace, uv: str, image_id: str = "", image_deps: int = 0, image_base: str = ""
+) -> str:
     """Which source and tools the package was built from, so the recipient can trace it back to a commit."""
     commit, dirty = source_commit()
     commit = (
@@ -245,13 +274,14 @@ def build_info(version: str, args: argparse.Namespace, image_id: str = "", image
             f"Commit: {commit}",
             f"Byggt: {built}",
             f"Kommando: {_command_line(args)}",
-            f"Verktyg: {_output(['uv', '--version']) or 'uv okänd'}, Python {platform.python_version()}",
+            f"Verktyg: {_output([uv, '--version']) or 'uv okänd'}, Python {platform.python_version()}",
             *([f"Container-image: fuzzy-mcp:{version} {image_id}"] if image_id else []),
             *(
                 [f"Imagens Python-beroenden: samma versioner som requirements.lock ({image_deps} st.)"]
                 if image_id
                 else []
             ),
+            *([f"Imagens bas: {image_base}"] if image_id else []),
             "",
         ]
     )
@@ -281,10 +311,22 @@ def main() -> int:
     if args.with_image and args.platform != "linux":
         parser.error("--with-image kräver --platform linux (imagen är en Linux-container)")
     args.python = args.python or DEFAULT_PYTHON[args.platform]
+    image_base = ""
+    if args.with_image:
+        image_base, image_python = base_image()
+        if args.python != image_python:
+            parser.error(f"--with-image kräver --python {image_python} (imagen bygger på {image_base.split('@')[0]})")
 
     if shutil.which("uv") is None:
         print("uv saknas – installera från https://docs.astral.sh/uv/", file=sys.stderr)
         return 2
+    with tempfile.TemporaryDirectory(prefix="fuzzy-mcp-build-tools-", ignore_cleanup_errors=True) as tools:
+        return build(args, build_tools(Path(tools)), image_base)
+
+
+def build(args: argparse.Namespace, tools: Path, image_base: str) -> int:
+    """Build the package with the locked tools in the tools directory (see build_tools)."""
+    python, uv = str(tools / f"python{EXE}"), str(tools / f"uv{EXE}")
     version = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
     uv_platform, pip_platforms = PLATFORMS[args.platform]
     name = f"fuzzy-mcp-{version}-{args.platform}-py{args.python}"
@@ -293,19 +335,25 @@ def main() -> int:
         shutil.rmtree(out)
     out.mkdir(parents=True)
 
-    run(["uv", "build", "--out-dir", str(out / "dist")])
+    # The build backend (hatchling) also comes from the lock file, with hash checks.
+    run(
+        [
+            uv, "build", "--out-dir", str(out / "dist"),
+            "--build-constraints", str(BUILD_REQUIREMENTS), "--require-hashes",
+        ]
+    )  # fmt: skip
     (out / "dist" / ".gitignore").unlink(missing_ok=True)
     lock = out / "requirements.lock"
     run(
         [
-            "uv", "pip", "compile", "pyproject.toml", "--generate-hashes", "--no-header", "--quiet",
+            uv, "pip", "compile", "pyproject.toml", "--generate-hashes", "--no-header", "--quiet",
             "--python-version", args.python, "--python-platform", uv_platform, "-o", str(lock),
         ]
     )  # fmt: skip
     platform_args = [arg for tag in pip_platforms for arg in ("--platform", tag)]
     run(
         [
-            "uvx", "--quiet", "--from", PIP, "pip", "download", "--quiet", "--no-deps", "--only-binary=:all:",
+            python, "-m", "pip", "download", "--quiet", "--no-deps", "--only-binary=:all:",
             "--implementation", "cp", "--python-version", args.python, *platform_args,
             "-r", str(lock), "-d", str(out / "wheelhouse"),
         ]
@@ -313,14 +361,14 @@ def main() -> int:
     sbom = out / "sbom.cdx.json"
     run(
         [
-            "uvx", "--quiet", "--from", CYCLONEDX, "cyclonedx-py", "requirements", str(lock),
+            python, "-m", "cyclonedx_py", "requirements", str(lock),
             "--pyproject", "pyproject.toml", "--output-reproducible", "-o", str(sbom),
         ]
     )  # fmt: skip
     complete_sbom(sbom, out / "wheelhouse")
     if not args.skip_audit:
         audit = subprocess.run(
-            ["uvx", "--quiet", "--from", PIP_AUDIT, "pip-audit", "--disable-pip", "--no-deps", "-r", str(lock)],
+            [python, "-m", "pip_audit", "--disable-pip", "--no-deps", "-r", str(lock)],
             cwd=ROOT,
             capture_output=True,
             text=True,
@@ -335,8 +383,10 @@ def main() -> int:
         shutil.copy2(ROOT / doc, out / doc)
     for script in PACKAGE_SCRIPTS:
         shutil.copy2(ROOT / script, out / Path(script).name)
-    image_id, image_deps = build_image(out, version, args.python, args.ca_file, lock) if args.with_image else ("", 0)
-    (out / "BUILDINFO.txt").write_text(build_info(version, args, image_id, image_deps), encoding="utf-8")
+    image_id, image_deps = build_image(out, version, args.ca_file, lock) if args.with_image else ("", 0)
+    (out / "BUILDINFO.txt").write_text(
+        build_info(version, args, uv, image_id, image_deps, image_base), encoding="utf-8"
+    )
 
     files = sorted(p for p in out.rglob("*") if p.is_file() and p.name != "SHA256SUMS")
     (out / "SHA256SUMS").write_text(

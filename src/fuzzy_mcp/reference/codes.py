@@ -34,6 +34,10 @@ from ..errors import InvalidInputError
 
 _DATA_PACKAGE = "fuzzy_mcp.reference.data"
 _STRIP_WORDS = ("kommun", "kommuns", "stad", "lan", "region", "regionen", "landsting")
+# Official municipality names put the name in the genitive before "kommun" or "stad" ("Lunds kommun", "Göteborgs
+# stad"); a name ending in s is unchanged ("Borås stad") and Falun keeps the old genitive "Falu" ("Falu kommun").
+_MUNICIPALITY_WORDS = ("kommun", "stad")
+_GENITIVES = {"falu": "falun"}
 
 
 @cache
@@ -133,13 +137,30 @@ def list_code_lists() -> list[dict[str, Any]]:
 
 
 def normalize(text: str) -> str:
-    """Lowercase, strip diacritics and administrative suffixes so that
-    'Göteborgs stad', 'goteborg' and 'Göteborg' compare equal."""
+    """Lowercase, strip diacritics, read hyphens as spaces and drop administrative words (kommun, stad, län,
+    region ...) so that 'Göteborg stad', 'goteborg' and 'Göteborg' compare equal. A genitive s stays
+    ('Göteborgs stad' → 'goteborgs'); :func:`name_forms` gives the name without it."""
     decomposed = unicodedata.normalize("NFKD", text.casefold())
     plain = "".join(ch for ch in decomposed if not unicodedata.combining(ch))
     plain = plain.replace("-", " ").replace("_", " ")
     words = [w for w in plain.split() if w not in _STRIP_WORDS]
     return " ".join(words)
+
+
+def name_forms(text: str) -> list[str]:
+    """``text`` casefolded and, when it ends in "kommun" or "stad", the name before that word as written and in
+    base form: without a genitive s ("Lunds kommun" → "lund") or from :data:`_GENITIVES` ("Falu kommun" →
+    "falun"). Diacritics are kept, so a form can be compared with a name as spelled (Håbo or Habo)."""
+    words = unicodedata.normalize("NFC", text).casefold().split()
+    forms = [" ".join(words)]
+    if len(words) > 1 and words[-1] in _MUNICIPALITY_WORDS:
+        name = " ".join(words[:-1])
+        forms.append(name)
+        if len(name) > 2 and name.endswith("s"):
+            forms.append(name[:-1])
+        if name in _GENITIVES:
+            forms.append(_GENITIVES[name])
+    return forms
 
 
 def _region_entries() -> list[dict[str, str]]:
@@ -171,8 +192,9 @@ def _region_entries() -> list[dict[str, str]]:
     return entries
 
 
-def lookup_region(query: str, *, kind: str = "alla", limit: int = 5) -> list[dict[str, Any]]:
-    """Find regions by code or (fuzzy) name. ``kind``: alla | kommun | lan."""
+def lookup_region(query: str, *, kind: str = "alla", limit: int = 5, fuzzy: bool = True) -> list[dict[str, Any]]:
+    """Find regions by code or (fuzzy) name. ``kind``: alla | kommun | lan. A name may be the official one with
+    the genitive ('Lunds kommun', 'Göteborgs stad', see :func:`name_forms`). ``fuzzy=False``: exact hits only."""
     query = query.strip()
     if not query:
         raise InvalidInputError("Ange ett namn eller en kod")
@@ -184,23 +206,39 @@ def lookup_region(query: str, *, kind: str = "alla", limit: int = 5) -> list[dic
     if by_code:
         return [dict(e, traff="kod", likhet=1.0) for e in by_code[:limit]]
 
-    target = normalize(query)
+    targets = {normalize(form) for form in name_forms(query)}
     scored: list[tuple[float, dict[str, Any]]] = []
     for entry in entries:
         name = normalize(entry["namn"])
         candidates = {name, name.removesuffix("s")}
-        if target in candidates:
+        if targets & candidates:
             score = 1.0
-        elif any(c.startswith(target) for c in candidates):
+        elif not fuzzy:
+            continue
+        elif any(c.startswith(t) for c in candidates for t in targets):
             score = 0.9
         else:
-            score = max(difflib.SequenceMatcher(None, target, c).ratio() for c in candidates)
+            score = max(difflib.SequenceMatcher(None, t, c).ratio() for c in candidates for t in targets)
         if score >= 0.6:
             scored.append((score, entry))
     # Prefer municipalities over counties on equal scores ("Uppsala" → kommun first).
     order = {"kommun": 0, "lan": 1, "riket": 2}
     scored.sort(key=lambda item: (-item[0], order[item[1]["typ"]], item[1]["kod"]))
     return [dict(entry, traff="namn", likhet=round(score, 3)) for score, entry in scored[:limit]]
+
+
+def match_municipality(query: str, *, limit: int = 5) -> tuple[dict[str, Any] | None, list[dict[str, Any]]]:
+    """(municipality, exact hits) for a code or a name that names one municipality, else (None, the ``limit``
+    closest hits as suggestions). A name names a municipality only when it matches no other one exactly (see
+    :func:`lookup_region`), never as the best fuzzy hit."""
+    exact = lookup_region(query, kind="kommun", limit=len(load("regioner")["kommuner"]), fuzzy=False)
+    # The match strips diacritics (Håbo == Habo), so an exact spelling decides when it names one municipality.
+    forms = name_forms(query)
+    spelled = [hit for hit in exact if unicodedata.normalize("NFC", hit["namn"]).casefold() in forms]
+    named = spelled if len(spelled) == 1 else exact
+    if len(named) == 1:
+        return named[0], exact
+    return None, lookup_region(query, kind="kommun", limit=limit)
 
 
 def municipalities_in_county(county_code: str) -> list[dict[str, str]]:

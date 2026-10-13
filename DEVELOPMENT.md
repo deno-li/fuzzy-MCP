@@ -155,35 +155,55 @@ flaggan; annars saknas `audit.txt` och `scripts/verify_release.py` stoppar paket
 
 Låsningen görs för målplattformen: på Windows kräver MCP-SDK:n även `pywin32`. Se [docs/DRIFT.md](docs/DRIFT.md).
 
+### Låsta byggverktyg och basimage
+
+- **Byggverktygen** (uv, hatchling, pip, cyclonedx-bom och pip-audit med alla beroenden) är låsta med version och
+  SHA-256 i `scripts/build_requirements.txt`. `build_release.py` installerar dem med `--require-hashes` i en
+  tillfällig miljö och bygger med dem; uv på datorn behövs bara för att skapa miljön. Release-flödet och
+  `Dockerfile`:s byggsteg installerar samma fil. Dependabot uppdaterar ett paket i taget. Behöver en uppdatering nya
+  beroenden stoppar CI (jobbet *Paket, installation och röktest*); generera då om filen med kommandot i dess
+  inledning och granska skillnaden.
+- **Basimagen** är låst till en digest i båda `FROM`-raderna i `Dockerfile`, och `BUILDINFO.txt` anger den
+  (`Imagens bas`). Dependabot letar varje vecka efter en ny digest för samma tagg och föreslår den som en vanlig
+  beroendeuppdatering. För hand: läs digesten med `docker buildx imagetools inspect python:3.12-slim` (raden
+  `Digest:`) och byt den i båda raderna. Imagens Python-version är densamma som Linux-paketets standard
+  (`DEFAULT_PYTHON` i `build_release.py`), och testerna stoppar om de skiljer sig: byt båda samtidigt.
+
 ## Utgåvor
 
 1. Uppdatera `version` i `pyproject.toml` och `src/fuzzy_mcp/__init__.py`, `softwareVersion`/`releaseDate` i
-   `publiccode.yml`, versionen i exemplen i `Dockerfile`, `docs/DRIFT.md`, `docs/ENEO.md` och
-   `docs/eneo/docker-compose.fuzzy-mcp.yml`, och flytta posterna under `[Unreleased]` i CHANGELOG.md.
+   `publiccode.yml`, versionen i exemplen i `docs/DRIFT.md`, `docs/ENEO.md` och
+   `docs/eneo/docker-compose.fuzzy-mcp.yml`, och flytta posterna under `[Unreleased]` i CHANGELOG.md. Uppdatera
+   länkarna längst ner i CHANGELOG.md: `[Unreleased]` jämför med den nya taggen, och den nya versionen får en egen
+   jämförelselänk.
 2. Kör kontrollerna ovan, inklusive livetesterna, och merga till main.
-3. Kör arbetsflödet **Release** från main (Actions → Release → Run workflow, *Use workflow from* `main`). Det bygger den
-   commit som är senaste på main när flödet startar (`GITHUB_SHA`) och ingen annan, även om main flyttas under tiden; en
-   äldre commit släpps med den manuella vägen nedan. Flödet kör lint och tester och bygger sedan Windows- och
-   Linux-paketen (med container-image). De färdiga arkivens externa och interna kontrollsummor och innehåll
-   kontrolleras innan paketen packas upp för test. Linux-paketet installeras utan nät från det uppackade
-   slutarkivet; Windows-paketet installeras på samma sätt på en Windows-runner med paketets Python-version.
-   Båda kör `fuzzy-mcp --version` och stdio-röktest. Den exporterade container-imagen läses tillbaka med
-   `docker load` och provas med och utan token; Eneo-kontrollen körs mot den med en säkerhetsuppdaterad
+3. Kör arbetsflödet **Release** från main (Actions → Release → Run workflow, *Use workflow from* `main`). Det bygger
+   den commit som är senaste på main när flödet startar (`GITHUB_SHA`) och ingen annan, även om main flyttas under
+   tiden; en äldre commit släpps med den manuella vägen nedan. Flödet kör först hela CI (`ci.yml`) för commiten –
+   Python 3.11–3.14, lint, tester, verktygstabellen, REUSE och paketkontrollerna – och bygger sedan Windows- och
+   Linux-paketen (med container-image) med de låsta byggverktygen. De färdiga arkivens externa och interna
+   kontrollsummor och innehåll kontrolleras innan paketen packas upp för test. Linux-paketet installeras utan nät från
+   det uppackade slutarkivet; Windows-paketet installeras på samma sätt på en Windows-runner med paketets
+   Python-version. Båda kör `fuzzy-mcp --version` och stdio-röktest. Den exporterade container-imagen läses tillbaka
+   med `docker load` och provas med och utan token; Eneo-kontrollen körs mot den med en säkerhetsuppdaterad
    klientprofil baserad på den granskade Eneo-versionen (2.2.2). Versioner och SHA-256 är låsta i
-   `scripts/eneo_client_requirements.txt`, vars inledning anger avvikelser från Eneos ursprungliga låsfil.
-   Kontrollen ersätter inte ett test från den installerade Eneo-backenden. Först när alla dessa kontroller passerat skapar flödet ett
-   release-**utkast** `vX.Y.Z` med paketen, deras `.sha256`-filer och en releasetext från
+   `scripts/eneo_client_requirements.txt`, vars inledning anger avvikelser från Eneos ursprungliga låsfil. Kontrollen
+   ersätter inte ett test från den installerade Eneo-backenden. Först när alla dessa kontroller passerat attesterar
+   flödet arkivens byggproveniens (`actions/attest-build-provenance`, i ett eget jobb som är det enda med rätt att
+   signera) och skapar ett release-**utkast** `vX.Y.Z` med paketen, deras `.sha256`-filer och en releasetext från
    CHANGELOG-avsnittet med kontrollsummor och spårbarhet (`scripts/release_notes.py`). Flödet stoppar om det inte
    startas från main, om taggen eller releasen redan finns, om CHANGELOG saknar versionen eller om ett paket inte är
-   byggt från rätt commit. Ett ofullständigt utkast tas bort automatiskt; finns ett kvar ändå, ta bort det (`gh release
-   delete vX.Y.Z`) innan du kör igen.
+   byggt från rätt commit. Ett ofullständigt utkast tas bort automatiskt; finns ett kvar ändå, ta bort det
+   (`gh release delete vX.Y.Z`) innan du kör igen.
 4. Granska utkastet under Releases. Kontrollera precis före publicering att taggen `vX.Y.Z` inte finns (Tags-listan,
    eller `gh api repos/deno-li/fuzzy-MCP/git/ref/tags/vX.Y.Z` ger 404 Not Found) och publicera sedan. Taggen skapas då
-   av GitHub på den byggda commiten, som en lättviktig tagg utan signatur; spårbarheten bygger på raden `Commit` och
-   kontrollsummorna i releasetexten. Kontrollera efteråt att `gh api repos/deno-li/fuzzy-MCP/commits/vX.Y.Z --jq .sha`
-   ger samma commit. DRIFT.md hänvisar till releasebeskrivningen som den separat publicerade kontrollsumman.
+   av GitHub på den byggda commiten, som en lättviktig tagg utan signatur; spårbarheten bygger på raden `Commit`,
+   kontrollsummorna i releasetexten och arkivens byggproveniens. Kontrollera gärna ett arkiv från utkastet med
+   `gh attestation verify` (DRIFT.md avsnitt 2) före publicering. Kontrollera efteråt att
+   `gh api repos/deno-li/fuzzy-MCP/commits/vX.Y.Z --jq .sha` ger samma commit. DRIFT.md hänvisar till
+   releasebeskrivningen som den separat publicerade kontrollsumman.
 
 Utan GitHub Actions: bygg med `build_release.py` (se ovan) och kör samma slutarkivs-, offline-, Windows-,
 container- och Eneo-kontroller som i flödet. Skapa därefter taggen och releasen för hand, bifoga paketen och
 `.sha256`-filerna och använd `python scripts/release_notes.py --version X.Y.Z --changelog CHANGELOG.md --release-dir
-release --commit <sha>` för releasetexten.
+release --commit <sha>` för releasetexten. Paket som byggs så får ingen byggproveniens; skriv det i releasetexten.

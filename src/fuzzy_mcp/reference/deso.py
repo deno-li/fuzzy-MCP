@@ -416,16 +416,14 @@ def lookup_regso(code: str) -> dict[str, Any]:
 
 
 def resolve_municipality(query: str) -> tuple[str, str]:
-    """(kommunkod, namn) for a code or a name that matches exactly one municipality."""
+    """(kommunkod, namn) for a code or a name that matches exactly one municipality (see
+    :func:`codes.match_municipality`)."""
     query = query.strip()
     if not query:
         raise InvalidInputError("Ange kommunkod (4 siffror, t.ex. '0180') eller kommunnamn.")
-    hits = codes.lookup_region(query, kind="kommun", limit=5)
-    # The fuzzy match strips diacritics (Håbo == Habo), so an exact spelling decides when it names one municipality.
-    spelled = [hit for hit in hits if hit["namn"].casefold() == query.casefold()]
-    exact = spelled if len(spelled) == 1 else [hit for hit in hits if hit["traff"] == "kod" or hit["likhet"] == 1.0]
-    if len(exact) == 1:
-        return exact[0]["kod"], exact[0]["namn"]
+    match, hits = codes.match_municipality(query)
+    if match is not None:
+        return match["kod"], match["namn"]
     if not hits:
         raise InvalidInputError(f"Okänd kommun {query!r}: ange kommunkod (4 siffror, t.ex. '0180') eller kommunnamn.")
     options = ", ".join(f"{hit['namn']} ({hit['kod']})" for hit in hits)

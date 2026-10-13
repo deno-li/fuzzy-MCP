@@ -32,6 +32,9 @@ Efter 0.2.1 använder CI och kommande releasebyggen en säkerhetsuppdaterad klie
 och PyJWT från 2.13.0 till 2.15.0. Den profilen återger därför inte exakt Eneos ursprungliga låsfil.
 Den tidigare verifieringen av 0.2.1 ovan gäller fortfarande den ursprungliga klientprofilen; nya CI-resultat
 gäller den uppdaterade profilen. Detta ändrar inte beroendena i er installerade Eneo-backend.
+[Releasekörningen för 0.2.2](https://github.com/deno-li/fuzzy-MCP/actions/runs/38308731439) körde kontrollen i
+avsnitt 4 med den uppdaterade profilen (Python 3.11, MCP SDK 1.28.1, AnyIO 4.14.2, PyJWT 2.15.0) mot 0.2.2-imagen,
+återinläst ur Linux-leveransarkivet, och kontrollen passerade.
 
 Inställningarna som börjar på `MCP_` nedan är Eneos egna (miljövariabler i Eneos backend); värdena är standardvärden.
 
@@ -77,7 +80,8 @@ Kommandona körs från leveranspaketets rot och lägger compose-filerna och toke
 ```bash
 # Imagen från leveranspaketet (byggt med --with-image). Jämför image-id med raden "Container-image" på
 # releasesidan (https://github.com/deno-li/fuzzy-MCP/releases) – då kör ni exakt den granskade imagen.
-# Det är en kontrollsumma från samma releasesida, ingen signatur.
+# Image-id:t är en kontrollsumma. Att Linux-arkivet byggts av Release-flödet visar dess signerade byggproveniens
+# (gh attestation verify, DRIFT.md avsnitt 2), och arkivets SHA256SUMS täcker imagefilen.
 docker load -i fuzzy-mcp-0.2.2-image.tar.gz
 docker image inspect --format '{{.Id}}' fuzzy-mcp:0.2.2
 # Använder Docker containerd för att lagra images (förvalt i nyare installationer) visar kommandot i stället
@@ -136,7 +140,8 @@ anslutningen försvinner när backend-containern skapas om, t.ex. vid en Eneo-up
 ### Utgående trafik
 
 fuzzy-mcp ska bara nå de sex värdarna i [DRIFT.md avsnitt 6](DRIFT.md#6-nätverk). Servern anropar bara dem och
-följer omdirigeringar bara mellan dem (aldrig från https till http), men nätet ska också spärra:
+följer omdirigeringar bara mellan dem (på samma port och protokoll som i deras adresser, aldrig från https till
+http), men nätet ska också spärra:
 
 - **Rekommenderat:** tillägget `docker-compose.egress.yml` (kommandona ovan). `fuzzy_egress` blir ett internt nät
   utan utgång, och trafiken går via en Squid-proxy (`egress/`, Ubuntu 24.04) som bara släpper fram HTTPS till de
@@ -371,7 +376,10 @@ steg 1; behåll era egna proxy- och certifikatinställningar enligt avsnitt 2.
 Från 0.2.2 till nästa version: kortade svar (`FUZZY_MCP_MAX_OUTPUT_CHARS`) anger nu `truncated` rätt och bläddrar
 vidare utan luckor (`next_*` eller `_kortat.fortsatt`). `scb_search_tables` och `scb_geodata_get_features` har nya
 utdatafält och flera verktyg har ändrade beskrivningar: synkronisera verktygen enligt steg 3 och uppdatera
-assistentinstruktionen (`docs/eneo/assistentinstruktion.md`).
+assistentinstruktionen (`docs/eneo/assistentinstruktion.md`). Kontrollera gärna paketets byggproveniens med
+`gh attestation verify` (DRIFT.md avsnitt 2) innan imagen läses in. `docker stop` avslutar nu fuzzy-mcp med kod 0
+efter att HTTP-klienten stängts, och Susa-navets kommunfilter ger ett fel med förslag i stället för att gissa när ett
+kommunnamn är felstavat eller tvetydigt.
 
 Från 0.2.1 till 0.2.2: rättningar av API-notishistorik, personuppgiftsfiltrering, sidning och frågerecept.
 Inga verktyg tillkommer. Synkronisera verktygen och granska ändrade beskrivningar och svarsformat enligt steg 3.
@@ -408,7 +416,8 @@ Kör kontrollen i avsnitt 4 från den återskapade backend-containern och accept
 - fuzzy-mcp bara på `eneo_module_net` + eget egress-nät, aldrig `data_net`, `object_content_net` eller `proxy_tier`;
   inga publicerade portar och inga `traefik.*`-etiketter.
 - Utgående trafik bara till myndigheternas värdar: egress-proxyn (avsnitt 2) eller motsvarande spärr. Servern följer
-  dessutom bara omdirigeringar mellan de värdarna, aldrig från https till http.
+  dessutom bara omdirigeringar mellan de värdarna, på samma port och protokoll som i deras adresser och aldrig från
+  https till http.
 - Token på fil med snäva rättigheter, rotation enligt avsnitt 3.
 - fuzzy-mcp är skrivskyddad mot öppna API:er och ansluter inte till interna system. Den sparar inga svar på disk;
   svar från myndigheterna ligger i minnescachen högst `FUZZY_MCP_CACHE_TTL` (en timme).
@@ -443,6 +452,7 @@ Kör kontrollen i avsnitt 4 från den återskapade backend-containern och accept
 | "Kunde inte nå API:t" i svaren | fuzzy-mcp saknar utgående nät – egress-nätet, brandvägg och proxy (DRIFT.md avsnitt 6) |
 | "Kunde inte nå API:t (ProxyError) … 403" | Egress-proxyn nekade värden. `docker logs fuzzy-egress-proxy` visar vilken; lägg bara till en värd i `egress/squid.conf` om den hör till en myndighet ni använder, och kör `docker restart fuzzy-egress-proxy` |
 | "Omdirigeringen till … stoppades – … myndigheternas egna adresser" | Myndighetens API omdirigerade till en annan värd än myndigheternas egna. Inget hämtades därifrån. Rapportera adressen (SECURITY.md) |
+| "Omdirigeringen till … stoppades – … samma port och protokoll som i myndighetens adress" | Myndighetens API omdirigerade till en annan port på en av myndigheternas värdar, t.ex. `https://api.skolverket.se:22`. Inget hämtades därifrån. Rapportera adressen (SECURITY.md) |
 | "Omdirigeringen till http://… stoppades – … okrypterad adress" | Myndighetens API omdirigerade från https till http, ofta en server bakom TLS-avlastning som svarar med en http-adress. Servern följer aldrig sådana; rapportera det till myndigheten |
 | Nya verktyg syns inte, eller anrop ger parameterfel efter en uppdatering | **Synkronisera verktyg** och godkänn ändringarna i Eneo, och slå på nya verktyg i assistenterna (avsnitt 7) |
 
@@ -450,7 +460,10 @@ Kör kontrollen i avsnitt 4 från den återskapade backend-containern och accept
 
 - Ett fullständigt acceptanstest i en riktig Eneo-installation. Den publicerade 0.2.1-imagen har kontrollerats med
   Python 3.11 och Eneo 2.2.2:s 31 klientberoenden, låsta med versioner och SHA-256 (bl.a. SDK 1.28.1, httpx 0.28.1,
-  anyio 4.14.1 och pydantic 2.13.4). HTTP-röktestet och klientkontrollen passerade: Bearer-token, protokoll,
+  anyio 4.14.1 och pydantic 2.13.4). [Releasekörningen för 0.2.2](https://github.com/deno-li/fuzzy-MCP/actions/runs/38308731439)
+  kontrollerade 0.2.2-imagen, återinläst ur leveransarkivet, med den säkerhetsuppdaterade profilen från avsnitt 1:
+  samma beroenden men anyio 4.14.2 och PyJWT 2.15.0. För båda imagerna passerade HTTP-röktestet och klientkontrollen:
+  Bearer-token, protokoll,
   verktygskatalogen med 84 verktyg, scheman, referensuppslag och svarsstorlek. De använder lokala referensdata och verifierar inte
   myndighetsåtkomst genom er egress-proxy eller hur er modell väljer verktyg och använder svaren. Avsnitt 1–9 bygger
   på källkoden och dokumentationen för v2.2.2 (där de skiljer sig gäller koden) samt dessa klientkontroller.

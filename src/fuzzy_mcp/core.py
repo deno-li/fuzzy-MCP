@@ -5,9 +5,11 @@
 """Shared plumbing for the source modules: service container, error
 translation for MCP tools and small helpers."""
 
+import bisect
 import functools
 import inspect
 import json
+import logging
 from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass, field
 from typing import Any, ParamSpec, TypeVar
@@ -23,6 +25,8 @@ from .http import HttpClient, RateLimit
 
 P = ParamSpec("P")
 R = TypeVar("R")
+
+logger = logging.getLogger("fuzzy_mcp")
 
 # Read-only, open-world: every tool only reads public data from external APIs.
 READ_ONLY_OPEN = ToolAnnotations(readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=True)
@@ -60,6 +64,7 @@ class Services:
         if self._http is not None:
             await self._http.aclose()
             self._http = None
+            logger.info("HTTP-klienten mot myndigheterna är stängd")
 
 
 def inline_schema_refs(schema: dict[str, Any]) -> dict[str, Any]:
@@ -343,25 +348,6 @@ def _candidates(node: Any, path: str = "", ancestors: tuple[dict[str, Any], ...]
     return found
 
 
-def _pick_list(data: dict[str, Any], prefer: frozenset[str] = frozenset()) -> _Candidate | None:
-    """The trimmable list with the largest own weight (its size minus nested trimmable lists), so long inner value
-    lists shrink before whole records are dropped. Lists a paging contract names (``prefer``) go first: shortening
-    them leaves the answer resumable."""
-    candidates = _candidates(data)
-    preferred = [c for c in candidates if c.path in prefer]
-    candidates = preferred or candidates
-    sizes = {id(c.items): len(compact_json(c.items)) for c in candidates}
-    best: tuple[int, _Candidate] | None = None
-    for c in candidates:
-        nested = sum(
-            sizes[id(o.items)] for o in candidates if o.items is not c.items and o.path.startswith(c.path + "[")
-        )
-        own = sizes[id(c.items)] - nested
-        if best is None or own > best[0]:
-            best = (own, c)
-    return best[1] if best else None
-
-
 def _longest_string(node: Any) -> tuple[dict[str, Any] | list[Any], Any, str, str] | None:
     """The longest string that may be shortened: not a URL or a query (shortened, it would no longer work), nothing
     positional, and long enough that shortening it again makes it shorter."""
@@ -372,20 +358,22 @@ def _longest_string(node: Any) -> tuple[dict[str, Any] | list[Any], Any, str, st
         items = (
             current.items() if isinstance(current, dict) else enumerate(current) if isinstance(current, list) else ()
         )
+        in_object = isinstance(current, dict)
         for key, value in items:
-            sub = (f"{path}.{key}" if path else str(key)) if isinstance(current, dict) else f"{path}[]"
-            label = str(key) if isinstance(current, dict) else name
+            label = str(key) if in_object else name
             if isinstance(value, str):
-                eligible = (
-                    len(value) > MIN_STRING + len(CUT_MARKER)
-                    and not any(part in label.lower() for part in ("url", "query", "href"))
-                    and not value.startswith(("http://", "https://"))
-                )
-                if eligible and (best is None or len(value) > best[0]):
-                    best = (len(value), current, key, value, sub)
-            elif isinstance(value, dict | list) and not (
-                isinstance(current, dict) and key in POSITIONAL_KEYS | {TRUNCATION_KEY}
-            ):
+                if len(value) <= (best[0] if best else MIN_STRING + len(CUT_MARKER)):
+                    continue  # too short, or no longer than the longest so far
+                if any(part in label.lower() for part in ("url", "query", "href")) or value.startswith(
+                    ("http://", "https://")
+                ):
+                    continue
+            elif not isinstance(value, dict | list) or (in_object and key in POSITIONAL_KEYS | {TRUNCATION_KEY}):
+                continue
+            sub = (f"{path}.{key}" if path else str(key)) if in_object else f"{path}[]"
+            if isinstance(value, str):
+                best = (len(value), current, key, value, sub)
+            else:
                 stack.append((value, sub, label))
     return (best[1], best[2], best[3], best[4]) if best else None
 
@@ -413,6 +401,442 @@ def _reachable_lists(node: Any) -> set[int]:
     return seen
 
 
+def _json_size(text: str) -> tuple[int, int]:
+    """(length, client length) of a compact JSON text. A client JSON-encodes it escaping only quotes and backslashes
+    (json.dumps has already escaped every control character), so both lengths add up over the parts of a JSON value
+    and ``client_size(text) == client length + 2 + ENVELOPE_CHARS``."""
+    return len(text), len(text) + text.count('"') + text.count("\\")
+
+
+class _Sizes:
+    """Exact sizes of the answer fit_to_limit shortens, kept per object and list: a step measures again only what it
+    changed and the objects above it, not the whole answer. Every change to the answer is reported with touch()."""
+
+    def __init__(self, root: dict[str, Any]) -> None:
+        self.root = root
+        # id(node) -> (node, its parent, its key or index there); holding the node keeps every id unique
+        self.parents: dict[int, tuple[Any, Any, Any]] = {}
+        self.branches: set[int] = set()  # objects and lists holding objects or lists
+        self.split: set[int] = set()  # changed below: measured part by part, reusing the sizes of unchanged parts
+        self.memo: dict[int, list[Any]] = {}  # id(node) -> [node, length, client length]
+        # id(node) -> {key: (child, child's length, child's client length)}: measured children that have changed since
+        # node was measured; node's size is corrected by their difference instead of measuring all its parts again
+        self.pending: dict[int, dict[Any, tuple[Any, int, int]]] = {}
+        self.keys: dict[str, tuple[int, int]] = {}
+        self.adopt(root, None, None)
+
+    def adopt(self, node: Any, parent: Any, key: Any) -> None:
+        """Register ``node`` (new, or the whole answer) and everything in it."""
+        if parent is not None:
+            self.parents[id(node)] = (node, parent, key)
+            self.touch(node)
+        stack = [node]
+        while stack:
+            current = stack.pop()
+            for index, child in current.items() if isinstance(current, dict) else enumerate(current):
+                if isinstance(child, dict | list):
+                    self.parents[id(child)] = (child, current, index)
+                    self.branches.add(id(current))
+                    stack.append(child)
+
+    def touch(self, node: Any) -> None:
+        """``node`` has changed: measure it again, and correct everything holding it by the difference."""
+        known = self.memo.pop(id(node), None)
+        if known is None and id(node) in self.split:
+            return  # not measured since it last changed: everything holding it already knows
+        self.pending.pop(id(node), None)
+        self.split.add(id(node))
+        self._propagate(node, known)
+
+    def set(self, container: dict[str, Any] | list[Any], key: Any, value: Any) -> None:
+        """``container[key] = value`` where both the old and the new value are strings or numbers: the size known for
+        the container is corrected by their difference instead of measuring the container again."""
+        known = self.memo.get(id(container))
+        if known is None:
+            container[key] = value
+            self.touch(container)
+            return
+        length, client = self.measure(container[key])
+        container[key] = value
+        new_length, new_client = self.measure(value)
+        self._propagate(container, known)
+        known[1] += new_length - length
+        known[2] += new_client - client
+
+    def _propagate(self, node: Any, known: list[Any] | None) -> None:
+        """Tell everything holding ``node`` that it changed; ``known`` is its size before the change, if measured."""
+        while (entry := self.parents.get(id(node))) is not None:
+            _, parent, key = entry
+            if known is not None and id(parent) in self.memo:
+                waiting = self.pending.setdefault(id(parent), {})
+                if key in waiting:  # already changing, and so is everything above
+                    return
+                waiting[key] = (node, known[1], known[2])
+                known = self.memo[id(parent)]
+            elif id(parent) in self.split and id(parent) not in self.memo:
+                return  # to be measured again already
+            else:  # its size is part of the parent's, which must be measured again
+                known = self.memo.pop(id(parent), None)
+                self.pending.pop(id(parent), None)
+                self.split.add(id(parent))
+            node = parent
+
+    def attached(self, node: Any) -> bool:
+        """Whether ``node`` is still in the answer, i.e. not in an item a shorter list has left out."""
+        while node is not self.root:
+            entry = self.parents.get(id(node))
+            if entry is None:
+                return False
+            _, parent, key = entry
+            if isinstance(parent, list):
+                if key >= len(parent) or parent[key] is not node:
+                    return False
+            elif parent.get(key) is not node:
+                return False
+            node = parent
+        return True
+
+    def key(self, key: str) -> tuple[int, int]:
+        known = self.keys.get(key)
+        if known is None:
+            known = self.keys[key] = _json_size(compact_json(key))
+        return known
+
+    def measure(self, node: Any) -> tuple[int, int]:
+        """(length, client length) of ``node`` as compact JSON."""
+        known = self.memo.get(id(node))  # only objects and lists are kept (and their ids are unique)
+        if known is not None:
+            if id(node) in self.pending:
+                for child, length, client in self.pending.pop(id(node)).values():
+                    new_length, new_client = self.measure(child)
+                    known[1] += new_length - length
+                    known[2] += new_client - client
+            return known[1], known[2]
+        if not isinstance(node, dict | list):
+            return _json_size(compact_json(node))
+        if id(node) in self.split and id(node) in self.branches:
+            length = client = max(len(node) + 1, 2)  # brackets and commas
+            if isinstance(node, dict):
+                for key, value in node.items():
+                    key_length, key_client = self.key(key)
+                    value_length, value_client = self.measure(value)
+                    length += key_length + 1 + value_length
+                    client += key_client + 1 + value_client
+            else:
+                for value in node:
+                    value_length, value_client = self.measure(value)
+                    length += value_length
+                    client += value_client
+        else:  # unchanged below, or holding only strings and numbers: one serialization
+            length, client = _json_size(compact_json(node))
+        self.memo[id(node)] = [node, length, client]
+        return length, client
+
+    def answer(self, note: dict[str, Any]) -> int:
+        """``client_size(compact_json({**root, TRUNCATION_KEY: note}))``, serializing only the note."""
+        return (
+            self.measure(self.root)[1]
+            + (1 if self.root else 0)
+            + self.key(TRUNCATION_KEY)[1]
+            + 1
+            + _json_size(compact_json(note))[1]
+            + 2
+            + ENVELOPE_CHARS
+        )
+
+
+class _Shortening:
+    """One run of fit_to_limit on a copy of the answer.
+
+    Each probe ("does the answer fit with the lists cut like this?") is measured exactly, but only what changed since
+    the previous probe is measured again (see _Sizes), and a probe updates the list it cut, not every list cut so far.
+    With ``exact`` every probe and pick looks at the whole answer instead (serializes it, finds the trimmable lists),
+    as fit_to_limit did before: the fallback should the incremental sizes ever disagree. Both take the same steps."""
+
+    def __init__(self, data: dict[str, Any], limit: int, cuts: tuple[Cut, ...], exact: bool) -> None:
+        self.data = data
+        self.limit = limit
+        self.exact = exact
+        self.work: dict[str, Any] = json.loads(json.dumps(data))  # deep copy; never mutate the caller's data
+        own = self.work.pop(TRUNCATION_KEY, None)  # a tool's own note (ref_get_code_list) is kept, not replaced
+        self.own: dict[str, Any] = own if isinstance(own, dict) else {}
+        self.active = tuple(c for c in cuts if c.when is None or self.work.get(c.when[0]) == c.when[1])
+        self.contracted = frozenset(c.items for c in self.active)
+        self.sizes = _Sizes(self.work)
+        # id(list) -> (candidate, length before the first cut, whether the holder's ``returned`` counts this list)
+        self.shortened: dict[int, tuple[_Candidate, int, bool]] = {}
+        self.strings: dict[str, list[int]] = {}  # path -> [length before, length now]
+        self.left_out: list[str] = []
+        self.recut: dict[int, list[Any]] = {}  # lists cut since the last probe
+        self.counted: dict[int, list[_Candidate]] = {}  # id(holder) -> the cut lists its ``returned`` counts, in order
+        # The lists that can still be shortened, in the order _candidates finds them. Cuts only shorten lists, so lists
+        # only leave: one cut to its floor, and those in what a cut or a contract leaves out.
+        self.live: list[_Candidate] = []
+        self.floor: dict[int, int] = {}  # id(list) -> length at or below which it is no longer trimmable
+        self.inside: dict[int, list[_Candidate]] = {}  # id(list) -> the trimmable lists inside it
+        self.emptied: set[int] = set()  # lists holding trimmable lists, cut since the last pick
+        self.recheck = False  # whether any list in live may have been left out
+        self.presence: dict[int, bool] = {}  # id(list) -> whether it is in the answer, as at the start of the probe
+        self.moved = False  # whether presence is out of date (as from the next probe)
+        self.reachable: set[int] = set()  # with exact: id() of every list in the answer at the start of the probe
+        self.last: _Candidate | None = None  # the list picked last
+        self.nested: dict[str, list[str]] = {}  # path -> the paths of trimmable lists inside lists at that path
+        self.beside: list[_Candidate] = []  # lists without a contract, in the object a contract updates
+        # what the contracts add to the note in the current probe
+        self.resumes: list[dict[str, Any]] = []
+        self.named: list[dict[str, Any]] = []
+        self.hints: list[str] = []
+
+    def run(self) -> tuple[dict[str, Any], int]:
+        """Shorten until the answer fits or nothing more can be shortened; the answer and its measured size."""
+        for key in DROP_FIRST_KEYS:
+            if key in self.work and not self.fits():
+                del self.work[key]
+                self.sizes.touch(self.work)
+                self.left_out.append(key)
+        self.index()
+        for _ in range(10_000):
+            if self.fits():
+                return self.finish()
+            picked = self.last = self.pick()
+            if picked is None:
+                break
+            returned = picked.holder.get("returned")
+            counted = isinstance(returned, int) and not isinstance(returned, bool) and returned == len(picked.items)
+            if id(picked.items) not in self.shortened:
+                self.shortened[id(picked.items)] = (picked, len(picked.items), counted)
+                if counted:
+                    self.counted.setdefault(id(picked.holder), []).append(picked)
+            lst = picked.items
+            original = len(lst)
+            items = list(lst)
+            self.cut(lst, items[:1])
+            if not self.fits():
+                # This list alone cannot make the answer fit: halve it and let the others shrink too.
+                self.cut(lst, items[: max(1, original // 2)])
+                continue
+            low, high = 1, original - 1  # longest prefix that fits
+            while low < high:
+                mid = (low + high + 1) // 2
+                self.cut(lst, items[:mid])
+                if self.fits():
+                    low = mid
+                else:
+                    high = mid - 1
+            self.cut(lst, items[:low])
+        for _ in range(1_000):
+            if self.fits():
+                return self.finish()
+            found = _longest_string(self.work)
+            if found is None:
+                break
+            container, key, value, path = found
+            shorter = value.removesuffix(CUT_MARKER)
+            self.sizes.set(container, key, shorter[: max(MIN_STRING, len(shorter) // 2)] + CUT_MARKER)
+            lengths = self.strings.setdefault(path, [len(value), 0])
+            lengths[1] = len(container[key])
+        return self.finish()
+
+    def index(self) -> None:
+        """Find the trimmable lists once; afterwards a list only stops being trimmable (see live)."""
+        self.live = _candidates(self.work)
+        ids = {id(c.items) for c in self.live}
+        for c in self.live:
+            numbers = next(i for i, x in enumerate(c.items) if not isinstance(x, int | float) or isinstance(x, bool))
+            self.floor[id(c.items)] = max(1, numbers)  # a prefix of numbers only is not trimmable
+            entry = self.sizes.parents.get(id(c.items))
+            while entry is not None:
+                if id(entry[1]) in ids:
+                    self.inside.setdefault(id(entry[1]), []).append(c)
+                entry = self.sizes.parents.get(id(entry[1]))
+        paths = sorted({c.path for c in self.live})
+        for path in paths:
+            start = end = bisect.bisect_left(paths, path + "[")
+            while end < len(paths) and paths[end].startswith(path + "["):
+                end += 1
+            self.nested[path] = paths[start:end]
+        holders = [_resolve(self.work, cut.items)[0] for cut in self.active]
+        self.beside = [c for c in self.live if c.path not in self.contracted and any(c.holder is h for h in holders)]
+
+    def pick(self) -> _Candidate | None:
+        """The trimmable list with the largest own weight (its size minus nested trimmable lists), so long inner value
+        lists shrink before whole records are dropped. Lists a paging contract names go first: shortening them leaves
+        the answer resumable."""
+        if self.exact:
+            self.live = _candidates(self.work)
+        elif self.recheck:
+            self.live = [c for c in self.live if self.sizes.attached(c.items)]
+            self.recheck = False
+        elif self.emptied:
+            gone = {id(c.items) for i in self.emptied for c in self.inside[i] if not self.sizes.attached(c.items)}
+            self.live = [c for c in self.live if id(c.items) not in gone]
+        self.emptied.clear()
+        if self.last is not None and len(self.last.items) <= self.floor[id(self.last.items)]:
+            self.live = [c for c in self.live if c.items is not self.last.items]
+        pool = [c for c in self.live if c.path in self.contracted] or self.live
+        if not pool:
+            return None
+        if self.exact:
+            sizes = [len(compact_json(c.items)) for c in pool]
+        else:
+            sizes = [self.sizes.measure(c.items)[0] for c in pool]
+        if any(self.nested.values()):
+            totals: dict[str, int] = {}
+            for c, size in zip(pool, sizes, strict=True):
+                totals[c.path] = totals.get(c.path, 0) + size
+            nested = {path: sum(totals.get(inner, 0) for inner in self.nested[path]) for path in totals}
+            sizes = [size - nested[c.path] for c, size in zip(pool, sizes, strict=True)]
+        return pool[sizes.index(max(sizes))]  # the first of equals
+
+    def cut(self, lst: list[Any], items: list[Any]) -> None:
+        lst[:] = items
+        self.sizes.touch(lst)
+        self.recut[id(lst)] = lst
+        if id(lst) in self.inside:  # the lists in the items it left out (or put back) left (or are back)
+            self.emptied.add(id(lst))
+            for c in self.inside[id(lst)]:
+                self.presence.pop(id(c.items), None)
+
+    def dropped(self) -> None:
+        """Lists may have left the answer: pick() checks every list again, and so does the next probe (a probe sees
+        the answer as it was when the probe started, like the cuts before it)."""
+        self.recheck = self.moved = True
+
+    def present(self, lst: list[Any]) -> bool:
+        known = self.presence.get(id(lst))
+        if known is None:
+            known = self.presence[id(lst)] = id(lst) in self.reachable if self.exact else self.sizes.attached(lst)
+        return known
+
+    def fits(self) -> bool:
+        self.settle(full=self.exact)
+        if self.exact:
+            return client_size(compact_json({**self.work, TRUNCATION_KEY: self.note()})) <= self.limit
+        if self.sizes.measure(self.work)[1] + 2 + ENVELOPE_CHARS > self.limit:  # too large even before the note
+            return False
+        return self.sizes.answer(self.note()) <= self.limit
+
+    def finish(self) -> tuple[dict[str, Any], int]:
+        """The answer as it would be sent, and its size as the probes measure it."""
+        self.settle(full=True)
+        note = self.note()
+        answer = {**self.work, TRUNCATION_KEY: note}
+        return answer, client_size(compact_json(answer)) if self.exact else self.sizes.answer(note)
+
+    def mark(self, c: _Candidate) -> None:
+        """Flag a cut list where it is: ``<list>_truncated`` beside it and ``truncated`` on every object above it (when
+        they have those fields); without a contract its paging pointers go (a dead end, never a gap)."""
+        for obj, flag in ((c.holder, f"{c.key}_truncated"), *((obj, "truncated") for obj in c.ancestors)):
+            if obj.get(flag) is False:
+                self.sizes.set(obj, flag, True)
+        if c.path not in self.contracted:
+            for key in CONTINUATION_KEYS:
+                if key in c.holder:
+                    if isinstance(c.holder.pop(key), dict | list):
+                        self.dropped()
+                    self.sizes.touch(c.holder)
+
+    def count(self, holder: dict[str, Any], returned: int) -> None:
+        if holder.get("returned") != returned:  # counted: the holder has an int returned
+            self.sizes.set(holder, "returned", returned)
+
+    def settle(self, full: bool) -> None:
+        """Update the answer for everything cut so far: flags, ``returned`` and the contracts' paging fields.
+
+        The updates of a list are the same at every probe once it is cut, so a probe updates only the lists cut since
+        the previous one (``full`` updates every list). Exceptions: ``returned`` is the length of the last cut list it
+        counts, and a contract writes its paging fields again at every probe, so the lists beside it remove theirs again
+        first. Lists that a later cut leaves out, or puts back, need no update: their objects go and come with them."""
+        if self.moved or self.exact:
+            self.presence.clear()
+            self.moved = False
+            self.reachable = _reachable_lists(self.work) if self.exact else set()
+        if full:
+            for c, _, counted in self.shortened.values():
+                if self.present(c.items):
+                    self.mark(c)
+                    if counted:
+                        self.count(c.holder, len(c.items))
+        else:
+            for lst in self.recut.values():
+                c, _, counted = self.shortened[id(lst)]
+                if self.present(lst):
+                    self.mark(c)
+                    if counted:
+                        self.count(c.holder, len(self.counted[id(c.holder)][-1].items))
+            for c in self.beside:
+                if id(c.items) in self.shortened and self.present(c.items):
+                    self.mark(c)
+        self.recut.clear()
+        self.resumes, self.named, self.hints = [], [], []
+        for cut in self.active:
+            holder, items = _resolve(self.work, cut.items)
+            _, original = _resolve(self.data, cut.items)
+            if not isinstance(holder, dict) or not isinstance(items, list) or not isinstance(original, list):
+                continue
+            if len(items) >= len(original):
+                continue
+            notes = self.work.get("notes")
+            if cut.stale_notes and isinstance(notes, list):
+                kept = [n for n in notes if not (isinstance(n, str) and n.startswith(cut.stale_notes))]
+                if len(kept) < len(notes):
+                    self.work["notes"] = kept
+                    self.sizes.adopt(kept, self.work, "notes")
+            fields = len(holder)
+            resumed = cut.resume(self.work, holder, len(items), original)
+            self.sizes.touch(holder)
+            if len(holder) < fields:  # a removed field may have held trimmable lists
+                self.dropped()
+            if resumed:
+                (self.resumes if "anrop" in resumed else self.named).append({"falt": cut.items, **resumed})
+            if cut.hint:
+                self.hints.append(cut.hint)
+
+    def note(self) -> dict[str, Any]:
+        """The ``_kortat`` note for everything shortened so far (after settle)."""
+        totals: dict[str, dict[str, Any]] = {}
+        for c, before, _ in self.shortened.values():
+            if self.present(c.items):
+                entry = totals.setdefault(c.path, {"falt": c.path, "fore": 0, "efter": 0, "listor": 0})
+                entry["fore"] += before
+                entry["efter"] += len(c.items)
+                entry["listor"] += 1
+        kortade = [e for e in self.own.get("kortade", []) if isinstance(e, dict)]
+        kortade += [
+            {k: v for k, v in e.items() if k != "listor" or v > 1} for e in totals.values() if e["efter"] < e["fore"]
+        ]
+        kortade += [
+            {"falt": path, "fore": lengths[0], "efter": lengths[1], "enhet": "tecken"}
+            for path, lengths in self.strings.items()
+        ]
+        message = " ".join(
+            part
+            for part in (
+                str(self.own.get("meddelande") or ""),
+                f"Svaret kortades för att rymmas i klientens gräns ({self.limit} tecken).",
+                "Fälten i kortade är inte fullständiga." if kortade else "",
+                "raw utelämnades helt (anropa utan include_raw om du inte behöver det)." if self.left_out else "",
+                "Hämta resten utan luckor med fortsatt: samma verktyg med övriga argument oförändrade och värdena i "
+                "anrop, eller verktyget i verktyg med exakt argumenten i anrop."
+                if self.resumes
+                else "Posterna i utelamnade saknas i svaret."
+                if self.named
+                else "Begränsa urvalet för att få allt."
+                if kortade
+                else "",
+            )
+            if part
+        ) + "".join(self.hints)
+        note: dict[str, Any] = {"meddelande": message, "kortade": kortade}
+        if self.left_out:
+            note["utelamnade_falt"] = self.left_out
+        if self.resumes:
+            note["fortsatt"] = self.resumes
+        if self.named:
+            note["utelamnade"] = self.named
+        return note
+
+
 def fit_to_limit(data: dict[str, Any], limit: int, cuts: tuple[Cut, ...] = ()) -> tuple[dict[str, Any] | None, bool]:
     """Shorten lists (and, if needed, long strings) until the answer fits ``limit`` as a client measures it.
 
@@ -422,138 +846,20 @@ def fit_to_limit(data: dict[str, Any], limit: int, cuts: tuple[Cut, ...] = ()) -
     contract, paging fields beside a shortened list are removed (a dead end, never a gap). Returns ``(data, False)``
     when it already fits, ``(shortened copy, True)`` with a ``_kortat`` note, or ``(None, True)`` when even that
     cannot fit.
+
+    Each step is measured incrementally (see _Shortening), so hundreds of long lists take well under a second. The
+    result is measured whole once more; should that ever disagree, every step is measured whole instead.
     """
     if limit <= 0 or client_size(compact_json(data)) <= limit:
         return data, False
-    work = json.loads(json.dumps(data))  # deep copy; never mutate the caller's data
-    own = work.pop(TRUNCATION_KEY, None)  # a tool's own note (ref_get_code_list) is kept, not replaced
-    own = own if isinstance(own, dict) else {}
-    active = tuple(c for c in cuts if c.when is None or work.get(c.when[0]) == c.when[1])
-    contracted = frozenset(c.items for c in active)
-    # id(list) -> (candidate, length before the first cut, whether the holder's ``returned`` counts this list)
-    shortened: dict[int, tuple[_Candidate, int, bool]] = {}
-    strings: dict[str, list[int]] = {}  # path -> [length before, length now]
-    left_out: list[str] = []
-
-    def finish() -> dict[str, Any]:
-        """The answer as it would be sent: flags, contracts and the note for everything shortened so far."""
-        reachable = _reachable_lists(work)
-        current = [(c, before, counted) for c, before, counted in shortened.values() if id(c.items) in reachable]
-        for c, _, counted in current:
-            if isinstance(c.holder.get(f"{c.key}_truncated"), bool):
-                c.holder[f"{c.key}_truncated"] = True
-            if counted:
-                c.holder["returned"] = len(c.items)
-            for obj in c.ancestors:
-                if isinstance(obj.get("truncated"), bool):
-                    obj["truncated"] = True
-            if c.path not in contracted:
-                for key in CONTINUATION_KEYS:
-                    c.holder.pop(key, None)
-        resumes: list[dict[str, Any]] = []
-        named: list[dict[str, Any]] = []
-        hints: list[str] = []
-        for cut in active:
-            holder, items = _resolve(work, cut.items)
-            _, original = _resolve(data, cut.items)
-            if not isinstance(holder, dict) or not isinstance(items, list) or not isinstance(original, list):
-                continue
-            if len(items) >= len(original):
-                continue
-            notes = work.get("notes")
-            if cut.stale_notes and isinstance(notes, list):
-                work["notes"] = [n for n in notes if not (isinstance(n, str) and n.startswith(cut.stale_notes))]
-            resumed = cut.resume(work, holder, len(items), original)
-            if resumed:
-                (resumes if "anrop" in resumed else named).append({"falt": cut.items, **resumed})
-            if cut.hint:
-                hints.append(cut.hint)
-        totals: dict[str, dict[str, Any]] = {}
-        for c, before, _ in current:
-            entry = totals.setdefault(c.path, {"falt": c.path, "fore": 0, "efter": 0, "listor": 0})
-            entry["fore"] += before
-            entry["efter"] += len(c.items)
-            entry["listor"] += 1
-        kortade = [e for e in own.get("kortade", []) if isinstance(e, dict)]
-        kortade += [
-            {k: v for k, v in e.items() if k != "listor" or v > 1} for e in totals.values() if e["efter"] < e["fore"]
-        ]
-        kortade += [
-            {"falt": path, "fore": lengths[0], "efter": lengths[1], "enhet": "tecken"}
-            for path, lengths in strings.items()
-        ]
-        message = " ".join(
-            part
-            for part in (
-                str(own.get("meddelande") or ""),
-                f"Svaret kortades för att rymmas i klientens gräns ({limit} tecken).",
-                "Fälten i kortade är inte fullständiga." if kortade else "",
-                "raw utelämnades helt (anropa utan include_raw om du inte behöver det)." if left_out else "",
-                "Hämta resten utan luckor med fortsatt: samma verktyg med övriga argument oförändrade och värdena i "
-                "anrop, eller verktyget i verktyg med exakt argumenten i anrop."
-                if resumes
-                else "Posterna i utelamnade saknas i svaret."
-                if named
-                else "Begränsa urvalet för att få allt."
-                if kortade
-                else "",
-            )
-            if part
-        ) + "".join(hints)
-        note: dict[str, Any] = {"meddelande": message, "kortade": kortade}
-        if left_out:
-            note["utelamnade_falt"] = left_out
-        if resumes:
-            note["fortsatt"] = resumes
-        if named:
-            note["utelamnade"] = named
-        return {**work, TRUNCATION_KEY: note}
-
-    def fits() -> bool:
-        return client_size(compact_json(finish())) <= limit
-
-    for key in DROP_FIRST_KEYS:
-        if key in work and not fits():
-            del work[key]
-            left_out.append(key)
-    for _ in range(10_000):
-        if fits():
-            return finish(), True
-        picked = _pick_list(work, contracted)
-        if picked is None:
-            break
-        returned = picked.holder.get("returned")
-        counted = isinstance(returned, int) and not isinstance(returned, bool) and returned == len(picked.items)
-        shortened.setdefault(id(picked.items), (picked, len(picked.items), counted))
-        lst = picked.items
-        original = len(lst)
-        items = list(lst)
-        lst[:] = items[:1]
-        if not fits():
-            # This list alone cannot make the answer fit: halve it and let the others shrink too.
-            lst[:] = items[: max(1, original // 2)]
-            continue
-        low, high = 1, original - 1  # longest prefix that fits
-        while low < high:
-            mid = (low + high + 1) // 2
-            lst[:] = items[:mid]
-            if fits():
-                low = mid
-            else:
-                high = mid - 1
-        lst[:] = items[:low]
-    for _ in range(1_000):
-        if fits():
-            return finish(), True
-        found = _longest_string(work)
-        if found is None:
-            break
-        container, key, value, path = found
-        shorter = value.removesuffix(CUT_MARKER)
-        container[key] = shorter[: max(MIN_STRING, len(shorter) // 2)] + CUT_MARKER
-        lengths = strings.setdefault(path, [len(value), 0])
-        lengths[1] = len(container[key])
-    return (finish(), True) if fits() else (None, True)
+    answer, size = _Shortening(data, limit, cuts, exact=False).run()
+    measured = client_size(compact_json(answer))
+    if size != measured:  # never expected: the incremental sizes are exact
+        logger.warning(
+            "Kortningen mätte svaret till %d tecken men det har %d; kortar om med full mätning", size, measured
+        )
+        answer, size = _Shortening(data, limit, cuts, exact=True).run()
+    return (answer, True) if size <= limit else (None, True)
 
 
 def fit_count(build: Callable[[int], BaseModel | Mapping[str, Any]], count: int, limit: int) -> int:

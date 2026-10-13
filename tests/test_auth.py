@@ -244,7 +244,18 @@ def test_http_server_runs_without_websockets(monkeypatch):
     from fuzzy_mcp import __main__ as cli
 
     calls = []
-    monkeypatch.setattr(uvicorn, "run", lambda *a, **kw: calls.append(kw))
+
+    class Server:
+        started = True
+
+        def __init__(self, config):
+            calls.append(config)
+
+        async def serve(self):
+            pass
+
+    monkeypatch.setattr(uvicorn, "Config", lambda app, **kw: kw)
+    monkeypatch.setattr(uvicorn, "Server", Server)
     monkeypatch.delenv("FUZZY_MCP_AUTH_TOKEN_FILE", raising=False)
     monkeypatch.setenv("FUZZY_MCP_AUTH_TOKEN", TOKEN)
     cli.main(["--transport", "streamable-http", "--sources", "reference"])

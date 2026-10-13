@@ -241,8 +241,10 @@ JOIN_KEYS: list[dict[str, Any]] = [
         },
         "not": "Två versionspar: DeSO 2018 med RegSO 2020 och DeSO 2025 med RegSO 2025. 5 835 koder finns i båda, men "
         "enligt SCB:s förändringslogg (förändringar daterade 2025-01-01; filen daterad 2025-09-19) har 603 av dem en "
-        "egen rad (samma kod före och efter) och ytterligare 84 förekommer bara som mottagare på andra koders rader; "
-        "ref_lookup_deso ger 'ändrad gräns' för alla 687: samma kod är inte alltid samma yta. DeSO 2018/RegSO 2020 "
+        "egen rad (samma kod före och efter) och ytterligare 85 förekommer bara som mottagare på andra koders rader. "
+        "ref_lookup_deso ger 'ändrad gräns' för alla 603 och för 84 av de 85, totalt 687; den 85:e (1883A0030, "
+        "Karlskoga) räknas som oförändrad eftersom dess rader avser koder som inte finns i någon av nyckelfilerna. "
+        "Samma kod är alltså inte alltid samma yta. DeSO 2018/RegSO 2020 "
         "gäller t.o.m. referensår 2023 och DeSO 2025/RegSO 2025 fr.o.m. referensår 2024 (SCB:s tabellnoter och "
         "kodlistor, verifierat 2026-10-10); äldre år räknas inte om. Kontrollera i ref_lookup_deso om antal kan "
         "summeras över en förändring. Andelar, medelvärden och index summeras aldrig över områden.",

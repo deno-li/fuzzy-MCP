@@ -5,10 +5,14 @@
 """Command line entry point: ``fuzzy-mcp`` or ``python -m fuzzy_mcp``."""
 
 import argparse
+import contextlib
 import logging
 import os
 import re
+import signal
 import sys
+import threading
+from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any, NoReturn
 
 from . import __version__
@@ -205,12 +209,8 @@ def serve_http(server: Any, args: argparse.Namespace, security: Any, tokens: lis
     import uvicorn
 
     app = build_http_app(server, args, security, tokens)
-    # Keep the shared HTTP client, cache and rate limiter for the whole process (SSE enters the server
-    # lifespan per connection); release it after shutdown so the client is closed cleanly.
-    services = server.fuzzy_services
-    services.acquire()
-    try:
-        uvicorn.run(
+    http_server = uvicorn.Server(
+        uvicorn.Config(
             app,
             host=args.host,
             port=args.port,
@@ -218,8 +218,56 @@ def serve_http(server: Any, args: argparse.Namespace, security: Any, tokens: lis
             log_config=uvicorn_log_config(),
             ws="none",  # no WebSocket endpoints; uvicorn would otherwise log upgrade requests with their query string
         )
+    )
+    # Keep the shared HTTP client, cache and rate limiter for the whole process (SSE enters the server
+    # lifespan per connection). Release them in the server's own event loop: the client's connections belong
+    # to it and cannot be closed once it has ended.
+    services = server.fuzzy_services
+
+    async def serve() -> None:
+        services.acquire()
+        try:
+            await http_server.serve()
+        finally:
+            await services.release()
+
+    with stop_on_signals(http_server):
+        try:
+            anyio.run(serve)
+        except SystemExit:
+            if http_server.started:
+                raise
+    if not http_server.started:
+        # Startup failed, e.g. the address cannot be used (port in use, unknown host). uvicorn exits with 1 or 3
+        # depending on its version; always exit with 3, which service managers restart after a delay (docs/DRIFT.md).
+        raise SystemExit(3)
+
+
+# What uvicorn handles while it serves: Ctrl+C (also NSSM's stop), SIGTERM (Docker, systemd), Ctrl+Break (Windows).
+STOP_SIGNALS = tuple(getattr(signal, name) for name in ("SIGINT", "SIGTERM", "SIGBREAK") if hasattr(signal, name))
+
+
+@contextlib.contextmanager
+def stop_on_signals(http_server: Any) -> Iterator[None]:
+    """Stop signals end the process normally: exit code 0, after the shared HTTP client is closed.
+
+    uvicorn handles them while it serves, then restores the previous handlers and raises the signal again. Python's
+    defaults would then kill the process (SIGTERM) or interrupt the cleanup with KeyboardInterrupt (Ctrl+C), and
+    service managers would see a failure. These handlers only ask the server to stop, also when a signal comes just
+    before uvicorn takes over."""
+    if threading.current_thread() is not threading.main_thread():  # signals are handled in the main thread only
+        yield
+        return
+
+    def stop(signum: int, frame: object) -> None:
+        http_server.should_exit = True
+
+    previous = {sig: signal.signal(sig, stop) for sig in STOP_SIGNALS}
+    try:
+        yield
     finally:
-        anyio.run(services.release)
+        for sig, handler in previous.items():
+            signal.signal(sig, handler)
 
 
 def uvicorn_log_config() -> dict[str, Any]:

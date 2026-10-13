@@ -25,10 +25,8 @@ För IT-drift som installerar och kör servern. Utvecklare läser [DEVELOPMENT.m
 ## 2. Leveransen
 
 Paketet byggs med `python scripts/build_release.py --platform windows|linux` (Python 3.14 för Windows och 3.12 för
-Linux som standard; annan version med `--python`) och innehåller:
-
-Bygg leveranspaket utan `--skip-audit` när de ska driftsättas eller publiceras. Flaggan är bara för lokala
-testbyggen; utan audit-steget skapas ingen `audit.txt`, och `scripts/verify_release.py` underkänner paketet.
+Linux som standard; annan version med `--python`, men container-imagen har alltid basimagens Python 3.12) och
+innehåller:
 
 | Fil | Syfte |
 | --- | --- |
@@ -46,13 +44,17 @@ testbyggen; utan audit-steget skapas ingen `audit.txt`, och `scripts/verify_rele
 | `fuzzy-mcp-<version>-image.tar.gz` | färdig container-image (bara om paketet byggts med `--with-image`); `docker load -i …` |
 | `README.md`, `CHANGELOG.md`, `SECURITY.md`, `DEVELOPMENT.md` m.fl. | dokumentation, samma sökvägar som i repot |
 | `LICENSE`, `LICENSES/`, `REUSE.toml` | licenstexter och vilka filer som har vilken licens (MIT för koden, CC0 1.0 för kodlistor och dokument) |
-| `BUILDINFO.txt` | vilken commit, plattform och vilka verktyg paketet byggts med |
+| `BUILDINFO.txt` | vilken commit, plattform och vilka verktyg paketet byggts med, och imagens bas med digest |
 | `SHA256SUMS` | kontrollsummor för filerna ovan |
+
+Bygg leveranspaket utan `--skip-audit` när de ska driftsättas eller publiceras. Flaggan är bara för lokala
+testbyggen; utan audit-steget skapas ingen `audit.txt`, och `scripts/verify_release.py` underkänner paketet.
 
 `sbom.cdx.json` och `audit.txt` gäller paketets Python-beroenden. Container-imagen löser beroendena själv när den
 byggs; `build_release.py --with-image` kontrollerar att den fick exakt samma versioner som `requirements.lock` och
 skriver det i `BUILDINFO.txt`. En image som byggs direkt från repot med `docker build` låser sina beroenden själv
-och omfattas bara av image-skanningen. Imagens bas (Debian-paket och Python från `python:3.12-slim`) omfattas inte – skanna
+och omfattas bara av image-skanningen. Imagens bas (Debian-paket och Python från `python:3.12-slim`, låst till den
+digest som står på raden `Imagens bas` i `BUILDINFO.txt`) omfattas inte – skanna
 imagen med er vanliga verktygskedja (t.ex. Trivy eller Grype) före drift; samma verktyg (eller `syft`) kan ta fram
 en SBOM för hela imagen. Basimagens Debian-paket har sina egna licenser (bl.a. GPL), som etiketten
 `org.opencontainers.image.licenses` och `sbom.cdx.json` inte beskriver; etiketten gäller bara fuzzy-mcp. Källkoden till
@@ -73,6 +75,22 @@ i paketet. `smoke_test.py` och `eneo_check.py` ligger i paketets rot.
 **Kontrollera paketet före installation.** Jämför också kontrollsumman i `.sha256`-filen med den som publicerats
 separat – i releasebeskrivningen på GitHub (`https://github.com/deno-li/fuzzy-MCP/releases`) eller i meddelandet från
 den som levererade paketet. Filerna i samma leverans skyddar bara mot skadade filer, inte mot ett utbytt paket.
+
+**Kontrollera var paketet byggts (byggproveniens).** Releaser efter 0.2.2 har en attestering från GitHub för båda
+arkiven: en signerad uppgift om att arkivet byggts av repots Release-flöde från en viss commit på main. Den gäller
+själva filen, så den fungerar även när ni hämtat paketet från en intern spegel. Kontrollera arkivet innan ni packar upp
+det, med GitHub CLI (`gh`, inloggad med `gh auth login`) på en dator med nät mot GitHub. Byt `<version>`, `<python>`
+och `<commit>` mot värdena i releasetexten (i PowerShell: skriv kommandot på en rad, utan `\`):
+
+```bash
+gh attestation verify fuzzy-mcp-<version>-windows-py<python>.zip --repo deno-li/fuzzy-MCP \
+  --signer-workflow deno-li/fuzzy-MCP/.github/workflows/release.yml --source-ref refs/heads/main \
+  --source-digest <commit>
+```
+
+Linux-arkivet kontrolleras på samma sätt (`fuzzy-mcp-<version>-linux-py<python>.tar.gz`). Kontrollen misslyckas om
+filen har ändrats eller om den inte byggts av Release-flödet från den commiten. `SHA256SUMS` i arkivet täcker sedan
+varje fil i paketet, även container-imagen. Kontrollera kontrollsummorna och packa upp så här:
 
 ```powershell
 # Windows (som administratör) – i mappen där zip-filen ligger; lägg bara ett paket där. Klistra in hela blocket
@@ -181,7 +199,7 @@ Allt styrs med miljövariabler (eller motsvarande flaggor till `fuzzy-mcp`). Ing
 | `FUZZY_MCP_STATELESS` | `false` | `true` = Streamable HTTP utan sessioner (flera instanser utan sticky sessions; rekommenderas för Eneo) |
 | `FUZZY_MCP_PERSONAL_DATA` | `opt-in` | `off` = inga namn på enskilda personer, även om en klient ber om det |
 | `FUZZY_MCP_MAX_OUTPUT_CHARS` | `0` (av) | tak för ett verktygssvar i tecken; servern kortar listor och behåller giltig JSON (Eneo: `30000`). Ett kortat svar har `_kortat`, sanna `truncated`-fält och en fortsättning utan luckor (`next_*` eller `_kortat.fortsatt`); notes och ekon kortas aldrig och `raw` lämnas ut helt. Frågerecept från `*_build_query` kortas aldrig: för stora recept ger fel med uppmaning att minska urvalet |
-| `FUZZY_MCP_TOOL_TIMEOUT` | `0` (av) | sekunder per verktygsanrop; därefter ett tydligt fel och återstående anrop mot myndigheterna avbryts. Sätt den under klientens egen gräns (Eneo: `50`, Eneo väntar 60 s) |
+| `FUZZY_MCP_TOOL_TIMEOUT` | `0` (av) | sekunder per verktygsanrop, inklusive kortningen till `FUZZY_MCP_MAX_OUTPUT_CHARS`; därefter ett tydligt fel och återstående anrop mot myndigheterna avbryts. Sätt den under klientens egen gräns (Eneo: `50`, Eneo väntar 60 s) |
 | `FUZZY_MCP_SOURCES` | alla | begränsa källorna, t.ex. `scb,skolverket,reference` (delkällor: `scb.statistik`, `scb.geodata`, `skolverket.statistik`, `skolverket.skolenhetsregistret`, `skolverket.syllabus`, `skolverket.planerad`, `skolverket.susa`) |
 | `FUZZY_MCP_LANGUAGE` | `sv` | `sv` eller `en` |
 | `FUZZY_MCP_HTTP_TIMEOUT` | `30` | sekunder per anrop mot myndigheterna |
@@ -202,6 +220,11 @@ Ett ogiltigt värde i en `FUZZY_MCP_*`-variabel, en saknad token eller en CA-fil
 `Name or service not known` (Windows: `getaddrinfo failed`). systemd försöker då igen var 5:e sekund. NSSM väntar minst
 5 sekunder (`AppRestartDelay`), men avslutas processen inom 1,5 sekunder ökar NSSM väntan stegvis upp till 4 minuter
 och visar tjänsten som Pausad – rätta felet och kör `& "C:\Program Files\nssm\nssm.exe" restart fuzzy-mcp`.
+
+`nssm stop` (Ctrl+C), `systemctl stop` och `docker stop` (SIGTERM) stoppar servern med avslutskod 0 när pågående
+anrop är klara. Tjänsthanteraren väntar bara en stund innan den avslutar processen hårt (NSSM 1,5 sekunder,
+`AppStopMethodConsole`; `docker stop` 10 sekunder). Har servern anropat någon myndighet slutar loggen med
+`HTTP-klienten mot myndigheterna är stängd`.
 
 ## 5. Köra som tjänst
 
@@ -342,8 +365,10 @@ på RHEL, `/etc/ssl/certs/ca-certificates.crt` på Debian/Ubuntu). En fil med ba
 | `admin.dataportal.se` | Sveriges dataportal |
 
 Källor som stängts av med `FUZZY_MCP_SOURCES` anropas inte. Servern följer omdirigeringar bara mellan de här
-värdarna (och en värd som satts med `FUZZY_MCP_<KÄLLA>_BASE_URL`), aldrig från https till http och högst fem i
-rad; en annan adress stoppar anropet utan att något hämtas därifrån.
+värdarna (och en värd som satts med `FUZZY_MCP_<KÄLLA>_BASE_URL`), bara till samma port och protokoll som i
+adressen (443 för https utan port), aldrig från https till http och högst fem i rad; en annan adress stoppar anropet
+utan att något hämtas därifrån. Om en egen spegel med http-adress skickar vidare till https, ange spegelns
+https-adress i `FUZZY_MCP_<KÄLLA>_BASE_URL`.
 
 Spärra ändå i nätet. **Container på Ubuntu (och andra Linux med Docker):** regler i `ufw` (`default deny
 outgoing`) gäller trafik från värden själv, inte från containrar – den går genom `FORWARD`, där Dockers regler kommer
@@ -373,7 +398,7 @@ organisationens proxy via `HTTPS_PROXY`, eller regler i kedjan `DOCKER-USER`.
   undvik det.
 - **Inga skrivoperationer, inga godtyckliga URL:er.** Verktygen anropar bara de konfigurerade adresserna i avsnitt
   6 (`FUZZY_MCP_<KÄLLA>_BASE_URL` kan ändra dem), och id:n valideras innan de hamnar i en URL. Omdirigeringar följs
-  bara mellan de värdarna och aldrig från https till http.
+  bara mellan de värdarna, på samma port och protokoll som i adressen och aldrig från https till http.
 - **Personuppgifter** (namn på rektor, c/o-namn, kontaktpersoner) visas bara om klienten anger en parameter märkt
   "personuppgift", och aldrig med `FUZZY_MCP_PERSONAL_DATA=off`. Det gäller de strukturerade fälten: fritext som
   en utbildningsanordnare själv skrivit (t.ex. en kursbeskrivning) kan ändå innehålla namn eller telefonnummer.
@@ -471,7 +496,7 @@ organisationens proxy via `HTTPS_PROXY`, eller regler i kedjan `DOCKER-USER`.
 | `403` med `Origin` | webbklientens origin saknas i `FUZZY_MCP_ALLOWED_ORIGINS` |
 | `400 Missing session ID` på `/mcp` | normalt för `GET` utan MCP-session; använd `/healthz` för hälsokontroll |
 | Verktyg svarar "… hann inte svara inom N s" | `FUZZY_MCP_TOOL_TIMEOUT` nåddes: myndighetens API är långsamt eller anropsgränsen nådd. Gör ett mindre urval; kontrollera myndigheten med `smoke_test.py --live` |
-| Verktyg svarar "Omdirigeringen till … stoppades" | myndighetens API omdirigerade till en värd utanför listan i avsnitt 6 ("… myndigheternas egna adresser"; rapportera adressen enligt SECURITY.md) eller från https till http ("… okrypterad adress", ofta en server bakom TLS-avlastning; rapportera till myndigheten). Inget hämtades därifrån |
+| Verktyg svarar "Omdirigeringen till … stoppades" | myndighetens API omdirigerade till en värd utanför listan i avsnitt 6 ("… myndigheternas egna adresser"; rapportera adressen enligt SECURITY.md), till en annan port eller ett annat protokoll än i adressen ("… samma port och protokoll som i myndighetens adress"; rapportera adressen enligt SECURITY.md, eller ange spegelns rätta adress i `FUZZY_MCP_<KÄLLA>_BASE_URL`) eller från https till http ("… okrypterad adress", ofta en server bakom TLS-avlastning; rapportera till myndigheten). Inget hämtades därifrån |
 | Verktyg svarar "Kunde inte nå API:t (ProxyError/ConnectError)" | utgående trafik blockeras – kontrollera brandvägg, `HTTPS_PROXY` och listan i avsnitt 6. Kräver proxyn NTLM/Kerberos-inloggning: be om undantag för värdarna |
 | "HTTP 429" från en källa | myndighetens anropsgräns; servern försöker igen själv, minska samtidiga klienter |
 | Certifikatfel mot myndigheterna | proxy med TLS-inspektion och en CA som saknas i operativsystemet: installera organisationens rotcertifikat där, eller sätt `SSL_CERT_FILE` till en komplett CA-bundle. Pekar `SSL_CERT_FILE` på en fil med bara organisationens CA blir det certifikatfel mot alla värdar som inte inspekteras |

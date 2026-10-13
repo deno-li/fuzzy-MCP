@@ -189,6 +189,62 @@ async def test_tool_timeout_is_off_by_default_and_leaves_fast_tools_alone():
     assert Settings().tool_timeout_seconds == 0
 
 
+def _slow_shortening(router, monkeypatch):
+    """A large scb_search_tables answer, and a shortening that waits for ``release`` after setting ``started``."""
+    import threading
+
+    from fuzzy_mcp import server as server_module
+
+    from .conftest import load_fixture
+
+    tables = load_fixture("scb_tables.json")
+    tables["tables"] = tables["tables"] * 60
+    router.add("GET", r"/tables\?", tables)
+    fit_to_limit = server_module.fit_to_limit
+    started, release = threading.Event(), threading.Event()
+
+    def slow(data, limit, cuts=()):
+        started.set()
+        assert release.wait(5), "händelseloopen stod still medan svaret kortades"
+        return fit_to_limit(data, limit, cuts)
+
+    monkeypatch.setattr(server_module, "fit_to_limit", slow)
+    return started, release
+
+
+async def test_output_cap_shortens_without_blocking_other_sessions(router, make_client, monkeypatch):
+    """Issue #23: the output cap shortened on the event loop, so a large answer stalled every session. It runs in a
+    worker thread: here the event loop releases the shortening while it is under way."""
+    import anyio
+
+    started, release = _slow_shortening(router, monkeypatch)
+
+    async def other_session() -> None:
+        assert await anyio.to_thread.run_sync(started.wait, 5)
+        release.set()  # on the event loop
+
+    async with make_client("scb", max_output_chars=3000) as client, anyio.create_task_group() as group:
+        group.start_soon(other_session)
+        result = await client.call_tool("scb_search_tables", {"query": "x", "page_size": 100})
+    assert not result.is_error and "_kortat" in result.structured_content
+
+
+async def test_tool_timeout_interrupts_a_slow_shortening(router, make_client, monkeypatch):
+    """FUZZY_MCP_TOOL_TIMEOUT also covers the output cap: the answer does not wait for the shortening to finish."""
+    import anyio
+
+    started, release = _slow_shortening(router, monkeypatch)
+    try:
+        async with make_client("scb", max_output_chars=3000, tool_timeout_seconds=0.5) as client:
+            start = anyio.current_time()
+            result = await client.call_tool("scb_search_tables", {"query": "x", "page_size": 100})
+            elapsed = anyio.current_time() - start
+    finally:
+        release.set()  # the abandoned thread ends
+    assert started.is_set(), "tidsgränsen nåddes innan kortningen började"
+    assert result.is_error and "hann inte svara inom 0.5 s" in result.content[0].text and elapsed < 3
+
+
 @pytest.mark.parametrize("value", ["-1", "abc", "nan", "inf"])
 def test_tool_timeout_must_be_seconds(monkeypatch, value):
     monkeypatch.setenv("FUZZY_MCP_TOOL_TIMEOUT", value)

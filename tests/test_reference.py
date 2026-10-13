@@ -17,6 +17,22 @@ async def test_lookup_region_fuzzy(make_client):
         assert hits[0]["kod"] == "01" and hits[0]["typ"] == "lan"
         hits = await call(client, "ref_lookup_region", {"query": "Stockholm", "limit": 2})
         assert [h["kod"] for h in hits] == ["0180", "01"]
+        # Official names in the genitive (#26): exact hits, the municipality before the county.
+        hits = await call(client, "ref_lookup_region", {"query": "Göteborgs stad", "kind": "kommun"})
+        assert hits[0]["kod"] == "1480" and hits[0]["likhet"] == 1.0 and all(h["likhet"] < 1 for h in hits[1:])
+        hits = await call(client, "ref_lookup_region", {"query": "Gotlands kommun", "limit": 2})
+        assert [(h["kod"], h["likhet"]) for h in hits] == [("0980", 1.0), ("09", 1.0)]
+
+
+def test_lookup_region_counties_by_name():
+    """A county's name, its base name and 'Region <base name>' match that county exactly and no other."""
+    from fuzzy_mcp.reference import codes
+
+    for county in codes.load("regioner")["lan"]:
+        base = county["namn"].removesuffix(" län").removesuffix("s")
+        for query in (county["namn"], base, f"Region {base}"):
+            exact = [hit["kod"] for hit in codes.lookup_region(query, kind="lan") if hit["likhet"] == 1.0]
+            assert exact == [county["kod"]], query
 
 
 async def test_list_municipalities_and_code_lists(make_client):
