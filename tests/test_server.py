@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
+import json
+
 import pytest
 from mcp import Client
 
@@ -197,3 +199,35 @@ def test_tool_timeout_must_be_seconds(monkeypatch, value):
 def test_tool_timeout_from_environment(monkeypatch):
     monkeypatch.setenv("FUZZY_MCP_TOOL_TIMEOUT", "50")
     assert Settings.from_env().tool_timeout_seconds == 50
+
+
+PAGING_INPUTS = {"offset", "page", "start_page"}
+PAGING_OUTPUTS = ("next_offset", "next_page", "next_skip_matches")
+
+
+@pytest.mark.parametrize("v2", [False, True])
+def test_tools_with_paging_declare_cut_contracts(v2):
+    """A tool that pages (an offset/page/start_page input or a next_* pointer in its answer) must tell the output cap
+    how its paging continues after a cut (issue #20); otherwise the cap can only leave a dead end."""
+    from fuzzy_mcp.config import DEFAULT_API_VERSIONS
+    from fuzzy_mcp.core import inline_schema_refs
+
+    versions = {**DEFAULT_API_VERSIONS, **({"fohm": "v2", "skolverket_statistik": "v2"} if v2 else {})}
+    server = build_server(Settings(api_versions=versions))
+    missing, unresolved = [], []
+    for tool in server._tool_manager.list_tools():
+        schema = inline_schema_refs(tool.fn_metadata.output_schema or {})
+        output = json.dumps(schema)
+        pages = PAGING_INPUTS & set(tool.parameters.get("properties", {})) or any(k in output for k in PAGING_OUTPUTS)
+        cuts = getattr(tool.fn, "_fuzzy_cuts", ())
+        if pages and not cuts:
+            missing.append(tool.name)
+        for cut in cuts:
+            node = schema
+            for part in cut.items.split("."):
+                node = (node.get("properties") or {}).get(part, {})
+                node = next((s for s in node.get("anyOf", []) if s.get("type") != "null"), node)  # optional field
+            if node.get("type") != "array":
+                unresolved.append(f"{tool.name}: {cut.items}")
+    assert not missing, f"verktyg som bläddrar utan @cut_contract: {missing}"
+    assert not unresolved, f"kontrakt vars lista inte finns i utdataschemat: {unresolved}"

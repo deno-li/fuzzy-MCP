@@ -40,7 +40,7 @@ from mcp.server.mcpserver import MCPServer
 from mcp.types import CallToolResult
 from pydantic import BaseModel, Field
 
-from ...core import READ_ONLY_OPEN, Services, clamp, personal_data, structured, tool_errors
+from ...core import READ_ONLY_OPEN, OffsetCut, Services, clamp, cut_contract, personal_data, structured, tool_errors
 from ...errors import InvalidInputError, UpstreamError
 
 SOURCE = "skolverket"
@@ -63,6 +63,14 @@ DETAIL_CONCURRENCY = 4
 # (compact JSON bytes of the returned items), split evenly between the requested registers.
 CHANGES_DEFAULT_LIMIT = 50
 CHANGES_MAX_BYTES = 60_000
+# The registers of skolverket_school_unit_changes: answer field, the search tool that continues it, and the filters
+# from the register's echo that the continuation must repeat (the search tool's status default is only AKTIV).
+CHANGE_PARTS = (
+    ("school_units", "skolverket_search_school_units", ("status", "municipality_code")),
+    ("organizers", "skolverket_search_organizers", ()),
+    ("education_providers", "skolverket_search_education_providers", ()),
+    ("contracts", "skolverket_search_contracts", ()),
+)
 
 ALL_STATUSES = ("AKTIV", "VILANDE", "UPPHORT", "PLANERAD")
 # Upstream keys holding names of individual people (personuppgifter).
@@ -1243,6 +1251,12 @@ def fit_to_budget(result: ListResult, budget: int) -> bool:
     return True
 
 
+def continuation_args(since: str, filters: dict[str, Any], offset: int | None, keys: tuple[str, ...]) -> dict[str, Any]:
+    """Arguments for the search tool that continues a register of skolverket_school_unit_changes at ``offset``:
+    the same change date and the register's ``keys`` filters as echoed in its answer."""
+    return {"modified_since": since, **{k: filters[k] for k in keys if filters.get(k)}, "offset": offset}
+
+
 # ---------------------------------------------------------------------------
 # HTTP access
 # ---------------------------------------------------------------------------
@@ -1592,6 +1606,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         title="Skolverket: sök skolenheter (Skolenhetsregistret)",
         annotations=READ_ONLY_OPEN,
     )
+    @cut_contract(OffsetCut("items"))
     @tool_errors
     async def skolverket_search_school_units(
         name: Annotated[
@@ -1703,6 +1718,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         title="Skolverket: sök huvudmän (Skolenhetsregistret)",
         annotations=READ_ONLY_OPEN,
     )
+    @cut_contract(OffsetCut("items"))
     @tool_errors
     async def skolverket_search_organizers(
         name: Annotated[
@@ -1763,6 +1779,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         title="Skolverket: sök utbildningsanordnare (komvux)",
         annotations=READ_ONLY_OPEN,
     )
+    @cut_contract(OffsetCut("items"))
     @tool_errors
     async def skolverket_search_education_providers(
         name: Annotated[
@@ -1821,6 +1838,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         title="Skolverket: sök komvux-entreprenader",
         annotations=READ_ONLY_OPEN,
     )
+    @cut_contract(OffsetCut("items"))
     @tool_errors
     async def skolverket_search_contracts(
         organizer_organization_number: Annotated[
@@ -1884,6 +1902,21 @@ def register(server: MCPServer[Any], services: Services) -> None:
         title="Skolverket: ändringar i Skolenhetsregistret",
         annotations=READ_ONLY_OPEN,
     )
+    # A register the output cap shortens continues in its search tool with every argument (fortsatt); the register's
+    # own notes, written for the longer list, would point past the rows that were left out.
+    @cut_contract(
+        *(
+            OffsetCut(
+                f"{part}.items",
+                tool=tool,
+                stale_notes=(f"{tool}:", f"Fortsätt med {tool}("),
+                call=lambda root, holder, offset, keys=keys: continuation_args(
+                    root["since"], holder.get("filters", {}), offset, keys
+                ),
+            )
+            for part, tool, keys in CHANGE_PARTS
+        )
+    )
     @tool_errors
     async def skolverket_school_unit_changes(
         since: Annotated[str, Field(description="Ändrade från och med detta datum (ÅÅÅÅ-MM-DD)")],
@@ -1917,13 +1950,13 @@ def register(server: MCPServer[Any], services: Services) -> None:
 
         Utan status efterfrågas skolenheter med alla fyra statusar explicit (AKTIV, VILANDE, UPPHORT, PLANERAD);
         att API:t faktiskt returnerar nedlagda och planerade enheter är inte verifierat. Svaret är storleksbegränsat:
-        är truncated=true finns resten via respektive sökverktyg med offset=next_offset (se notes)."""
+        är truncated=true finns resten via respektive sökverktyg med offset=next_offset (se notes eller
+        _kortat.fortsatt)."""
         day = iso_date(since, "since")
         if day is None:
             raise InvalidInputError("Ange since som ÅÅÅÅ-MM-DD")
         wanted = list(dict.fromkeys(entities or ["school_units", "organizers"]))
         result = ChangesResult(since=day)
-        parts: list[tuple[str, ListResult, dict[str, Any]]] = []
         if "school_units" in wanted:
             result.school_units = await search_school_units(
                 name=None,
@@ -1937,32 +1970,30 @@ def register(server: MCPServer[Any], services: Services) -> None:
                 limit=limit,
                 offset=0,
             )
-            extra = {k: result.school_units.filters.get(k) for k in ("status", "municipality_code")}
-            parts.append(("skolverket_search_school_units", result.school_units, extra))
         if "organizers" in wanted:
             result.organizers = await search_organizers(
                 name=None, organizer_type=None, modified_since=day, limit=limit, offset=0
             )
-            parts.append(("skolverket_search_organizers", result.organizers, {}))
         if "education_providers" in wanted:
             result.education_providers = await search_education_providers(
                 name=None, grading_rights=None, modified_since=day, limit=limit, offset=0
             )
-            parts.append(("skolverket_search_education_providers", result.education_providers, {}))
         if "contracts" in wanted:
             result.contracts = await search_contracts(
                 name=None, organizer=None, provider=None, status=None, modified_since=day, limit=limit, offset=0
             )
-            parts.append(("skolverket_search_contracts", result.contracts, {}))
+        parts: list[tuple[str, ListResult, tuple[str, ...]]] = [
+            (tool, part, keys) for key, tool, keys in CHANGE_PARTS if (part := getattr(result, key)) is not None
+        ]
         share = CHANGES_MAX_BYTES // max(1, len(parts))
-        for tool, part, extra in parts:
+        for tool, part, keys in parts:
             if fit_to_budget(part, share):
                 result.notes.append(
                     f"{tool}: svaret kortades till {len(part.items)} rader för att hålla storleken nere."
                 )
             if part.truncated:
                 result.truncated = True
-                args = {"modified_since": day, **{k: v for k, v in extra.items() if v}, "offset": part.next_offset}
+                args = continuation_args(day, part.filters, part.next_offset, keys)
                 result.notes.append(f"Fortsätt med {tool}({json.dumps(args, ensure_ascii=False)}).")
         return structured(result)
 

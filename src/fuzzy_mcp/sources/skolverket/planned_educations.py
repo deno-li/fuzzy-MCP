@@ -34,7 +34,19 @@ from mcp.server.mcpserver import MCPServer
 from mcp.types import CallToolResult
 from pydantic import BaseModel, Field
 
-from ...core import READ_ONLY_OPEN, Services, clamp, compact, personal_data, structured, tool_errors
+from ...core import (
+    READ_ONLY_OPEN,
+    CodesCut,
+    Cut,
+    PageCut,
+    Services,
+    clamp,
+    compact,
+    cut_contract,
+    personal_data,
+    structured,
+    tool_errors,
+)
 from ...errors import InvalidInputError, UpstreamError
 from ...http import ApiResponse
 
@@ -51,6 +63,8 @@ SUPPORT_NESTED_LIST_CAP = 100
 SUPPORT_MAX_ENTRIES = 500
 # Hosts cap tool output at ~25k tokens; support lists stop adding entries beyond this many JSON characters.
 SUPPORT_CHAR_BUDGET = 50_000
+# Start of support_list's note on that budget: it states the tool's own count, stale once the output cap cuts more.
+SUPPORT_NOTE = "Svaret kortades till"
 DOCUMENTS_MAX = 200
 # A gy school with many programmes and include_history can exceed the host limit; see drop_program_history.
 STATISTICS_CHAR_BUDGET = 60_000
@@ -408,8 +422,16 @@ class PagedResult(BaseModel):
     page: int = Field(default=0, description="Sidnummer (0-baserat)")
     page_size: int = 0
     total_pages: int | None = None
-    truncated: bool = Field(default=False, description="Fler sidor finns – hämta nästa med page=next_page")
-    next_page: int | None = None
+    truncated: bool = Field(
+        default=False,
+        description="Fler träffar finns – hämta nästa med page=next_page; saknas next_page kortades sidan, fortsätt "
+        "då enligt _kortat.fortsatt",
+    )
+    next_page: int | None = Field(
+        default=None,
+        description="Nästa sida med samma sidstorlek; saknas på sista sidan och när servern kortat sidan (se "
+        "_kortat.fortsatt)",
+    )
     source_url: str | None = None
 
 
@@ -1839,6 +1861,9 @@ def variant_entry(value: Any) -> Any:
 
 SchoolUnitCode = Annotated[str, Field(description="Skolenhetskod (8 siffror, school unit code), t.ex. '44673074'")]
 PageParam = Annotated[int, Field(description="Sidnummer, 0-baserat (page)")]
+# 0-based Spring pages (page, size): when the output cap shortens rows, next_page would skip the rest of the page, so
+# it is removed and _kortat.fortsatt gives a page and size that continue without a gap.
+ROWS_PAGE_CUT = PageCut("rows", size_argument="size")
 Latitude = Annotated[float | None, Field(description="Latitud WGS84 (decimalgrader) för närhetssökning")]
 Longitude = Annotated[float | None, Field(description="Longitud WGS84 (decimalgrader) för närhetssökning")]
 RadiusKm = Annotated[
@@ -1887,6 +1912,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         title="Planerad utbildning: sök skolenheter",
         annotations=READ_ONLY_OPEN,
     )
+    @cut_contract(ROWS_PAGE_CUT)
     @tool_errors
     async def skolverket_pe_search_school_units(
         name: Annotated[str | None, Field(description="Skolenhetens namn eller del av namn (school name)")] = None,
@@ -2176,6 +2202,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         )
 
     @server.tool(name="skolverket_pe_salsa", title="Planerad utbildning: SALSA", annotations=READ_ONLY_OPEN)
+    @cut_contract(CodesCut("rows", code="school_unit_code", argument="school_unit_codes"))
     @tool_errors
     async def skolverket_pe_salsa(
         school_unit_code: Annotated[
@@ -2349,6 +2376,8 @@ def register(server: MCPServer[Any], services: Services) -> None:
         title="Planerad utbildning: gymnasieutbud för skolenhet",
         annotations=READ_ONLY_OPEN,
     )
+    # Only the compact list is paged; the full map has no pointer (the cap sets truncated and asks for a narrower call).
+    @cut_contract(PageCut("rows", size_argument="size", when=("variant", "compact")))
     @tool_errors
     async def skolverket_pe_school_unit_education_events(
         school_unit_code: SchoolUnitCode,
@@ -2419,6 +2448,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         title="Planerad utbildning: sök gymnasieutbildningar",
         annotations=READ_ONLY_OPEN,
     )
+    @cut_contract(ROWS_PAGE_CUT)
     @tool_errors
     async def skolverket_pe_search_education_events(
         name: Annotated[
@@ -2558,6 +2588,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         title="Planerad utbildning: sök vuxenutbildningar",
         annotations=READ_ONLY_OPEN,
     )
+    @cut_contract(ROWS_PAGE_CUT)
     @tool_errors
     async def skolverket_pe_search_adult_education_events(
         search_term: Annotated[
@@ -2755,6 +2786,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         title="Planerad utbildning: stödlistor",
         annotations=READ_ONLY_OPEN,
     )
+    @cut_contract(Cut("entries", stale_notes=(SUPPORT_NOTE,)))
     @tool_errors
     async def skolverket_pe_support_list(
         list: Annotated[
@@ -2797,7 +2829,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
                 f"Inre listor har kortats till {SUPPORT_NESTED_LIST_CAP} poster; använd search för att smalna av"
             )
         if over_budget:
-            notes.append(f"Svaret kortades till {len(shown)} poster för att hålla storleken nere; använd search")
+            notes.append(f"{SUPPORT_NOTE} {len(shown)} poster för att hålla storleken nere; använd search")
         return structured(
             SupportListResult(
                 name=list,

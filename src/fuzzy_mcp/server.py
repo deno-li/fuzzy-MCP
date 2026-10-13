@@ -23,6 +23,7 @@ from starlette.responses import JSONResponse
 from . import __version__
 from .config import Settings
 from .core import (
+    TRUNCATION_KEY,
     Services,
     client_size,
     compact_json,
@@ -60,6 +61,11 @@ skolenhetskod (8 siffror), organisationsnummer (huvudman) och DeSO/RegSO-kod. De
 (2018 och 2025, med RegSO 2020 respektive 2025); kontrollera version och om antal kan summeras med
 `ref_lookup_deso` innan du jämför över tid (andelar och medelvärden summeras aldrig över områden).
 Ange alltid källa (myndighet + tabell/endpoint) när du redovisar siffror.
+Kortade svar: har ett svar fältet `_kortat` har servern kortat det för att rymmas i klientens gräns; listorna i
+`_kortat.kortade` är då ofullständiga och `truncated`/`…_truncated` är true. Redovisa aldrig ett kortat svar som
+komplett. Bläddra med next_offset, next_page eller next_skip_matches när de finns, annars med `_kortat.fortsatt`
+(samma verktyg och övriga argument, eller verktyget i `fortsatt.verktyg` med exakt de argumenten). Ger fortsatt en
+sidstorlek, behåll den resten av bläddringen och räkna aldrig ut nästa sida som page+1.
 All data är öppen; se `fuzzy://sources` för licenser.
 Namn på enskilda personer (t.ex. rektor, c/o-adress, kontaktperson) returneras bara när verktyget anropas
 med en uttrycklig parameter för personuppgifter – använd den bara när användaren behöver uppgiften.
@@ -198,6 +204,7 @@ def _limit_output(tool: Any, limit: int) -> None:
     results (Eneo: 32 768 characters) still receives valid JSON; report an error if even that cannot fit."""
     fn = tool.fn
     preserve_output = bool(getattr(fn, "_fuzzy_preserve_output", False))
+    cuts = tuple(getattr(fn, "_fuzzy_cuts", ()))
 
     @functools.wraps(fn)
     async def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -212,11 +219,17 @@ def _limit_output(tool: Any, limit: int) -> None:
         if not isinstance(data, dict):
             text = "".join(getattr(block, "text", "") for block in result.content)
             return result if client_size(text) <= limit else too_large_result(client_size(text), limit)
-        fitted, changed = fit_to_limit(data, limit)
+        fitted, changed = fit_to_limit(data, limit, cuts)
         if not changed:
             return result
         if fitted is None:
             return too_large_result(client_size(compact_json(data)), limit)
+        logger.info(
+            "Verktyget %s kortades för klientens gräns (%d tecken): %s",
+            tool.name,
+            limit,
+            ", ".join(str(entry.get("falt")) for entry in fitted[TRUNCATION_KEY]["kortade"]) or "raw",
+        )
         return CallToolResult(content=[TextContent(type="text", text=compact_json(fitted))], structured_content=fitted)
 
     tool.fn = wrapper

@@ -42,7 +42,17 @@ from mcp.server.mcpserver import MCPServer
 from mcp.types import CallToolResult
 from pydantic import BaseModel, Field
 
-from ..core import READ_ONLY_LOCAL, READ_ONLY_OPEN, Services, clamp, personal_data, structured, tool_errors
+from ..core import (
+    READ_ONLY_LOCAL,
+    READ_ONLY_OPEN,
+    OffsetCut,
+    Services,
+    clamp,
+    cut_contract,
+    personal_data,
+    structured,
+    tool_errors,
+)
 from ..errors import InvalidInputError, UpstreamError
 
 SOURCE = "dataportal"
@@ -1784,6 +1794,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
     portal = DataportalService(services)
 
     @server.tool(name="dataportal_search_datasets", title="Dataportalen: sök dataset", annotations=READ_ONLY_OPEN)
+    @cut_contract(OffsetCut("datasets"))
     @tool_errors
     async def dataportal_search_datasets(
         query: Annotated[
@@ -1845,6 +1856,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         title="Dataportalen: en utgivares dataset",
         annotations=READ_ONLY_OPEN,
     )
+    @cut_contract(OffsetCut("datasets"))
     @tool_errors
     async def dataportal_list_publisher_datasets(
         publisher: PublisherParam,

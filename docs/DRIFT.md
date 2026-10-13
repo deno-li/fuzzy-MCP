@@ -180,7 +180,7 @@ Allt styrs med miljövariabler (eller motsvarande flaggor till `fuzzy-mcp`). Ing
 | `FUZZY_MCP_AUTH_HEADER` | `X-API-Key` | header för API-nyckel som alternativ till `Authorization: Bearer` |
 | `FUZZY_MCP_STATELESS` | `false` | `true` = Streamable HTTP utan sessioner (flera instanser utan sticky sessions; rekommenderas för Eneo) |
 | `FUZZY_MCP_PERSONAL_DATA` | `opt-in` | `off` = inga namn på enskilda personer, även om en klient ber om det |
-| `FUZZY_MCP_MAX_OUTPUT_CHARS` | `0` (av) | tak för ett verktygssvar i tecken; servern kortar listor och behåller giltig JSON (Eneo: `30000`). Frågerecept från `*_build_query` kortas aldrig: för stora recept ger fel med uppmaning att minska urvalet |
+| `FUZZY_MCP_MAX_OUTPUT_CHARS` | `0` (av) | tak för ett verktygssvar i tecken; servern kortar listor och behåller giltig JSON (Eneo: `30000`). Ett kortat svar har `_kortat`, sanna `truncated`-fält och en fortsättning utan luckor (`next_*` eller `_kortat.fortsatt`); notes och ekon kortas aldrig och `raw` lämnas ut helt. Frågerecept från `*_build_query` kortas aldrig: för stora recept ger fel med uppmaning att minska urvalet |
 | `FUZZY_MCP_TOOL_TIMEOUT` | `0` (av) | sekunder per verktygsanrop; därefter ett tydligt fel och återstående anrop mot myndigheterna avbryts. Sätt den under klientens egen gräns (Eneo: `50`, Eneo väntar 60 s) |
 | `FUZZY_MCP_SOURCES` | alla | begränsa källorna, t.ex. `scb,skolverket,reference` (delkällor: `scb.statistik`, `scb.geodata`, `skolverket.statistik`, `skolverket.skolenhetsregistret`, `skolverket.syllabus`, `skolverket.planerad`, `skolverket.susa`) |
 | `FUZZY_MCP_LANGUAGE` | `sv` | `sv` eller `en` |

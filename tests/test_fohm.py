@@ -5,10 +5,12 @@
 import httpx2
 import pytest
 
-from fuzzy_mcp.config import DEFAULT_BASE_URLS, Settings
+from fuzzy_mcp.config import DEFAULT_API_VERSIONS, DEFAULT_BASE_URLS, Settings
+from fuzzy_mcp.core import TRUNCATION_KEY
 from fuzzy_mcp.sources.fohm import normalize_table_path
 
 from .conftest import call, call_error, load_fixture
+from .test_scb import assert_no_skips, dataset, summary, table_pages, walk_search
 
 pytestmark = pytest.mark.anyio
 
@@ -179,3 +181,82 @@ def test_api_version_v2_requires_a_v2_base_url(monkeypatch):
     monkeypatch.setenv("FUZZY_MCP_SKOLVERKET_STATISTIK_API_VERSION", "v3")
     with pytest.raises(ValueError, match="'v1' eller 'v2'"):
         Settings.from_env()
+
+
+# PxWeb v1 declares no contract: the two tests below guard the core's generic rules on its answer shapes.
+
+
+async def test_v1_search_cut_sets_truncated(router, make_client):
+    """Fewer hits than limit: the tool's own truncated is false, so only the server's cut can make it true. Browse and
+    the database list have no flag of their own; _kortat is their signal."""
+    hits = [
+        {
+            "id": f"T{i:03}.px",
+            "path": "/C_HBSC/Regionalt",
+            "title": f"Tabell {i} om mobbning i skolan",
+            "score": 100 - i,
+        }
+        for i in range(80)
+    ]
+    folders = [{"id": f"N{i:03}", "type": "l", "text": f"Mapp {i}"} for i in range(200)]
+    router.add("GET", r"/sv/A_Folkhalsodata\?query=mobbning", hits)
+    router.add("GET", r"/sv/A_Folkhalsodata/C_HBSC$", folders)
+    router.add("GET", r"/sv/$", [{"dbid": f"DB{i:02}", "text": f"Databas {i} om folkhälsa"} for i in range(60)])
+    for cap in (0, 4000):
+        async with make_client("fohm", max_output_chars=cap) as client:
+            result = await call(client, "fohm_search_tables", {"query": "mobbning", "limit": 100})
+            listing = await call(client, "fohm_browse", {"path": "A_Folkhalsodata/C_HBSC"})
+            databases = await call(client, "fohm_list_databases")
+        assert result["total"] == 80 and result["truncated"] is (len(result["hits"]) < 80) is bool(cap)
+        assert [hit["id"] for hit in result["hits"]] == [hit["id"] for hit in hits][: len(result["hits"])]
+        assert (TRUNCATION_KEY in listing) is (len(listing["nodes"]) < 200) is bool(cap)
+        assert listing["path"] == "A_Folkhalsodata/C_HBSC"
+        assert (TRUNCATION_KEY in databases) is (len(databases["databases"]) < 60) is bool(cap)
+
+
+@pytest.mark.parametrize("source,prefix", [("fohm", "fohm"), ("skolverket.statistik", "skolverket_stat")])
+async def test_v1_table_data_cut_sets_truncated(router, make_client, source, prefix):
+    """The issue #20 case on PxWeb v1: the cut answer says it is incomplete and keeps what explains its rows."""
+    dimensions = {
+        "Region": [f"{i:04}" for i in range(29)],
+        "Kon": ["1", "2", "3"],
+        "ContentsCode": ["BE0101N1"],
+        "Tid": [str(2015 + i) for i in range(10)],
+    }
+    variables = [
+        {"code": code, "text": code.lower(), "values": codes, "valueTexts": codes, "time": code == "Tid"}
+        for code, codes in dimensions.items()
+    ]
+    data = dataset(dimensions, value=[i * 1.5 for i in range(870)], note=[f"Fotnot {i}" for i in range(45)])
+    router.add("GET", r"/sv/\?config$", {"maxCells": 100000})
+    router.add("GET", r"/T870\.px$", {"title": "Tabell", "variables": variables})
+    router.add("POST", r"/T870\.px$", data)
+    args = {"table_path": "T870.px", "selection": {"Region": ["*"], "Kon": ["*"], "Tid": ["*"]}, "max_rows": 1000}
+    async with make_client(source) as client:
+        whole = await call(client, f"{prefix}_get_table_data", args)
+    async with make_client(source, max_output_chars=30000) as client:
+        cut = await call(client, f"{prefix}_get_table_data", args)
+    rows = cut["data"]["rows"]
+    assert whole["data"]["truncated"] is False and len(whole["data"]["rows"]) == 870
+    assert cut["data"]["truncated"] is True and cut["data"]["total_rows"] == 870 and 0 < len(rows) < 870
+    assert rows == whole["data"]["rows"][: len(rows)] and cut["selection"] == whole["selection"]
+    for key in ("dimensions", "columns", "notes"):
+        assert cut["data"][key] == whole["data"][key]
+    assert cut[TRUNCATION_KEY]["kortade"] == [{"falt": "data.rows", "fore": 870, "efter": len(rows)}]
+
+
+@pytest.mark.parametrize("cap", [0, 3000])
+@pytest.mark.parametrize(
+    "source,key,prefix", [("fohm", "fohm", "fohm"), ("skolverket.statistik", "skolverket_statistik", "skolverket_stat")]
+)
+async def test_v2_search_walk(router, make_client, source, key, prefix, cap):
+    """With *_API_VERSION=v2 the search is PxWebApi 2's paged one, and a cut page continues without gaps."""
+    router.add("GET", r"example\.se/api/v2/tables\?", table_pages(237))
+    settings = {
+        "base_urls": {**DEFAULT_BASE_URLS, key: "https://example.se/api/v2"},
+        "api_versions": {**DEFAULT_API_VERSIONS, key: "v2"},
+    }
+    async with make_client(source, max_output_chars=cap, **settings) as client:
+        seen, cuts = await walk_search(client, f"{prefix}_search_tables", {"query": "elever", "page_size": 20}, cap)
+    assert_no_skips(seen, [summary(i)["id"] for i in range(237)], max_dups=10 * cuts)
+    assert (cuts > 0) is bool(cap)

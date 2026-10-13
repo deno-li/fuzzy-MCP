@@ -436,7 +436,7 @@ def _regso_options(members: dict[str, tuple[str, ...]], names: dict[str, str]) -
     listed = sorted(members)
     text = ", ".join(f"{code} {names[code]}" for code in listed[:MAX_OPTIONS])
     if len(listed) > MAX_OPTIONS:
-        text += f" … ({len(listed)} totalt; ref_list_deso utan regso visar alla)"
+        text += f" … ({len(listed)} totalt; ref_list_deso utan regso listar dem)"
     return text
 
 

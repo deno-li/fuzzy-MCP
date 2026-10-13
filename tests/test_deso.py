@@ -301,6 +301,43 @@ async def test_code_list_tools_keep_the_deso_lists_within_one_answer(make_client
     assert "_kortat" not in regions and len(regions["kommuner"]) == 290
 
 
+async def test_code_list_leaves_the_tables_out_at_the_output_cap(make_client):
+    """Under FUZZY_MCP_MAX_OUTPUT_CHARS the lookup tables are left out at the cap, not at 32 768 (#20): the cap cannot
+    shorten a kod → namn table, so a search between the two was an error. When the server shortens the rest too,
+    the tool's own note comes first in _kortat and no promise of a whole list or of all RegSO remains."""
+    async with make_client("reference") as client:
+        uncapped = await call(client, "ref_get_code_list", {"name": "deso_regso_2025", "search": "07"})
+    async with make_client("reference", max_output_chars=30_000) as client:
+        capped = await call(client, "ref_get_code_list", {"name": "deso_regso_2025", "search": "07"})
+        options = await call_error(client, "ref_list_deso", {"municipality": "0180", "regso": "Finnsinte"})
+        tools = {t.name: t for t in (await client.list_tools()).tools}
+    async with make_client("reference", max_output_chars=4000) as client:
+        log = await call(client, "ref_get_code_list", {"name": deso.LOG})
+    assert 30_000 < client_size(compact_json(uncapped)) <= 32_768 and "_kortat" not in uncapped
+    assert client_size(compact_json(capped)) <= 30_000 and capped["search"] == "07"
+    note = capped["_kortat"]
+    assert note["kortade"] == [
+        {"falt": "deso", "fore": len(uncapped["deso"]), "efter": 0},
+        {"falt": "regso", "fore": len(uncapped["regso"]), "efter": 0},
+    ]
+    assert (
+        note["meddelande"].startswith("Svaret skulle överstiga 30000 tecken") and "snävare search" in note["meddelande"]
+    )
+    assert {k: v for k, v in capped.items() if k != "_kortat"} == {
+        k: v for k, v in uncapped.items() if k not in ("deso", "regso")
+    }
+    # At 4000 the server shortens the rest as well and adds its entries after the tool's own.
+    note = log["_kortat"]
+    assert client_size(compact_json(log)) <= 4000 and "forandringar" not in log
+    assert note["kortade"][0] == {"falt": "forandringar", "fore": 1234, "efter": 0} and len(note["kortade"]) > 1
+    assert all(len(log[entry["falt"]]) == entry["efter"] < entry["fore"] for entry in note["kortade"][1:])
+    assert note["meddelande"].startswith("Svaret skulle överstiga 4000 tecken")
+    assert "Svaret kortades för att rymmas i klientens gräns (4000 tecken)." in note["meddelande"]
+    assert "hel kodlista" not in tools["ref_get_code_list"].description
+    assert "storleksgräns" in tools["ref_get_code_list"].description
+    assert "totalt; ref_list_deso utan regso listar dem)" in options and "visar alla" not in options
+
+
 async def test_deso_tools_are_registered_as_local_read_only(make_client):
     async with make_client("reference") as client:
         tools = {t.name: t for t in (await client.list_tools()).tools}

@@ -11,6 +11,7 @@ from typing import Any
 import httpx2
 import pytest
 
+from fuzzy_mcp.core import client_size
 from fuzzy_mcp.sources.dataportal import (
     MODIFIED_SORT,
     OUTPUT_BUDGET_CHARS,
@@ -1482,3 +1483,163 @@ async def test_theme_codes_tool_and_codes_resource(make_client):
     text = res.contents[0].text
     for needle in ('"HEAL"', '"NON_PUBLIC"', '"ANNUAL_2"', "creativecommons.org/licenses/by/4.0/", '"c_e1da4e07"'):
         assert needle in text
+
+
+# --- output cap (FUZZY_MCP_MAX_OUTPUT_CHARS, issue #20) -------------------------------------------
+
+HITS = 870
+PAGING_TOOLS = {
+    "dataportal_search_datasets": {"query": "mätningar"},
+    "dataportal_list_publisher_datasets": {"publisher": "http://dataportal.se/organisation/SE2021000837"},
+}
+
+
+def _hit(i: int, title: str) -> dict[str, Any]:
+    """A search hit of about 1 000 characters in the answer: a 50-hit page is over Eneo's 32 768."""
+    dataset = f"https://example.org/dataset/{i}"
+    dcat = "http://www.w3.org/ns/dcat#"
+    theme = "http://publications.europa.eu/resource/authority/data-theme/"
+    metadata = {
+        dataset: {
+            DCT + "title": [literal(f"Dataset {i}: {title}", "sv")],
+            DCT + "description": [literal("Mätvärden per station och månad. " * 12, "sv")],
+            DCT + "publisher": [{"type": "bnode", "value": "_:agent"}],  # named in the hit: no name lookup
+            dcat + "theme": [uri(theme + "ENVI"), uri(theme + "REGI")],
+            dcat + "keyword": [literal(f"nyckelord {i}.{k}", "sv") for k in range(8)],
+            DCT + "modified": [literal("2026-01-01T00:00:00Z")],
+            DCT + "license": [uri("http://creativecommons.org/publicdomain/zero/1.0/")],
+            DCT + "format": [literal("text/csv"), literal("application/json")],
+            dcat + "distribution": [uri(f"{dataset}/csv"), uri(f"{dataset}/json")],
+        },
+        "_:agent": {FOAF_NAME: [literal("Exempelkommunen", "sv")]},
+    }
+    return child("43", str(1000 + i), dataset, metadata)
+
+
+def _paged_search(router, title: str = "kommunens mätningar av luft och vatten") -> list[str]:
+    """870 hits in a fixed order; offset and limit are exact, as in Solr. Returns the entry ids in that order."""
+    hits = [_hit(i, title) for i in range(HITS)]
+
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        p = params(request)
+        offset, limit = int(p["offset"]), int(p["limit"])
+        children = hits[offset : offset + limit]
+        return httpx2.Response(
+            200, json={"results": HITS, "limit": limit, "offset": offset, "resource": {"children": children}}
+        )
+
+    router.add("GET", r"/store/search\?", handler)
+    return [hit["entryId"] for hit in hits]
+
+
+async def _walk(client, tool: str, args: dict[str, Any], cap: int) -> tuple[list[str], list[dict[str, Any]]]:
+    """Page like a client: follow next_offset, else _kortat.fortsatt. Every answer must fit the cap, and a page the
+    server shortened must say so (truncated, returned, _kortat) and point at its first hit not shown."""
+    seen: list[str] = []
+    pages: list[dict[str, Any]] = []
+    offset: int | None = args.get("offset", 0)
+    while offset is not None:
+        assert len(pages) < HITS, "paging does not progress"
+        result = await client.call_tool(tool, {**args, "offset": offset})
+        text = "".join(getattr(block, "text", "") for block in result.content)
+        assert not result.is_error, text[:300]
+        assert not cap or client_size(text) <= cap
+        page = result.structured_content
+        rows = page["datasets"]
+        assert page["offset"] == offset and page["total"] == HITS and page["returned"] == len(rows)
+        note = page.get("_kortat")
+        if len(rows) < min(page["limit"], HITS - offset):  # the server shortened this page
+            assert note is not None and page["truncated"] is True
+            assert page["next_offset"] == offset + len(rows)
+            assert note["fortsatt"] == [{"falt": "datasets", "anrop": {"offset": offset + len(rows)}}]
+        else:
+            assert note is None
+        seen += [row["entry_id"] for row in rows]
+        pages.append(page)
+        offset = page.get("next_offset")
+        if offset is None and note and note.get("fortsatt"):
+            offset = note["fortsatt"][0]["anrop"]["offset"]
+    assert pages[-1]["truncated"] is False
+    return seen, pages
+
+
+@pytest.mark.parametrize("tool", list(PAGING_TOOLS))
+async def test_paging_under_the_cap_returns_every_hit_once(router, make_client, tool):
+    """Following next_offset reads all 870 hits exactly once and in order, with or without the server's cap: a page
+    the cap shortened says truncated and continues at its first hit not shown, also on the last page (issue #20)."""
+    expected = _paged_search(router)
+    args = {**PAGING_TOOLS[tool], "limit": 50}
+    for cap in (0, 12000, 32768):
+        async with make_client("dataportal", max_output_chars=cap) as client:
+            seen, pages = await _walk(client, tool, args, cap)
+            assert seen == expected, cap
+            assert any("_kortat" in page for page in pages) is bool(cap)  # the caps do shorten 50-hit pages
+            if cap == 12000:
+                # The last page (850-869) is shortened too: it must not read as the end of the list.
+                seen, pages = await _walk(client, tool, {**args, "offset": 850}, cap)
+                assert seen == expected[850:]
+                last = pages[0]
+                assert "_kortat" in last and last["truncated"] is True
+                assert last["next_offset"] == 850 + len(last["datasets"]) < HITS
+
+
+async def test_cut_search_keeps_the_query_and_links_whole(router, make_client):
+    """A cap that leaves a single hit and shortens its text below the length of solr_query still keeps solr_query
+    (it reproduces the search) and the links whole, and the answer continues at the next hit."""
+    _paged_search(router, title="Mätstationer för luft och vatten i kommunen, månadsvärden. " * 20)
+    args = {
+        "query": "luft vatten mätningar station månad kommun region år",
+        "theme": "ENVI",
+        "format": "csv",
+        "limit": 50,
+        "offset": 100,
+    }
+    async with make_client("dataportal") as client:
+        whole = await call(client, "dataportal_search_datasets", args)
+    async with make_client("dataportal", max_output_chars=3200) as client:
+        cut = await call(client, "dataportal_search_datasets", args)
+    note = cut["_kortat"]
+    assert (cut["returned"], cut["truncated"], cut["next_offset"]) == (1, True, 101)
+    assert note["fortsatt"] == [{"falt": "datasets", "anrop": {"offset": 101}}]
+    assert len(whole["solr_query"]) > 600 and cut["solr_query"] == whole["solr_query"]
+    assert cut["query"] == whole["query"] and cut["media_types"] == whole["media_types"]
+    [row] = cut["datasets"]
+    first = whole["datasets"][0]
+    assert (row["portal_url"], row["dataset_uri"], row["licenses"]) == (
+        first["portal_url"],
+        first["dataset_uri"],
+        first["licenses"],
+    )
+    # The title was halved twice, so solr_query was the longer string when the title was picked the second time.
+    assert row["title"].endswith(" … [kortad]") and len(row["title"]) < len(whole["solr_query"]) // 2
+    assert {"falt": "datasets", "fore": 50, "efter": 1} in note["kortade"]
+    assert {"falt": "datasets[].title", "fore": len(first["title"]), "efter": len(row["title"]), "enhet": "tecken"} in (
+        note["kortade"]
+    )
+
+
+async def test_get_dataset_leaves_out_raw_before_any_distribution(router, make_client):
+    """include_raw under the cap: raw is left out whole before anything else is shortened, so all 30 distributions
+    stay; a lower cap shortens the distributions and says so in distributions_truncated (issue #20). The core does
+    this (DROP_FIRST_KEYS) and get_dataset needs no cut contract: the test guards that it holds for this tool."""
+    skara_routes(router, _big_graph(30))
+    args = {"dataset": "83_9", "include_raw": True}
+    async with make_client("dataportal") as client:
+        whole = await call(client, "dataportal_get_dataset", args)
+    assert "raw" in whole and len(whole["distributions"]) == 30 and whole["distributions_truncated"] is False
+    without_raw = {key: value for key, value in whole.items() if key != "raw"}
+    for cap in (32768, 20000):
+        async with make_client("dataportal", max_output_chars=cap) as client:
+            result = await call(client, "dataportal_get_dataset", args)
+        note = result.pop("_kortat")
+        assert result == without_raw, cap
+        assert note["utelamnade_falt"] == ["raw"] and note["kortade"] == []
+    async with make_client("dataportal", max_output_chars=12000) as client:
+        result = await call(client, "dataportal_get_dataset", args)
+    note = result["_kortat"]
+    kept = len(result["distributions"])
+    assert "raw" not in result and note["utelamnade_falt"] == ["raw"]
+    assert 0 < kept < result["distributions_total"] == 30 and result["distributions_truncated"] is True
+    assert result["distributions"] == whole["distributions"][:kept]
+    assert {"falt": "distributions", "fore": 30, "efter": kept} in note["kortade"]
+    assert "fortsatt" not in note  # get_dataset has no paging input to continue with

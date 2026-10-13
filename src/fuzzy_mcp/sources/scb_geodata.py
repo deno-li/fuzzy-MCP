@@ -44,7 +44,19 @@ from mcp.server.mcpserver import MCPServer
 from mcp.types import CallToolResult
 from pydantic import BaseModel, Field
 
-from ..core import READ_ONLY_OPEN, Services, clamp, structured, tool_errors
+from ..core import (
+    READ_ONLY_OPEN,
+    OffsetCut,
+    Services,
+    clamp,
+    client_size,
+    compact_json,
+    cut_contract,
+    dump,
+    preserve_output,
+    structured,
+    tool_errors,
+)
 from ..errors import InvalidInputError, UpstreamError
 from ..geo import check_sweref99tm, check_wgs84, sweref99tm_to_wgs84, wgs84_to_sweref99tm
 from .skolverket.skolenhetsregistret import Address, RegistryClient, SchoolUnitDetail, normalize_school_unit_code
@@ -63,6 +75,10 @@ MAX_FEATURES = 1000
 MAX_GEOMETRY_FEATURES = 10
 # Keeps an answer well below the ~25k-token cap of MCP hosts (compact JSON, ~3–4 chars per token).
 OUTPUT_CHAR_BUDGET = 60_000
+# With FUZZY_MCP_MAX_OUTPUT_CHARS: room kept for the notes added after the features are chosen.
+NOTES_RESERVE_CHARS = 1_000
+# Start of the note on the tool's own budget cut; the output cap removes it when it shortens the page further.
+BUDGET_NOTE = "Svaret kortades till"
 _LAYER_CHARS = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-:")
 
 Srs = Literal["EPSG:3006", "EPSG:4326"]
@@ -113,6 +129,7 @@ class GeoFeatures(BaseModel):
     returned: int
     offset: int = Field(default=0, description="Antal överhoppade objekt (startIndex)")
     truncated: bool = False
+    next_offset: int | None = Field(default=None, description="offset för nästa sida när fler objekt finns")
     srs: str | None = Field(default=None, description="Koordinatsystem för geometrin (bara när geometri ingår)")
     features: list[dict[str, Any]]
     request_url: str
@@ -479,6 +496,11 @@ def _locate_layers(layers: list[str] | tuple[str, ...]) -> list[str]:
     return names
 
 
+def _client_chars(value: Any) -> int:
+    """Characters ``value`` adds to an answer as a client measures it (compact JSON, then JSON-encoded as text)."""
+    return len(json.dumps(compact_json(value), ensure_ascii=False)) - 2
+
+
 def register(server: MCPServer[Any], services: Services) -> None:
     geo = GeodataService(services)
     school_units = RegistryClient(services)
@@ -511,6 +533,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         return structured(GeoLayerDescription(layer=name, attributes=await geo.describe(name)))
 
     @server.tool(name="scb_geodata_get_features", title="SCB: hämta geoobjekt", annotations=READ_ONLY_OPEN)
+    @cut_contract(OffsetCut("features", stale_notes=(BUDGET_NOTE,)))
     @tool_errors
     async def scb_geodata_get_features(
         layer: Annotated[str, Field(description="Lagernamn, t.ex. 'DeSO_2025'")],
@@ -541,8 +564,9 @@ def register(server: MCPServer[Any], services: Services) -> None:
         offset: Annotated[
             int,
             Field(
-                description="Antal objekt att hoppa över (startIndex) för att bläddra; sidorna sorteras på sort_by "
-                "eller, om det saknas, lagrets kodattribut (desokod/regsokod)"
+                description="Antal objekt att hoppa över (startIndex) för att bläddra: använd next_offset från "
+                "föregående svar. Sidorna sorteras på sort_by eller, om det saknas, lagrets kodattribut "
+                "(desokod/regsokod)"
             ),
         ] = 0,
         sort_by: Annotated[str | None, Field(description="Attribut att sortera på (stigande), t.ex. 'desokod'")] = None,
@@ -550,7 +574,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
     ) -> Annotated[CallToolResult, GeoFeatures]:
         """Hämta objekt ur ett geodatalager, som alla DeSO-områden i en kommun med koder (DeSO har bara koder; RegSO
         har namn). Utan geometri som standard; koderna (t.ex. DeSO '2180C1010') kopplar till SCB-statistik på
-        DeSO/RegSO-nivå. Bläddra med limit/offset (sorterat); geometri kan fås i SWEREF 99 TM (standard, [E, N])
+        DeSO/RegSO-nivå. Bläddra med offset=next_offset (sorterat); geometri kan fås i SWEREF 99 TM (standard, [E, N])
         eller WGS84 (srs='EPSG:4326', [lon, lat])."""
         name = layer_name(layer)
         if offset < 0:
@@ -589,36 +613,60 @@ def register(server: MCPServer[Any], services: Services) -> None:
             params["CQL_FILTER"] = cql
         data, url = await geo.get_features(name, **params)
         raw_features = data.get("features") or []
+        # Two budgets: the compact size (OUTPUT_CHAR_BUDGET) and, with FUZZY_MCP_MAX_OUTPUT_CHARS, the size as the
+        # client measures it, less the rest of the answer. The tool stops at whole features and says where to
+        # continue. The client budget is an estimate (separators are not counted); when the server's cap still has to
+        # shorten the page, the cut contract moves next_offset to the first feature left out.
+        client_budget: int | None = None
+        if services.settings.max_output_chars > 0:
+            frame = GeoFeatures(layer=name, returned=0, offset=offset, features=[], request_url=url, notes=notes)
+            client_budget = (
+                services.settings.max_output_chars - client_size(compact_json(dump(frame))) - NOTES_RESERVE_CHARS
+            )
         features: list[dict[str, Any]] = []
-        used = 0
+        used = used_client = consumed = 0
         budget_hit = False
         geometry_dropped = 0
         for feature in raw_features[:cap]:
             if not isinstance(feature, dict):
+                consumed += 1
                 continue
             item = dict(feature.get("properties") or {})
-            size = len(json.dumps(item, ensure_ascii=False, separators=(",", ":")))
-            if features and used + size > OUTPUT_CHAR_BUDGET:
+            size, item_client = len(compact_json(item)), _client_chars(item)
+            if features and (
+                used + size > OUTPUT_CHAR_BUDGET
+                or (client_budget is not None and used_client + item_client > client_budget)
+            ):
                 budget_hit = True
                 break
             used += size
+            used_client += item_client
             geometry = feature.get("geometry") if include_geometry else None
             if geometry is not None:
-                geometry_size = len(json.dumps(geometry, separators=(",", ":")))
-                if used + geometry_size > OUTPUT_CHAR_BUDGET:
+                geometry_size, geometry_client = len(compact_json(geometry)), _client_chars(geometry)
+                if used + geometry_size > OUTPUT_CHAR_BUDGET or (
+                    client_budget is not None and used_client + geometry_client > client_budget
+                ):
                     item["bbox"] = _bbox(geometry)
                     geometry_dropped += 1
                 else:
                     item["geometry"] = geometry
                     used += geometry_size
+                    used_client += geometry_client
             features.append(item)
+            consumed += 1
+        truncated = len(raw_features) > cap or budget_hit
+        next_offset = offset + consumed if truncated else None
         if geometry_dropped:
             notes.append(
                 f"Geometrin utelämnades för {geometry_dropped} objekt (för stor för svaret); bbox anges i stället. "
                 "Hämta hela geometrin via scb_geodata_download_url."
             )
         if budget_hit:
-            notes.append(f"Svaret kortades till {len(features)} objekt för att hålla storleken nere; filtrera mer.")
+            notes.append(
+                f"{BUDGET_NOTE} {len(features)} objekt för att hålla storleken nere; fortsätt med "
+                f"offset={next_offset} eller filtrera mer."
+            )
         total = data.get("totalFeatures") or data.get("numberMatched")
         return structured(
             GeoFeatures(
@@ -626,7 +674,8 @@ def register(server: MCPServer[Any], services: Services) -> None:
                 total=total if isinstance(total, int) else None,
                 returned=len(features),
                 offset=offset,
-                truncated=len(raw_features) > cap or budget_hit,
+                truncated=truncated,
+                next_offset=next_offset,
                 srs=srs if include_geometry else None,
                 features=features,
                 request_url=url,
@@ -635,6 +684,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         )
 
     @server.tool(name="scb_geodata_download_url", title="SCB: nedladdningslänk för geodata", annotations=READ_ONLY_OPEN)
+    @preserve_output
     @tool_errors
     async def scb_geodata_download_url(
         layer: Annotated[str, Field(description="Lagernamn, t.ex. 'DeSO_2025'")],

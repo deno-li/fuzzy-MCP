@@ -245,7 +245,7 @@ i `FUZZY_MCP_ALLOWED_HOSTS`, "Stort svar" = `FUZZY_MCP_MAX_OUTPUT_CHARS` saknas)
 | Läroplaner, ämnen och kurser | `skolverket.syllabus,reference` | 23 | 6 500 |
 | Vuxen- och högre utbildning | `skolverket.susa,skolverket.planerad,reference` | 30 | 11 500 |
 | Geodata och dataset | `scb.geodata,dataportal,reference` | 18 | 5 000 |
-| Områdesstatistik (DeSO och RegSO) | `scb.statistik,scb.geodata,reference` | 23 | 5 000 |
+| Områdesstatistik (DeSO och RegSO) | `scb.statistik,scb.geodata,reference` | 23 | 5 500 |
 | Allt | alla | 84 | 29 000 |
 <!-- profiler:end -->
 
@@ -367,6 +367,11 @@ compose-filen: se samma avsnitt.
 Från 0.2.0 till 0.2.1: paketet får de rättade driftinstruktionerna och `docs/KALLKONTROLL.md`. Inga verktyg eller
 MCP-inställningar ändras, och token behålls. Jämför och kopiera de uppdaterade compose-filerna och `egress/` som i
 steg 1; behåll era egna proxy- och certifikatinställningar enligt avsnitt 2.
+
+Från 0.2.2 till nästa version: kortade svar (`FUZZY_MCP_MAX_OUTPUT_CHARS`) anger nu `truncated` rätt och bläddrar
+vidare utan luckor (`next_*` eller `_kortat.fortsatt`). `scb_search_tables` och `scb_geodata_get_features` har nya
+utdatafält och flera verktyg har ändrade beskrivningar: synkronisera verktygen enligt steg 3 och uppdatera
+assistentinstruktionen (`docs/eneo/assistentinstruktion.md`).
 
 Från 0.2.1 till 0.2.2: rättningar av API-notishistorik, personuppgiftsfiltrering, sidning och frågerecept.
 Inga verktyg tillkommer. Synkronisera verktygen och granska ändrade beskrivningar och svarsformat enligt steg 3.

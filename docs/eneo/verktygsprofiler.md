@@ -16,13 +16,13 @@ kostnaden beror på modellen.
 
 | Profil | `FUZZY_MCP_SOURCES` | Verktyg | Katalog | Cirka token per tur |
 | --- | --- | --- | --- | --- |
-| Statistik | `scb.statistik,skolverket.statistik,fohm,reference` | 30 | 26 422 byte | 6 500 |
-| Skolor och skolenheter | `skolverket.skolenhetsregistret,skolverket.planerad,reference` | 33 | 47 497 byte | 12 000 |
-| Läroplaner, ämnen och kurser | `skolverket.syllabus,reference` | 23 | 25 787 byte | 6 500 |
-| Vuxen- och högre utbildning | `skolverket.susa,skolverket.planerad,reference` | 30 | 45 461 byte | 11 500 |
-| Geodata och dataset | `scb.geodata,dataportal,reference` | 18 | 19 733 byte | 5 000 |
-| Områdesstatistik (DeSO och RegSO) | `scb.statistik,scb.geodata,reference` | 23 | 20 864 byte | 5 000 |
-| Allt | alla | 84 | 115 252 byte | 29 000 |
+| Statistik | `scb.statistik,skolverket.statistik,fohm,reference` | 30 | 26 700 byte | 6 500 |
+| Skolor och skolenheter | `skolverket.skolenhetsregistret,skolverket.planerad,reference` | 33 | 47 799 byte | 12 000 |
+| Läroplaner, ämnen och kurser | `skolverket.syllabus,reference` | 23 | 26 459 byte | 6 500 |
+| Vuxen- och högre utbildning | `skolverket.susa,skolverket.planerad,reference` | 30 | 45 739 byte | 11 500 |
+| Geodata och dataset | `scb.geodata,dataportal,reference` | 18 | 20 062 byte | 5 000 |
+| Områdesstatistik (DeSO och RegSO) | `scb.statistik,scb.geodata,reference` | 23 | 21 193 byte | 5 500 |
+| Allt | alla | 84 | 115 999 byte | 29 000 |
 
 ## Statistik
 

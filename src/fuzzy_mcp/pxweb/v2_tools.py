@@ -20,7 +20,17 @@ from mcp.server.mcpserver import MCPServer
 from mcp.types import CallToolResult
 from pydantic import BaseModel, Field
 
-from ..core import READ_ONLY_OPEN, Services, clamp, personal_data, preserve_output, structured, tool_errors
+from ..core import (
+    READ_ONLY_OPEN,
+    PageCut,
+    Services,
+    clamp,
+    cut_contract,
+    personal_data,
+    preserve_output,
+    structured,
+    tool_errors,
+)
 from ..errors import InvalidInputError, UpstreamError
 from .jsonstat import jsonstat_to_table
 from .models import DataResult, TableMetadataView, to_view
@@ -110,6 +120,12 @@ class TableSearchResult(BaseModel):
     page: int
     page_size: int
     total_pages: int
+    truncated: bool = Field(default=False, description="Fler sidor finns eller svaret kortades (se _kortat)")
+    next_page: int | None = Field(
+        default=None,
+        description="Nästa sida med samma sidstorlek; saknas på sista sidan och när servern kortat sidan "
+        "(se _kortat.fortsatt)",
+    )
     tables: list[TableSummary]
     hint: str
 
@@ -317,6 +333,7 @@ def register_pxweb_v2_source(server: MCPServer[Any], services: Services, spec: P
         + ". Returnerar tabell-id, titel, tidsperiod, tidsenhet och ämnessökväg.",
         annotations=READ_ONLY_OPEN,
     )
+    @cut_contract(PageCut("tables", first_page=1))
     @tool_errors
     async def search_tables(
         query: Annotated[
@@ -334,25 +351,33 @@ def register_pxweb_v2_source(server: MCPServer[Any], services: Services, spec: P
         page_size: Annotated[int, Field(description="Träffar per sida (1–100)")] = 20,
         lang: Language | None = None,
     ) -> Annotated[CallToolResult, TableSearchResult]:
+        # Page arithmetic (next_page, the output cap's continuation) needs the size requested, also when the answer
+        # leaves out pageSize.
+        request_size = clamp(page_size, 1, 100)
         data = await service.client.search_tables(
             lang=lang_or_default(lang),
             query=query,
             past_days=past_days,
             include_discontinued=include_discontinued,
             page_number=page,
-            page_size=clamp(page_size, 1, 100),
+            page_size=request_size,
         )
         if not isinstance(data, dict):
             raise UpstreamError(spec.source, "Oväntat svar från /tables")
         info = data.get("page") or {}
         tables = [to_summary(t) for t in data.get("tables") or [] if isinstance(t, dict)]
+        current = _int(info.get("pageNumber"), page)
+        total_pages = _int(info.get("totalPages"), 1)
+        more = current < total_pages
         return structured(
             TableSearchResult(
                 query=query,
                 total=_int(info.get("totalElements"), len(tables)),
-                page=_int(info.get("pageNumber"), page),
-                page_size=_int(info.get("pageSize"), page_size),
-                total_pages=_int(info.get("totalPages"), 1),
+                page=current,
+                page_size=_int(info.get("pageSize"), request_size),
+                total_pages=total_pages,
+                truncated=more,
+                next_page=current + 1 if more else None,
                 tables=tables,
                 hint=spec.search_hint,
             )
@@ -542,6 +567,7 @@ def register_pxweb_v2_source(server: MCPServer[Any], services: Services, spec: P
         "värdekoder.",
         annotations=READ_ONLY_OPEN,
     )
+    @preserve_output
     @tool_errors
     async def get_default_selection(
         table_id: Annotated[str, table_id_field],

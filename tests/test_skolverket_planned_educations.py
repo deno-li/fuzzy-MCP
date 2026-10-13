@@ -9,11 +9,13 @@ from urllib.parse import urlsplit
 import httpx2
 import pytest
 
+from fuzzy_mcp.core import TRUNCATION_KEY, client_size
 from fuzzy_mcp.errors import InvalidInputError
 from fuzzy_mcp.sources.skolverket.planned_educations import (
     MEDIA_TYPE,
     PERSONAL_DATA_NOTE,
     PERSONAL_DATA_OFF_NOTE,
+    SUPPORT_NOTE,
     colon_sort,
     normalize_area_code,
     normalize_school_unit_code,
@@ -1053,3 +1055,294 @@ async def test_codes_resource(make_client):
     assert {"vuxgy", "vuxgr", "vuxsfi", "fhs", "yh"} <= adult_ids and "fhsk" not in adult_ids
     assert codes["adult_execution_conditions"]["0"] == "Ej fastställt"
     assert {"vux", "vuxgrs", "vuxgys"} <= {t["code"] for t in codes["type_of_schooling"]}
+
+
+# --- issue #20: the output cap keeps the paging fields and flags truthful ---------------------------------------------
+
+
+def hal_pages(embedded: str, make_item, total: int = 870):
+    """A 0-based Spring HAL list of ``total`` items that honours page and size like the API."""
+
+    def respond(request: httpx2.Request) -> httpx2.Response:
+        page, size = int(request.url.params["page"]), int(request.url.params["size"])
+        items = [make_item(i) for i in range(page * size, min(total, (page + 1) * size))]
+        meta = {"size": size, "totalElements": total, "totalPages": -(-total // size), "number": page}
+        return httpx2.Response(200, json=envelope({"_embedded": {embedded: items}, "page": meta}))
+
+    return respond
+
+
+def longer(i: int) -> str:
+    """Rows grow along the list, so the cap also shortens later pages (and the last one), not only the first."""
+    return " med en längre beskrivning" * (2 * (i // 175))
+
+
+def school_unit_item(i: int) -> dict:
+    return {
+        "code": f"{10000000 + i}",
+        "name": f"Exempelskolan nummer {i} i Stockholms stad{longer(i)}",
+        "principalOrganizerType": "Kommunal",
+        "schoolOrientation": "Ej relevant",
+        "geographicalAreaCode": "0180",
+        "postCodeDistrict": "Stockholm",
+        "typeOfSchooling": [{"code": "gr", "schoolYears": ["7", "8", "9"]}],
+    }
+
+
+def education_event_item(i: int) -> dict:
+    return {
+        "id": f"edu-event-{10000000 + i}-NA25",
+        "schoolUnitCode": f"{10000000 + i}",
+        "schoolUnitName": f"Exempelgymnasiet nummer {i}{longer(i)}",
+        "studyPathCode": "NA25",
+        "studyPathName": "Naturvetenskapsprogrammet",
+        "studyPathCategory": "PRELIMINARY_PROGRAM_FOR_HIGHER_EDUCATION",
+        "typeOfSchooling": {"code": "gy"},
+        "visitingAddressCity": "Stockholm",
+        "geographicalAreaCode": "0180",
+    }
+
+
+def adult_event_item(i: int) -> dict:
+    return {
+        "educationEventId": f"e.test.{i}",
+        "titleSv": f"Svenska som andraspråk, kurs {i}{longer(i)}",
+        "providerName": "Exempelkommunens vuxenutbildning",
+        "town": "Göteborg",
+        "municipality": "Göteborg",
+        "county": "Västra Götalands län",
+        "geographicalAreaCode": "1480",
+        "typeOfSchool": "Kommunal vuxenutbildning",
+        "paceOfStudy": "100.0",
+        "executionCondition": 1,
+    }
+
+
+def compact_event_item(i: int) -> dict:
+    return {
+        "schoolUnitCode": "77364720",
+        "schoolUnitName": "ABF Stockholms gymnasium",
+        "studyPathCode": f"P{i:03}25",
+        "studyPathName": f"Programmet nummer {i}{longer(i)}",
+        "studyPathCategory": "VOCATIONAL_PROGRAM",
+        "educationEventTypeOfSchooling": "gy",
+        "visitingAddressCity": "Stockholm",
+        "wgs84Latitude": "59.3293",
+        "wgs84Longitude": "18.0686",
+    }
+
+
+# tool -> (fixed arguments, URL pattern, _embedded key, row id field, upstream item)
+PAGE_TOOLS = {
+    "skolverket_pe_search_school_units": ({}, r"/v4/school-units\?", "listedSchoolUnits", "code", school_unit_item),
+    "skolverket_pe_search_education_events": (
+        {},
+        r"/v4/education-events\?",
+        "educationEvents",
+        "id",
+        education_event_item,
+    ),
+    "skolverket_pe_search_adult_education_events": (
+        {},
+        r"/v4/adult-education-events\?",
+        "listedAdultEducationEvents",
+        "education_event_id",
+        adult_event_item,
+    ),
+    "skolverket_pe_school_unit_education_events": (
+        {"school_unit_code": "77364720", "compact": True},
+        r"/77364720/compact-education-events\?",
+        "compactEducationEvents",
+        "study_path_name",
+        compact_event_item,
+    ),
+}
+
+
+async def follow_pages(client, tool: str, args: dict, key: str, cap: int, *, fortsatt: bool = True):
+    """Page like a client that reads the answer: next_page, else _kortat.fortsatt (keeping its size from then on);
+    with fortsatt=False only next_page. Checks every answer and returns the row ids in order and the number of cuts."""
+    seen: list[str] = []
+    cuts = 0
+    while True:
+        result = await client.call_tool(tool, args)
+        assert not result.is_error, result.content[0].text[:300]
+        assert cap == 0 or client_size(result.content[0].text) <= cap
+        answer = result.structured_content
+        seen += [row[key] for row in answer["rows"]]
+        note = answer.get(TRUNCATION_KEY)
+        if note:
+            cuts += 1
+            # A shortened page never looks complete, and no page number points past the rows it left out.
+            assert answer["truncated"] is True and "next_page" not in answer
+            (entry,) = note["kortade"]
+            assert entry["falt"] == "rows" and entry["efter"] == len(answer["rows"]) < entry["fore"]
+            (resume,) = note["fortsatt"]
+            assert resume["falt"] == "rows" and set(resume["anrop"]) == {"page", "size"}
+            if not fortsatt:
+                return seen, cuts
+            args = {**args, **resume["anrop"]}
+        elif answer.get("next_page") is not None:
+            args = {**args, "page": answer["next_page"]}
+        else:
+            return seen, cuts
+
+
+@pytest.mark.parametrize("size", [100, 37])
+@pytest.mark.parametrize("tool", list(PAGE_TOOLS))
+async def test_page_tools_walk_never_skips(router, make_client, tool, size):
+    fixed, pattern, embedded, key, make_item = PAGE_TOOLS[tool]
+    router.add("GET", pattern, hal_pages(embedded, make_item))
+    args = {**fixed, "size": size}
+    async with make_client("skolverket") as client:
+        expected, cuts = await follow_pages(client, tool, args, key, 0)
+    assert len(set(expected)) == len(expected) == 870 and cuts == 0
+    for cap in (30000, 8000):
+        async with make_client("skolverket", max_output_chars=cap) as client:
+            seen, cuts = await follow_pages(client, tool, args, key, cap)
+            prefix, _ = await follow_pages(client, tool, args, key, cap, fortsatt=False)
+        # Following next_page and fortsatt reaches every row in order; a cut repeats a few rows, never skips one.
+        assert list(dict.fromkeys(seen)) == expected
+        assert len(seen) - len(expected) <= 10 * cuts
+        assert cuts > 0 or cap == 30000
+        # A client that only knows next_page stops at the first shortened page, without a gap before it.
+        assert prefix == expected[: len(prefix)]
+        assert len(prefix) < len(expected) or cuts == 0
+    async with make_client("skolverket", max_output_chars=8000) as client:
+        last = await call(client, tool, {**args, "size": 100, "page": 8})
+    # The upstream's last page is not the end of the answer once the cap has shortened it.
+    assert len(last["rows"]) < 70 and last["truncated"] is True and "next_page" not in last
+    resume = last[TRUNCATION_KEY]["fortsatt"][0]["anrop"]
+    assert resume["page"] * resume["size"] <= 800 + len(last["rows"]) < (resume["page"] + 1) * resume["size"]
+
+
+async def test_unit_events_continue_only_in_compact_mode(router, make_client):
+    events = [
+        {"schoolUnitCode": "30530571", "studyPathCode": f"P{i:02}25", "studyPathName": f"Programmet nummer {i}"}
+        for i in range(40)
+    ]
+    router.add("GET", r"/30530571/education-events$", envelope({"gy": events}))
+    router.add(
+        "GET", r"/30530571/compact-education-events\?", hal_pages("compactEducationEvents", compact_event_item, 40)
+    )
+    async with make_client("skolverket", max_output_chars=2500) as client:
+        full = await call(client, "skolverket_pe_school_unit_education_events", {"school_unit_code": "30530571"})
+        paged = await call(
+            client, "skolverket_pe_school_unit_education_events", {"school_unit_code": "30530571", "compact": True}
+        )
+    # The full map is not paged: the cut is flagged and no pointer is invented.
+    assert full["variant"] == "full" and full["total"] == 40 and len(full["rows"]) < 40
+    assert full["truncated"] is True and "next_page" not in full
+    assert "fortsatt" not in full[TRUNCATION_KEY] and "Begränsa urvalet" in full[TRUNCATION_KEY]["meddelande"]
+    # The compact list continues exactly after the rows shown on page 0.
+    kept = len(paged["rows"])
+    assert paged["truncated"] is True and "next_page" not in paged and kept < 40
+    assert paged[TRUNCATION_KEY]["fortsatt"] == [{"falt": "rows", "anrop": {"page": 1, "size": kept}}]
+
+
+async def test_salsa_fortsatt_fetches_omitted(router, make_client):
+    salsa = load_fixture("planned_educations_salsa.json")
+    template = salsa["body"]["compulsorySchoolUnitSalsaMetricList"]
+    salsa["body"]["compulsorySchoolUnitSalsaMetricList"] = [
+        dict(
+            copy.deepcopy(template[i % 3]),
+            schoolUnitCode=f"{10000000 + i}",
+            name=f"Skolan nummer {i} 4-9",
+            geographicalAreaCode="1383" if i % 2 else "0180",
+        )
+        for i in range(120)
+    ]
+    router.add("GET", r"/all-schools/salsa$", salsa)
+    args = {"geographical_area_code": "1383", "sort_by": "salsaAverageGradesIn9thGradeDeviation", "limit": 100}
+    async with make_client("skolverket") as client:
+        whole = await call(client, "skolverket_pe_salsa", args)
+    expected = [r["school_unit_code"] for r in whole["rows"]]
+    assert len(expected) == whole["total"] == 60 and whole["truncated"] is False
+    seen: list[str] = []
+    calls = 0
+    call_args = dict(args)
+    async with make_client("skolverket", max_output_chars=6000) as client:
+        while calls < 60:
+            answer = await call(client, "skolverket_pe_salsa", call_args)
+            calls += 1
+            seen += [r["school_unit_code"] for r in answer["rows"]]
+            note = answer.get(TRUNCATION_KEY)
+            if not note:
+                break
+            # Fewer rows than the tool chose to show: never reported as complete, and the filter notes stay.
+            assert answer["truncated"] is True and answer["notes"] == whole["notes"]
+            (resume,) = note["fortsatt"]
+            assert resume["anrop"] == {"school_unit_codes": expected[len(seen) :]}
+            call_args = {**args, **resume["anrop"]}
+    assert calls > 1
+    assert seen == expected  # every school the cap left out comes back exactly once, in the same order
+
+
+async def test_support_list_cut_drops_its_stale_note(router, make_client):
+    shape = load_fixture("planned_educations_municipality_schoolunit.json")
+    unit = shape["body"]["schoolUnits"][0]
+    shape["body"]["schoolUnits"] = [
+        dict(unit, code=f"{20000000 + i}", name=f"Exempelskolan nummer {i} i en kommun") for i in range(2000)
+    ]
+    router.add("GET", r"/support/municipality-schoolunit$", shape)
+    args = {"list": "municipality-schoolunit", "limit": 500}
+    async with make_client("skolverket") as client:
+        whole = await call(client, "skolverket_pe_support_list", args)
+    async with make_client("skolverket", max_output_chars=8000) as client:
+        cut = await call(client, "skolverket_pe_support_list", args)
+    # The tool's own budget note names its own count, which is wrong once the server cuts further.
+    assert any(n.startswith(f"{SUPPORT_NOTE} {len(whole['entries'])} poster") for n in whole["notes"])
+    assert not any(n.startswith(SUPPORT_NOTE) for n in cut["notes"])
+    assert cut["truncated"] is True and cut["total"] == whole["total"]
+    assert cut["entries"] == whole["entries"][: len(cut["entries"])]
+    (entry,) = cut[TRUNCATION_KEY]["kortade"]
+    assert entry == {"falt": "entries", "fore": len(whole["entries"]), "efter": len(cut["entries"])}
+
+
+# Regression guards for core rules (#20, part 1) on tools that declare no cut contract: they already pass on the core
+# commit and fail without it (the documents root kept truncated=false; available_school_forms was cut to "gr").
+
+
+async def test_documents_cut_sets_root_truncated(router, make_client):
+    groups = [
+        {
+            "typeOfSchoolingCode": form,
+            "documents": [
+                {"typeId": "SCHOOL_SURVEY", "title": f"Skolenkäten {form} {i}", "url": f"https://example.se/d?id={i}"}
+                for i in range(40)
+            ],
+        }
+        for form in ("fsk", "gr", "gy")
+    ]
+    router.add("GET", r"/76026322/documents$", envelope(groups))
+    args = {"school_unit_code": "76026322", "limit": 200}
+    async with make_client("skolverket", max_output_chars=5000) as client:
+        result = await call(client, "skolverket_pe_school_unit_documents", args)
+    shown = sum(len(g["documents"]) for g in result["groups"])
+    # The tool's own limit kept everything; only the cap shortened the groups, and the root says so.
+    assert result["total"] == 120 and shown < 120 and result["truncated"] is True
+    entry = next(e for e in result[TRUNCATION_KEY]["kortade"] if e["falt"] == "groups[].documents")
+    assert entry["fore"] == 120 and entry["efter"] == shown
+
+
+async def test_statistics_cut_keeps_index_lists(router, make_client):
+    gr = load_fixture("planned_educations_statistics_gr.json")
+    # Free text that only the string phase can shorten: gr alone exceeds the cap, so the list phase first reaches even
+    # the shortest lists.
+    gr["body"]["kommentar"] = "Statistiken avser skolenheten och läsåret. " * 300
+    router.add("GET", r"/statistics$", load_fixture("planned_educations_statistics_index.json"))
+    router.add("GET", r"/statistics/gr$", gr)
+    router.add("GET", r"/statistics/gy$", load_fixture("planned_educations_statistics_gy.json"))
+    args = {"school_unit_code": "85014247"}
+    async with make_client("skolverket") as client:
+        whole = await call(client, "skolverket_pe_school_unit_statistics", args)
+    async with make_client("skolverket", max_output_chars=12000) as client:
+        cut = await call(client, "skolverket_pe_school_unit_statistics", args)
+        gy = await call(client, "skolverket_pe_school_unit_statistics", {**args, "school_form": "gy"})
+    # The cap drops the gy block, but the list of school forms still names it: that is how the client asks again.
+    assert [b["school_form"] for b in whole["statistics"]] == ["gr", "gy"]
+    assert [b["school_form"] for b in cut["statistics"]] == ["gr"]
+    assert cut["available_school_forms"] == whole["available_school_forms"] == ["gr", "gy"]
+    assert cut["notes"] == whole["notes"]
+    assert {"falt": "statistics", "fore": 2, "efter": 1} in cut[TRUNCATION_KEY]["kortade"]
+    assert TRUNCATION_KEY not in gy and gy["statistics"] == whole["statistics"][1:]

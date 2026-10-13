@@ -13,6 +13,7 @@ import pytest
 from mcp import Client
 
 from fuzzy_mcp.config import Settings
+from fuzzy_mcp.core import CursorCut, client_size, compact_json, fit_to_limit
 from fuzzy_mcp.server import build_server
 from fuzzy_mcp.sources.skolverket.susa_navet import (
     EMAIL_WITHHELD_NOTE,
@@ -53,16 +54,21 @@ def paged_events(total_pages: int = 3):
     return responder
 
 
-def event_rows(copies: int) -> list[dict[str, Any]]:
-    """``copies`` × the four fixture events with copy-unique ids (two of each four lie in county 22)."""
+def fixture_rows(fixture: str, items_key: str, copies: int) -> list[dict[str, Any]]:
+    """``copies`` × the rows of a list fixture with copy-unique ids."""
     rows = []
     for n in range(copies):
-        for item in copy.deepcopy(load_fixture("susa_navet_events.json")["educationEvents"]):
+        for item in copy.deepcopy(load_fixture(fixture)[items_key]):
             item["id"] = f"{item['id']}.c{n}"
             if item["content"]:
                 item["content"]["identifier"] = item["id"]
             rows.append(item)
     return rows
+
+
+def event_rows(copies: int) -> list[dict[str, Any]]:
+    """``copies`` × the four fixture events with copy-unique ids (two of each four lie in county 22)."""
+    return fixture_rows("susa_navet_events.json", "educationEvents", copies)
 
 
 def dataset(items_key: str, rows: list[dict[str, Any]]):
@@ -77,17 +83,23 @@ def dataset(items_key: str, rows: list[dict[str, Any]]):
     return responder
 
 
-async def follow(client: Client, tool: str, args: dict[str, Any], key: str) -> tuple[list[str], int]:
-    """Call ``tool`` and keep following next_page/next_skip_matches; returns all returned ids and the call count."""
-    ids: list[str] = []
+async def answers(client: Client, tool: str, args: dict[str, Any]) -> list[dict[str, Any]]:
+    """Call ``tool`` and keep following next_page/next_skip_matches; returns every answer."""
+    seen: list[dict[str, Any]] = []
     cursor: dict[str, Any] = {}
-    for calls in range(1, 50):
+    while len(seen) < 100:
         result = await call(client, tool, {**args, **cursor})
-        ids += [row["id"] for row in result[key]]
+        seen.append(result)
         if "next_page" not in result:
-            return ids, calls
+            return seen
         cursor = {"start_page": result["next_page"], "skip_matches": result.get("next_skip_matches", 0)}
     raise AssertionError("next_page never ended")
+
+
+async def follow(client: Client, tool: str, args: dict[str, Any], key: str) -> tuple[list[str], int]:
+    """Call ``tool`` and keep following next_page/next_skip_matches; returns all returned ids and the call count."""
+    results = await answers(client, tool, args)
+    return [row["id"] for result in results for row in result[key]], len(results)
 
 
 async def test_search_events_without_client_filters_requests_only_limit(router, make_client):
@@ -732,6 +744,152 @@ async def test_following_next_page_returns_every_match_exactly_once(router, make
         assert [e["id"] for e in skipped["events"]] == [r["id"] for r in rows[2:8]]
         assert skipped["skip_matches"] == 2 and skipped["next_page"] == 1 and skipped["next_skip_matches"] == 2
         assert skipped["matched"] == 10 and skipped["returned"] == 6 and len(router.requests) == 2
+
+
+# --- issue #20: the client's size cap (FUZZY_MCP_MAX_OUTPUT_CHARS) never leaves a stale cursor or count ------------
+
+# key in the answer → (tool, list fixture and its items key, a client-side filter matching some of its rows)
+SEARCHES: dict[str, tuple[str, str, str, dict[str, Any]]] = {
+    "events": (SEARCH_EVENTS, "susa_navet_events.json", "educationEvents", {"county_code": "22"}),
+    "infos": (
+        "skolverket_susa_search_education_infos",
+        "susa_navet_infos.json",
+        "educationInfos",
+        {"text": "elektronik"},
+    ),
+    "providers": (
+        "skolverket_susa_search_education_providers",
+        "susa_navet_providers.json",
+        "educationProviders",
+        {"county_code": "22"},
+    ),
+}
+
+
+def check_coverage(result: dict[str, Any], key: str, limit: int, cap: int) -> bool:
+    """Assert that an answer fits ``cap`` and that its counts, flags, cursor and hint describe the rows it holds;
+    returns whether the cap left out rows that limit would have allowed."""
+    assert result["returned"] == len(result[key])
+    assert "_kortat" not in result  # the tool cut its rows itself, so the generic cap cut nothing
+    assert client_size(compact_json(result)) <= cap
+    hint = result.get("hint", "")
+    if "next_page" in result:
+        assert f"start_page={result['next_page']}" in hint
+        skip = result.get("next_skip_matches")
+        assert (f"skip_matches={skip}" in hint) if skip else ("skip_matches=" not in hint)
+    cut = result["returned"] < min(result["matched"], limit)
+    if cut:
+        assert result["truncated"] is True and result["complete_scan"] is False and "next_page" in result
+        assert "höj limit" not in hint and "klientens storleksgräns" in hint
+    return cut
+
+
+def capped_follow(key: str, filtered: bool, cap: int) -> Any:
+    return pytest.param(key, filtered, cap, id=f"{key}-{'med' if filtered else 'utan'}-klientfilter-{cap}")
+
+
+# Only caps that cut: the reference is the same search followed without a cap. 100 events without client filters
+# (about 32 000 characters) are cut at Eneo's 30 000 too; every other search fits there.
+@pytest.mark.parametrize(
+    ("key", "filtered", "max_output_chars"),
+    [capped_follow(key, filtered, cap) for key in SEARCHES for filtered in (False, True) for cap in (8000, 3000)]
+    + [capped_follow("events", False, 30000)],
+)
+async def test_follow_under_cap_matches_uncapped(router, make_client, key, filtered, max_output_chars):
+    """Under the server's size cap the searches return fewer rows, and next_page/next_skip_matches point at the first
+    row left out: following them returns every match exactly once, in the same order as without a cap (issue #20)."""
+    tool, fixture, items_key, client_filter = SEARCHES[key]
+    rows = fixture_rows(fixture, items_key, 60)
+    router.add("GET", rf"/emil3/{items_key}\?", dataset(items_key, rows))
+    limit = 100
+    args = {**client_filter, "page_size": 8, "max_pages": 10, "limit": limit} if filtered else {"limit": limit}
+    async with make_client("skolverket") as client:
+        expected, _ = await follow(client, tool, args, key)
+    assert len(set(expected)) == len(expected) and (filtered or expected == [row["id"] for row in rows])
+    async with make_client("skolverket", max_output_chars=max_output_chars) as client:
+        results = await answers(client, tool, args)
+    assert [row["id"] for result in results for row in result[key]] == expected
+    cuts = [check_coverage(result, key, limit, max_output_chars) for result in results]
+    assert any(cuts)
+    assert results[-1]["truncated"] is False
+
+
+async def test_cut_on_page_zero_keeps_next_page_zero(router, make_client):
+    """A complete one-page scan cut by the size cap continues on page 0: next_page=0 is a cursor, not the end."""
+    rows = event_rows(10)
+    router.add("GET", EVENTS, dataset("educationEvents", rows))
+    async with make_client("skolverket") as client:
+        whole = await call(client, SEARCH_EVENTS, {"limit": 40})
+    assert whole["complete_scan"] is True and whole["truncated"] is False and "next_page" not in whole
+    async with make_client("skolverket", max_output_chars=6000) as client:
+        cut = await call(client, SEARCH_EVENTS, {"limit": 40})
+        kept = cut["returned"]
+        assert 0 < kept < 40 and check_coverage(cut, "events", 40, 6000)
+        assert cut["next_page"] == 0 and cut["next_skip_matches"] == kept and cut["matched"] == 40
+        assert "start_page=0, skip_matches=" in cut["hint"] and "limit=40" in cut["hint"]
+        found, _ = await follow(client, SEARCH_EVENTS, {"limit": 40}, "events")
+    assert found == [row["id"] for row in rows]
+
+
+@pytest.mark.parametrize("deleted_last", [False, True], ids=["blandade", "borttagna-sist"])
+async def test_inactive_count_over_kept_rows(router, make_client, deleted_last):
+    """The hint counts the inactive rows passed through the client filters (updated_since set) among the rows
+    returned, not among the rows the size cap left out; without client filters there is no such sentence."""
+    rows = event_rows(12)  # each four: KTH (0180), two in county 22, one deleted (no content)
+    if deleted_last:
+        rows.sort(key=lambda row: row["content"] is None)
+    router.add("GET", EVENTS, dataset("educationEvents", rows))
+    args = {"county_code": "22", "updated_since": "2026-01-01", "page_size": 100, "limit": 100}
+    sentence = re.compile(r"(\d+) borttagna/inaktiva poster \(inactive\)")
+    async with make_client("skolverket") as client:
+        whole = await call(client, SEARCH_EVENTS, args)
+        unfiltered = await call(client, SEARCH_EVENTS, {"updated_since": "2026-01-01", "limit": 100})
+    assert sum(row.get("inactive", False) for row in whole["events"]) == 12
+    assert sentence.search(whole["hint"]).group(1) == "12"
+    assert any(row.get("inactive") for row in unfiltered["events"]) and "inactive" not in unfiltered.get("hint", "")
+    counts = set()
+    for cap in (8000, 5000, 3000):
+        async with make_client("skolverket", max_output_chars=cap) as client:
+            result = await call(client, SEARCH_EVENTS, args)
+        kept = sum(row.get("inactive", False) for row in result["events"])
+        found = sentence.search(result["hint"])
+        assert (int(found.group(1)) if found else 0) == kept
+        assert check_coverage(result, "events", 100, cap)
+        counts.add(kept)
+    assert (counts == {0}) if deleted_last else (min(counts) > 0 and max(counts) < 12)
+
+
+@pytest.mark.parametrize("key", list(SEARCHES))
+async def test_cursor_cut_backstop(router, make_client, key):
+    """Should the generic cap still shorten a search's rows, the declared CursorCut moves the cursor to the first row
+    not shown, and drops the hint and complete_scan that describe the uncut answer."""
+    tool, fixture, items_key, client_filter = SEARCHES[key]
+    rows = fixture_rows(fixture, items_key, 60)
+    router.add("GET", rf"/emil3/{items_key}\?", dataset(items_key, rows))
+    settings = Settings(enabled_sources=frozenset({"skolverket"}), max_retries=0, cache_ttl_seconds=0)
+    server = build_server(settings, transport=httpx2.MockTransport(router), rate_limits={})
+    cuts = {t.name: getattr(t.fn, "_fuzzy_cuts", ()) for t in server._tool_manager.list_tools()}[tool]
+    assert cuts == (CursorCut(key),)
+    async with make_client("skolverket") as client:
+        for args in (
+            {"limit": 40, "start_page": 1, "skip_matches": 7},
+            {**client_filter, "page_size": 8, "max_pages": 10},
+        ):
+            whole = await call(client, tool, args)
+            expected = [row["id"] for row in whole[key]]
+            out, cut = fit_to_limit(whole, 3000, cuts)
+            assert cut and out is not None
+            kept = len(out[key])
+            assert 0 < kept < len(expected) and out["returned"] == kept
+            assert out["truncated"] is True and out["complete_scan"] is False and "hint" not in out
+            cursor = {"start_page": out["next_page"], "skip_matches": out.get("next_skip_matches", 0)}
+            assert out["_kortat"]["fortsatt"] == [{"falt": key, "anrop": cursor}]
+            following = await call(client, tool, {**args, **cursor})
+            first = following[key][0]["id"]
+            if "page_size" in args:  # pages hold fewer matches than page_size: at or before the first row not shown
+                assert first in expected[: kept + 1]
+            else:  # every page is full: exact
+                assert first == expected[kept]
 
 
 async def test_missing_data_is_counted_not_silently_dropped(router, make_client):
