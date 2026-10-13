@@ -4,6 +4,7 @@
 
 """DeSO/RegSO lookups (ref_lookup_deso, ref_list_deso) and the invariants of SCB's key files."""
 
+import unicodedata
 from collections import Counter
 
 import pytest
@@ -374,6 +375,9 @@ def test_resolve_municipality():
     # Diacritics are stripped in the fuzzy match, so the exact spelling must win when it matches one name.
     assert deso.resolve_municipality("Håbo") == ("0305", "Håbo")
     assert deso.resolve_municipality("Habo") == ("0643", "Habo")
+    # A decomposed å (a + combining ring, e.g. pasted from macOS) is the same spelling as the composed one.
+    assert deso.resolve_municipality(unicodedata.normalize("NFD", "Håbo")) == ("0305", "Håbo")
+    assert deso.resolve_municipality(unicodedata.normalize("NFD", "Håbos kommun")) == ("0305", "Håbo")
     with pytest.raises(deso.InvalidInputError, match="inte entydig"):
         deso.resolve_municipality("Upsala")
 

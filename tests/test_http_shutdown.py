@@ -87,8 +87,8 @@ def test_http_client_is_released_in_the_servers_own_loop(monkeypatch):
     assert services.loops[0] is services.loops[1]
 
 
-# uvicorn 0.31 exits with 1 when the port is in use and returns without starting when the app's startup fails;
-# later versions exit with 3 in both cases.
+# uvicorn up to at least 0.44 exits with 1 when the port is in use, and 0.31 returns without starting when the app's
+# startup fails; newer versions exit with 3 in both cases.
 @pytest.mark.parametrize("exit_code", [None, 1, 3])
 def test_startup_failure_exits_3_after_release(monkeypatch, exit_code):
     async def serve(server: Any) -> None:

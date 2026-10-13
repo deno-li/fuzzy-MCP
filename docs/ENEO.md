@@ -376,7 +376,10 @@ steg 1; behåll era egna proxy- och certifikatinställningar enligt avsnitt 2.
 Från 0.2.2 till nästa version: kortade svar (`FUZZY_MCP_MAX_OUTPUT_CHARS`) anger nu `truncated` rätt och bläddrar
 vidare utan luckor (`next_*` eller `_kortat.fortsatt`). `scb_search_tables` och `scb_geodata_get_features` har nya
 utdatafält och flera verktyg har ändrade beskrivningar: synkronisera verktygen enligt steg 3 och uppdatera
-assistentinstruktionen (`docs/eneo/assistentinstruktion.md`).
+assistentinstruktionen (`docs/eneo/assistentinstruktion.md`). Kontrollera gärna paketets byggproveniens med
+`gh attestation verify` (DRIFT.md avsnitt 2) innan imagen läses in. `docker stop` avslutar nu fuzzy-mcp med kod 0
+efter att HTTP-klienten stängts, och Susa-navets kommunfilter ger ett fel med förslag i stället för att gissa när ett
+kommunnamn är felstavat eller tvetydigt.
 
 Från 0.2.1 till 0.2.2: rättningar av API-notishistorik, personuppgiftsfiltrering, sidning och frågerecept.
 Inga verktyg tillkommer. Synkronisera verktygen och granska ändrade beskrivningar och svarsformat enligt steg 3.

@@ -221,8 +221,10 @@ Ett ogiltigt värde i en `FUZZY_MCP_*`-variabel, en saknad token eller en CA-fil
 5 sekunder (`AppRestartDelay`), men avslutas processen inom 1,5 sekunder ökar NSSM väntan stegvis upp till 4 minuter
 och visar tjänsten som Pausad – rätta felet och kör `& "C:\Program Files\nssm\nssm.exe" restart fuzzy-mcp`.
 
-`nssm stop` (Ctrl+C), `systemctl stop` och `docker stop` (SIGTERM) stoppar servern med avslutskod 0. Har den anropat
-någon myndighet slutar loggen med `HTTP-klienten mot myndigheterna är stängd`.
+`nssm stop` (Ctrl+C), `systemctl stop` och `docker stop` (SIGTERM) stoppar servern med avslutskod 0 när pågående
+anrop är klara. Tjänsthanteraren väntar bara en stund innan den avslutar processen hårt (NSSM 1,5 sekunder,
+`AppStopMethodConsole`; `docker stop` 10 sekunder). Har servern anropat någon myndighet slutar loggen med
+`HTTP-klienten mot myndigheterna är stängd`.
 
 ## 5. Köra som tjänst
 
@@ -365,7 +367,7 @@ på RHEL, `/etc/ssl/certs/ca-certificates.crt` på Debian/Ubuntu). En fil med ba
 Källor som stängts av med `FUZZY_MCP_SOURCES` anropas inte. Servern följer omdirigeringar bara mellan de här
 värdarna (och en värd som satts med `FUZZY_MCP_<KÄLLA>_BASE_URL`), bara till samma port och protokoll som i
 adressen (443 för https utan port), aldrig från https till http och högst fem i rad; en annan adress stoppar anropet
-utan att något hämtas därifrån. Skickar en egen spegel med en http-adress vidare till https: ange spegelns
+utan att något hämtas därifrån. Om en egen spegel med http-adress skickar vidare till https, ange spegelns
 https-adress i `FUZZY_MCP_<KÄLLA>_BASE_URL`.
 
 Spärra ändå i nätet. **Container på Ubuntu (och andra Linux med Docker):** regler i `ufw` (`default deny
@@ -494,7 +496,7 @@ organisationens proxy via `HTTPS_PROXY`, eller regler i kedjan `DOCKER-USER`.
 | `403` med `Origin` | webbklientens origin saknas i `FUZZY_MCP_ALLOWED_ORIGINS` |
 | `400 Missing session ID` på `/mcp` | normalt för `GET` utan MCP-session; använd `/healthz` för hälsokontroll |
 | Verktyg svarar "… hann inte svara inom N s" | `FUZZY_MCP_TOOL_TIMEOUT` nåddes: myndighetens API är långsamt eller anropsgränsen nådd. Gör ett mindre urval; kontrollera myndigheten med `smoke_test.py --live` |
-| Verktyg svarar "Omdirigeringen till … stoppades" | myndighetens API omdirigerade till en värd utanför listan i avsnitt 6 ("… myndigheternas egna adresser"; rapportera adressen enligt SECURITY.md), till en annan port eller ett annat protokoll än i adressen ("… samma port och protokoll som i myndighetens adress"; rapportera adressen, eller ange spegelns rätta adress i `FUZZY_MCP_<KÄLLA>_BASE_URL`) eller från https till http ("… okrypterad adress", ofta en server bakom TLS-avlastning; rapportera till myndigheten). Inget hämtades därifrån |
+| Verktyg svarar "Omdirigeringen till … stoppades" | myndighetens API omdirigerade till en värd utanför listan i avsnitt 6 ("… myndigheternas egna adresser"; rapportera adressen enligt SECURITY.md), till en annan port eller ett annat protokoll än i adressen ("… samma port och protokoll som i myndighetens adress"; rapportera adressen enligt SECURITY.md, eller ange spegelns rätta adress i `FUZZY_MCP_<KÄLLA>_BASE_URL`) eller från https till http ("… okrypterad adress", ofta en server bakom TLS-avlastning; rapportera till myndigheten). Inget hämtades därifrån |
 | Verktyg svarar "Kunde inte nå API:t (ProxyError/ConnectError)" | utgående trafik blockeras – kontrollera brandvägg, `HTTPS_PROXY` och listan i avsnitt 6. Kräver proxyn NTLM/Kerberos-inloggning: be om undantag för värdarna |
 | "HTTP 429" från en källa | myndighetens anropsgräns; servern försöker igen själv, minska samtidiga klienter |
 | Certifikatfel mot myndigheterna | proxy med TLS-inspektion och en CA som saknas i operativsystemet: installera organisationens rotcertifikat där, eller sätt `SSL_CERT_FILE` till en komplett CA-bundle. Pekar `SSL_CERT_FILE` på en fil med bara organisationens CA blir det certifikatfel mot alla värdar som inte inspekteras |

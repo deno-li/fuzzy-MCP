@@ -151,12 +151,12 @@ def name_forms(text: str) -> list[str]:
     """``text`` casefolded and, when it ends in "kommun" or "stad", the name before that word as written and in
     base form: without a genitive s ("Lunds kommun" → "lund") or from :data:`_GENITIVES` ("Falu kommun" →
     "falun"). Diacritics are kept, so a form can be compared with a name as spelled (Håbo or Habo)."""
-    words = text.casefold().split()
+    words = unicodedata.normalize("NFC", text).casefold().split()
     forms = [" ".join(words)]
     if len(words) > 1 and words[-1] in _MUNICIPALITY_WORDS:
         name = " ".join(words[:-1])
         forms.append(name)
-        if len(name) > 1 and name.endswith("s"):
+        if len(name) > 2 and name.endswith("s"):
             forms.append(name[:-1])
         if name in _GENITIVES:
             forms.append(_GENITIVES[name])
@@ -234,7 +234,7 @@ def match_municipality(query: str, *, limit: int = 5) -> tuple[dict[str, Any] | 
     exact = lookup_region(query, kind="kommun", limit=len(load("regioner")["kommuner"]), fuzzy=False)
     # The match strips diacritics (Håbo == Habo), so an exact spelling decides when it names one municipality.
     forms = name_forms(query)
-    spelled = [hit for hit in exact if hit["namn"].casefold() in forms]
+    spelled = [hit for hit in exact if unicodedata.normalize("NFC", hit["namn"]).casefold() in forms]
     named = spelled if len(spelled) == 1 else exact
     if len(named) == 1:
         return named[0], exact

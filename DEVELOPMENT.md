@@ -173,7 +173,9 @@ Låsningen görs för målplattformen: på Windows kräver MCP-SDK:n även `pywi
 
 1. Uppdatera `version` i `pyproject.toml` och `src/fuzzy_mcp/__init__.py`, `softwareVersion`/`releaseDate` i
    `publiccode.yml`, versionen i exemplen i `docs/DRIFT.md`, `docs/ENEO.md` och
-   `docs/eneo/docker-compose.fuzzy-mcp.yml`, och flytta posterna under `[Unreleased]` i CHANGELOG.md.
+   `docs/eneo/docker-compose.fuzzy-mcp.yml`, och flytta posterna under `[Unreleased]` i CHANGELOG.md. Uppdatera
+   länkarna längst ner i CHANGELOG.md: `[Unreleased]` jämför med den nya taggen, och den nya versionen får en egen
+   jämförelselänk.
 2. Kör kontrollerna ovan, inklusive livetesterna, och merga till main.
 3. Kör arbetsflödet **Release** från main (Actions → Release → Run workflow, *Use workflow from* `main`). Det bygger
    den commit som är senaste på main när flödet startar (`GITHUB_SHA`) och ingen annan, även om main flyttas under
