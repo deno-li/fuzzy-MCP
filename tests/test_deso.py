@@ -229,6 +229,14 @@ async def test_list_deso_by_name_and_code(make_client):
     assert client_size(compact_json(stockholm)) <= 30_000
 
 
+async def test_list_deso_by_official_name(make_client):
+    """The municipality's official name in the genitive gives the municipality (#26)."""
+    async with make_client("reference") as client:
+        for name, code in (("Lunds kommun", "1281"), ("Göteborgs stad", "1480"), ("Stockholms stad", "0180")):
+            listed = await call(client, "ref_list_deso", {"municipality": name, "category": "A"})
+            assert listed["kommunkod"] == code, name
+
+
 async def test_list_deso_filters(make_client):
     async with make_client("reference") as client:
         by_code = await call(client, "ref_list_deso", {"municipality": "0114", "regso": "0114R006"})
@@ -368,6 +376,56 @@ def test_resolve_municipality():
     assert deso.resolve_municipality("Habo") == ("0643", "Habo")
     with pytest.raises(deso.InvalidInputError, match="inte entydig"):
         deso.resolve_municipality("Upsala")
+
+
+def test_resolve_municipality_takes_the_official_name():
+    """Official names put the municipality in the genitive before "kommun" or "stad" (#26)."""
+    official = {
+        "Lunds kommun": "1281",
+        "Göteborgs stad": "1480",
+        "Stockholms stad": "0180",
+        "Malmö stad": "1280",
+        "Region Gotland": "0980",
+        "Gotlands kommun": "0980",
+        "Haninge kommun": "0136",
+        "Upplands Väsby kommun": "0114",
+        "Upplands-Bro kommun": "0139",
+        "Lilla Edets kommun": "1462",
+        "Dals-Eds kommun": "1438",
+        "Falu kommun": "2080",  # Falun keeps the old genitive "Falu"
+        "Västerås stad": "1980",
+        "Borås stad": "1490",
+        "Höganäs kommun": "1284",
+        "Mönsterås kommun": "0861",
+        "Kramfors kommun": "2282",
+        "Bollnäs kommun": "2183",
+        "Håbos kommun": "0305",
+        "Habo kommun": "0643",
+    }
+    assert {name: deso.resolve_municipality(name)[0] for name in official} == official
+    # A name ending in s is the name itself, not a genitive of another municipality.
+    for name in ("Borås", "Höganäs", "Kramfors", "Mönsterås", "Bollnäs"):
+        assert deso.resolve_municipality(name)[1] == name
+    # Only "kommun" and "stad" make a genitive: a county is not one of its municipalities.
+    with pytest.raises(deso.InvalidInputError, match="inte entydig"):
+        deso.resolve_municipality("Stockholms län")
+
+
+def test_every_municipality_resolves_by_its_names():
+    """Every municipality's name, alone and with "kommun"/"stad" (with or without the genitive s), names that
+    municipality in codes.match_municipality (behind ref_list_deso and Susa-navet's kommunfilter). The only names
+    that match more than one municipality exactly are Håbo and Habo (same letters without diacritics), where the
+    spelling decides; the genitive forms add no such collision."""
+    ties: set[frozenset[str]] = set()
+    for municipality in codes.load("regioner")["kommuner"]:
+        name, code = municipality["namn"], municipality["kod"]
+        genitive = name if name[-1] in "sxz" else f"{name}s"
+        for query in (name, f"{genitive} kommun", f"{name} kommun", f"{genitive} stad"):
+            match, exact = codes.match_municipality(query)
+            assert match is not None and (match["kod"], match["namn"]) == (code, name), query
+            if len(exact) > 1:
+                ties.add(frozenset(hit["kod"] for hit in exact))
+    assert ties == {frozenset({"0305", "0643"})}
 
 
 def test_karlskoga_rows_from_2018_predate_the_key_files():

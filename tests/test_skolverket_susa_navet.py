@@ -14,6 +14,7 @@ from mcp import Client
 
 from fuzzy_mcp.config import Settings
 from fuzzy_mcp.core import CursorCut, client_size, compact_json, fit_to_limit
+from fuzzy_mcp.errors import InvalidInputError
 from fuzzy_mcp.server import build_server
 from fuzzy_mcp.sources.skolverket.susa_navet import (
     EMAIL_WITHHELD_NOTE,
@@ -717,6 +718,17 @@ def test_tolerant_parsing_helpers():
     ]
     assert texts_of({"strings": [{"lang": "fin", "value": "x"}, {"lang": "deu", "value": "y"}]}) == ["x", "y"]
     assert texts_of({"strings": [{"lang": "swe", "value": "a"}, {"value": "neutral"}]}, ENGLISH) == ["a", "neutral"]
+
+
+def test_municipality_names_resolve_as_in_ref_list_deso():
+    """A name must name one municipality, as in ref_list_deso: official names in the genitive work (#26), the
+    spelling decides Håbo/Habo, and a name that fits several or none is an error with suggestions, never a guess."""
+    assert normalize_municipality_codes("Lunds kommun, Göteborgs stad; Falu kommun") == ["1281", "1480", "2080"]
+    assert normalize_municipality_codes(["Habo", "Håbo"]) == ["0643", "0305"]
+    with pytest.raises(InvalidInputError, match="Förslag: 1471 Götene, 1480 Göteborg"):
+        normalize_municipality_codes("Göte")
+    with pytest.raises(InvalidInputError, match="Förslag: 0180 Stockholm"):
+        normalize_municipality_codes("Stockholms län")
 
 
 async def test_following_next_page_returns_every_match_exactly_once(router, make_client):
