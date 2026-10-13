@@ -10,6 +10,10 @@ updates:
       interval: weekly
     cooldown:
       default-days: 7
+    # Eneo-klientens lås följer Eneos egen låsfil, så att Eneo-kontrollen provar samma klient som Eneo kör. Det
+    # uppdateras för hand när Eneo byter version eller vid en säkerhetsfix (filens inledning och ENEO.md avsnitt 1).
+    exclude-paths:
+      - "scripts/eneo_client_requirements.txt"
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
