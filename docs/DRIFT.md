@@ -76,8 +76,8 @@ i paketet. `smoke_test.py` och `eneo_check.py` ligger i paketets rot.
 separat – i releasebeskrivningen på GitHub (`https://github.com/deno-li/fuzzy-MCP/releases`) eller i meddelandet från
 den som levererade paketet. Filerna i samma leverans skyddar bara mot skadade filer, inte mot ett utbytt paket.
 
-**Kontrollera var paketet byggts (byggproveniens).** Releaser efter 0.2.2 har en attestering från GitHub för båda
-arkiven: en signerad uppgift om att arkivet byggts av repots Release-flöde från en viss commit på main. Den gäller
+**Kontrollera var paketet byggts (byggproveniens).** Från och med 0.3.0 har releaserna en attestering från GitHub
+för båda arkiven: en signerad uppgift om att arkivet byggts av repots Release-flöde från en viss commit på main. Den gäller
 själva filen, så den fungerar även när ni hämtat paketet från en intern spegel. Kontrollera arkivet innan ni packar upp
 det, med GitHub CLI (`gh`, inloggad med `gh auth login`) på en dator med nät mot GitHub. Byt `<version>`, `<python>`
 och `<commit>` mot värdena i releasetexten (i PowerShell: skriv kommandot på en rad, utan `\`):
@@ -313,9 +313,9 @@ releasesidan. Använder Docker containerd för att lagra images (förvalt i nyar
 via `SHA256SUMS`):
 
 ```bash
-docker load -i fuzzy-mcp-0.2.2-image.tar.gz
-docker image inspect --format '{{.Id}}' fuzzy-mcp:0.2.2     # samma som på releasesidan, eller som raden nedan
-tar -xzOf fuzzy-mcp-0.2.2-image.tar.gz index.json | python3 -c "import json,sys; print(json.load(sys.stdin)['manifests'][0]['digest'])"
+docker load -i fuzzy-mcp-0.3.0-image.tar.gz
+docker image inspect --format '{{.Id}}' fuzzy-mcp:0.3.0     # samma som på releasesidan, eller som raden nedan
+tar -xzOf fuzzy-mcp-0.3.0-image.tar.gz index.json | python3 -c "import json,sys; print(json.load(sys.stdin)['manifests'][0]['digest'])"
 ```
 
 `Dockerfile` i repot bygger en image för test. Den löser beroendena på nytt vid varje bygge (med hashkontroll inom
@@ -340,7 +340,7 @@ sudo chown 10001:10001 /etc/fuzzy-mcp/token && sudo chmod 0400 /etc/fuzzy-mcp/to
 docker run -d --name fuzzy-mcp -p 127.0.0.1:8000:8000 \
   -e FUZZY_MCP_ALLOWED_HOSTS=mcp.kommun.se \
   -v /etc/fuzzy-mcp/token:/run/secrets/fuzzy_mcp_token:ro -e FUZZY_MCP_AUTH_TOKEN_FILE=/run/secrets/fuzzy_mcp_token \
-  --read-only --cap-drop ALL --security-opt no-new-privileges fuzzy-mcp:0.2.2
+  --read-only --cap-drop ALL --security-opt no-new-privileges fuzzy-mcp:0.3.0
 docker inspect --format '{{.State.Health.Status}}' fuzzy-mcp     # healthy
 ```
 
@@ -449,7 +449,7 @@ organisationens proxy via `HTTPS_PROXY`, eller regler i kedjan `DOCKER-USER`.
    & {
    $ErrorActionPreference = "Stop"
    $py = "3.14"                         # samma som paketnamnet
-   $venv = "C:\fuzzy-mcp\venv-0.2.2"     # den nya versionen
+   $venv = "C:\fuzzy-mcp\venv-0.3.0"     # den nya versionen
    if (Test-Path $venv) { throw "$venv finns redan – efter ett avbrutet försök: Remove-Item -Recurse -Force $venv och kör blocket igen (inte den miljö som tjänsten använder nu)" }
    py -$py -m venv $venv
    if ($LASTEXITCODE) { throw "Kunde inte skapa $venv med Python $py" }
@@ -468,7 +468,7 @@ organisationens proxy via `HTTPS_PROXY`, eller regler i kedjan `DOCKER-USER`.
    & {
    $ErrorActionPreference = "Stop"
    $nssm = "C:\Program Files\nssm\nssm.exe"
-   $venv = "C:\fuzzy-mcp\venv-0.2.2"
+   $venv = "C:\fuzzy-mcp\venv-0.3.0"
    & $nssm set fuzzy-mcp Application "$venv\Scripts\fuzzy-mcp.exe"
    if ($LASTEXITCODE) { throw "nssm set misslyckades" }
    & $nssm restart fuzzy-mcp

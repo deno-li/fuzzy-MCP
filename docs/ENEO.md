@@ -82,11 +82,11 @@ Kommandona körs från leveranspaketets rot och lägger compose-filerna och toke
 # releasesidan (https://github.com/deno-li/fuzzy-MCP/releases) – då kör ni exakt den granskade imagen.
 # Image-id:t är en kontrollsumma. Att Linux-arkivet byggts av Release-flödet visar dess signerade byggproveniens
 # (gh attestation verify, DRIFT.md avsnitt 2), och arkivets SHA256SUMS täcker imagefilen.
-docker load -i fuzzy-mcp-0.2.2-image.tar.gz
-docker image inspect --format '{{.Id}}' fuzzy-mcp:0.2.2
+docker load -i fuzzy-mcp-0.3.0-image.tar.gz
+docker image inspect --format '{{.Id}}' fuzzy-mcp:0.3.0
 # Använder Docker containerd för att lagra images (förvalt i nyare installationer) visar kommandot i stället
 # manifestets digest. Den står i arkivets index.json, som SHA256SUMS redan har kontrollerat:
-tar -xzOf fuzzy-mcp-0.2.2-image.tar.gz index.json | python3 -c "import json,sys; print(json.load(sys.stdin)['manifests'][0]['digest'])"
+tar -xzOf fuzzy-mcp-0.3.0-image.tar.gz index.json | python3 -c "import json,sys; print(json.load(sys.stdin)['manifests'][0]['digest'])"
 
 sudo mkdir -m 755 -p /opt/fuzzy-mcp
 sudo cp -r docs/eneo/docker-compose.fuzzy-mcp.yml docs/eneo/docker-compose.egress.yml docs/eneo/egress /opt/fuzzy-mcp/
@@ -105,8 +105,8 @@ skilja sig från paketets `requirements.lock`, SBOM och sårbarhetskontroll. En 
 tagg (t.ex. `fuzzy-mcp:dev`) och används bara för test.
 
 Paketets `sbom.cdx.json` och `audit.txt` gäller Python-beroendena, inte basimagen och inte egress-proxyn (DRIFT.md
-avsnitt 2). Skanna båda imagerna före drift och efter varje ombyggnad, t.ex. `trivy image fuzzy-mcp:0.2.2` och
-`trivy image fuzzy-mcp-egress-proxy:local` (SBOM för hela imagen: `syft fuzzy-mcp:0.2.2 -o cyclonedx-json`).
+avsnitt 2). Skanna båda imagerna före drift och efter varje ombyggnad, t.ex. `trivy image fuzzy-mcp:0.3.0` och
+`trivy image fuzzy-mcp-egress-proxy:local` (SBOM för hela imagen: `syft fuzzy-mcp:0.3.0 -o cyclonedx-json`).
 Egress-imagen byggs lokalt från `ubuntu:24.04` med de Squid-paket Ubuntu har vid byggtillfället; lås gärna basimagen
 till en digest (kommentaren i `egress/Dockerfile`).
 
@@ -373,7 +373,7 @@ Från 0.2.0 till 0.2.1: paketet får de rättade driftinstruktionerna och `docs/
 MCP-inställningar ändras, och token behålls. Jämför och kopiera de uppdaterade compose-filerna och `egress/` som i
 steg 1; behåll era egna proxy- och certifikatinställningar enligt avsnitt 2.
 
-Från 0.2.2 till nästa version: kortade svar (`FUZZY_MCP_MAX_OUTPUT_CHARS`) anger nu `truncated` rätt och bläddrar
+Från 0.2.2 till 0.3.0: kortade svar (`FUZZY_MCP_MAX_OUTPUT_CHARS`) anger nu `truncated` rätt och bläddrar
 vidare utan luckor (`next_*` eller `_kortat.fortsatt`). `scb_search_tables` och `scb_geodata_get_features` har nya
 utdatafält och flera verktyg har ändrade beskrivningar: synkronisera verktygen enligt steg 3 och uppdatera
 assistentinstruktionen (`docs/eneo/assistentinstruktion.md`). Kontrollera gärna paketets byggproveniens med
