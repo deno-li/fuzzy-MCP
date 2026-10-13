@@ -4,7 +4,7 @@
 
 """Verify and unpack a final release archive before installation.
 
-    python scripts/verify_release.py --archive release/fuzzy-mcp-0.2.1-linux-py3.12.tar.gz --out-dir unpacked
+    python scripts/verify_release.py --archive release/fuzzy-mcp-<version>-linux-py3.12.tar.gz --out-dir unpacked
 
 Checks the adjacent .sha256 before extraction, then every packaged file against
 SHA256SUMS. Prints only the verified package directory to stdout for CI callers.

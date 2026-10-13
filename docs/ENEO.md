@@ -32,6 +32,9 @@ Efter 0.2.1 använder CI och kommande releasebyggen en säkerhetsuppdaterad klie
 och PyJWT från 2.13.0 till 2.15.0. Den profilen återger därför inte exakt Eneos ursprungliga låsfil.
 Den tidigare verifieringen av 0.2.1 ovan gäller fortfarande den ursprungliga klientprofilen; nya CI-resultat
 gäller den uppdaterade profilen. Detta ändrar inte beroendena i er installerade Eneo-backend.
+[Releasekörningen för 0.2.2](https://github.com/deno-li/fuzzy-MCP/actions/runs/38308731439) körde kontrollen i
+avsnitt 4 med den uppdaterade profilen (Python 3.11, MCP SDK 1.28.1, AnyIO 4.14.2, PyJWT 2.15.0) mot 0.2.2-imagen,
+återinläst ur Linux-leveransarkivet, och kontrollen passerade.
 
 Inställningarna som börjar på `MCP_` nedan är Eneos egna (miljövariabler i Eneos backend); värdena är standardvärden.
 
@@ -450,7 +453,10 @@ Kör kontrollen i avsnitt 4 från den återskapade backend-containern och accept
 
 - Ett fullständigt acceptanstest i en riktig Eneo-installation. Den publicerade 0.2.1-imagen har kontrollerats med
   Python 3.11 och Eneo 2.2.2:s 31 klientberoenden, låsta med versioner och SHA-256 (bl.a. SDK 1.28.1, httpx 0.28.1,
-  anyio 4.14.1 och pydantic 2.13.4). HTTP-röktestet och klientkontrollen passerade: Bearer-token, protokoll,
+  anyio 4.14.1 och pydantic 2.13.4). [Releasekörningen för 0.2.2](https://github.com/deno-li/fuzzy-MCP/actions/runs/38308731439)
+  kontrollerade 0.2.2-imagen, återinläst ur leveransarkivet, med den säkerhetsuppdaterade profilen från avsnitt 1:
+  samma beroenden men anyio 4.14.2 och PyJWT 2.15.0. För båda imagerna passerade HTTP-röktestet och klientkontrollen:
+  Bearer-token, protokoll,
   verktygskatalogen med 84 verktyg, scheman, referensuppslag och svarsstorlek. De använder lokala referensdata och verifierar inte
   myndighetsåtkomst genom er egress-proxy eller hur er modell väljer verktyg och använder svaren. Avsnitt 1–9 bygger
   på källkoden och dokumentationen för v2.2.2 (där de skiljer sig gäller koden) samt dessa klientkontroller.

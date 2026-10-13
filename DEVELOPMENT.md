@@ -158,7 +158,7 @@ Låsningen görs för målplattformen: på Windows kräver MCP-SDK:n även `pywi
 ## Utgåvor
 
 1. Uppdatera `version` i `pyproject.toml` och `src/fuzzy_mcp/__init__.py`, `softwareVersion`/`releaseDate` i
-   `publiccode.yml`, versionen i exemplen i `Dockerfile`, `docs/DRIFT.md`, `docs/ENEO.md` och
+   `publiccode.yml`, versionen i exemplen i `docs/DRIFT.md`, `docs/ENEO.md` och
    `docs/eneo/docker-compose.fuzzy-mcp.yml`, och flytta posterna under `[Unreleased]` i CHANGELOG.md.
 2. Kör kontrollerna ovan, inklusive livetesterna, och merga till main.
 3. Kör arbetsflödet **Release** från main (Actions → Release → Run workflow, *Use workflow from* `main`). Det bygger den
