@@ -494,7 +494,9 @@ def fit_to_limit(data: dict[str, Any], limit: int, cuts: tuple[Cut, ...] = ()) -
                 if resumes
                 else "Posterna i utelamnade saknas i svaret."
                 if named
-                else "Begränsa urvalet för att få allt.",
+                else "Begränsa urvalet för att få allt."
+                if kortade
+                else "",
             )
             if part
         ) + "".join(hints)

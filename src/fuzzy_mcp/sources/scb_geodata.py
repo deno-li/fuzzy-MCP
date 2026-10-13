@@ -44,7 +44,19 @@ from mcp.server.mcpserver import MCPServer
 from mcp.types import CallToolResult
 from pydantic import BaseModel, Field
 
-from ..core import READ_ONLY_OPEN, Services, clamp, client_size, compact_json, dump, structured, tool_errors
+from ..core import (
+    READ_ONLY_OPEN,
+    OffsetCut,
+    Services,
+    clamp,
+    client_size,
+    compact_json,
+    cut_contract,
+    dump,
+    preserve_output,
+    structured,
+    tool_errors,
+)
 from ..errors import InvalidInputError, UpstreamError
 from ..geo import check_sweref99tm, check_wgs84, sweref99tm_to_wgs84, wgs84_to_sweref99tm
 from .skolverket.skolenhetsregistret import Address, RegistryClient, SchoolUnitDetail, normalize_school_unit_code
@@ -65,6 +77,8 @@ MAX_GEOMETRY_FEATURES = 10
 OUTPUT_CHAR_BUDGET = 60_000
 # With FUZZY_MCP_MAX_OUTPUT_CHARS: room kept for the notes added after the features are chosen.
 NOTES_RESERVE_CHARS = 1_000
+# Start of the note on the tool's own budget cut; the output cap removes it when it shortens the page further.
+BUDGET_NOTE = "Svaret kortades till"
 _LAYER_CHARS = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-:")
 
 Srs = Literal["EPSG:3006", "EPSG:4326"]
@@ -519,6 +533,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         return structured(GeoLayerDescription(layer=name, attributes=await geo.describe(name)))
 
     @server.tool(name="scb_geodata_get_features", title="SCB: hämta geoobjekt", annotations=READ_ONLY_OPEN)
+    @cut_contract(OffsetCut("features", stale_notes=(BUDGET_NOTE,)))
     @tool_errors
     async def scb_geodata_get_features(
         layer: Annotated[str, Field(description="Lagernamn, t.ex. 'DeSO_2025'")],
@@ -600,7 +615,8 @@ def register(server: MCPServer[Any], services: Services) -> None:
         raw_features = data.get("features") or []
         # Two budgets: the compact size (OUTPUT_CHAR_BUDGET) and, with FUZZY_MCP_MAX_OUTPUT_CHARS, the size as the
         # client measures it, less the rest of the answer. The tool stops at whole features and says where to
-        # continue, so the server's generic cap never has to cut a page it cannot resume.
+        # continue. The client budget is an estimate (separators are not counted); when the server's cap still has to
+        # shorten the page, the cut contract moves next_offset to the first feature left out.
         client_budget: int | None = None
         if services.settings.max_output_chars > 0:
             frame = GeoFeatures(layer=name, returned=0, offset=offset, features=[], request_url=url, notes=notes)
@@ -648,7 +664,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
             )
         if budget_hit:
             notes.append(
-                f"Svaret kortades till {len(features)} objekt för att hålla storleken nere; fortsätt med "
+                f"{BUDGET_NOTE} {len(features)} objekt för att hålla storleken nere; fortsätt med "
                 f"offset={next_offset} eller filtrera mer."
             )
         total = data.get("totalFeatures") or data.get("numberMatched")
@@ -668,6 +684,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         )
 
     @server.tool(name="scb_geodata_download_url", title="SCB: nedladdningslänk för geodata", annotations=READ_ONLY_OPEN)
+    @preserve_output
     @tool_errors
     async def scb_geodata_download_url(
         layer: Annotated[str, Field(description="Lagernamn, t.ex. 'DeSO_2025'")],

@@ -14,11 +14,16 @@ from ..core import READ_ONLY_LOCAL, TRUNCATION_KEY, Services, clamp, client_size
 from ..errors import InvalidInputError
 from . import catalog, codes, deso
 
-# A code list answer is kept within the size Eneo cuts a tool result at (see core.TRUNCATION_KEY). The DeSO/RegSO
+# A code list answer is kept within the size Eneo cuts a tool result at (see core.TRUNCATION_KEY), or within the
+# server's output cap when that is lower: the cap cannot shorten a lookup table (a kod → namn object). The DeSO/RegSO
 # lists are 90–290 kB as files, so their lookup tables are filtered by ``search`` or left out with a note.
 CODE_LIST_LIMIT = 32_768
 TABLE_ROWS = 100  # a top-level kod → namn table or list of rows with more entries than this is a lookup table
 POST_KEYS = ("kod", "namn", "code", "name", "id")
+# The one verification note every municipality in regioner shares (263 characters) is left out of the list tool's
+# entries, as ref_lookup_region does: with it a county like Västra Götaland (49 municipalities) needs 18.7k characters,
+# so a lower output cap cut the narrowest list the tool can give; without it all 290 need 27k and each county < 5k.
+SHARED_MUNICIPALITY_KEYS = ("verifiering_not",)
 
 
 def _is_table(value: Any) -> bool:
@@ -77,13 +82,21 @@ def register(server: MCPServer[Any], services: Services) -> None:
     @tool_errors
     async def ref_list_municipalities(
         county_code: Annotated[
-            str | None, Field(description="Länskod (2 siffror, t.ex. '14'). Utelämna för alla 290 kommuner.")
+            str | None,
+            Field(
+                description="Länskod (2 siffror, t.ex. '14'). Utelämna för alla kommuner (kortas vid låg "
+                "storleksgräns – se _kortat; ange län för färre)."
+            ),
         ] = None,
     ) -> list[dict[str, Any]]:
-        """Lista kommuner (kod, namn, länskod), valfritt filtrerat på län."""
+        """Lista kommuner (kod, namn, länskod), valfritt filtrerat på län. Varje kommun har verifiering;
+        verifiering_not är densamma för alla kommuner och finns i kodlistan regioner (ref_get_code_list med name
+        'regioner' och search = kommunkoden)."""
         if county_code:
-            return codes.municipalities_in_county(county_code.strip())
-        return codes.load("regioner")["kommuner"]
+            rows = codes.municipalities_in_county(county_code.strip())
+        else:
+            rows = codes.load("regioner")["kommuner"]
+        return [{key: value for key, value in row.items() if key not in SHARED_MUNICIPALITY_KEYS} for row in rows]
 
     @server.tool(name="ref_lookup_deso", title="Slå upp DeSO- eller RegSO-kod", annotations=READ_ONLY_LOCAL)
     @tool_errors
@@ -159,18 +172,22 @@ def register(server: MCPServer[Any], services: Services) -> None:
             ),
         ] = None,
     ) -> dict[str, Any]:
-        """Hämta en hel kodlista (koder, namn, beskrivningar och källhänvisning). DeSO/RegSO-listorna är stora:
+        """Hämta en kodlista (koder, namn, beskrivningar och källhänvisning). DeSO/RegSO-listorna är stora:
         uppslagstabellerna (deso, regso, forandringar) utelämnas med en not i _kortat om svaret skulle överstiga
-        32 768 tecken; ange search (kommunkod eller kod) eller använd ref_lookup_deso/ref_list_deso."""
+        32 768 tecken eller serverns lägre storleksgräns; ange search (kommunkod eller kod) eller använd
+        ref_lookup_deso/ref_list_deso."""
         doc = codes.load(name.strip())
         tables = [key for key, value in doc.items() if _is_table(value)]
         if search:
             doc = _filter_code_list(doc, search)
-        if not tables or client_size(compact_json(doc)) <= CODE_LIST_LIMIT:
+        cap = services.settings.max_output_chars
+        limit = min(CODE_LIST_LIMIT, cap) if cap > 0 else CODE_LIST_LIMIT
+        if not tables or client_size(compact_json(doc)) <= limit:
             return doc
+        ask = "en snävare search (t.ex. hel kommunkod eller kod)" if search else "search (t.ex. kommunkod eller kod)"
         note = {
-            "meddelande": f"Svaret skulle överstiga {CODE_LIST_LIMIT} tecken, så uppslagstabellerna "
-            f"{', '.join(tables)} är utelämnade. Ange search (t.ex. kommunkod eller kod) för ett urval, använd "
+            "meddelande": f"Svaret skulle överstiga {limit} tecken, så uppslagstabellerna "
+            f"{', '.join(tables)} är utelämnade. Ange {ask} för ett urval, använd "
             "ref_lookup_deso/ref_list_deso för DeSO och RegSO, eller läs hela filen som resursen "
             f"fuzzy://codes/{doc.get('id', name.strip())}.",
             "kortade": [{"falt": key, "fore": len(doc[key]), "efter": 0} for key in tables],

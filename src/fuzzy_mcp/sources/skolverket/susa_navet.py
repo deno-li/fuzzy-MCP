@@ -30,7 +30,7 @@ import json
 import re
 import unicodedata
 from collections.abc import Callable, Iterable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import date, datetime
 from typing import Annotated, Any, TypeVar
 from urllib.parse import quote
@@ -39,7 +39,17 @@ from mcp.server.mcpserver import MCPServer
 from mcp.types import CallToolResult
 from pydantic import BaseModel, Field
 
-from ...core import READ_ONLY_OPEN, Services, clamp, compact, structured, tool_errors
+from ...core import (
+    READ_ONLY_OPEN,
+    CursorCut,
+    Services,
+    clamp,
+    compact,
+    cut_contract,
+    fit_count,
+    structured,
+    tool_errors,
+)
 from ...errors import InvalidInputError, UpstreamError
 from ...reference import codes as region_codes
 
@@ -354,7 +364,9 @@ class SearchCoverage(BaseModel):
     start_page: int = 0
     skip_matches: int | None = Field(default=None, description="Antal träffar på start_page som hoppades över")
     next_page: int | None = Field(
-        default=None, description="Sida att fortsätta med (start_page); saknas när sista sidan är genomsökt"
+        default=None,
+        description="Sida att fortsätta med (start_page); saknas när sista sidan är genomsökt och alla träffar har "
+        "returnerats",
     )
     next_skip_matches: int | None = Field(
         default=None,
@@ -432,6 +444,9 @@ class ProviderRow(BaseModel):
 
 class ProviderSearchResult(SearchCoverage):
     providers: list[ProviderRow] = Field(default_factory=list)
+
+
+SearchAnswer = TypeVar("SearchAnswer", bound=SearchCoverage)
 
 
 class DistanceDetails(BaseModel):
@@ -1538,9 +1553,34 @@ class ScanResult:
     limit: int
     excluded: dict[str, int] = field(default_factory=dict)
     inactive_included: int = 0
+    # Per match: the API page it was found on and its index among that page's matches (skipped ones included), i.e.
+    # the start_page/skip_matches cursor that resumes at it; and whether it passed as MATCH_INACTIVE.
+    positions: list[tuple[int, int]] = field(default_factory=list)
+    inactive: list[bool] = field(default_factory=list)
 
 
-def coverage(scan: ScanResult, filters: dict[str, Any], returned: int, noun: str) -> dict[str, Any]:
+def scan_prefix(scan: ScanResult, n: int) -> ScanResult:
+    """The scan as if it had stopped after its first ``n`` matches: the cursor points at the first match left out,
+    so a client following next_page/next_skip_matches gets it first and skips nothing."""
+    if n >= len(scan.matches):
+        return scan
+    next_page, next_skip = scan.positions[n]
+    return replace(
+        scan,
+        matches=scan.matches[:n],
+        next_page=next_page,
+        next_skip=next_skip,
+        inactive_included=sum(scan.inactive[:n]),
+        positions=scan.positions[:n],
+        inactive=scan.inactive[:n],
+    )
+
+
+def coverage(
+    scan: ScanResult, filters: dict[str, Any], returned: int, noun: str, *, capped: bool = False
+) -> dict[str, Any]:
+    """Coverage fields and hint for ``returned`` rows; ``capped`` when the client's size cap, not limit, left out the
+    rest (a higher limit would not help)."""
     # Pages before start_page were not scanned in this call, so only a scan from page 0 to the end is complete.
     complete = scan.next_page is None and scan.start_page == 0
     truncated = scan.matched > returned or scan.next_page is not None
@@ -1559,7 +1599,8 @@ def coverage(scan: ScanResult, filters: dict[str, Any], returned: int, noun: str
         if scan.matched > returned:
             hint += (
                 f"; {scan.matched - returned} träffar på de genomsökta sidorna har inte returnerats än och kommer "
-                "först i nästa anrop (eller höj limit)."
+                "först i nästa anrop"
+                + (" (fler rader ryms inte i klientens storleksgräns)." if capped else " (eller höj limit).")
             )
         elif scan.filtering:
             hint += ", höj max_pages, eller snäva in med school_type/provider_id/updated_since."
@@ -1599,6 +1640,30 @@ def coverage(scan: ScanResult, filters: dict[str, Any], returned: int, noun: str
         "excluded": ExcludedCounts(**scan.excluded) if scan.excluded else None,
         "hint": " ".join(hints) or None,
     }
+
+
+def fit_search(
+    model: type[SearchAnswer],
+    key: str,
+    rows: list[Any],
+    scan: ScanResult,
+    filters: dict[str, Any],
+    noun: str,
+    notes: list[str],
+    max_chars: int,
+) -> SearchAnswer:
+    """The search answer with as many rows as fit the client's size cap (FUZZY_MCP_MAX_OUTPUT_CHARS, 0 = off). The
+    tool cuts its rows itself because only it knows on which page each match was found: the cursor, counts and hint
+    then describe the rows returned, and the server's generic cap is only the backstop."""
+
+    def answer(n: int) -> SearchAnswer:
+        return model(
+            **{key: rows[:n]},
+            notes=notes or None,
+            **coverage(scan_prefix(scan, n), filters, n, noun, capped=n < len(rows)),
+        )
+
+    return answer(fit_count(answer, len(rows), max_chars))
 
 
 def _prefer(services: Services) -> tuple[str, ...]:
@@ -1651,7 +1716,8 @@ def register(server: MCPServer[Any], services: Services) -> None:
 
         When ``limit`` is reached on a page that still holds unreturned matches, the scan stops there and reports
         that page as ``next_page`` together with the number of its matches already returned (``next_skip``), which
-        the caller passes back as ``skip_matches``; no match is ever skipped by following next_page."""
+        the caller passes back as ``skip_matches``; no match is ever skipped by following next_page. The position of
+        every returned match is kept, so a caller returning fewer rows can move the cursor back (``scan_prefix``)."""
         limit = paging.limit
         # Without client-side filters every row matches, so one API page of exactly ``limit`` rows is enough.
         size = paging.page_size if filtering else limit
@@ -1659,7 +1725,9 @@ def register(server: MCPServer[Any], services: Services) -> None:
         page = paging.start_page
         skip = paging.skip_matches
         matches: list[Item] = []
-        matched = scanned = pages_scanned = inactive_included = 0
+        positions: list[tuple[int, int]] = []
+        inactive: list[bool] = []
+        matched = scanned = pages_scanned = 0
         excluded: dict[str, int] = {}
         total: int | None = None
         next_page: int | None = None
@@ -1692,7 +1760,8 @@ def register(server: MCPServer[Any], services: Services) -> None:
                 matched += 1
                 if len(matches) < limit:
                     matches.append(item)
-                    inactive_included += verdict == MATCH_INACTIVE
+                    positions.append((page, page_hits - 1))
+                    inactive.append(verdict == MATCH_INACTIVE)
                 elif overflow_at is None:
                     overflow_at = page_hits - 1
             skip = 0
@@ -1728,7 +1797,9 @@ def register(server: MCPServer[Any], services: Services) -> None:
             filtering=filtering,
             limit=limit,
             excluded=excluded,
-            inactive_included=inactive_included,
+            inactive_included=sum(inactive),
+            positions=positions,
+            inactive=inactive,
         )
 
     async def fetch_by_id(path: str, raw_id: str, noun: str, prefix: str) -> tuple[Item, str]:
@@ -1791,6 +1862,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         title="Susa-navet: sök utbildningstillfällen",
         annotations=READ_ONLY_OPEN,
     )
+    @cut_contract(CursorCut("events"))
     @tool_errors
     async def skolverket_susa_search_education_events(
         school_type: Annotated[str | list[str] | None, school_type_field] = None,
@@ -1879,8 +1951,9 @@ def register(server: MCPServer[Any], services: Services) -> None:
             "distance_only": filters.distance_only or None,
             "language": filters.language,
         }
+        max_chars = services.settings.max_output_chars
         return structured(
-            EventSearchResult(events=rows, notes=withheld or None, **coverage(result, applied, len(rows), "tillfällen"))
+            fit_search(EventSearchResult, "events", rows, result, applied, "tillfällen", withheld, max_chars)
         )
 
     @server.tool(
@@ -1888,6 +1961,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         title="Susa-navet: sök utbildningar",
         annotations=READ_ONLY_OPEN,
     )
+    @cut_contract(CursorCut("infos"))
     @tool_errors
     async def skolverket_susa_search_education_infos(
         school_type: Annotated[str | list[str] | None, school_type_field] = None,
@@ -1929,8 +2003,9 @@ def register(server: MCPServer[Any], services: Services) -> None:
         matches, withheld = withhold_emails(result.matches, services.settings.allow_personal_data)
         rows = [info_row(item, prefer) for item in matches]
         applied = {"school_type": school_types, "updated_since": since, "text": text.strip() if text else None}
+        max_chars = services.settings.max_output_chars
         return structured(
-            InfoSearchResult(infos=rows, notes=withheld or None, **coverage(result, applied, len(rows), "utbildningar"))
+            fit_search(InfoSearchResult, "infos", rows, result, applied, "utbildningar", withheld, max_chars)
         )
 
     @server.tool(
@@ -1938,6 +2013,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         title="Susa-navet: sök utbildningsanordnare",
         annotations=READ_ONLY_OPEN,
     )
+    @cut_contract(CursorCut("providers"))
     @tool_errors
     async def skolverket_susa_search_education_providers(
         school_type: Annotated[str | list[str] | None, school_type_field] = None,
@@ -1991,10 +2067,9 @@ def register(server: MCPServer[Any], services: Services) -> None:
             "municipality_codes": filters.municipalities,
             "county_codes": filters.counties,
         }
+        max_chars = services.settings.max_output_chars
         return structured(
-            ProviderSearchResult(
-                providers=rows, notes=withheld or None, **coverage(result, applied, len(rows), "anordnare")
-            )
+            fit_search(ProviderSearchResult, "providers", rows, result, applied, "anordnare", withheld, max_chars)
         )
 
     @server.tool(

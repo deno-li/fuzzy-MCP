@@ -241,3 +241,110 @@ async def test_eneo_assistant_instruction_names_existing_tools(make_client):
     async with make_client() as client:
         tools = {t.name for t in (await client.list_tools()).tools}
     assert named and named <= tools, named - tools
+
+
+# --- issue #20: an answer the output cap (FUZZY_MCP_MAX_OUTPUT_CHARS) shortened never passes for complete ---------
+
+
+async def test_list_municipalities_cut_is_flagged_and_every_county_is_whole(make_client):
+    """The 263-character verification note all 290 municipalities share is left out of each entry (it is in the
+    code list regioner), so all 290 fit Eneo's 30 000 and every county, Västra Götaland (49) the largest at about
+    4.6k characters, fits whole at 15 000 (ENEO.md §5.1 for a 32k-token model) and 8 000. At those caps the whole
+    list is a prefix flagged in _kortat with no pointer that could skip, the parameter no longer promises all 290,
+    and the remedy it names (one county at a time) returns every municipality exactly once. With the note, county 14
+    alone was cut below about 18.7k and its last municipalities were out of reach."""
+    from fuzzy_mcp.core import client_size, compact_json
+    from fuzzy_mcp.reference import codes
+
+    regions = codes.load("regioner")
+    shared = {m["verifiering_not"] for m in regions["kommuner"]}
+    assert len(shared) == 1  # one note for every municipality: an entry of its own would need to keep it
+    expected = [{k: v for k, v in m.items() if k != "verifiering_not"} for m in regions["kommuner"]]
+    assert all(m["verifiering"] for m in expected)
+    async with make_client("reference", max_output_chars=30_000) as client:
+        assert await call(client, "ref_list_municipalities") == expected
+        found = await call(client, "ref_get_code_list", {"name": "regioner", "search": "1480"})
+        tools = {t.name: t for t in (await client.list_tools()).tools}
+    assert [m["verifiering_not"] for m in found["kommuner"]] == list(shared)  # where the description points
+    for cap in (15_000, 8000):
+        async with make_client("reference", max_output_chars=cap) as client:
+            cut = await call(client, "ref_list_municipalities")
+            counties = [
+                await call(client, "ref_list_municipalities", {"county_code": lan["kod"]}) for lan in regions["lan"]
+            ]
+        kept = cut["result"]
+        assert set(cut) == {"result", "_kortat"} and client_size(compact_json(cut)) <= cap
+        assert 0 < len(kept) < 290 and kept == expected[: len(kept)]
+        note = cut["_kortat"]
+        assert note["kortade"] == [{"falt": "result", "fore": 290, "efter": len(kept)}]
+        assert "fortsatt" not in note and "Begränsa urvalet" in note["meddelande"]
+        assert all(isinstance(county, list) for county in counties), cap  # no _kortat: every county fits whole
+        seen = [m for county in counties for m in county]
+        assert sorted(seen, key=lambda m: m["kod"]) == expected and len(seen) == 290
+    description = tools["ref_list_municipalities"].input_schema["properties"]["county_code"]["description"]
+    assert "290" not in description and "_kortat" in description
+    assert "verifiering_not" in tools["ref_list_municipalities"].description
+
+
+async def test_entity_catalog_cut_keeps_caveats_and_join_keys(make_client):
+    """forbehall (personal data, suppression) and kopplingsnycklar never lose an entry, since a missing warning
+    reads as no warning: the cap shortens entiteter (flagged in _kortat), then may halve a long text inside the two
+    lists (listed in _kortat.kortade with enhet "tecken", as at 6 500), and rejects the answer when even that does
+    not fit. The behaviour comes from core.PROTECTED_KEYS; this guards it for the catalog."""
+    from fuzzy_mcp.core import CUT_MARKER
+
+    def halved(whole, cut, path):
+        """Paths (in _kortat's form, lists as []) of the strings the cap halved."""
+        if isinstance(whole, dict):
+            return [p for key in whole for p in halved(whole[key], cut[key], f"{path}.{key}")]
+        if isinstance(whole, list):
+            return [p for a, b in zip(whole, cut, strict=True) for p in halved(a, b, f"{path}[]")]
+        if whole == cut:
+            return []
+        assert cut.endswith(CUT_MARKER) and whole.startswith(cut.removesuffix(CUT_MARKER)), path
+        return [path]
+
+    async with make_client("reference") as client:
+        whole = await call(client, "ref_entity_catalog", {"source": "skolverket"})
+    async with make_client("reference", max_output_chars=8000) as client:
+        cut = await call(client, "ref_entity_catalog", {"source": "skolverket"})
+    async with make_client("reference", max_output_chars=6500) as client:
+        tight = await call(client, "ref_entity_catalog", {"source": "skolverket"})
+    async with make_client("reference", max_output_chars=4000) as client:
+        err = await call_error(client, "ref_entity_catalog", {"source": "skolverket"})
+    assert "_kortat" not in whole and len(whole["entiteter"]) == 13
+    assert cut["forbehall"] == whole["forbehall"] and cut["kopplingsnycklar"] == whole["kopplingsnycklar"]
+    kept = cut["entiteter"]
+    assert 0 < len(kept) < 13 and kept == whole["entiteter"][: len(kept)]
+    assert cut["_kortat"]["kortade"] == [{"falt": "entiteter", "fore": 13, "efter": len(kept)}]
+    # At 6 500 the two lists keep every entry, and each text the cap halved in them is named in kortade.
+    protected = ("forbehall", "kopplingsnycklar")
+    assert [len(tight[key]) for key in protected] == [len(whole[key]) for key in protected]
+    texts = {entry["falt"] for entry in tight["_kortat"]["kortade"] if entry.get("enhet") == "tecken"}
+    cut_texts = {p for key in protected for p in halved(whole[key], tight[key], key)}
+    assert cut_texts and cut_texts <= texts, cut_texts - texts
+    assert "för stort" in err and "4000" in err
+
+
+async def test_api_notices_are_whole_or_rejected(make_client):
+    """notices is never shortened, so count never describes notices the answer does not hold."""
+    from fuzzy_mcp.core import client_size
+    from fuzzy_mcp.http import MAX_SHARED_NOTICES
+
+    sources = ("scb", "fohm", "skolverket", "skolverket.skolenhetsregistret", "dataportal")
+    notices = [
+        f"{sources[i % 5]}: {'Sunset' if i % 2 else 'Deprecation'}: 2027-{1 + i // 5:02}-01T00:00:00Z"
+        for i in range(MAX_SHARED_NOTICES)
+    ]
+
+    async def notices_at(cap):
+        async with make_client("reference", max_output_chars=cap) as client:
+            client.server.fuzzy_services.http.recent_notices.update(dict.fromkeys(notices))
+            return await client.call_tool("fuzzy_api_notices", {})
+
+    whole = await notices_at(30_000)
+    assert whole.structured_content == {"notices": notices, "count": MAX_SHARED_NOTICES}
+    cap = client_size(whole.content[0].text) - 200  # room for most notices, not for all of them
+    rejected = await notices_at(cap)
+    assert rejected.is_error and rejected.structured_content is None
+    assert "för stort" in rejected.content[0].text and f"({cap} tecken)" in rejected.content[0].text

@@ -17,8 +17,10 @@ from pathlib import Path
 import httpx2
 import pytest
 
+from fuzzy_mcp.core import client_size
 from fuzzy_mcp.geo import sweref99tm_to_wgs84
 from fuzzy_mcp.sources.scb_geodata import (
+    BUDGET_NOTE,
     GeoAttribute,
     build_cql,
     coordinate_text,
@@ -220,49 +222,160 @@ async def test_pagination_returns_each_feature_once_from_unordered_source(
     assert {request.url.params["sortBy"] for request in _get_feature_requests(router)} == {sort_by or code_attribute}
 
 
-@pytest.mark.parametrize("max_output_chars", [0, 30000])
-async def test_paging_with_next_offset_returns_every_feature_once(router, make_client, max_output_chars):
-    """A municipality with more DeSO than one answer holds (Stockholm: 569) is read completely by following
-    next_offset, also when the server caps answers; the tool cuts whole features itself (issue #21)."""
-    records = [{**DESO_0180C4040, "objectid": n, "desokod": f"0180C{n:04d}"} for n in range(569)]
+def _deso_records(count: int) -> list[dict]:
+    # referensdatum is unique here so that pages holding only that attribute can be checked feature by feature.
+    return [
+        {**DESO_0180C4040, "objectid": n, "desokod": f"0180C{n:04d}", "referensdatum": f"2025{n:04d}"}
+        for n in range(count)
+    ]
+
+
+def _paged_features(records: list[dict], junk: tuple[int, ...] = ()):
+    """GetFeature as GeoServer pages it: sorted on sortBy, then startIndex/maxFeatures, with the propertyName
+    attributes only. ``junk`` puts items that are not objects at these positions of the sorted sequence."""
 
     def get_features(request):
         params = request.url.params
+        names = params["propertyName"].split(",")
+        ordered: list = [
+            {"properties": {name: r[name] for name in names}}
+            for r in sorted(records, key=lambda r: r[params["sortBy"]])
+        ]
+        for position in junk:
+            ordered.insert(position, None if position % 2 else "inte ett objekt")
         start = int(params.get("startIndex", 0))
-        page = sorted(records, key=lambda item: item[params["sortBy"]])[start : start + int(params["maxFeatures"])]
         return httpx2.Response(
             200,
             json={
                 "type": "FeatureCollection",
                 "totalFeatures": len(records),
-                "features": [{"properties": r} for r in page],
+                "features": ordered[start : start + int(params["maxFeatures"])],
             },
         )
 
-    router.add("GET", r"request=DescribeFeatureType", _describe)
-    router.add("GET", r"request=GetFeature", get_features)
-    seen: list[str] = []
-    pages = []
-    args = {"layer": "DeSO_2025", "filters": {"kommunkod": "0180"}, "limit": 1000}
-    async with make_client("scb.geodata", max_output_chars=max_output_chars) as client:
-        offset = 0
-        while offset is not None and len(pages) < 20:
-            result = await client.call_tool("scb_geodata_get_features", {**args, "offset": offset})
-            text = "".join(getattr(block, "text", "") for block in result.content)
-            page = json.loads(text)
-            pages.append((page, text))
-            seen += [feature["desokod"] for feature in page["features"]]
-            offset = page.get("next_offset")
-    assert seen == [record["desokod"] for record in records]  # every feature once, in order
-    assert len(pages) > 1 and pages[-1][0]["truncated"] is False
-    for page, text in pages:
+    return get_features
+
+
+async def _walk(client, args: dict, cap: int) -> list[dict]:
+    """Read every page as a client does: offset=next_offset, else the offset in _kortat.fortsatt. Checks on every
+    page that the answer fits the cap and that its counts, flags and notes describe the features it holds."""
+    pages: list[dict] = []
+    offset: int | None = 0
+    while offset is not None and len(pages) < 40:
+        result = await client.call_tool("scb_geodata_get_features", {**args, "offset": offset})
+        text = "".join(getattr(block, "text", "") for block in result.content)
+        assert not result.is_error, text
+        page = json.loads(text)
+        pages.append(page)
+        if cap:
+            assert client_size(text) <= cap
         assert page["returned"] == len(page["features"])
-        assert "_kortat" not in page  # the tool, not the server's generic cap, decided where the page ends
-        if max_output_chars:
-            assert len(json.dumps(text, ensure_ascii=False)) + 100 <= max_output_chars
+        budget_notes = [note for note in page["notes"] if note.startswith(BUDGET_NOTE)]
+        for note in budget_notes:  # never a stale "kortades till N" or offset from before the server's cut
+            assert (
+                note.startswith(f"{BUDGET_NOTE} {page['returned']} objekt") and f"offset={page['next_offset']}" in note
+            )
+        if "_kortat" in page:  # the server's cap shortened the page: the tool's fields and pointer follow it
+            assert page["truncated"] is True and not budget_notes
+            assert page["_kortat"]["fortsatt"] == [{"falt": "features", "anrop": {"offset": page["next_offset"]}}]
+            assert page["next_offset"] == page["offset"] + page["returned"]
+        offset = page.get("next_offset")
+        if offset is None and "_kortat" in page:
+            offset = page["_kortat"]["fortsatt"][0]["anrop"]["offset"]
+    return pages
+
+
+# (cap, whether the server's cap shortens pages of single-attribute features). At 15000 a page holds about 420 such
+# features and the tool's own budget ends every page; at 30000 and 32768 it holds about 900, whose separators (left
+# out of the tool's estimate) outgrow the notes reserve, and the server's cap shortens the page further.
+SINGLE_ATTRIBUTE_CAPS = [(0, False), (15000, False), (30000, True), (32768, True)]
+
+
+@pytest.mark.parametrize(("max_output_chars", "server_cuts"), SINGLE_ATTRIBUTE_CAPS)
+@pytest.mark.parametrize(("attributes", "count"), [(None, 569), (["referensdatum"], 2500)])
+async def test_paging_with_next_offset_returns_every_feature_once(
+    router, make_client, attributes, count, max_output_chars, server_cuts
+):
+    """A municipality with more DeSO than one answer holds (Stockholm: 569) is read completely by following
+    next_offset, also when the server caps answers; the tool cuts whole features itself (issue #21). With a single
+    attribute per feature its size estimate leaves out the separators between up to 1000 features, and the server's
+    cap shortens the page further: next_offset, returned and truncated then follow that cut and the tool's own
+    "kortades till" note is removed, so no feature is skipped (issue #20)."""
+    records = _deso_records(count)
+    router.add("GET", r"request=DescribeFeatureType", _describe)
+    router.add("GET", r"request=GetFeature", _paged_features(records))
+    args = {"layer": "DeSO_2025", "filters": {"kommunkod": "0180"}, "limit": 1000}
+    if attributes:
+        args["attributes"] = attributes
+    async with make_client("scb.geodata", max_output_chars=max_output_chars) as client:
+        pages = await _walk(client, args, max_output_chars)
+    key = attributes[0] if attributes else "desokod"
+    seen = [feature[key] for page in pages for feature in page["features"]]
+    assert seen == [record[key] for record in records]  # every feature once, in order
+    assert len(pages) > 1 and pages[-1]["truncated"] is False and "next_offset" not in pages[-1]
+    for page in pages:
         if page["truncated"]:
             assert page["next_offset"] == page["offset"] + page["returned"]
-            assert any(f"offset={page['next_offset']}" in note for note in page["notes"])
+        if attributes is None:  # whole features: the tool, not the server's cap, decides where a page ends
+            assert "_kortat" not in page
+            assert not page["truncated"] or any(f"offset={page['next_offset']}" in note for note in page["notes"])
+    # The residual case of #21 that the cut contract covers, and only there: whole features never reach the cap
+    assert any("_kortat" in page for page in pages) is bool(attributes and server_cuts)
+
+
+@pytest.mark.parametrize(("max_output_chars", "server_cuts"), SINGLE_ATTRIBUTE_CAPS)
+async def test_non_dict_items_never_skip(router, make_client, max_output_chars, server_cuts):
+    """Items that are not objects are passed over but still count in startIndex. The tool's own next_offset counts
+    them; after the server's cap shortens a page, next_offset = offset + shown features lies at or before the first
+    feature left out, so a client may see a feature twice (at most once per passed-over item) but never misses one."""
+    records = _deso_records(2500)
+    junk = (3, 250, 700, 1500)
+    router.add("GET", r"request=DescribeFeatureType", _describe)
+    router.add("GET", r"request=GetFeature", _paged_features(records, junk))
+    args = {"layer": "DeSO_2025", "attributes": ["referensdatum"], "limit": 1000}
+    async with make_client("scb.geodata", max_output_chars=max_output_chars) as client:
+        pages = await _walk(client, args, max_output_chars)
+    seen = [feature["referensdatum"] for page in pages for feature in page["features"]]
+    expected = [record["referensdatum"] for record in records]
+    assert list(dict.fromkeys(seen)) == expected  # every feature, first seen in order
+    assert len(seen) - len(expected) <= len(junk)
+    assert pages[-1]["truncated"] is False
+    for page in pages:
+        if page["truncated"] and "_kortat" not in page:  # the tool's own pointer counts the passed-over items
+            assert page["next_offset"] == page["offset"] + page["returned"] + sum(
+                page["offset"] <= j < page["next_offset"] for j in junk
+            )
+    assert any("_kortat" in page for page in pages) is server_cuts
+
+
+async def test_server_cut_of_the_last_page_keeps_paging(router, make_client):
+    """On its last page (here the only one) the tool returns every feature left (they fit under limit and its
+    budget), says truncated=false and gives no next_offset. Its size estimate leaves out the separators, so with a
+    cap just under the page's size the server's cap shortens that page. The cut contract then makes it truncated with
+    next_offset = offset + shown features, and one more page completes the walk. The window of caps where this happens
+    is only a few characters wide (17 here), so the cap is measured from the uncapped page rather than fixed."""
+    records = _deso_records(1000)
+    router.add("GET", r"request=DescribeFeatureType", _describe)
+    router.add("GET", r"request=GetFeature", _paged_features(records))
+    args = {"layer": "DeSO_2025", "attributes": ["referensdatum"], "limit": 1000}
+    async with make_client("scb.geodata") as client:
+        result = await client.call_tool("scb_geodata_get_features", args)
+    text = "".join(getattr(block, "text", "") for block in result.content)
+    whole = json.loads(text)
+    assert whole["returned"] == len(records) and whole["truncated"] is False and "next_offset" not in whole
+    cap = client_size(text) - 1
+    async with make_client("scb.geodata", max_output_chars=cap) as client:
+        pages = await _walk(client, args, cap)
+    seen = [feature["referensdatum"] for page in pages for feature in page["features"]]
+    assert seen == [record["referensdatum"] for record in records]
+    assert len(pages) == 2
+    first, rest = pages
+    # The tool returned the whole page and the server's cap cut it, not the tool's budget ...
+    assert first["_kortat"]["kortade"] == [{"falt": "features", "fore": len(records), "efter": first["returned"]}]
+    # ... so the page no longer claims to be complete and points at the first feature left out.
+    assert first["truncated"] is True and first["next_offset"] == first["returned"] < len(records)
+    assert rest["offset"] == first["next_offset"] and rest["truncated"] is False and "next_offset" not in rest
+    assert "_kortat" not in rest
 
 
 async def test_geometry_srs(router, make_client):
@@ -313,6 +426,27 @@ async def test_download_url_and_validation(router, make_client):
         assert "Ogiltigt lagernamn" in err
         err = await call_error(client, "scb_geodata_get_features", {"layer": "DeSO_2025", "filters": {"lan": "21"}})
         assert "Okänt attribut 'lan'" in err
+
+
+async def test_download_url_whole_or_rejected(router, make_client):
+    """The link is the answer: within the server's cap it is returned unchanged, above it the call fails with a clear
+    error; no field (link, layer) is ever shortened (issue #20)."""
+    _routes(router)
+    filtered = {"layer": "DeSO_2025", "filters": {"desokod": [f"0180C{n:04d}" for n in range(200)]}}
+    long_layer = {"layer": "DeSO_" + "x" * 2000}  # without filters the layer is not looked up
+    async with make_client("scb.geodata") as client:
+        originals = [await client.call_tool("scb_geodata_download_url", args) for args in (filtered, long_layer)]
+    sizes = [client_size(result.content[0].text) for result in originals]
+    assert not any(result.is_error for result in originals) and sizes[0] > 5000
+    for args, original, size in zip((filtered, long_layer), originals, sizes, strict=True):
+        async with make_client("scb.geodata", max_output_chars=size) as client:
+            whole = await client.call_tool("scb_geodata_download_url", args)
+        assert whole.content == original.content and whole.structured_content == original.structured_content
+        async with make_client("scb.geodata", max_output_chars=size - 50) as client:
+            rejected = await client.call_tool("scb_geodata_download_url", args)
+        text = rejected.content[0].text
+        assert rejected.is_error and rejected.structured_content is None
+        assert "får inte kortas" in text and "[kortad]" not in text
 
 
 async def test_geometry_is_capped_in_count_and_size(router, make_client):

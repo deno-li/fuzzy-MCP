@@ -43,7 +43,20 @@ from mcp.server.mcpserver import MCPServer
 from mcp.types import CallToolResult
 from pydantic import BaseModel, Field
 
-from ...core import READ_ONLY_OPEN, Services, clamp, compact, dump, structured, tool_errors
+from ...core import (
+    CUT_MARKER,
+    MIN_STRING,
+    READ_ONLY_OPEN,
+    CodesCut,
+    OffsetCut,
+    Services,
+    clamp,
+    compact,
+    cut_contract,
+    dump,
+    structured,
+    tool_errors,
+)
 from ...errors import InvalidInputError, UpstreamError
 from ...http import ApiResponse
 
@@ -1399,6 +1412,26 @@ def fit_output(
     return model
 
 
+# Start of the notes in which drop_courses names the courses it left out. The server's output cap
+# (FUZZY_MCP_MAX_OUTPUT_CHARS) may halve long strings even in notes, but never one of at most OMITTED_NOTE_CHARS
+# characters: spread over notes that short, every omitted code stays readable (or the capped answer is an error).
+OMITTED_NOTE = "Utelämnade kurser/nivåer:"
+OMITTED_NOTE_CHARS = MIN_STRING + len(CUT_MARKER)
+
+
+def omitted_notes(codes: Sequence[str]) -> list[str]:
+    """``codes`` as notes ``OMITTED_NOTE a, b, …`` of at most ``OMITTED_NOTE_CHARS`` characters each (only a code
+    too long for one note on its own, which course codes never are, would make a longer note)."""
+    notes: list[str] = []
+    line = ""
+    for code in codes:
+        if line and len(OMITTED_NOTE) + len(line) + len(code) + 3 > OMITTED_NOTE_CHARS:
+            notes.append(f"{OMITTED_NOTE} {line}")
+            line = ""
+        line = f"{line}, {code}" if line else code
+    return [*notes, f"{OMITTED_NOTE} {line}"] if line else notes
+
+
 def drop_courses(detail: SubjectDetail) -> None:
     """Reducer for subjects: leave out courses/levels from the end until the result
     fits and name the omitted codes so they can be fetched separately."""
@@ -1413,8 +1446,9 @@ def drop_courses(detail: SubjectDetail) -> None:
         detail.courses = courses or None
         detail.notes = [
             *notes,
-            f"Svaret blev för stort: {len(omitted)} av {total} kurser/nivåer utelämnades ({', '.join(omitted)}). "
+            f"Svaret blev för stort: {len(omitted)} av {total} kurser/nivåer utelämnades (koderna följer nedan). "
             "Hämta dem med course_codes=[...] eller skolverket_get_course.",
+            *omitted_notes(omitted),
         ]
 
     # Estimate from the per-course sizes, then verify exactly.
@@ -1443,6 +1477,26 @@ def drop_raw(detail: ProgramDetail | CurriculumDetail) -> None:
 
 ListT = TypeVar("ListT", SyllabusListResult, ValuestoreResult)
 
+# Start of fit_items' note. Its row count and offset describe the list fit_items built, so the note is removed when the
+# server's output cap (FUZZY_MCP_MAX_OUTPUT_CHARS) shortens that list further.
+FIT_NOTE = "Svaret begränsades till"
+# Paged lists: offset + returned (or _kortat.fortsatt) continues right after the last row the cap left in the answer.
+PAGED_ITEMS = OffsetCut("items", next_field=None, stale_notes=(FIT_NOTE,))
+# get_subject: the courses the cap left out are asked for again with course_codes (kept in the subject's order).
+OMITTED_COURSES = CodesCut(
+    "courses", argument="course_codes", hint=" Kurser som verktyget redan utelämnat står i notes."
+)
+
+
+def omitted_versions(get_tool: str) -> CodesCut:
+    """Version lists cannot be paged (no offset): a cut names the versions left out, readable one by one."""
+    return CodesCut(
+        "items",
+        code="version",
+        stale_notes=(FIT_NOTE,),
+        hint=f" Hämta en utelämnad version med {get_tool}(code, version=...).",
+    )
+
 
 def fit_items(result: ListT, pageable: bool = True) -> ListT:
     """Stop adding rows once the compact JSON passes ``MAX_OUTPUT_CHARS`` (a large
@@ -1466,9 +1520,7 @@ def fit_items(result: ListT, pageable: bool = True) -> ListT:
         if pageable
         else "Resten utelämnades."
     )
-    add_note(
-        result, f"Svaret begränsades till {kept} rader för att hålla det under ca {MAX_OUTPUT_CHARS} tecken. {hint}"
-    )
+    add_note(result, f"{FIT_NOTE} {kept} rader för att hålla det under ca {MAX_OUTPUT_CHARS} tecken. {hint}")
     return result
 
 
@@ -1647,6 +1699,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
     # ---------------------------------------------------------------- subjects
 
     @server.tool(name="skolverket_list_subjects", title="Skolverket: lista ämnen", annotations=READ_ONLY_OPEN)
+    @cut_contract(PAGED_ITEMS)
     @tool_errors
     async def skolverket_list_subjects(
         schooltype: SchoolTypeArg = None,
@@ -1686,6 +1739,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         return structured(result)
 
     @server.tool(name="skolverket_get_subject", title="Skolverket: hämta ämne", annotations=READ_ONLY_OPEN)
+    @cut_contract(OMITTED_COURSES)
     @tool_errors
     async def skolverket_get_subject(
         code: Annotated[
@@ -1727,7 +1781,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         kursplaner) samt betygskriterier med betygssteg (E–A). GY11: kriterierna ligger per kurs. Gy25: nivåerna
         har eget centralt innehåll men kriterierna gäller ämnet (ämnesbetyg). Begränsa storleken med sections,
         course_codes och max_chars; blir svaret ändå för stort kortas texterna och sista kurserna utelämnas
-        (koderna anges i notes)."""
+        (koderna anges i notes; kortar servern svaret står resten som course_codes i _kortat.fortsatt)."""
         subject_code = normalize_code(code, "ämneskod")
         version = normalize_version(version)
         when = normalize_date(date)
@@ -1770,6 +1824,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
     @server.tool(
         name="skolverket_list_subject_versions", title="Skolverket: ämnesversioner", annotations=READ_ONLY_OPEN
     )
+    @cut_contract(omitted_versions("skolverket_get_subject"))
     @tool_errors
     async def skolverket_list_subject_versions(
         code: Annotated[str, Field(description="Ämneskod, t.ex. 'MAT' eller 'MATE'")],
@@ -1777,7 +1832,8 @@ def register(server: MCPServer[Any], services: Services) -> None:
     ) -> Annotated[CallToolResult, SyllabusListResult]:
         """Lista alla versioner av ett ämne (nyast först) med giltighetsdatum, ändringsdatum och SKOLFS-nummer
         (skolfsGrund/skolfsAndring visas bara här). Versionsnumren är inte löpande. Hämta en viss version med
-        skolverket_get_subject(code, version=...)."""
+        skolverket_get_subject(code, version=...). Kortar servern listan står de utelämnade versionsnumren i
+        _kortat.utelamnade."""
         subject_code = normalize_code(code, "ämneskod")
         result = await list_entities(
             kind="subject_versions",
@@ -1796,6 +1852,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
     # ---------------------------------------------------------------- courses
 
     @server.tool(name="skolverket_list_courses", title="Skolverket: lista kurser", annotations=READ_ONLY_OPEN)
+    @cut_contract(PAGED_ITEMS)
     @tool_errors
     async def skolverket_list_courses(
         schooltype: SchoolTypeArg = None,
@@ -1985,13 +2042,15 @@ def register(server: MCPServer[Any], services: Services) -> None:
         )
 
     @server.tool(name="skolverket_list_course_versions", title="Skolverket: kursversioner", annotations=READ_ONLY_OPEN)
+    @cut_contract(omitted_versions("skolverket_get_course"))
     @tool_errors
     async def skolverket_list_course_versions(
         code: Annotated[str, Field(description="Kurskod, t.ex. 'MATMAT01c'")],
         limit: LimitArg = DEFAULT_LIMIT,
     ) -> Annotated[CallToolResult, SyllabusListResult]:
         """Lista versioner av en kurs (nyast först). Svarsformatet är inte officiellt dokumenterat och tolkas
-        defensivt; för GY11-kurser ger skolverket_list_subject_versions för ämnet samma versionshistorik."""
+        defensivt; för GY11-kurser ger skolverket_list_subject_versions för ämnet samma versionshistorik. Kortar
+        servern listan står de utelämnade versionsnumren i _kortat.utelamnade."""
         course_code = normalize_code(code, "kurskod")
         result = await list_entities(
             kind="course_versions",
@@ -2010,6 +2069,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
     # ---------------------------------------------------------------- programs
 
     @server.tool(name="skolverket_list_programs", title="Skolverket: lista program", annotations=READ_ONLY_OPEN)
+    @cut_contract(PAGED_ITEMS)
     @tool_errors
     async def skolverket_list_programs(
         schooltype: Annotated[
@@ -2130,13 +2190,14 @@ def register(server: MCPServer[Any], services: Services) -> None:
     @server.tool(
         name="skolverket_list_program_versions", title="Skolverket: programversioner", annotations=READ_ONLY_OPEN
     )
+    @cut_contract(omitted_versions("skolverket_get_program"))
     @tool_errors
     async def skolverket_list_program_versions(
         code: Annotated[str, Field(description="Programkod, t.ex. 'NA25'")],
         limit: LimitArg = DEFAULT_LIMIT,
     ) -> Annotated[CallToolResult, SyllabusListResult]:
         """Lista versioner av ett program (nyast först). Svarsformatet är inte officiellt dokumenterat och tolkas
-        defensivt."""
+        defensivt. Kortar servern listan står de utelämnade versionsnumren i _kortat.utelamnade."""
         program_code = normalize_code(code, "programkod")
         result = await list_entities(
             kind="program_versions",
@@ -2155,6 +2216,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
     # ---------------------------------------------------------------- curriculums
 
     @server.tool(name="skolverket_list_curriculums", title="Skolverket: lista läroplaner", annotations=READ_ONLY_OPEN)
+    @cut_contract(PAGED_ITEMS)
     @tool_errors
     async def skolverket_list_curriculums(
         schooltype: SchoolTypeArg = None,
@@ -2243,13 +2305,14 @@ def register(server: MCPServer[Any], services: Services) -> None:
     @server.tool(
         name="skolverket_list_curriculum_versions", title="Skolverket: läroplansversioner", annotations=READ_ONLY_OPEN
     )
+    @cut_contract(omitted_versions("skolverket_get_curriculum"))
     @tool_errors
     async def skolverket_list_curriculum_versions(
         code: Annotated[str, Field(description="Läroplanskod, t.ex. 'LGR22'")],
         limit: LimitArg = DEFAULT_LIMIT,
     ) -> Annotated[CallToolResult, SyllabusListResult]:
         """Lista versioner av en läroplan (nyast först). Svarsformatet är inte officiellt dokumenterat och tolkas
-        defensivt."""
+        defensivt. Kortar servern listan står de utelämnade versionsnumren i _kortat.utelamnade."""
         curriculum_code = normalize_code(code, "läroplanskod")
         result = await list_entities(
             kind="curriculum_versions",
@@ -2270,6 +2333,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
     @server.tool(
         name="skolverket_syllabus_valuestore", title="Skolverket: värdeförråd och kodlistor", annotations=READ_ONLY_OPEN
     )
+    @cut_contract(PAGED_ITEMS)
     @tool_errors
     async def skolverket_syllabus_valuestore(
         list: Annotated[

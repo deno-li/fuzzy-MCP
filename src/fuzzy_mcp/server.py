@@ -61,6 +61,11 @@ skolenhetskod (8 siffror), organisationsnummer (huvudman) och DeSO/RegSO-kod. De
 (2018 och 2025, med RegSO 2020 respektive 2025); kontrollera version och om antal kan summeras med
 `ref_lookup_deso` innan du jämför över tid (andelar och medelvärden summeras aldrig över områden).
 Ange alltid källa (myndighet + tabell/endpoint) när du redovisar siffror.
+Kortade svar: har ett svar fältet `_kortat` har servern kortat det för att rymmas i klientens gräns; listorna i
+`_kortat.kortade` är då ofullständiga och `truncated`/`…_truncated` är true. Redovisa aldrig ett kortat svar som
+komplett. Bläddra med next_offset, next_page eller next_skip_matches när de finns, annars med `_kortat.fortsatt`
+(samma verktyg och övriga argument, eller verktyget i `fortsatt.verktyg` med exakt de argumenten). Ger fortsatt en
+sidstorlek, behåll den resten av bläddringen och räkna aldrig ut nästa sida som page+1.
 All data är öppen; se `fuzzy://sources` för licenser.
 Namn på enskilda personer (t.ex. rektor, c/o-adress, kontaktperson) returneras bara när verktyget anropas
 med en uttrycklig parameter för personuppgifter – använd den bara när användaren behöver uppgiften.

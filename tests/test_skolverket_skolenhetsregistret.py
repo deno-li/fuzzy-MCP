@@ -7,8 +7,10 @@ import json
 import httpx2
 import pytest
 
+from fuzzy_mcp.core import TRUNCATION_KEY, client_size
 from fuzzy_mcp.errors import InvalidInputError
 from fuzzy_mcp.sources.skolverket.skolenhetsregistret import (
+    CHANGE_PARTS,
     CHANGES_MAX_BYTES,
     CODE_LISTS,
     MAX_LIMIT_CONTRACTS,
@@ -833,3 +835,182 @@ async def test_search_with_details_fits_the_rate_limit(router, make_client):
     async with make_client("skolverket") as client:
         result = await call(client, "skolverket_search_school_units", {"limit": 50, "with_details": True})
     assert f"with_details begränsar limit till {MAX_DETAIL_ROWS}." in result["notes"]
+
+
+# --- the server's output cap (FUZZY_MCP_MAX_OUTPUT_CHARS, issue #20) ----------------------------------------------
+
+
+def _without(payload: dict, key: str, positions: tuple[int, ...]) -> dict:
+    for position in positions:
+        del payload["data"]["attributes"][position][key]
+    return payload
+
+
+async def _walk(client, tool: str, args: dict, id_key: str, cap: int) -> tuple[list, int]:
+    """Page ``tool`` from ``args`` the documented way: next_offset, else ``_kortat.fortsatt``. Every answer must fit
+    ``cap`` and, when the server cut it, say so. Returns the row ids in the order seen and the number of cut pages."""
+    args = dict(args)
+    seen: list = []
+    cut_pages = 0
+    for _ in range(100):
+        result = await client.call_tool(tool, args)
+        text = "".join(getattr(c, "text", "") for c in result.content)
+        assert not result.is_error, text
+        assert cap <= 0 or client_size(text) <= cap
+        page = result.structured_content
+        if TRUNCATION_KEY in page:
+            cut_pages += 1
+            assert page["truncated"] is True and page["next_offset"] == page["offset"] + len(page["items"])
+        seen += [row[id_key] for row in page["items"]]
+        if page.get("next_offset") is not None:
+            args["offset"] = page["next_offset"]
+        elif fortsatt := page.get(TRUNCATION_KEY, {}).get("fortsatt"):
+            args.update(fortsatt[0]["anrop"])
+        else:
+            return seen, cut_pages
+    raise AssertionError(f"{tool} never reached the last page")
+
+
+def _assert_no_skips(seen: list, expected: list, max_duplicates: int) -> None:
+    assert list(dict.fromkeys(seen)) == expected  # every row, first seen in upstream order
+    assert len(seen) - len(expected) <= max_duplicates
+
+
+CAPPED_SEARCHES = [
+    # tool, list route, rows, upstream key whose absence drops a row, row id in the answer, the tool's max limit
+    ("skolverket_search_school_units", LIST_UNITS, _long_units, "schoolUnitCode", "school_unit_code", 300),
+    (
+        "skolverket_search_organizers",
+        r"/v2/organizers(\?|$)",
+        _long_organizers,
+        "organizationNumber",
+        "organization_number",
+        300,
+    ),
+    (
+        "skolverket_search_education_providers",
+        r"/v2/education-providers(\?|$)",
+        _long_providers,
+        "educationProviderCode",
+        "education_provider_code",
+        200,
+    ),
+    # Contract rows are kept without a provider code, so nothing is dropped and the walk is exact.
+    (
+        "skolverket_search_contracts",
+        r"/v2/contracts(\?|$)",
+        _long_contracts,
+        "educationProviderCode",
+        "education_provider_organization_number",
+        150,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    ("tool", "route", "rows", "key", "id_key", "maximum"), CAPPED_SEARCHES, ids=[case[0] for case in CAPPED_SEARCHES]
+)
+async def test_search_walk_under_the_output_cap_never_skips(
+    router, make_client, tool, route, rows, key, id_key, maximum
+):
+    """A cut page continues at offset + the rows it kept. Rows the tool drops for a missing key (positions 3 and
+    250) can make that repeat one row each, never skip one."""
+    router.add("GET", route, _without(rows(500), key, (3, 250)))
+    async with make_client("skolverket") as client:
+        expected, _ = await _walk(client, tool, {"limit": maximum}, id_key, 0)
+    async with make_client("skolverket", max_output_chars=6000) as client:
+        seen, cut_pages = await _walk(client, tool, {"limit": maximum}, id_key, 6000)
+        last = await call(client, tool, {"limit": maximum, "offset": 500 - maximum})
+    dropped = 0 if tool == "skolverket_search_contracts" else 2
+    assert len(expected) == 500 - dropped and cut_pages > 1
+    _assert_no_skips(seen, expected, max_duplicates=dropped)
+    # Upstream has no rows after the last page, but the cut answer must not claim to be complete.
+    assert TRUNCATION_KEY in last and last["total"] == 500 and last["truncated"] is True
+    assert last["next_offset"] == 500 - maximum + len(last["items"])
+
+
+CHANGE_REGISTERS = {
+    # register: list route, rows, upstream row id, row id in the answer
+    "school_units": (LIST_UNITS, _long_units, "schoolUnitCode", "school_unit_code"),
+    "organizers": (r"/v2/organizers(\?|$)", _long_organizers, "organizationNumber", "organization_number"),
+    "education_providers": (
+        r"/v2/education-providers(\?|$)",
+        _long_providers,
+        "educationProviderCode",
+        "education_provider_code",
+    ),
+    "contracts": (
+        r"/v2/contracts(\?|$)",
+        _long_contracts,
+        "educationProviderOrganizationNumber",
+        "education_provider_organization_number",
+    ),
+}
+
+
+@pytest.mark.parametrize(
+    ("sizes", "limit", "cut"),
+    [
+        # School units and organizers stop at limit, providers are complete and the tool's own budget cuts contracts:
+        # the cap then cuts all four, whatever state each register was in.
+        ((400, 400, 30, 400), 100, {"school_units", "organizers", "education_providers", "contracts"}),
+        # Every register stops at limit and the cap cuts two: the other two keep their own continuation notes.
+        ((400, 400, 400, 400), 10, {"education_providers", "contracts"}),
+        # Nothing was truncated before the cap: the cap alone makes the change set incomplete.
+        ((40, 30, 20, 10), 50, {"school_units", "organizers", "education_providers", "contracts"}),
+    ],
+    ids=["all-cut-from-mixed-states", "two-cut-two-keep-notes", "cap-alone-truncates"],
+)
+async def test_school_unit_changes_cut_continues_every_register(router, make_client, sizes, limit, cut):
+    """Each register the cap shortens continues in its search tool with every argument the changes tool used
+    (_kortat.fortsatt), and its own notes, written for the longer list, are gone; the others keep their notes."""
+    expected = {}
+    for (key, (route, rows, upstream_id, _)), size in zip(CHANGE_REGISTERS.items(), sizes, strict=True):
+        payload = rows(size)
+        router.add("GET", route, payload)
+        expected[key] = [row[upstream_id] for row in payload["data"]["attributes"]]
+    args = {
+        "since": "2025-01-01",
+        "entities": list(CHANGE_REGISTERS),
+        "municipality_code": ["0180", "1480"],
+        "limit": limit,
+    }
+    async with make_client("skolverket") as client:
+        uncapped = await call(client, "skolverket_school_unit_changes", args)
+    assert uncapped["truncated"] is any(size > limit for size in sizes)
+    async with make_client("skolverket", max_output_chars=8000) as client:
+        result = await client.call_tool("skolverket_school_unit_changes", args)
+        text = "".join(getattr(c, "text", "") for c in result.content)
+        assert not result.is_error and client_size(text) <= 8000
+        changes = result.structured_content
+        assert {key for key in CHANGE_REGISTERS if len(changes[key]["items"]) < len(uncapped[key]["items"])} == cut
+        assert changes["truncated"] is True
+        fortsatt = {entry["falt"]: entry for entry in changes[TRUNCATION_KEY]["fortsatt"]}
+        assert set(fortsatt) == {f"{key}.items" for key in cut}
+        for key, tool, _ in CHANGE_PARTS:
+            part = changes[key]
+            own = (f"{tool}:", f"Fortsätt med {tool}(")
+            notes = [n for n in changes["notes"] if n.startswith(own)]
+            if key in cut:
+                assert part["truncated"] is True and part["next_offset"] == len(part["items"])
+                assert notes == []  # written for the longer list, they would skip rows
+                assert fortsatt[f"{key}.items"]["verktyg"] == tool
+                more = fortsatt[f"{key}.items"]["anrop"]
+            else:
+                assert notes == [n for n in uncapped["notes"] if n.startswith(own)]
+                follow = [n for n in notes if n.startswith(own[1])]
+                more = json.loads(follow[0].removeprefix(own[1]).removesuffix(").")) if follow else None
+            id_key = CHANGE_REGISTERS[key][3]
+            seen = [row[id_key] for row in part["items"]]
+            if more is not None:
+                assert more["modified_since"] == "2025-01-01" and more["offset"] == len(seen)
+                if key == "school_units":
+                    # The changes tool asks for all four statuses; the search tool alone would ask for AKTIV only.
+                    assert more["status"] == ALL_STATUSES and more["municipality_code"] == ["0180", "1480"]
+                seen += (await _walk(client, tool, more, id_key, 8000))[0]
+            assert seen == expected[key], key
+    for request in router.requests:
+        if request.url.path.endswith("/v2/school-units"):  # the changes call and every continuation
+            assert request.url.params.get_list("status") == ALL_STATUSES
+            assert request.url.params.get_list("municipality_code") == ["0180", "1480"]
+            assert request.url.params["meta_modified_after"] == "2025-01-01"

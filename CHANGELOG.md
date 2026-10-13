@@ -9,12 +9,37 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ### Rättat
 
+- Med `FUZZY_MCP_MAX_OUTPUT_CHARS` säger ett kortat svar inte längre att det är komplett, och bläddring hoppar inte
+  över poster ([#20](https://github.com/deno-li/fuzzy-MCP/issues/20)). Efter en kortning är `truncated`,
+  `…_truncated` och `returned` rätt i objektet som håller listan och objekten ovanför; tabelldata (`*_get_table_data`)
+  anger till exempel `data.truncated=true` med 367 av 870 rader i stället för `false`. Verktyg som bläddrar deklarerar
+  hur de fortsätter:
+  - offset (Dataportalens sökningar, Skolenhetsregistrets sökningar och ändringslista, kursplanslistorna, geodata):
+    `next_offset = offset + antal visade`, även på en kortad sista sida;
+  - sidnummer (`scb_search_tables`, Planerad utbildnings sökningar): `next_page` tas bort och `_kortat.fortsatt` ger
+    sida och sidstorlek som börjar vid eller före första posten som inte visades;
+  - Susa-navets sökningar kortar själva vid hela träffar och ger `next_page`/`next_skip_matches` för den första
+    träffen som inte visades;
+  - versionslistorna och `skolverket_get_subject` namnger det som utelämnades (`_kortat.utelamnade` respektive
+    `fortsatt` med `course_codes`), och `skolverket_pe_salsa` ger skolenhetskoderna som saknas.
+  Utan deklarerad bläddring tas `next_*` bort vid en kortning (ett stopp, aldrig en lucka). Notes, filter- och
+  urvalsekon, dimensioner och liknande index kortas aldrig, `raw` lämnas ut helt innan något annat kortas, URL:er och
+  frågor halveras inte, och verktygets egen `_kortat`-notis behålls.
+- `ref_get_code_list` följer `FUZZY_MCP_MAX_OUTPUT_CHARS` och ger inte längre fel vid 30000 tecken.
+- `scb_search_tables` begränsar `page_size` till 1–100 även i svarets eko när källan inte anger sidstorleken.
 - `scb_geodata_get_features` anger `next_offset` när fler objekt finns, och notisen säger vilket `offset` nästa
   anrop ska använda. Tidigare hoppade bläddring med `offset += limit` över objekt när svaret kortats till
   teckenbudgeten (447 av Stockholms 569 DeSO). Med `FUZZY_MCP_MAX_OUTPUT_CHARS` kortar verktyget själv vid hela
   objekt inom taket, så att serverns generella kortning inte behöver korta en sida som inte går att fortsätta från
   ([#21](https://github.com/deno-li/fuzzy-MCP/issues/21)). Utdataschemat har ett nytt fält: synkronisera verktygen
   i Eneo efter uppgraderingen.
+
+### Ändrat
+
+- `scb_search_tables` (och `fohm_`/`skolverket_stat_search_tables` med v2-API) har fälten `truncated` och
+  `next_page`. `_kortat` kan innehålla `fortsatt`, `utelamnade` och `utelamnade_falt`, och `kortade` anger antal listor
+  (`listor`) och tecken (`enhet`). `*_get_default_selection` och `scb_geodata_download_url` lämnas ut hela eller
+  avvisas, som frågerecepten. Synkronisera verktygen i Eneo och uppdatera assistentinstruktionen.
 
 ## [0.2.2] - 2026-10-12
 

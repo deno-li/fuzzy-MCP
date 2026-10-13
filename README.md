@@ -143,7 +143,7 @@ Servern har **84 verktyg**, 11 resurser och 6 promptar.
 | `ref_lookup_deso` | Slå upp en DeSO- eller RegSO-kod i SCB:s nyckelfiler: kommun, kategori, RegSO per version och jämförbarhet mellan DeSO 2018 och DeSO 2025. |
 | `ref_list_deso` | Lista alla DeSO-koder i en kommun grupperade per RegSO (kod, namn, antal) för DeSO 2025 eller DeSO 2018, med antal per kategori A/B/C. |
 | `ref_list_code_lists` | Lista medföljande kodlistor och referensdata med beskrivning, källa och verifiering. |
-| `ref_get_code_list` | Hämta en hel kodlista (koder, namn, beskrivningar och källhänvisning). |
+| `ref_get_code_list` | Hämta en kodlista (koder, namn, beskrivningar och källhänvisning). |
 | `ref_entity_catalog` | Katalog över alla dataentiteter som servern exponerar (tabeller, skolenheter, huvudmän, ämnen, kurser, program, utbildningstillfällen, dataset ...) med identifierare, verktyg och hur källorna kopplas ihop (kommunkod, länskod, skolenhetskod, organisationsnummer, skolform, kurs-/ämnes-/programkoder). |
 
 #### SCB – Statistikdatabasen (PxWebApi 2)
@@ -416,8 +416,11 @@ Anropsgränser per värd följer det myndigheterna publicerar: SCB 30 och Skolve
 - **SCB:s v1-API** (`api.scb.se/OV0104/v1`) stängs runt årsskiftet 2026/2027 och används inte.
 - **Stora svar** kortas för att hålla sig under ungefär 25 000 token (gränsen i t.ex. Claude Code): svaren
   markerar då `truncated` och säger hur man bläddrar vidare. Klienter med hårdare gräns (t.ex. Eneo) sätter
-  `FUZZY_MCP_MAX_OUTPUT_CHARS`; servern kortar då listor och text och anger det i fältet `_kortat`. Frågerecept från
-  `*_build_query` behålls däremot hela: om receptet inte ryms får klienten ett fel och behöver minska urvalet.
+  `FUZZY_MCP_MAX_OUTPUT_CHARS`; servern kortar då listor och text och anger det i fältet `_kortat`. Fälten
+  `truncated`, `…_truncated` och `returned` i det kortade svaret stämmer, och bläddringen fortsätter utan luckor via
+  `next_offset`/`next_page`/`next_skip_matches` eller `_kortat.fortsatt`. Notes, filter- och urvalsekon kortas aldrig,
+  och `raw` lämnas i så fall ut helt. Frågerecept från `*_build_query` behålls däremot hela: om receptet inte ryms
+  får klienten ett fel och behöver minska urvalet.
   Geometrier från geodata begränsas till tio objekt;
   hämta hela lager via `scb_geodata_download_url`.
 - **Folkhälsomyndigheten** anger ingen licens i API:et. Ange "Källa: Folkhälsomyndigheten" och tabell.

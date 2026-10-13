@@ -3,14 +3,20 @@
 # SPDX-License-Identifier: MIT
 
 import json
+import re
 
 import httpx2
 import pytest
 
+from fuzzy_mcp.core import CUT_MARKER, TRUNCATION_KEY, client_size
 from fuzzy_mcp.errors import InvalidInputError
 from fuzzy_mcp.sources.skolverket.syllabus import (
+    ALL_SUBJECT_SECTIONS,
     CODES_URI,
+    FIT_NOTE,
     MAX_OUTPUT_CHARS,
+    OMITTED_NOTE,
+    OMITTED_NOTE_CHARS,
     html_to_text,
     normalize_code,
     normalize_school_type,
@@ -58,6 +64,13 @@ CENTRAL_HTML = (
     + "<li>Centrala begrepp, metoder och arbetssätt inom kursens område och yrkeslivet.</li>" * 30
     + "</ul>"
 )
+
+
+def omitted_by_tool(notes: list[str]) -> list[str]:
+    """Course codes get_subject's own budget left out, in order, from its notes; none of them is shortened."""
+    found = [note for note in notes if note.startswith(OMITTED_NOTE)]
+    assert all(len(note) <= OMITTED_NOTE_CHARS and not note.endswith(CUT_MARKER) for note in found), found
+    return [code for note in found for code in note.removeprefix(OMITTED_NOTE).strip().split(", ")]
 
 
 def criterion_html(step: str) -> str:
@@ -476,8 +489,8 @@ async def test_get_subject_drops_trailing_courses_and_names_them(router, make_cl
     assert 0 < len(kept) < 150 and kept[0] == "VARVAR01" and result["course_count"] == 150
     note = next(n for n in result["notes"] if "utelämnades" in n)
     omitted = [f"VARVAR{i:02d}" for i in range(len(kept) + 1, 151)]
-    assert f"{len(omitted)} av 150 kurser/nivåer" in note and ", ".join(omitted) in note
-    assert "course_codes" in note
+    assert f"{len(omitted)} av 150 kurser/nivåer" in note and "course_codes" in note
+    assert omitted_by_tool(result["notes"]) == omitted
 
 
 async def test_get_subject_caps_huge_subject_level_lists(router, make_client):
@@ -908,3 +921,199 @@ async def test_codes_resource(make_client):
     assert "LEVEL_IN_GRADE_SUBJECT_SYLLABUS" in {t["code"] for t in data["type_of_syllabus_entity"]}
     assert "CANCELED" in {t["code"] for t in data["timespan"]}
     assert "BASIC_REQUIREMENTS" in data["requirement_types"] and "GY25" in {r["code"] for r in data["reforms"]}
+
+
+# ---------------------------------------------------------------- server output cap (FUZZY_MCP_MAX_OUTPUT_CHARS)
+
+# Tool, upstream URL, payload key and fixed arguments of every list tool that pages with offset.
+PAGED_LIST_TOOLS = [
+    ("skolverket_list_subjects", r"/v1/subjects\?", "subjects", {}),
+    ("skolverket_list_courses", r"/v1/courses\?", "courses", {}),
+    ("skolverket_list_programs", r"/v1/programs\?", "programs", {}),
+    ("skolverket_list_curriculums", r"/v1/curriculums\?", "curriculums", {}),
+    (
+        "skolverket_syllabus_valuestore",
+        r"/v1/valuestore/subjectandcoursecodes$",
+        "codes",
+        {"list": "subjectandcoursecodes"},
+    ),
+]
+
+
+def list_rows(count: int) -> list[dict]:
+    """Rows large enough that limit=500 passes the tool's own budget (fit_items) and the cap shortens most pages."""
+    return [
+        {
+            "code": f"K{i:03d}",
+            "name": f"Post {i} med ett ganska långt namn",
+            "version": 1,
+            "startDate": "2025-07-01",
+            "typeOfSyllabus": "COURSE_IN_SUBJECT_SYLLABUS",
+            "schoolTypes": ["GY", "VUXGY"],
+            "description": "Beskrivning av posten. " * 8,
+        }
+        for i in range(count)
+    ]
+
+
+async def walk_offsets(client, tool: str, args: dict, cap: int) -> tuple[list[str], int]:
+    """Page through a list tool with offset = offset + returned (the documented pointer); returns the codes seen and
+    the number of pages the cap shortened. Every answer must fit the cap, never claim to be complete when it is not,
+    agree with _kortat.fortsatt and keep no stale offset in its notes."""
+    seen: list[str] = []
+    offset = cut = 0
+    for _ in range(200):
+        result = await client.call_tool(tool, {**args, "limit": 500, "offset": offset})
+        text = result.content[0].text
+        assert not result.is_error and client_size(text) <= cap, text[:300]
+        page = result.structured_content
+        returned, total = page["returned"], page["total"]
+        assert page["offset"] == offset and returned == len(page["items"]) > 0
+        assert page["truncated"] is (offset + returned < total)
+        if TRUNCATION_KEY in page:
+            cut += 1
+            assert page["truncated"] is True
+            assert page[TRUNCATION_KEY]["fortsatt"] == [{"falt": "items", "anrop": {"offset": offset + returned}}]
+        assert "Avveckling (sunset): 2027-12-31" in page["notes"]  # only the stale fit_items note is removed
+        for note in page["notes"]:
+            assert all(int(n) == offset + returned for n in re.findall(r"offset=(\d+)", note)), note
+        seen += [row["code"] for row in page["items"]]
+        offset += returned
+        if not page["truncated"]:
+            return seen, cut
+    raise AssertionError("paging did not end")
+
+
+@pytest.mark.parametrize("tool,pattern,key,args", PAGED_LIST_TOOLS, ids=[t[0] for t in PAGED_LIST_TOOLS])
+async def test_lists_walk_exactly_once_under_the_output_cap(router, make_client, tool, pattern, key, args):
+    """Regression (#20): the cap shortened items but left returned, truncated and fit_items' 'offset=' note as they
+    were, so offset + returned skipped the rows the cap removed (and a cut last page claimed to be complete)."""
+    rows = list_rows(600)
+    router.add("GET", pattern, {**ENVELOPE, "apiSunset": "2027-12-31", key: rows})
+    async with make_client("skolverket") as client:
+        uncapped = await call(client, tool, {**args, "limit": 500})
+    assert any(n.startswith(FIT_NOTE) for n in uncapped["notes"])  # the tool's own budget cut the first page
+    for cap in (32_768, 8_000):
+        async with make_client("skolverket", max_output_chars=cap) as client:
+            seen, cut = await walk_offsets(client, tool, args, cap)
+        assert cut > 0 and seen == [row["code"] for row in rows], cap  # every row exactly once, in order
+
+
+VERSION_TOOLS = [
+    ("skolverket_list_subject_versions", "MAT", "subjects", "skolverket_get_subject"),
+    ("skolverket_list_course_versions", "MATMAT01c", "courses", "skolverket_get_course"),
+    ("skolverket_list_program_versions", "NA", "programs", "skolverket_get_program"),
+    ("skolverket_list_curriculum_versions", "LGR22", "curriculums", "skolverket_get_curriculum"),
+]
+
+
+@pytest.mark.parametrize("tool,code,key,get_tool", VERSION_TOOLS, ids=[t[0] for t in VERSION_TOOLS])
+async def test_version_lists_name_omitted_versions(router, make_client, tool, code, key, get_tool):
+    """Regression (#20): a cut version list kept truncated=false and returned=60. The tools have no offset and the
+    version numbers are not consecutive, so the cap names the versions it left out instead."""
+    versions = [
+        {"code": code, "version": 3 * i + 1, "startDate": "2011-07-01", "versionInfo": "Ändrad genom SKOLFS 2020:1."}
+        for i in range(60)
+    ]
+    newest_first = [3 * i + 1 for i in reversed(range(60))]
+    router.add("GET", rf"/v1/{key}/{code}/versions$", {**ENVELOPE, key: versions})
+    async with make_client("skolverket", max_output_chars=6_000) as client:
+        result = await client.call_tool(tool, {"code": code, "limit": 500})
+    assert not result.is_error and client_size(result.content[0].text) <= 6_000
+    page = result.structured_content
+    kept = [row["version"] for row in page["items"]]
+    assert 0 < len(kept) < 60 and page["returned"] == len(kept) and page["total"] == 60
+    assert page["truncated"] is True
+    note = page[TRUNCATION_KEY]
+    assert note["utelamnade"] == [{"falt": "items", "koder": newest_first[len(kept) :]}]
+    assert kept + note["utelamnade"][0]["koder"] == newest_first
+    assert "fortsatt" not in note  # offset is not an argument: a pointer would repeat the same page
+    assert f"{get_tool}(code, version=...)" in note["meddelande"]
+
+
+async def test_version_list_cut_removes_the_stale_fit_note(router, make_client):
+    """The tool's own budget (fit_items) cuts first and says how many rows it kept; the cap cuts further, so that
+    count no longer holds. The versions the cap removed are named, in order, right after the rows shown."""
+    versions = [{"code": "MAT", "version": v, "versionInfo": "Ändrad genom SKOLFS 2020:1. " * 15} for v in range(300)]
+    router.add("GET", r"/v1/subjects/MAT/versions$", {**ENVELOPE, "subjects": versions})
+    async with make_client("skolverket") as client:
+        own = await call(client, "skolverket_list_subject_versions", {"code": "MAT", "limit": 500})
+    assert own["returned"] < 300 and any(n.startswith(FIT_NOTE) for n in own["notes"])
+    async with make_client("skolverket", max_output_chars=6_000) as client:
+        result = await client.call_tool("skolverket_list_subject_versions", {"code": "MAT", "limit": 500})
+    assert not result.is_error and client_size(result.content[0].text) <= 6_000
+    page = result.structured_content
+    assert not any(n.startswith(FIT_NOTE) for n in page.get("notes") or [])
+    kept = [row["version"] for row in page["items"]]
+    assert page["returned"] == len(kept) < own["returned"] and page["truncated"] is True and page["total"] == 300
+    assert kept + page[TRUNCATION_KEY]["utelamnade"][0]["koder"] == [row["version"] for row in own["items"]]
+
+
+async def test_get_subject_names_every_omitted_course(router, make_client):
+    """Regression (#20): the tool named the courses it left out (VARVAR64–150), then the cap cut courses 63 → ~16
+    and VARVAR17–63 were missing with no note. Shown + fortsatt + the tool's note now cover every course once."""
+    router.add("GET", r"/v1/subjects/VAR$", {**ENVELOPE, "subject": big_subject(150)})
+    every = [f"VARVAR{i:02d}" for i in range(1, 151)]
+    async with make_client("skolverket", max_output_chars=20_000) as client:
+        result = await client.call_tool("skolverket_get_subject", {"code": "VAR", "max_chars": 50})
+        assert not result.is_error and client_size(result.content[0].text) <= 20_000
+        first = result.structured_content
+        shown = [course["code"] for course in first["courses"]]
+        note = first[TRUNCATION_KEY]
+        [resume] = note["fortsatt"]
+        assert resume["falt"] == "courses" and list(resume["anrop"]) == ["course_codes"]
+        named = omitted_by_tool(first["notes"])
+        assert shown + resume["anrop"]["course_codes"] + named == every and first["course_count"] == 150
+        assert first["sections"] == list(ALL_SUBJECT_SECTIONS)  # echoes and notes are never shortened
+        assert not {"sections", "notes"} & {entry["falt"] for entry in note["kortade"]}
+        assert note["meddelande"].endswith(" Kurser som verktyget redan utelämnat står i notes.")
+        # Following fortsatt (other arguments unchanged) returns exactly those courses, in the subject's order.
+        fetched: list[str] = []
+        call_args = {"code": "VAR", "max_chars": 50, **resume["anrop"]}
+        for _ in range(20):
+            result = await client.call_tool("skolverket_get_subject", call_args)
+            assert not result.is_error and client_size(result.content[0].text) <= 20_000
+            answer = result.structured_content
+            fetched += [course["code"] for course in answer["courses"]]
+            more = answer.get(TRUNCATION_KEY, {}).get("fortsatt")
+            if not more:
+                break
+            call_args = {"code": "VAR", "max_chars": 50, **more[0]["anrop"]}
+    assert fetched == resume["anrop"]["course_codes"]
+
+
+# (courses, cap, must_fit). At 150/4000, 120/4000 and 80/3600 the cap used to halve the tool's note on the courses it
+# had left out, losing 53, 39 and 20 codes; one course plus every code does not fit there, so an explicit error is a
+# valid answer. The other caps leave room for the whole note beside the cap's own fortsatt.
+OMITTED_COURSE_CASES = [
+    (150, 4_000, False),
+    (120, 4_000, False),
+    (80, 3_600, False),
+    (150, 6_000, True),
+    (80, 4_000, True),
+]
+
+
+@pytest.mark.parametrize("courses,cap,must_fit", OMITTED_COURSE_CASES)
+async def test_get_subject_cap_never_halves_the_omitted_course_codes(router, make_client, courses, cap, must_fit):
+    """Regression (#20): the note in which the tool names the courses its own budget left out was the longest string
+    left once the cap had cut courses to one, so the cap halved it: the codes in its second half were in neither
+    courses, notes nor _kortat.fortsatt. The codes now stand in notes too short to be shortened, so an answer names
+    every course (shown + fortsatt + notes) or is an explicit error."""
+    router.add("GET", r"/v1/subjects/VAR$", {**ENVELOPE, "subject": big_subject(courses)})
+    async with make_client("skolverket", max_output_chars=cap) as client:
+        result = await client.call_tool("skolverket_get_subject", {"code": "VAR"})
+    text = result.content[0].text
+    if result.is_error:
+        assert not must_fit and "Svaret ryms inte ens efter kortning" in text, text[:300]
+        return
+    assert client_size(text) <= cap
+    page = result.structured_content
+    note = page[TRUNCATION_KEY]
+    shown = [course["code"] for course in page["courses"]]
+    [resume] = note["fortsatt"]
+    named = omitted_by_tool(page["notes"])
+    assert named and page["course_count"] == courses
+    assert shown + resume["anrop"]["course_codes"] + named == [f"VARVAR{i:02d}" for i in range(1, courses + 1)]
+    assert not any(entry["falt"].startswith("notes") for entry in note["kortade"])
+    assert note["meddelande"].endswith(" Kurser som verktyget redan utelämnat står i notes.")

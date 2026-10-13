@@ -403,3 +403,11 @@ def test_fit_count_matches_brute_force():
         n = fit_count(build, 60, limit)
         fitting = [k for k in range(1, 61) if limit <= 0 or client_size(compact_json(build(k))) <= limit]
         assert n == (max(fitting) if fitting else 1)
+
+
+def test_fit_to_limit_raw_only_note_does_not_ask_for_a_smaller_selection():
+    from fuzzy_mcp.core import TRUNCATION_KEY
+
+    out = _fit({"title": "t", "raw": {"rows": ["x" * 80] * 100}}, 600)
+    assert out[TRUNCATION_KEY]["kortade"] == [] and out[TRUNCATION_KEY]["utelamnade_falt"] == ["raw"]
+    assert "Begränsa urvalet" not in out[TRUNCATION_KEY]["meddelande"]
