@@ -642,6 +642,23 @@ async def test_contracts(router, make_client):
     assert contract["school_unit_codes"] == ["56789012"]
 
 
+async def test_contract_raw_follows_personal_data_policy(router, make_client):
+    """The contract schema has no personal fields today. Should one appear, raw follows the policy of the other
+    detail tools: names never (the tool has no opt-in), e-mail addresses only when personal data is on (#28)."""
+    payload = load_fixture("skolenhetsregistret_contract.json")
+    payload["data"]["attributes"]["email"] = "named.person@example.se"
+    payload["data"]["attributes"]["careOfAddress"] = "Förnamn Efternamn"
+    router.add("GET", r"/v2/contracts/2120000126/87654321", payload)
+    args = {"organization_number": "2120000126", "education_provider_code": "87654321", "include_raw": True}
+    for allowed in (True, False):
+        async with make_client("skolverket", allow_personal_data=allowed) as client:
+            contract = await call(client, "skolverket_get_contract", args)
+        attributes = contract["raw"]["data"]["attributes"]
+        assert attributes["organizerName"] == "EKERÖ KOMMUN" and "careOfAddress" not in attributes
+        assert attributes.get("email") == ("named.person@example.se" if allowed else None)
+        assert ("@" in json.dumps(contract)) is allowed
+
+
 # --- changes, api-info and code resource --------------------------------------------------------------
 
 
@@ -1014,3 +1031,33 @@ async def test_school_unit_changes_cut_continues_every_register(router, make_cli
             assert request.url.params.get_list("status") == ALL_STATUSES
             assert request.url.params.get_list("municipality_code") == ["0180", "1480"]
             assert request.url.params["meta_modified_after"] == "2025-01-01"
+
+
+async def test_school_unit_changes_budget_cut_continues_after_records_without_id(router, make_client):
+    """The tool's byte budget continues each register at the first record not shown. Records without an id (no
+    row) before the cut must not make the continuation repeat rows, and none may be skipped (#28)."""
+    expected = {}
+    for key, (route, rows, upstream_id, _) in CHANGE_REGISTERS.items():
+        payload = rows(400)
+        if key != "contracts":  # contract rows are kept without an id, nothing to skip
+            payload = _without(payload, upstream_id, (3, 40, 250))
+        router.add("GET", route, payload)
+        expected[key] = [row[upstream_id] for row in payload["data"]["attributes"] if upstream_id in row]
+    async with make_client("skolverket") as client:
+        changes = await call(
+            client,
+            "skolverket_school_unit_changes",
+            {"since": "2025-01-01", "entities": list(CHANGE_REGISTERS), "limit": 500},
+        )
+        assert any("kortades" in n for n in changes["notes"])
+        for key, tool, _ in CHANGE_PARTS:
+            part = changes[key]
+            id_key = CHANGE_REGISTERS[key][3]
+            skipped = 0 if key == "contracts" else 2  # positions 3 and 40 lie before the cut, 250 after it
+            assert part["truncated"] is True and 40 < len(part["items"]) < 240, key
+            assert part["next_offset"] == len(part["items"]) + skipped, key
+            note = next(n for n in changes["notes"] if n.startswith(f"Fortsätt med {tool}("))
+            more = json.loads(note.removeprefix(f"Fortsätt med {tool}(").removesuffix(")."))
+            assert more["offset"] == part["next_offset"]
+            seen = [row[id_key] for row in part["items"]] + (await _walk(client, tool, more, id_key, 0))[0]
+            assert seen == expected[key], key  # every row once: no repeats, no gaps

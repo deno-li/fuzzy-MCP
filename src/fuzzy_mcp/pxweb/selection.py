@@ -141,6 +141,11 @@ def expand_token(token: str, variable: PxVariable) -> list[str]:
             validate_wildcard(token)
             if token != "*" and not (token.startswith("*") or token.endswith("*")):
                 raise InvalidInputError(f"'*' måste stå först eller sist i {token!r}")
+            if token != "*" and token.startswith("*") and token.endswith("*"):
+                raise InvalidInputError(
+                    f"{token!r} stöds inte för variabeln {variable.code!r} som saknar värdelista – '*' får stå först "
+                    "eller sist, inte i båda ändar. Använd '*', 'prefix*' eller '*suffix'."
+                )
         match = _FUNC.match(token)
         if match:
             args = [a.strip() for a in match.group(2).split(",")]

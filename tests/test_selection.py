@@ -114,6 +114,24 @@ def test_opaque_top_normalization_keeps_invalid_arguments_rejected(token):
         resolve_selection([level], {"level": [token]})
 
 
+@pytest.mark.parametrize("token", ["*", "2120*", "*87313898"])
+def test_opaque_wildcard_at_one_end_becomes_v1_all_filter(token):
+    level = PxVariable(code="level", label="huvudman/skolenhet", values=[], opaque=True)
+    resolved = resolve_selection([level], {"level": [token]})
+    query = build_v1_query(resolved.values, raw_variables=set(resolved.unvalidated))
+    assert query["query"] == [{"code": "level", "selection": {"filter": "all", "values": [token]}}]
+
+
+@pytest.mark.parametrize("token", ["*2120*", "**", "*a*"])
+def test_opaque_wildcard_at_both_ends_is_rejected(token):
+    """PxWeb v1 'all' takes '*', 'prefix*' or '*suffix'; '*x*' must not reach the API (issue #28)."""
+    level = PxVariable(code="level", label="huvudman/skolenhet", values=[], opaque=True)
+    with pytest.raises(InvalidInputError, match=r"inte i båda ändar\. Använd '\*', 'prefix\*' eller '\*suffix'"):
+        resolve_selection([level], {"level": [token]})
+    # A variable with a value list still expands '*x*' locally.
+    assert expand_token("*8*", REGION) == ["0180", "1480"]
+
+
 def test_explicit_top_value_code_remains_a_literal():
     level = var("level", ["TOP( 2 )"])
     resolved = resolve_selection([level], {"level": ["TOP( 2 )"]})

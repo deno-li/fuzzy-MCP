@@ -38,7 +38,7 @@ from typing import Annotated, Any, Literal
 import anyio
 from mcp.server.mcpserver import MCPServer
 from mcp.types import CallToolResult
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, PrivateAttr
 
 from ...core import READ_ONLY_OPEN, OffsetCut, Services, clamp, cut_contract, personal_data, structured, tool_errors
 from ...errors import InvalidInputError, UpstreamError
@@ -535,6 +535,7 @@ class SchoolUnitSearchResult(BaseModel):
     items: list[SchoolUnitRow] = Field(default_factory=list)
     request_url: str | None = None
     notes: list[str] = Field(default_factory=list)
+    _positions: list[int] = PrivateAttr(default_factory=list)  # list position of each row in items
 
 
 class SchoolUnitDetail(BaseModel):
@@ -594,6 +595,7 @@ class OrganizerSearchResult(BaseModel):
     filters: dict[str, Any] = Field(default_factory=dict)
     items: list[OrganizerRow] = Field(default_factory=list)
     request_url: str | None = None
+    _positions: list[int] = PrivateAttr(default_factory=list)  # list position of each row in items
 
 
 class Contact(BaseModel):
@@ -656,6 +658,7 @@ class EducationProviderSearchResult(BaseModel):
     filters: dict[str, Any] = Field(default_factory=dict)
     items: list[EducationProviderRow] = Field(default_factory=list)
     request_url: str | None = None
+    _positions: list[int] = PrivateAttr(default_factory=list)  # list position of each row in items
 
 
 class CodeLabel(BaseModel):
@@ -708,6 +711,7 @@ class ContractSearchResult(BaseModel):
     filters: dict[str, Any] = Field(default_factory=dict)
     items: list[ContractRow] = Field(default_factory=list)
     request_url: str | None = None
+    _positions: list[int] = PrivateAttr(default_factory=list)  # list position of each row in items
 
 
 class ContractSchoolTypePart(BaseModel):
@@ -1226,6 +1230,12 @@ def paginate(items: list[dict[str, Any]], limit: int, offset: int, max_limit: in
     return Page(window, len(items), start, lim, truncated, end if truncated else None)
 
 
+def row_positions(page: Page, key: str | None = None) -> list[int]:
+    """List position of each record on ``page`` that gets a row: the search helpers skip records without an id
+    (``key``, read like the row builders do); with no key every record gets one."""
+    return [p for p, item in enumerate(page.window, page.offset) if key is None or text_or_none(item.get(key))]
+
+
 def json_size(model: BaseModel) -> int:
     """Bytes of the compact JSON a model contributes to a tool result."""
     data = model.model_dump(mode="json", exclude_none=True)
@@ -1247,7 +1257,9 @@ def fit_to_budget(result: ListResult, budget: int) -> bool:
         return False
     result.items = result.items[:kept]  # type: ignore[assignment]
     result.truncated = True
-    result.next_offset = result.offset + kept
+    # Continue at the first record not shown: records skipped for a missing id are consumed but have no row, so
+    # offset + kept would repeat rows on the next page.
+    result.next_offset = result._positions[kept]
     return True
 
 
@@ -1436,7 +1448,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         echo = {k: v for k, v in filters.items() if v is not None}
         if matcher:
             echo["name"] = name
-        return SchoolUnitSearchResult(
+        result = SchoolUnitSearchResult(
             total=page.total,
             offset=page.offset,
             limit=page.limit,
@@ -1447,6 +1459,8 @@ def register(server: MCPServer[Any], services: Services) -> None:
             items=rows,
             request_url=listing.url,
         )
+        result._positions = row_positions(page, "schoolUnitCode")
+        return result
 
     async def enrich(result: SchoolUnitSearchResult) -> None:
         limiter = anyio.CapacityLimiter(DETAIL_CONCURRENCY)
@@ -1489,7 +1503,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         echo = {k: v for k, v in filters.items() if v is not None}
         if matcher:
             echo["name"] = name
-        return OrganizerSearchResult(
+        result = OrganizerSearchResult(
             total=page.total,
             offset=page.offset,
             limit=page.limit,
@@ -1500,6 +1514,8 @@ def register(server: MCPServer[Any], services: Services) -> None:
             items=rows,
             request_url=listing.url,
         )
+        result._positions = row_positions(page, "organizationNumber")
+        return result
 
     async def search_education_providers(
         *, name: str | None, grading_rights: bool | None, modified_since: str | None, limit: int, offset: int
@@ -1531,7 +1547,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         echo = {k: v for k, v in filters.items() if v is not None}
         if matcher:
             echo["name"] = name
-        return EducationProviderSearchResult(
+        result = EducationProviderSearchResult(
             total=page.total,
             offset=page.offset,
             limit=page.limit,
@@ -1542,6 +1558,8 @@ def register(server: MCPServer[Any], services: Services) -> None:
             items=rows,
             request_url=listing.url,
         )
+        result._positions = row_positions(page, "educationProviderCode")
+        return result
 
     async def search_contracts(
         *,
@@ -1589,7 +1607,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
             echo["status"] = wanted_status
         if matcher:
             echo["name"] = name
-        return ContractSearchResult(
+        result = ContractSearchResult(
             total=page.total,
             offset=page.offset,
             limit=page.limit,
@@ -1600,6 +1618,8 @@ def register(server: MCPServer[Any], services: Services) -> None:
             items=rows,
             request_url=listing.url,
         )
+        result._positions = row_positions(page)
+        return result
 
     @server.tool(
         name="skolverket_search_school_units",
@@ -1893,8 +1913,9 @@ def register(server: MCPServer[Any], services: Services) -> None:
         detail = flatten_contract(payload, number, code)
         detail.as_of_date = as_of
         if include_raw:
-            # The contract schema has no personal fields; redaction is a defensive no-op.
-            detail.raw = raw_output(payload, personal=False)
+            # The contract schema has no personal fields; redaction is defensive. Names always go (the tool has no
+            # opt-in), e-mail addresses follow FUZZY_MCP_PERSONAL_DATA like the other raw outputs.
+            detail.raw = raw_output(payload, personal=False, emails=services.settings.allow_personal_data)
         return structured(detail)
 
     @server.tool(
