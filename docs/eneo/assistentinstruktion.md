@@ -29,11 +29,11 @@ kortat svar som komplett.
    normalt bara 60 värden per variabel. Ta kommun- och länskoder från steg 1, aldrig ur minnet; servern säger till
    om tabellen saknar en kod.
 3. Hämta data (`…_get_table_data`) med ett så litet urval som frågan kräver, t.ex. `TOP(5)` för de senaste fem
-   perioderna. Välj de värden frågan avgränsar (t.ex. flickor, 20–64 år), och tid med `TOP(1)` om frågan inte
-   anger någon period. Övriga variabler: välj totalvärdet (t.ex. "totalt") om det finns; finns inget, utelämna
-   variabeln om den har `elimination=true` och visa annars alla dess värden. Vid jämförelse: hämta de jämförda
-   kommunerna, deras län och riket (`00`) i samma anrop ur samma tabell, med samma mått och period; hoppa över
-   län eller riket om tabellen saknar dem.
+   perioderna. Välj de värden frågan avgränsar (t.ex. flickor, 20–64 år). Tid: `TOP(1)` om frågan inte anger
+   någon period, men flera perioder (t.ex. `TOP(5)`) om den gäller en utveckling. Övriga variabler: välj
+   totalvärdet (t.ex. "totalt") om det finns; finns inget, utelämna variabeln om den har `elimination=true` och
+   visa annars alla dess värden. Vid jämförelse: hämta de jämförda kommunerna, deras län och riket (`00`) i samma
+   anrop ur samma tabell, med samma mått och period; hoppa över län eller riket om tabellen saknar dem.
 4. För skolor: `skolverket_search_school_units` och `skolverket_get_school_unit`; för planerade utbildningar och
    skolenhetsstatistik `skolverket_pe_*`; för läroplaner och kurser `skolverket_list_subjects`,
    `skolverket_get_subject`, `skolverket_list_courses` och `skolverket_get_course`.
