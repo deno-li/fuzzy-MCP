@@ -9,6 +9,11 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ### Ändrat
 
+- Eneo-assistentinstruktionen: steg 2 nämner TAB628 för folkmängd per kommun, län och riket per år (TAB638 slutar
+  2024). Även med regeln om senaste perioden valde modellen TAB638, fast TAB628 med 2025 fanns bland sökträffarna;
+  med ledtråden hämtade den 2021–2025 direkt. Källan anges som i verktygets fält `citation`, med tabellens titel
+  oförändrad, och svaren ska vara på korrekt svenska (inte norska eller danska), eftersom modellen skrev om titlar
+  och använde norska ord.
 - Eneo-assistentinstruktionen: har flera tabeller samma mått, samma tidsindelning som frågan (time_unit hos SCB,
   annars tidsvariabelns värden) och de regioner och variabler frågan kräver, väljs den som har den senaste perioden
   (last_period hos SCB; hos FoHM och Skolverket sista värdet i tidsvariabeln i metadata). "De senaste fem åren"
