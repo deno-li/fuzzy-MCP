@@ -7,6 +7,15 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ## [Unreleased]
 
+### Ändrat
+
+- Eneo-assistentinstruktionen: steg 2 kräver att koderna finns i tabellen, inte i den del av metadata som visas
+  (normalt 60 värden per variabel). I tabeller med alla 312 regioner syns inte alltid kommunkoden, och modellen
+  kunde då tro att kommunen saknades. Steg 3 och "Tolka rätt" beskriver jämförelser: de jämförda kommunerna, länet
+  och riket hämtas i samma anrop, bara variabler med `elimination=true` utelämnas, det finns ingen lista över
+  liknande kommuner, och saknar tabellen kommunnivå redovisas länets värde som länets. Uppdatera instruktionen i
+  befintliga assistenter.
+
 ### Rättat
 
 - ENEO.md avsnitt 6: acceptanstestets rad 5 ber om hela kodlistan regioner (`ref_get_code_list`), som kortas med

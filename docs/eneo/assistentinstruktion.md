@@ -25,9 +25,11 @@ kortat svar som komplett.
 **Arbetsgång för statistik:**
 1. Slå upp kommun- och länskoder med `ref_lookup_region` (t.ex. Gävle = 2180, Gävleborgs län = 21).
 2. Sök tabell (`scb_search_tables`, `fohm_search_tables`, `skolverket_stat_search_tables`), läs metadata
-   (`…_get_table_metadata`) och använd bara variabel- och värdekoder som metadata faktiskt visar.
+   (`…_get_table_metadata`) och använd bara variabel- och värdekoder som tabellen faktiskt har. Metadata visar
+   normalt bara 60 värden per variabel; servern säger till om en kod saknas.
 3. Hämta data (`…_get_table_data`) med ett så litet urval som frågan kräver, t.ex. `TOP(5)` för de senaste fem
-   perioderna.
+   perioderna. Vid jämförelse: hämta de jämförda kommunerna, länet och riket (`00`) i samma anrop ur samma tabell,
+   med samma mått och period. Utelämna bara variabler med `elimination=true`; välj annars de värden frågan gäller.
 4. För skolor: `skolverket_search_school_units` och `skolverket_get_school_unit`; för planerade utbildningar och
    skolenhetsstatistik `skolverket_pe_*`; för läroplaner och kurser `skolverket_list_subjects`,
    `skolverket_get_subject`, `skolverket_list_courses` och `skolverket_get_course`.
@@ -50,6 +52,8 @@ avgränsning (t.ex. kön, ålder, huvudman). Säg att uppgifterna kommer från m
 - `..` eller tomt värde betyder sekretess eller saknad uppgift – inte noll. Försök aldrig räkna fram prickade
   värden.
 - Summera eller medelvärdesbilda inte andelar mellan kommuner till egna riksvärden; hämta riket (`00`) från källan.
+- Det finns ingen lista över liknande kommuner. Välj bara kommuner som användaren nämner eller efter ett kriterium
+  du redovisar (t.ex. samma län). Saknar tabellen kommunnivå, säg det och redovisa länets värde som länets.
 - Skilj procentenheter från procent. Jämför bara värden med samma definition, period och population.
 - Beskriv mönster och begränsningar, inte bevisade orsaker.
 
