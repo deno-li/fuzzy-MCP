@@ -198,7 +198,10 @@ def fetch(url: str, accept: str | None = None) -> dict[str, Any]:
                 "content_type": exc.headers.get("Content-Type", "") if exc.headers else "",
                 "body": exc.read(200_000) if exc.fp else b"",
             }
-        except ValueError as exc:  # a redirect to a URL that does not parse (urllib parses it before redirect_request)
+        except ValueError as exc:
+            # A redirect to a URL that does not parse (urllib parses it before redirect_request): the agency did
+            # answer, so it counts as a response like a refused redirect, and trying again would give the same.
+            _responses += 1
             return {"url": url, "error": f"{type(exc).__name__}: {exc}"}
         except (urllib.error.URLError, TimeoutError, OSError, http.client.HTTPException) as exc:
             if attempt == 1:

@@ -140,13 +140,14 @@ def test_fetch_stops_a_redirect_to_another_origin(monkeypatch, location: str, fo
 
 
 @pytest.mark.parametrize(
-    ("answer", "error"),
+    ("answer", "error", "responses"),
     [
-        ((302, {"Location": "https://[www.scb.se/x"}, b""), "ValueError: Invalid IPv6 URL"),  # urllib parses it first
-        (http.client.IncompleteRead(b""), "IncompleteRead"),  # http.client's own errors are not OSError
+        # urllib parses the redirect first; the agency answered, so it counts as a response (exit code 0)
+        ((302, {"Location": "https://[www.scb.se/x"}, b""), "ValueError: Invalid IPv6 URL", 1),
+        (http.client.IncompleteRead(b""), "IncompleteRead", 0),  # http.client's own errors are not OSError
     ],
 )
-def test_fetch_never_raises(monkeypatch, answer, error: str) -> None:
+def test_fetch_never_raises(monkeypatch, answer, error: str, responses: int) -> None:
     """A redirect that does not parse, and http.client's errors, give an ordinary result, not an exception that ends
     the group before its status table (#39)."""
 
@@ -159,8 +160,10 @@ def test_fetch_never_raises(monkeypatch, answer, error: str) -> None:
     fake = Raising([answer] if not isinstance(answer, Exception) else [])
     monkeypatch.setattr(vs, "_opener", urllib.request.build_opener(vs._AllowedHostsRedirect, fake))
     monkeypatch.setattr(vs.time, "sleep", lambda seconds: None)
+    monkeypatch.setattr(vs, "_responses", 0)
     result = vs.fetch("https://www.scb.se/start")
     assert "status" not in result and result["error"].startswith(error)
+    assert vs._responses == responses
 
 
 @pytest.mark.parametrize(
