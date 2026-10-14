@@ -8,6 +8,7 @@ import functools
 import importlib
 import inspect
 import logging
+import threading
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from typing import Any
@@ -222,8 +223,15 @@ def _limit_output(tool: Any, limit: int) -> None:
             text = "".join(getattr(block, "text", "") for block in result.content)
             return result if client_size(text) <= limit else too_large_result(client_size(text), limit)
         # In a worker thread: a large answer takes a while to shorten, and the event loop serves every session. If the
-        # call is cancelled (FUZZY_MCP_TOOL_TIMEOUT), the thread finishes on its own and its result is dropped.
-        fitted, changed = await anyio.to_thread.run_sync(fit_to_limit, data, limit, cuts, abandon_on_cancel=True)
+        # call is cancelled (FUZZY_MCP_TOOL_TIMEOUT), the wait ends at once and ``cancel`` stops the shortening at its
+        # next step; the thread's result is dropped (#41).
+        cancel = threading.Event()
+        try:
+            fitted, changed = await anyio.to_thread.run_sync(
+                functools.partial(fit_to_limit, data, limit, cuts, cancel=cancel), abandon_on_cancel=True
+            )
+        finally:
+            cancel.set()
         if not changed:
             return result
         if fitted is None:

@@ -76,6 +76,12 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
   ([#43](https://github.com/deno-li/fuzzy-MCP/issues/43)).
 - `release_notes.py`: releasetexten för det sista CHANGELOG-avsnittet slutar före länkdefinitionerna längst ner i
   filen ([#43](https://github.com/deno-li/fuzzy-MCP/issues/43)).
+- Kortningen till `FUZZY_MCP_MAX_OUTPUT_CHARS` mäter vid varje steg bara om de listor som har ändrats, och jämför bara
+  den största listan på varje sökväg i svaret. 25 grupper med 50 poster (1 276 listor) tar 0,2 s i stället för 2,6 s,
+  och 1 000 syskonlistor 0,5 s i stället för 2,6 s. Taket för antalet steg följer nu listornas längd, så 70 och 100
+  grupper ryms i stället för att ge "för stort". När `FUZZY_MCP_TOOL_TIMEOUT` nås stoppar kortningen vid nästa steg, i
+  stället för att fortsätta i en övergiven tråd. Kortningen märker också när ett avtal byter ut ett fält som håller
+  listor. Svaren blir desamma som förut ([#41](https://github.com/deno-li/fuzzy-MCP/issues/41)).
 - ENEO.md avsnitt 6: acceptanstestets rad 5 ber om hela kodlistan regioner (`ref_get_code_list`), som kortas med
   `_kortat` vid `FUZZY_MCP_MAX_OUTPUT_CHARS=30000`. Sedan 0.3.0 ryms alla 290 kommuner i `ref_list_municipalities`
   (cirka 26 600 tecken som Eneo räknar dem), så "Visa alla kommuner i Sverige." gav inget kortat svar. Rad 2 godtar
