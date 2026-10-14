@@ -990,9 +990,12 @@ def fit_to_limit(
     when it already fits, ``(shortened copy, True)`` with a ``_kortat`` note, or ``(None, True)`` when even that
     cannot fit.
 
-    Each step is measured incrementally and a pick looks only at the lists that changed (see _Shortening), so the
-    time grows about linearly with the number of lists (measured in #41: 5 100 lists of records in about a second).
-    The result is measured whole once more; should that ever disagree, every step is measured whole instead.
+    Each step is measured incrementally and a pick looks only at the lists that changed (see _Shortening), so picks
+    no longer grow with the number of lists, and answers of records with nested lists take about linear time
+    (measured in #41: 5 100 lists in about a second). The ``_kortat`` note has an entry per shortened path and is built
+    and measured at every probe once the answer fits without it, so an answer with many sibling lists, each a path of
+    its own, still takes longer than linear (measured in #41: 500 such lists at the limit 100 000 in 0.5 s, 1 000 in
+    3.4 s). The result is measured whole once more; should that ever disagree, every step is measured whole instead.
 
     ``cancel`` stops the work between two steps with :class:`ShorteningCancelled` once it is set: the server sets it
     when the call has given up (FUZZY_MCP_TOOL_TIMEOUT), so that an abandoned shortening does not go on in its thread.
