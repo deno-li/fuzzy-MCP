@@ -7,9 +7,9 @@
     python scripts/verify_sources.py --group scb-geodata|scb-pxweb|scb-nycklar|socialstyrelsen
 
 Runs from the GitHub Actions workflow "Källkontroll" (or any machine with network access) and uses only the standard
-library. Only GET, only the hosts in ALLOWED_HOSTS, redirects only within them, no input from the outside apart from
-the group name. Every record is one physical line that starts with a tag, so no text from a source can start a line
-of its own (or a GitHub workflow command, "::…"):
+library. Only GET, only https to the hosts in ALLOWED_HOSTS on port 443, redirects only within them (the origin rule of
+the server's own redirects), no input from the outside apart from the group name. Every record is one physical line
+that starts with a tag, so no text from a source can start a line of its own (or a GitHub workflow command, "::…"):
 
     VERIFY {json}               one request: check, url, status, content type, size, sha256 and a summary
     BODY <check> {json}         the whole response body (small JSON responses only)
@@ -23,6 +23,7 @@ import argparse
 import base64
 import hashlib
 import html
+import http.client
 import json
 import os
 import re
@@ -136,14 +137,22 @@ def emit_chunks(tag: str, name: str, text: str, as_json: bool = False) -> None:
 
 
 def allowed(url: str) -> bool:
-    parts = urllib.parse.urlsplit(url)
-    return parts.scheme == "https" and (parts.hostname or "") in ALLOWED_HOSTS
+    """https to a host in ALLOWED_HOSTS on port 443: the same origin (scheme, host and port) that the server's redirects
+    must keep (http.py). Only a missing port means 443 (not port 0), and a URL that does not parse, or a port that is
+    not a number, is not allowed (#39)."""
+    try:
+        parts = urllib.parse.urlsplit(url)
+        port = parts.port
+    except ValueError:
+        return False
+    return parts.scheme == "https" and (parts.hostname or "") in ALLOWED_HOSTS and port in (None, 443)
 
 
 class _AllowedHostsRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         if not allowed(newurl):
-            raise urllib.error.HTTPError(newurl, code, f"omdirigering till otillåten värd: {newurl}", headers, fp)
+            reason = f"omdirigering till otillåten värd eller port: {newurl}"
+            raise urllib.error.HTTPError(newurl, code, reason, headers, fp)
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
@@ -189,7 +198,12 @@ def fetch(url: str, accept: str | None = None) -> dict[str, Any]:
                 "content_type": exc.headers.get("Content-Type", "") if exc.headers else "",
                 "body": exc.read(200_000) if exc.fp else b"",
             }
-        except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        except ValueError as exc:
+            # A redirect to a URL that does not parse (urllib parses it before redirect_request): the agency did
+            # answer, so it counts as a response like a refused redirect, and trying again would give the same.
+            _responses += 1
+            return {"url": url, "error": f"{type(exc).__name__}: {exc}"}
+        except (urllib.error.URLError, TimeoutError, OSError, http.client.HTTPException) as exc:
             if attempt == 1:
                 time.sleep(3)
                 continue

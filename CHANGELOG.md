@@ -82,6 +82,12 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
   grupper ryms i stället för att ge "för stort". När `FUZZY_MCP_TOOL_TIMEOUT` nås stoppar kortningen vid nästa steg, i
   stället för att fortsätta i en övergiven tråd. Kortningen märker också när ett avtal byter ut ett fält som håller
   listor. Svaren blir desamma som förut ([#41](https://github.com/deno-li/fuzzy-MCP/issues/41)).
+- Källkontrollen (`scripts/verify_sources.py`) följer bara omdirigeringar till https på port 443 på de tillåtna
+  värdarna, samma ursprungsregel som serverns omdirigeringar sedan 0.3.0. Förut följdes t.ex.
+  `https://www.scb.se:22/x` och `:0`, och en port som inte var ett tal (`:abc`) eller en adress som inte gick att
+  tolka (`https://[www.scb.se/x`) avbröt hela gruppen med en traceback, utan statustabell. Nu ger en sådan
+  omdirigering ett vanligt resultat i VERIFY-raden, och det gör även fel från `http.client`
+  ([#39](https://github.com/deno-li/fuzzy-MCP/issues/39)).
 - ENEO.md avsnitt 6: acceptanstestets rad 5 ber om hela kodlistan regioner (`ref_get_code_list`), som kortas med
   `_kortat` vid `FUZZY_MCP_MAX_OUTPUT_CHARS=30000`. Sedan 0.3.0 ryms alla 290 kommuner i `ref_list_municipalities`
   (cirka 26 600 tecken som Eneo räknar dem), så "Visa alla kommuner i Sverige." gav inget kortat svar. Rad 2 godtar
