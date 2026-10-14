@@ -35,6 +35,7 @@ TOKEN = "stopptest-0123456789abcdefghijklmnopqrstuvwxyz"
 CLIENT_CLOSED = "HTTP-klienten mot myndigheterna är stängd"
 TIMEOUT = 30.0
 SERVER = [sys.executable, "-m", "fuzzy_mcp", "--transport", "streamable-http", "--stateless", "--host", "127.0.0.1"]
+SSE_SERVER = [sys.executable, "-m", "fuzzy_mcp", "--transport", "sse", "--host", "127.0.0.1"]
 
 
 class FakeServices:
@@ -102,6 +103,115 @@ def test_startup_failure_exits_3_after_release(monkeypatch, exit_code):
     assert services.events == ["acquire", "serve", "release"]
 
 
+def test_a_hanging_release_does_not_keep_the_process(monkeypatch, caplog):
+    """After uvicorn has stopped, a stop signal no longer stops anything: closing the HTTP client is limited (#40)."""
+    import anyio
+
+    class Hanging(FakeServices):
+        async def release(self) -> None:
+            await anyio.sleep_forever()
+
+    async def serve(server: Any) -> None:
+        server.started = True
+
+    monkeypatch.setattr(cli, "RELEASE_SECONDS", 0.2)
+    started = time.monotonic()
+    run_http(monkeypatch, Hanging(), serve)
+    assert time.monotonic() - started < 5
+    assert any("stängdes inte inom 0.2 s" in record.getMessage() for record in caplog.records)
+
+
+def test_stop_while_the_tools_are_built_exits_0_without_starting(monkeypatch, capsys):
+    """main holds the stop signals from the start: a stop while the tools are built ends the process with exit code 0
+    and the server does not start (it used to be killed, or end with a KeyboardInterrupt traceback) (#40)."""
+    from fuzzy_mcp import server as server_module
+
+    if threading.current_thread() is not threading.main_thread():
+        pytest.skip("signaler hanteras bara i huvudtråden")
+    before = {sig: signal.getsignal(sig) for sig in cli.STOP_SIGNALS}
+
+    def build_server(settings: Any) -> Any:
+        signal.raise_signal(cli.STOP_SIGNALS[0])  # Ctrl+C while the tools are built
+        return SimpleNamespace(fuzzy_services=FakeServices(), settings=settings)
+
+    def uvicorn_server(*args: Any, **kwargs: Any) -> Any:
+        raise AssertionError("servern startades fast den stoppats")
+
+    import uvicorn
+
+    monkeypatch.setattr(server_module, "build_server", build_server)
+    monkeypatch.setattr(uvicorn, "Server", uvicorn_server)
+    monkeypatch.setattr(cli, "quiet_logging", lambda: None)
+    monkeypatch.setenv("FUZZY_MCP_AUTH_TOKEN", TOKEN)
+    # Should main's handler be missing, the signal reaches this one instead of interrupting pytest itself.
+    reached: list[int] = []
+    guard = signal.signal(cli.STOP_SIGNALS[0], lambda signum, frame: reached.append(signum))
+    try:
+        cli.main(["--transport", "streamable-http", "--host", "127.0.0.1", "--port", "8000"])
+    finally:
+        signal.signal(cli.STOP_SIGNALS[0], guard)
+    assert not reached, "stoppsignalen nådde inte mains hanterare"
+    assert "Stoppsignal före start" in capsys.readouterr().err
+    assert {sig: signal.getsignal(sig) for sig in cli.STOP_SIGNALS} == before
+
+
+def test_stop_while_the_app_is_built_exits_0_without_starting(monkeypatch, capsys):
+    """A stop after the tools are built but before the handler knows the server (while the app and uvicorn's server
+    are created) is not lost: the server does not start (#40)."""
+    import uvicorn
+
+    if threading.current_thread() is not threading.main_thread():
+        pytest.skip("signaler hanteras bara i huvudtråden")
+
+    def build_http_app(*args: Any) -> Any:
+        signal.raise_signal(cli.STOP_SIGNALS[0])
+        return object()
+
+    class Server:
+        def __init__(self, config: Any) -> None:
+            self.started = self.should_exit = False
+
+        async def serve(self) -> None:
+            raise AssertionError("servern startades fast den stoppats")
+
+    monkeypatch.setattr(uvicorn, "Config", lambda app, **kwargs: kwargs)
+    monkeypatch.setattr(uvicorn, "Server", Server)
+    monkeypatch.setattr(cli, "build_http_app", build_http_app)
+    server = SimpleNamespace(fuzzy_services=FakeServices(), settings=SimpleNamespace(log_level="INFO"))
+    cli.serve_http(server, argparse.Namespace(host="127.0.0.1", port=8000), None, [])
+    assert cli.STOPPED_BEFORE_START in capsys.readouterr().err
+
+
+@pytest.mark.anyio
+async def test_sse_sends_one_response_per_request():
+    """The SDK's SSE endpoint sends an empty response after its stream; a second start is dropped, and its empty body
+    ends a stream that a shutdown interrupted, or is dropped too if the stream had ended (#40)."""
+    sent: list[dict[str, Any]] = []
+
+    async def send(message: dict[str, Any]) -> None:
+        sent.append(message)
+
+    async def interrupted(scope: Any, receive: Any, send: Any) -> None:
+        await send({"type": "http.response.start", "status": 200, "headers": []})
+        await send({"type": "http.response.body", "body": b"event: endpoint\n\n", "more_body": True})
+        await send({"type": "http.response.start", "status": 200, "headers": []})
+        await send({"type": "http.response.body", "body": b""})
+
+    await cli.OneResponse(interrupted)({"type": "http"}, None, send)
+    assert [m["type"] for m in sent] == ["http.response.start", "http.response.body", "http.response.body"]
+    assert sent[-1] == {"type": "http.response.body", "body": b""}
+
+    async def ended(scope: Any, receive: Any, send: Any) -> None:
+        await send({"type": "http.response.start", "status": 200, "headers": []})
+        await send({"type": "http.response.body", "body": b"ok"})
+        await send({"type": "http.response.start", "status": 200, "headers": []})
+        await send({"type": "http.response.body", "body": b""})
+
+    sent.clear()
+    await cli.OneResponse(ended)({"type": "http"}, None, send)
+    assert [m["type"] for m in sent] == ["http.response.start", "http.response.body"]
+
+
 def test_stop_signals_only_ask_the_server_to_stop(monkeypatch):
     before = {sig: signal.getsignal(sig) for sig in cli.STOP_SIGNALS}
 
@@ -154,12 +264,12 @@ def free_port() -> int:
         return sock.getsockname()[1]
 
 
-def start(port: int, log: Path, **env: str) -> subprocess.Popen[bytes]:
+def start(port: int, log: Path, command: list[str] = SERVER, **env: str) -> subprocess.Popen[bytes]:
     # Nothing from the caller's environment that changes the server or sends its upstream calls through a proxy.
     base = {k: v for k, v in os.environ.items() if not k.startswith("FUZZY_MCP_") and not k.lower().endswith("_proxy")}
     with log.open("wb") as stderr:
         return subprocess.Popen(
-            [*SERVER, "--port", str(port), "--sources", "scb.statistik"],
+            [*command, "--port", str(port), "--sources", "scb.statistik"],
             env={**base, "FUZZY_MCP_AUTH_TOKEN": TOKEN, **env},
             stdin=subprocess.DEVNULL,
             stdout=subprocess.DEVNULL,
@@ -239,6 +349,39 @@ def test_stop_signal_closes_http_client_and_exits_0(tmp_path, agency, sig):
     assert "Traceback" not in stderr
     assert "Event loop is closed" not in stderr
     assert CLIENT_CLOSED in stderr
+
+
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="Windows: SIGINT/SIGTERM kan inte skickas till en annan process (NSSM skickar Ctrl+C via konsolen)",
+)
+@pytest.mark.parametrize("sig", [signal.SIGINT, signal.SIGTERM], ids=["SIGINT", "SIGTERM"])
+def test_stop_signal_with_an_open_sse_stream_exits_0_without_traceback(tmp_path, sig):
+    """With a client on /sse a stop used to log "Exception in ASGI application" and a traceback: the SDK's SSE
+    endpoint sends a second response after the interrupted stream (#40)."""
+    port = free_port()
+    log = tmp_path / "stderr.log"
+    process = start(port, log, SSE_SERVER)
+    conn = http.client.HTTPConnection("127.0.0.1", port, timeout=TIMEOUT)
+    try:
+        wait_until_ready(process, port, log)
+        conn.request("GET", "/sse", headers={"Authorization": f"Bearer {TOKEN}", "Accept": "text/event-stream"})
+        response = conn.getresponse()
+        assert response.status == 200
+        for line in iter(response.fp.readline, b""):  # until the stream has sent its first event
+            if b"endpoint" in line:
+                break
+        else:  # the stream ended first: fail instead of reading the end of the stream for ever
+            pytest.fail(f"SSE-strömmen tog slut före endpoint-händelsen:\n{log.read_text('utf-8')}")
+        returncode = stop(process, sig)
+    finally:
+        conn.close()
+        if process.poll() is None:
+            process.kill()
+            process.wait()
+    stderr = log.read_text("utf-8")
+    assert returncode == 0, stderr
+    assert "Traceback" not in stderr and "Exception in ASGI application" not in stderr, stderr
 
 
 def test_port_in_use_exits_3(tmp_path):

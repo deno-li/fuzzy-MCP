@@ -88,6 +88,12 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
   tolka (`https://[www.scb.se/x`) avbröt hela gruppen med en traceback, utan statustabell. Nu ger en sådan
   omdirigering ett vanligt resultat i VERIFY-raden, och det gör även fel från `http.client`
   ([#39](https://github.com/deno-li/fuzzy-MCP/issues/39)).
+- Stopp med `--transport sse` och en ansluten klient loggar inte längre `Exception in ASGI application` med en
+  traceback. SDK:ns SSE-endpoint skickade ett andra svar efter den avbrutna strömmen, och nu skickas bara ett svar per
+  begäran. En stoppsignal medan servern startar (verktygen byggs) avslutar processen med kod 0 utan att starta
+  servern. Förut dödade SIGTERM processen utan logg (kod 143 i Docker), och Ctrl+C gav en traceback. Stängningen av
+  HTTP-klienten efter stoppet får ta högst 5 sekunder, så att processen inte kan bli kvar tills den dödas med SIGKILL
+  ([#40](https://github.com/deno-li/fuzzy-MCP/issues/40)).
 - ENEO.md avsnitt 6: acceptanstestets rad 5 ber om hela kodlistan regioner (`ref_get_code_list`), som kortas med
   `_kortat` vid `FUZZY_MCP_MAX_OUTPUT_CHARS=30000`. Sedan 0.3.0 ryms alla 290 kommuner i `ref_list_municipalities`
   (cirka 26 600 tecken som Eneo räknar dem), så "Visa alla kommuner i Sverige." gav inget kortat svar. Rad 2 godtar
