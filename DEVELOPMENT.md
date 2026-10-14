@@ -159,13 +159,15 @@ Låsningen görs för målplattformen: på Windows kräver MCP-SDK:n även `pywi
 
 - **Byggverktygen** (uv, hatchling, pip, cyclonedx-bom och pip-audit med alla beroenden) är låsta med version och
   SHA-256 i `scripts/build_requirements.txt`. `build_release.py` installerar dem med `--require-hashes` i en
-  tillfällig miljö och bygger med dem; uv på datorn behövs bara för att skapa miljön. Release-flödet och
-  `Dockerfile`:s byggsteg installerar samma fil. Dependabot uppdaterar ett paket i taget. Behöver en uppdatering nya
-  beroenden stoppar CI (jobbet *Paket, installation och röktest*); generera då om filen med kommandot i dess
-  inledning och granska skillnaden.
+  tillfällig miljö under utkatalogen (inte i `/tmp`, som härdade Linux-värdar monterar med `noexec`) och bygger med
+  dem; uv på datorn behövs bara för att skapa miljön. Release-flödet och `Dockerfile`:s byggsteg installerar samma
+  fil. Dependabot uppdaterar ett paket i taget. Behöver en uppdatering nya beroenden, eller saknar filen hashen för
+  ett hjul, för Linux eller Windows med någon av Python 3.11–3.14, stoppar CI (jobbet *Paket, installation och
+  röktest*); generera då om filen med kommandot i dess inledning och granska skillnaden.
 - **Basimagen** är låst till en digest i båda `FROM`-raderna i `Dockerfile`, och `BUILDINFO.txt` anger den
   (`Imagens bas`). Dependabot letar varje vecka efter en ny digest för samma tagg och föreslår den som en vanlig
-  beroendeuppdatering. För hand: läs digesten med `docker buildx imagetools inspect python:3.12-slim` (raden
+  beroendeuppdatering, men karenstiden räknas från taggens senaste push och kan skjuta upp förslaget i veckor
+  (kommentaren i `.github/dependabot.yml`). För hand: läs digesten med `docker buildx imagetools inspect python:3.12-slim` (raden
   `Digest:`) och byt den i båda raderna. Imagens Python-version är densamma som Linux-paketets standard
   (`DEFAULT_PYTHON` i `build_release.py`), och testerna stoppar om de skiljer sig: byt båda samtidigt.
 
@@ -175,7 +177,8 @@ Låsningen görs för målplattformen: på Windows kräver MCP-SDK:n även `pywi
    `publiccode.yml`, versionen i exemplen i `docs/DRIFT.md`, `docs/ENEO.md` och
    `docs/eneo/docker-compose.fuzzy-mcp.yml`, och flytta posterna under `[Unreleased]` i CHANGELOG.md. Uppdatera
    länkarna längst ner i CHANGELOG.md: `[Unreleased]` jämför med den nya taggen, och den nya versionen får en egen
-   jämförelselänk.
+   jämförelselänk. Jämför basimagens digest i `Dockerfile` med Docker Hubs (`docker buildx imagetools inspect
+   python:3.12-slim`, under *Låsta byggverktyg och basimage*): Dependabots förslag kan dröja.
 2. Kör kontrollerna ovan, inklusive livetesterna, och merga till main.
 3. Kör arbetsflödet **Release** från main (Actions → Release → Run workflow, *Use workflow from* `main`). Det bygger
    den commit som är senaste på main när flödet startar (`GITHUB_SHA`) och ingen annan, även om main flyttas under
@@ -193,8 +196,10 @@ Låsningen görs för målplattformen: på Windows kräver MCP-SDK:n även `pywi
    signera) och skapar ett release-**utkast** `vX.Y.Z` med paketen, deras `.sha256`-filer och en releasetext från
    CHANGELOG-avsnittet med kontrollsummor och spårbarhet (`scripts/release_notes.py`). Flödet stoppar om det inte
    startas från main, om taggen eller releasen redan finns, om CHANGELOG saknar versionen eller om ett paket inte är
-   byggt från rätt commit. Ett ofullständigt utkast tas bort automatiskt; finns ett kvar ändå, ta bort det
-   (`gh release delete vX.Y.Z`) innan du kör igen.
+   byggt från rätt commit. Taggen och publicerade releaser kontrolleras redan innan något byggs; ett utkast för
+   versionen syns bara med skrivrätt och stoppar flödet först efter attesteringen, som då gäller arkiv som aldrig
+   publiceras (ofarligt: attesteringen anger commiten, se DRIFT.md avsnitt 2). Ett ofullständigt utkast tas bort
+   automatiskt; finns ett kvar ändå, ta bort det (`gh release delete vX.Y.Z`) innan du kör igen.
 4. Granska utkastet under Releases. Kontrollera precis före publicering att taggen `vX.Y.Z` inte finns (Tags-listan,
    eller `gh api repos/deno-li/fuzzy-MCP/git/ref/tags/vX.Y.Z` ger 404 Not Found) och publicera sedan. Taggen skapas då
    av GitHub på den byggda commiten, som en lättviktig tagg utan signatur; spårbarheten bygger på raden `Commit`,

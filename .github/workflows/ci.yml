@@ -58,6 +58,29 @@ jobs:
           python -m venv "$RUNNER_TEMP/build-tools"
           "$RUNNER_TEMP/build-tools/bin/python" -m pip install --require-hashes --only-binary=:all: \
             -r scripts/build_requirements.txt
+      # build_release.py installerar låsfilen med den Python som kör skriptet, även på Windows. pip och uv kräver bara
+      # låsta rader för de beroenden som gäller där de installerar, och bara hashen för de hjul de väljer, så steget
+      # ovan provar bara Linux med 3.12. Den låsta uv installerar därför filen för båda plattformarna och alla
+      # Python-versioner, var för sig i en tom katalog och med kontroll av varje hjuls SHA-256. En torrkörning räcker
+      # inte: den laddar inte ner hjulen och kontrollerar inga hashar. Målmiljön är tom, eftersom redan installerade
+      # paket i byggverktygens egen miljö annars räknas som uppfyllda (#44).
+      - name: Låsfilen räcker för Linux och Windows med Python 3.11–3.14 (hjul och SHA-256)
+        run: |
+          uv="$RUNNER_TEMP/build-tools/bin/uv"
+          "$uv" venv --quiet --python "$RUNNER_TEMP/build-tools/bin/python" "$RUNNER_TEMP/empty"
+          failed=0
+          for platform in x86_64-manylinux_2_28 x86_64-pc-windows-msvc; do
+            for version in 3.11 3.12 3.13 3.14; do
+              if ! "$uv" pip install --quiet --require-hashes --only-binary :all: \
+                  --python "$RUNNER_TEMP/empty" --target "$RUNNER_TEMP/lock-check/$platform-$version" \
+                  --python-platform "$platform" --python-version "$version" \
+                  -r scripts/build_requirements.txt; then
+                echo "::error::scripts/build_requirements.txt räcker inte för $platform med Python $version"
+                failed=1
+              fi
+            done
+          done
+          exit "$failed"
       - name: REUSE-licensinformation i sdist
         run: |
           mkdir /tmp/sdist && tar xzf dist/*.tar.gz -C /tmp/sdist

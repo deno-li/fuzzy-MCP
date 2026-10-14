@@ -67,6 +67,25 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "commit=$commit" >> "$GITHUB_OUTPUT"
           echo "Bygger fuzzy-mcp $version från $commit"
+      # Samma kontroll som jobbet release gör, men innan något byggs eller attesteras: en körning som ändå skulle stoppa
+      # där lämnar då inga attesteringar för arkiv som aldrig publiceras (#44). Läsrätt räcker för taggar och
+      # publicerade releaser; utkast syns bara med skrivrätt och kontrolleras i release (DEVELOPMENT.md).
+      - name: Taggen och releasen för versionen finns inte redan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          tag="v$VERSION"
+          # Bara 404 betyder att taggen saknas; alla andra fel stoppar (fail closed).
+          if out=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" 2>&1); then
+            echo "::error::Taggen $tag finns redan – höj versionen eller ta bort taggen först"; exit 1
+          elif [[ "$out" != *"HTTP 404"* ]]; then
+            echo "::error::Kunde inte kontrollera om taggen $tag finns"; echo "$out" >&2; exit 1
+          fi
+          releases=$(gh release list --repo "$GITHUB_REPOSITORY" --limit 1000 --json tagName --jq '.[].tagName')
+          if grep -qxF -- "$tag" <<<"$releases"; then
+            echo "::error::Det finns redan en release för $tag"; exit 1
+          fi
       - name: Byggverktyg (låsta med SHA-256)
         run: |
           python -m pip install --require-hashes --only-binary=:all: -r scripts/build_requirements.txt
