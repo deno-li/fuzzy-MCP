@@ -558,6 +558,11 @@ class ShorteningCancelled(Exception):
     """fit_to_limit stopped because its ``cancel`` event was set: the call it shortened for has given up."""
 
 
+def _check(cancel: threading.Event | None) -> None:
+    if cancel is not None and cancel.is_set():
+        raise ShorteningCancelled
+
+
 class _Shortening:
     """One run of fit_to_limit on a copy of the answer.
 
@@ -636,6 +641,7 @@ class _Shortening:
                 del self.work[key]
                 self.sizes.touch(self.work)
                 self.left_out.append(key)
+        self.check()  # before finding and measuring every list
         self.index()
         for _ in range(self.rounds):
             self.check()
@@ -725,8 +731,7 @@ class _Shortening:
         self.beside = [c for c in self.live if c.path not in self.contracted and any(c.holder is h for h in holders)]
 
     def check(self) -> None:
-        if self.cancel is not None and self.cancel.is_set():
-            raise ShorteningCancelled
+        _check(self.cancel)
 
     def pick(self) -> _Candidate | None:
         """The trimmable list with the largest own weight (its size minus nested trimmable lists), so long inner value
@@ -994,12 +999,14 @@ def fit_to_limit(
     """
     if limit <= 0 or client_size(compact_json(data)) <= limit:
         return data, False
+    _check(cancel)  # before the copy of the answer, too
     answer, size = _Shortening(data, limit, cuts, exact=False, cancel=cancel).run()
     measured = client_size(compact_json(answer))
     if size != measured:  # never expected: the incremental sizes are exact
         logger.warning(
             "Kortningen mätte svaret till %d tecken men det har %d; kortar om med full mätning", size, measured
         )
+        _check(cancel)
         answer, size = _Shortening(data, limit, cuts, exact=True, cancel=cancel).run()
     return (answer, True) if size <= limit else (None, True)
 

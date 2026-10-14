@@ -519,6 +519,10 @@ def test_fit_to_limit_stops_when_cancelled(monkeypatch):
     picks.clear()
     out, cut = core.fit_to_limit(_groups(25), 30000, cancel=threading.Event())
     assert cut and out is not None and len(picks) > 10
+    # Set while the answer was measured: no copy of it, no list found or measured.
+    monkeypatch.setattr(core._Shortening, "__init__", lambda *args, **kwargs: pytest.fail("kortningen började"))
+    with pytest.raises(core.ShorteningCancelled):
+        core.fit_to_limit(_groups(25), 30000, cancel=cancel)
 
 
 def _varied_answers(rng):
