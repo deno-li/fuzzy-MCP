@@ -3,10 +3,16 @@
 # SPDX-License-Identifier: MIT
 
 import base64
+import email.message
 import hashlib
+import http.client
 import importlib.util
+import io
 import json
 import urllib.error
+import urllib.parse
+import urllib.request
+import urllib.response
 from pathlib import Path
 from typing import Any
 
@@ -56,6 +62,15 @@ def verify_lines(capsys: pytest.CaptureFixture[str]) -> dict[str, dict]:
         ("https://geodata.scb.se@example.org/", False),
         ("https://geodata.scb.se.example.org/", False),
         ("file:///etc/passwd", False),
+        # the origin, as in the server's redirects: port 443 only, and a port must be a number (#39)
+        ("https://www.scb.se/x", True),
+        ("https://www.scb.se:443/x", True),
+        ("https://www.scb.se:22/x", False),
+        ("https://www.scb.se:8443/x", False),
+        ("https://sdb.socialstyrelsen.se:80/", False),
+        ("https://www.scb.se:abc/x", False),
+        ("https://www.scb.se:0/x", False),  # only a missing port means 443
+        ("https://[www.scb.se/x", False),  # does not parse
     ],
 )
 def test_allowed_hosts(url: str, ok: bool) -> None:
@@ -66,10 +81,86 @@ def test_fetch_refuses_other_hosts_without_network() -> None:
     assert vs.fetch("https://example.org/") == {"url": "https://example.org/", "error": "otillåten värd"}
 
 
-def test_redirect_to_other_host_is_refused() -> None:
+@pytest.mark.parametrize(
+    "target", ["https://example.org/", "https://www.scb.se:22/x", "https://www.scb.se:abc/x", "https://www.scb.se:0/x"]
+)
+def test_redirect_to_other_origin_is_refused(target: str) -> None:
     handler = vs._AllowedHostsRedirect()
     with pytest.raises(urllib.error.HTTPError):
-        handler.redirect_request(None, None, 302, "Found", {}, "https://example.org/")
+        handler.redirect_request(None, None, 302, "Found", {}, target)
+
+
+def test_redirect_to_port_443_is_followed() -> None:
+    request = urllib.request.Request("https://www.scb.se/start")
+    follow = vs._AllowedHostsRedirect().redirect_request(request, None, 302, "Found", {}, "https://www.scb.se:443/x")
+    assert follow.full_url == "https://www.scb.se:443/x"
+
+
+class _FakeHTTPS(urllib.request.HTTPSHandler):
+    """Answers https requests from a list of (status, headers, body) without a network."""
+
+    def __init__(self, answers: list[tuple[int, dict[str, str], bytes]]) -> None:
+        super().__init__()
+        self.answers = answers
+        self.urls: list[str] = []
+
+    def https_open(self, req):
+        self.urls.append(req.full_url)
+        status, headers, body = self.answers.pop(0)
+        message = email.message.Message()
+        for key, value in headers.items():
+            message[key] = value
+        answer = urllib.response.addinfourl(io.BytesIO(body), message, req.full_url, status)
+        answer.msg = "Found" if status == 302 else "OK"
+        return answer
+
+
+@pytest.mark.parametrize(
+    ("location", "followed"),
+    [
+        ("https://www.scb.se:22/x", False),
+        ("https://www.scb.se:abc/x", False),  # was followed, and http.client raised InvalidURL out of fetch()
+        ("https://www.scb.se:0/x", False),
+        ("https://example.org/x", False),
+        ("https://www.scb.se:443/x", True),
+        ("/x", True),
+    ],
+)
+def test_fetch_stops_a_redirect_to_another_origin(monkeypatch, location: str, followed: bool) -> None:
+    """A redirect to another port on an allowed host is stopped like one to another host: an ordinary result with
+    the redirect's status, no second request and no exception (#39)."""
+    fake = _FakeHTTPS([(302, {"Location": location}, b""), (200, {"Content-Type": "text/plain"}, b"ok")])
+    monkeypatch.setattr(vs, "_opener", urllib.request.build_opener(vs._AllowedHostsRedirect, fake))
+    result = vs.fetch("https://www.scb.se/start")
+    if followed:
+        assert result["status"] == 200 and len(fake.urls) == 2
+        assert urllib.parse.urlsplit(result["final_url"]).hostname == "www.scb.se"
+    else:
+        assert result["status"] == 302 and fake.urls == ["https://www.scb.se/start"]
+
+
+@pytest.mark.parametrize(
+    ("answer", "error"),
+    [
+        ((302, {"Location": "https://[www.scb.se/x"}, b""), "ValueError: Invalid IPv6 URL"),  # urllib parses it first
+        (http.client.IncompleteRead(b""), "IncompleteRead"),  # http.client's own errors are not OSError
+    ],
+)
+def test_fetch_never_raises(monkeypatch, answer, error: str) -> None:
+    """A redirect that does not parse, and http.client's errors, give an ordinary result, not an exception that ends
+    the group before its status table (#39)."""
+
+    class Raising(_FakeHTTPS):
+        def https_open(self, req):
+            if isinstance(answer, Exception):
+                raise answer
+            return super().https_open(req)
+
+    fake = Raising([answer] if not isinstance(answer, Exception) else [])
+    monkeypatch.setattr(vs, "_opener", urllib.request.build_opener(vs._AllowedHostsRedirect, fake))
+    monkeypatch.setattr(vs.time, "sleep", lambda seconds: None)
+    result = vs.fetch("https://www.scb.se/start")
+    assert "status" not in result and result["error"].startswith(error)
 
 
 @pytest.mark.parametrize(
