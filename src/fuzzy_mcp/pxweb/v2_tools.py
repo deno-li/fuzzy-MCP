@@ -78,7 +78,7 @@ class PxWebV2Source:
     citation: str
     default_max_cells: int = 150_000
     csv_encoding: int = 28591  # Power Query code page for csv (SCB: iso-8859-1)
-    table_example: str = "TAB638"
+    table_example: str = "<tabell-id från sökverktyget>"
     topics: str = ""
     top_subjects: str = ""
     subject_example: str = "['BE'] eller ['BE', 'BE0101']"

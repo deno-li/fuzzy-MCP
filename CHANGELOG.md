@@ -9,6 +9,11 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ### Ändrat
 
+- SCB-verktygen anger inte längre TAB638 som exempel på tabell-id, och inte heller entitetskatalogen
+  (`ref_entity_catalog`). TAB638 är fryst och slutar 2024, och i ett prov i Eneo valde modellen den fast TAB628 med
+  2025 fanns bland sökträffarna. Beskrivningen hänvisar nu till `scb_search_tables`, som FoHM- och
+  Skolverket-verktygen redan gör. Verktygsbeskrivningarna ändras, så synkronisera och godkänn verktygen i Eneo efter
+  uppgraderingen (ENEO.md avsnitt 7) ([#50](https://github.com/deno-li/fuzzy-MCP/issues/50)).
 - Eneo-assistentinstruktionen: steg 2 nämner TAB628 för folkmängd per kommun, län och riket per år (TAB638 slutar
   2024). Även med regeln om senaste perioden valde modellen TAB638, fast TAB628 med 2025 fanns bland sökträffarna;
   med ledtråden hämtade den 2021–2025 direkt. Källan anges som i verktygets fält `citation`, med tabellens titel
