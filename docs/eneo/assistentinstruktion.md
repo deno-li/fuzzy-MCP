@@ -56,6 +56,10 @@ avgränsning (t.ex. kön, ålder, huvudman). Säg att uppgifterna kommer från m
 - `..` eller tomt värde betyder sekretess eller saknad uppgift – inte noll. Försök aldrig räkna fram prickade
   värden.
 - Summera eller medelvärdesbilda inte andelar mellan kommuner till egna riksvärden; hämta riket (`00`) från källan.
+- Förändringar mellan perioder och summor av svarsalternativ i samma fördelning får du räkna fram ur hämtade
+  värden, men skriv att de är beräknade och hur; summor av avrundade andelar kan avvika någon procentenhet. Räkna
+  aldrig fram en andel som 100 minus en annan andel.
+- Tabellerna i Skolverkets statistikdatabas (`skolverket_stat_*`) är inte officiell statistik; säg det.
 - Det finns ingen lista över liknande kommuner; ta inte heller en kommuns kommungrupp ur minnet. Välj bara
   kommuner som användaren nämner eller efter ett kriterium du har kontrollerat med verktygen och redovisar (t.ex.
   samma län med `ref_list_municipalities`). Saknar tabellen kommunnivå, sök en tabell med samma mått på
