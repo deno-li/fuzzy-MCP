@@ -24,8 +24,11 @@ PACKAGES = (
 
 
 def changelog_section(changelog: str, version: str) -> str:
-    """The body of '## [version] - date' up to the next '## [' heading."""
-    match = re.search(rf"^## \[{re.escape(version)}\][^\n]*\n(.*?)(?=^## \[|\Z)", changelog, re.M | re.S)
+    """The body of '## [version] - date' up to the next '## [' heading, or for the last section up to the link
+    definitions ('[0.1.0]: https://…') at the end of the file."""
+    match = re.search(
+        rf"^## \[{re.escape(version)}\][^\n]*\n(.*?)(?=^## \[|^\[[^\]\n]+\]: |\Z)", changelog, re.M | re.S
+    )
     if not match or not match.group(1).strip():
         raise SystemExit(f"CHANGELOG.md saknar ett avsnitt för [{version}]")
     return match.group(1).strip()

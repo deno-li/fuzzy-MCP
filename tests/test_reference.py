@@ -20,8 +20,18 @@ async def test_lookup_region_fuzzy(make_client):
         # Official names in the genitive (#26): exact hits, the municipality before the county.
         hits = await call(client, "ref_lookup_region", {"query": "Göteborgs stad", "kind": "kommun"})
         assert hits[0]["kod"] == "1480" and hits[0]["likhet"] == 1.0 and all(h["likhet"] < 1 for h in hits[1:])
-        hits = await call(client, "ref_lookup_region", {"query": "Gotlands kommun", "limit": 2})
-        assert [(h["kod"], h["likhet"]) for h in hits] == [("0980", 1.0), ("09", 1.0)]
+        # A name that ends in its kind is an exact hit only for that kind (#43); the other kind with the same name
+        # follows. "Region Gotland" is the municipality's own name, so it names both.
+        for query, expected in (
+            ("Gotlands kommun", [("0980", 1.0), ("09", 0.9)]),
+            ("Uppsala kommun", [("0380", 1.0), ("03", 0.9)]),
+            ("Stockholms stad", [("0180", 1.0), ("01", 0.9)]),
+            ("Uppsala län", [("03", 1.0), ("0380", 0.9)]),
+            ("Örebro län", [("18", 1.0), ("1880", 0.9)]),
+            ("Region Gotland", [("0980", 1.0), ("09", 1.0)]),
+        ):
+            hits = await call(client, "ref_lookup_region", {"query": query, "limit": 2})
+            assert [(h["kod"], h["likhet"]) for h in hits] == expected, query
 
 
 def test_lookup_region_counties_by_name():

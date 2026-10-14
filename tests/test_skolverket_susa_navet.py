@@ -729,6 +729,10 @@ def test_municipality_names_resolve_as_in_ref_list_deso():
         normalize_municipality_codes("Göte")
     with pytest.raises(InvalidInputError, match="Förslag: 0180 Stockholm"):
         normalize_municipality_codes("Stockholms län")
+    # A county with the same name as a municipality is not that municipality (#43).
+    with pytest.raises(InvalidInputError, match="Förslag: 0380 Uppsala"):
+        normalize_municipality_codes("Uppsala län")
+    assert normalize_municipality_codes(["Region Gotland", "Gotlands kommun"]) == ["0980"]
     # Common variants of the official name (#42).
     variants = "Lunds-kommun; Göteborgs-stad; Borås stad.; Falu kommun.; Gävles; Malmös"
     assert normalize_municipality_codes(variants) == ["1281", "1480", "1490", "2080", "2180", "1280"]

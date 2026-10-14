@@ -13,16 +13,24 @@ from fuzzy_mcp.sources.skolverket.skolenhetsregistret import (
     CHANGE_PARTS,
     CHANGES_MAX_BYTES,
     CODE_LISTS,
+    EMAIL_WITHHELD_NOTE,
     MAX_LIMIT_CONTRACTS,
     MAX_LIMIT_EDUCATION_PROVIDERS,
     MAX_LIMIT_ORGANIZERS,
     MAX_LIMIT_SCHOOL_UNITS,
+    OrganizerRow,
+    OrganizerSearchResult,
+    Page,
+    contract_row,
+    fit_to_budget,
     fold,
     iso_date,
     normalize_codes,
     normalize_municipality_code,
     normalize_organization_number,
     normalize_school_unit_code,
+    organizer_row,
+    page_rows,
     postal_code,
     redact_personal,
     resolve_status,
@@ -112,6 +120,25 @@ def test_redact_personal_is_deep_and_does_not_mutate():
     assert redacted == {"data": {"attributes": {"addresses": [{"streetAddress": "Agatan 1"}]}}}
     assert payload["data"]["attributes"]["headMaster"] == "Förnamn Efternamn"
     assert payload["data"]["attributes"]["addresses"][0]["careOfAddress"] == "CO-EXEMPEL"
+
+
+def test_page_rows_keeps_the_position_of_each_row():
+    """Rows and positions come from the same loop, so a skipped record moves the positions of the rows after it
+    whatever the builder's reason for skipping (#43)."""
+    page = Page([{"organizationNumber": "1"}, {}, {"organizationNumber": "2"}, {"name": "x"}], 4, 7, 4, False, None)
+    rows, positions = page_rows(page, organizer_row)
+    assert [row.organization_number for row in rows] == ["1", "2"] and positions == [7, 9]
+    rows, positions = page_rows(page, contract_row)  # contracts have no id: every record gets a row
+    assert len(rows) == 4 and positions == [7, 8, 9, 10]
+
+
+def test_fit_to_budget_without_positions_continues_after_the_rows_kept():
+    """A result built without positions (one row per record) is cut without IndexError (#43)."""
+    rows = [OrganizerRow(organization_number=f"55{i:08d}", name=f"Huvudman {i}") for i in range(5)]
+    result = OrganizerSearchResult(total=20, offset=10, items=rows)
+    assert fit_to_budget(result, 150) is True
+    assert result.truncated is True and 0 < len(result.items) < 5
+    assert result.next_offset == 10 + len(result.items)
 
 
 def test_code_lists_cover_spec_enums():
@@ -657,6 +684,7 @@ async def test_contract_raw_follows_personal_data_policy(router, make_client):
         assert attributes["organizerName"] == "EKERÖ KOMMUN" and "careOfAddress" not in attributes
         assert attributes.get("email") == ("named.person@example.se" if allowed else None)
         assert ("@" in json.dumps(contract)) is allowed
+        assert contract.get("notes") == (None if allowed else [EMAIL_WITHHELD_NOTE])  # as the other details (#43)
 
 
 # --- changes, api-info and code resource --------------------------------------------------------------
