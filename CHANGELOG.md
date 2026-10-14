@@ -44,6 +44,15 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ### Rättat
 
+- Kommunnamn tolkas även i vanliga varianter av det officiella namnet: med bindestreck ("Lunds-kommun",
+  "Göteborgs-stad"), i genitiv ("Lunds kommuns"), med skiljetecken på slutet ("Lunds kommun.", "Borås stad.") och som
+  ensam genitiv ("Lunds", "Falu", "Stockholms"). "Stockholms län" och andra län tolkas fortfarande inte som en kommun.
+  Ett dubbelt s ("Boråss kommun") och ett namn utan sitt sista s ("Bora" för Borås) ger nu fel med förslag i stället
+  för en träff, eftersom ett namn som slutar på s inte får något genitiv-s. Det gäller kommunfiltret i Susa-navet
+  (`skolverket_susa_search_education_events` och `skolverket_susa_search_education_providers`) och `ref_list_deso`.
+  Ett namn får ha högst 100 tecken och kommunfiltret högst 290 värden (en per kommun). Ett längre namn avvisas direkt,
+  utan fuzzy-jämförelse, och felet upprepar inte texten; tidigare tog 5 000 tecken över en sekund och blockerade
+  servern under tiden ([#42](https://github.com/deno-li/fuzzy-MCP/issues/42)).
 - ENEO.md avsnitt 6: acceptanstestets rad 5 ber om hela kodlistan regioner (`ref_get_code_list`), som kortas med
   `_kortat` vid `FUZZY_MCP_MAX_OUTPUT_CHARS=30000`. Sedan 0.3.0 ryms alla 290 kommuner i `ref_list_municipalities`
   (cirka 26 600 tecken som Eneo räknar dem), så "Visa alla kommuner i Sverige." gav inget kortat svar. Rad 2 godtar

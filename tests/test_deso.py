@@ -410,21 +410,64 @@ def test_resolve_municipality_takes_the_official_name():
     # A name ending in s is the name itself, not a genitive of another municipality.
     for name in ("Borås", "Höganäs", "Kramfors", "Mönsterås", "Bollnäs"):
         assert deso.resolve_municipality(name)[1] == name
-    # Only "kommun" and "stad" make a genitive: a county is not one of its municipalities.
-    with pytest.raises(deso.InvalidInputError, match="inte entydig"):
-        deso.resolve_municipality("Stockholms län")
+    # A county is not one of its municipalities, also when it is in the genitive.
+    for county in ("Stockholms län", "Jönköpings län"):
+        with pytest.raises(deso.InvalidInputError, match="inte entydig"):
+            deso.resolve_municipality(county)
+
+
+def test_resolve_municipality_takes_common_variants_of_the_official_name():
+    """Hyphens, a genitive "kommuns"/"stads", punctuation at the end and a genitive without "kommun" or "stad"
+    name the municipality too (#42); the spelling still decides Håbo/Habo."""
+    variants = {
+        "Lunds-kommun": "1281",
+        "Lunds kommuns": "1281",
+        "Lunds kommun.": "1281",
+        "Göteborgs-stad": "1480",
+        "Göteborgs stads": "1480",
+        "Borås stad.": "1490",
+        "Falu kommun.": "2080",
+        "Höganäs-kommun": "1284",
+        "Kramfors kommuns": "2282",
+        "Lunds": "1281",
+        "Göteborgs": "1480",
+        "Gävles": "2180",
+        "Malmös": "1280",
+        "Falu": "2080",
+        "Håbos": "0305",
+        "Habos": "0643",
+        # The parameters take municipalities only, so a bare county genitive names the municipality.
+        "Stockholms": "0180",
+        "Jönköpings": "0680",
+    }
+    assert {name: deso.resolve_municipality(name)[0] for name in variants} == variants
+    # A name ending in s takes no genitive s, so a double s is a misspelling; nor is a name without its last s the
+    # municipality ("Bora" is not Borås). Both are errors with suggestions, never a guess.
+    for name in ("Upplands", "Lundss", "Boråss", "Höganäss", "Kramforss kommun", "Boråss stad", "Bora", "Västerå"):
+        with pytest.raises(deso.InvalidInputError):
+            deso.resolve_municipality(name)
+
+
+def test_match_municipality_refuses_a_long_name_before_comparing():
+    """A name over the limit is an error at once, and the error does not repeat the text (#42)."""
+    text = "a" * 5000 + "s kommun"
+    with pytest.raises(codes.InvalidInputError) as exc:
+        codes.match_municipality(text)
+    assert "5008 tecken, högst 100" in str(exc.value) and len(str(exc.value)) < 200
 
 
 def test_every_municipality_resolves_by_its_names():
-    """Every municipality's name, alone and with "kommun"/"stad" (with or without the genitive s), names that
-    municipality in codes.match_municipality (behind ref_list_deso and Susa-navet's kommunfilter). The only names
-    that match more than one municipality exactly are Håbo and Habo (same letters without diacritics), where the
-    spelling decides; the genitive forms add no such collision."""
+    """Every municipality's name, alone and with "kommun"/"stad" (with or without the genitive s), and the genitive
+    alone, with a hyphen or with punctuation at the end, names that municipality in codes.match_municipality (behind
+    ref_list_deso and Susa-navet's kommunfilter). The only names that match more than one municipality exactly are
+    Håbo and Habo (same letters without diacritics), where the spelling decides; the genitive forms add no such
+    collision."""
     ties: set[frozenset[str]] = set()
     for municipality in codes.load("regioner")["kommuner"]:
         name, code = municipality["namn"], municipality["kod"]
         genitive = name if name[-1] in "sxz" else f"{name}s"
-        for query in (name, f"{genitive} kommun", f"{name} kommun", f"{genitive} stad"):
+        queries = (name, f"{genitive} kommun", f"{name} kommun", f"{genitive} stad", genitive)
+        for query in (*queries, f"{genitive}-kommun", f"{genitive} kommuns", f"{genitive} kommun."):
             match, exact = codes.match_municipality(query)
             assert match is not None and (match["kod"], match["namn"]) == (code, name), query
             if len(exact) > 1:

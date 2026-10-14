@@ -729,6 +729,25 @@ def test_municipality_names_resolve_as_in_ref_list_deso():
         normalize_municipality_codes("Göte")
     with pytest.raises(InvalidInputError, match="Förslag: 0180 Stockholm"):
         normalize_municipality_codes("Stockholms län")
+    # Common variants of the official name (#42).
+    variants = "Lunds-kommun; Göteborgs-stad; Borås stad.; Falu kommun.; Gävles; Malmös"
+    assert normalize_municipality_codes(variants) == ["1281", "1480", "1490", "2080", "2180", "1280"]
+    assert normalize_municipality_codes(["Lunds kommuns", "Lunds kommun.", "Lunds"]) == ["1281"]
+    for misspelled in ("Boråss", "Höganäss kommun", "Bora"):
+        with pytest.raises(InvalidInputError, match=r"Förslag: (1490 Borås|1284 Höganäs)"):
+            normalize_municipality_codes(misspelled)
+
+
+def test_municipality_filter_is_bounded():
+    """A value over 100 characters, or more values than there are municipalities, is an error at once, and the
+    error does not repeat the text (#42)."""
+    for value in ("a" * 5000 + "s kommun", "1" * 5000):
+        with pytest.raises(InvalidInputError, match="för långt") as exc:
+            normalize_municipality_codes(value)
+        assert len(str(exc.value)) < 200
+    with pytest.raises(InvalidInputError, match="För många kommuner \\(1000, högst 290\\)"):
+        normalize_municipality_codes(",".join(["Lund"] * 1000))
+    assert normalize_municipality_codes(",".join(["0180"] * 290)) == ["0180"]
 
 
 async def test_following_next_page_returns_every_match_exactly_once(router, make_client):
