@@ -221,12 +221,13 @@ Ett ogiltigt värde i en `FUZZY_MCP_*`-variabel, en saknad token eller en CA-fil
 5 sekunder (`AppRestartDelay`), men avslutas processen inom 1,5 sekunder ökar NSSM väntan stegvis upp till 4 minuter
 och visar tjänsten som Pausad – rätta felet och kör `& "C:\Program Files\nssm\nssm.exe" restart fuzzy-mcp`.
 
-`nssm stop` (Ctrl+C), `systemctl stop` och `docker stop` (SIGTERM) stoppar servern med avslutskod 0 när pågående
-anrop är klara. Tjänsthanteraren väntar bara en stund innan den avslutar processen hårt (NSSM 1,5 sekunder,
+`nssm stop` (Ctrl+C), `systemctl stop` och `docker stop` (SIGTERM) stoppar servern med avslutskod 0 när pågående anrop
+är klara. Tjänsthanteraren väntar bara en stund innan den avslutar processen hårt (NSSM 1,5 sekunder,
 `AppStopMethodConsole`; `docker stop` 10 sekunder). Har servern anropat någon myndighet slutar loggen med
 `HTTP-klienten mot myndigheterna är stängd`. Det gäller även med SSE-klienter anslutna. Kommer stoppet medan servern
-startar avslutas den med kod 0 och raden `Stoppsignal före start – servern startas inte.` Stängningen av HTTP-klienten
-får ta högst 5 sekunder; tar den längre loggas en varning och processen avslutas ändå.
+startar avslutas den med kod 0 och raden `Stoppsignal före start – servern startas inte.`, eller `Stoppsignal under
+starten – avslutar med kod 0.` om uvicorn redan hade börjat starta, även om starten sedan misslyckas. Stängningen av
+HTTP-klienten får ta högst 5 sekunder; tar den längre loggas en varning och processen avslutas ändå.
 
 ## 5. Köra som tjänst
 

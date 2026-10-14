@@ -212,6 +212,21 @@ async def test_sse_sends_one_response_per_request():
     assert [m["type"] for m in sent] == ["http.response.start", "http.response.body"]
 
 
+def test_stop_during_a_failed_startup_exits_0(monkeypatch, capsys):
+    """A stop while uvicorn starts, which then fails (port in use): exit 0, not the 3 that makes a service manager
+    restart the service it was told to stop (#40). uvicorn raises the signals it caught again when it returns."""
+
+    async def serve(server: Any) -> None:
+        handler = signal.getsignal(cli.STOP_SIGNALS[0])
+        handler(cli.STOP_SIGNALS[0], None)  # as uvicorn's capture_signals does after a stop during its start
+        sys.exit(3)  # uvicorn: the address cannot be used
+
+    services = FakeServices()
+    run_http(monkeypatch, services, serve)  # no SystemExit
+    assert services.events == ["acquire", "serve", "release"]
+    assert "Stoppsignal under starten" in capsys.readouterr().err
+
+
 def test_stop_signals_only_ask_the_server_to_stop(monkeypatch):
     before = {sig: signal.getsignal(sig) for sig in cli.STOP_SIGNALS}
 

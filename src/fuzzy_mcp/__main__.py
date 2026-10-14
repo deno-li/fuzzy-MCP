@@ -302,6 +302,11 @@ def serve_http(
         if http_server.started:
             raise
     if not http_server.started:
+        if stop.requested:
+            # Stopped while uvicorn started (it raises the signals it caught again when it returns): exit 0, also if
+            # the start then failed, so that a service manager does not restart a service it was told to stop (#40).
+            print("Stoppsignal under starten – avslutar med kod 0.", file=sys.stderr)
+            return
         # Startup failed, e.g. the address cannot be used (port in use, unknown host). uvicorn exits with 1 or 3
         # depending on its version; always exit with 3, which service managers restart after a delay (docs/DRIFT.md).
         raise SystemExit(3)
