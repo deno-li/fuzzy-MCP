@@ -94,6 +94,14 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
   servern. Förut dödade SIGTERM processen utan logg (kod 143 i Docker), och Ctrl+C gav en traceback. Stängningen av
   HTTP-klienten efter stoppet får ta högst 5 sekunder, så att processen inte kan bli kvar tills den dödas med SIGKILL
   ([#40](https://github.com/deno-li/fuzzy-MCP/issues/40)).
+- Releasekedjan: `build_release.py` lägger byggverktygen under utkatalogen i stället för i `/tmp`, så att bygget
+  fungerar där `/tmp` är monterad med `noexec`, och ett `OSError` ger en rad i stället för en traceback. CI provar att
+  `scripts/build_requirements.txt` räcker för Linux och Windows med Python 3.11–3.14 (förut bara Linux med 3.12).
+  `base_image()` läser FROM-rader som BuildKit gör (även indragna, i valfritt skiftläge och med flaggor som
+  `--platform=…`) och visar raden som inte godtas. Release-flödet kontrollerar taggen och publicerade releaser innan
+  något byggs och attesteras. `dependabot.yml` förklarar hur karenstiden för basimagen räknas och varför byggverktygen
+  inte grupperas, och DEVELOPMENT.md säger att digesten ska jämföras för hand före varje release
+  ([#44](https://github.com/deno-li/fuzzy-MCP/issues/44)).
 - ENEO.md avsnitt 6: acceptanstestets rad 5 ber om hela kodlistan regioner (`ref_get_code_list`), som kortas med
   `_kortat` vid `FUZZY_MCP_MAX_OUTPUT_CHARS=30000`. Sedan 0.3.0 ryms alla 290 kommuner i `ref_list_municipalities`
   (cirka 26 600 tecken som Eneo räknar dem), så "Visa alla kommuner i Sverige." gav inget kortat svar. Rad 2 godtar

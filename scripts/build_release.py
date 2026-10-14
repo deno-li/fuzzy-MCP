@@ -116,12 +116,23 @@ def build_tools(directory: Path) -> Path:
 
 def base_image() -> tuple[str, str]:
     """The Dockerfile's base image (name:tag@sha256:digest) and its Python version. Every stage must use the same
-    python image, pinned by digest and written out in full, so that Dependabot can update it."""
-    lines = DOCKERFILE.read_text(encoding="utf-8").splitlines()
-    images = {line.split()[1] for line in lines if re.match(r"FROM\s", line, re.IGNORECASE)}
-    match = re.fullmatch(r"python:(\d+\.\d+)[\w.-]*@sha256:[0-9a-f]{64}", images.pop()) if len(images) == 1 else None
-    if not match:
-        raise SystemExit("Dockerfile ska bygga alla steg på samma python-image, låst till en digest (@sha256:…)")
+    python image, pinned by digest and written out in full, so that Dependabot can update it. FROM lines are read as
+    BuildKit reads them: also indented and in any case, with flags such as --platform=… before the image (#44)."""
+    stages: list[tuple[str, str]] = []  # (image, line)
+    for line in DOCKERFILE.read_text(encoding="utf-8").splitlines():
+        if found := re.match(r"\s*FROM\s+(.*)", line, re.IGNORECASE):
+            words = [word for word in found[1].split() if not word.startswith("--")]
+            stages.append((words[0] if words else "", line.strip()))
+    pinned = r"python:(\d+\.\d+)[\w.-]*@sha256:[0-9a-f]{64}"
+    wrong = [line for image, line in stages if not re.fullmatch(pinned, image)]
+    if not stages or wrong or len({image for image, _ in stages}) > 1:
+        shown = wrong[:1] or [line for _, line in stages]
+        raise SystemExit(
+            "Dockerfile ska bygga alla steg på samma python-image, låst till en digest (@sha256:…): "
+            + " | ".join(shown or ["ingen FROM-rad"])
+        )
+    match = re.fullmatch(pinned, stages[0][0])
+    assert match is not None
     return match[0], match[1]
 
 
@@ -320,7 +331,11 @@ def main() -> int:
     if shutil.which("uv") is None:
         print("uv saknas – installera från https://docs.astral.sh/uv/", file=sys.stderr)
         return 2
-    with tempfile.TemporaryDirectory(prefix="fuzzy-mcp-build-tools-", ignore_cleanup_errors=True) as tools:
+    # Under the output directory, not the system's temp directory: hardened hosts mount /tmp noexec, and the tools'
+    # uv and compiled modules must run (#44).
+    out_root = (ROOT / args.out).resolve()
+    out_root.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix=".build-tools-", dir=out_root, ignore_cleanup_errors=True) as tools:
         return build(args, build_tools(Path(tools)), image_base)
 
 
@@ -417,4 +432,7 @@ if __name__ == "__main__":
         sys.exit(main())
     except subprocess.CalledProcessError as exc:
         print(f"\nSteget misslyckades (avslutskod {exc.returncode}): {' '.join(map(str, exc.cmd))}", file=sys.stderr)
+        sys.exit(1)
+    except OSError as exc:  # e.g. a program that may not run (a directory mounted noexec)
+        print(f"\nSteget misslyckades: {exc}", file=sys.stderr)
         sys.exit(1)

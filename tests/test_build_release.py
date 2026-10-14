@@ -99,6 +99,9 @@ def test_dockerfile_pins_one_base_image_with_the_linux_python():
     # Dependabot reads only literal FROM lines; both stages use the reference that BUILDINFO.txt names.
     lines = build_release.DOCKERFILE.read_text(encoding="utf-8").splitlines()
     assert [line.split()[1] for line in lines if line.startswith("FROM ")] == [base, base]
+    assert [line for line in lines if re.match(r"\s*FROM\s", line, re.IGNORECASE)] == [
+        line for line in lines if line.startswith("FROM ")
+    ]
     # The image gets the Linux package's Python: another minor version must change both deliberately.
     assert python == build_release.DEFAULT_PYTHON["linux"]
 
@@ -118,6 +121,58 @@ def test_base_image_must_be_one_literal_pinned_python_image(tmp_path, monkeypatc
     monkeypatch.setattr(build_release, "DOCKERFILE", path)
     with pytest.raises(SystemExit, match="låst till en digest"):
         build_release.base_image()
+
+
+def test_base_image_reads_from_lines_as_buildkit_does(tmp_path, monkeypatch):
+    """BuildKit also takes an indented FROM, in any case, with flags before the image: an indented stage without a
+    digest is refused and named, and --platform=… is not taken for the image (#44)."""
+    digest = "a" * 64
+    path = tmp_path / "Dockerfile"
+    monkeypatch.setattr(build_release, "DOCKERFILE", path)
+    path.write_text(f"FROM python:3.12-slim@sha256:{digest} AS build\n  FROM python:3.13-slim\n", encoding="utf-8")
+    with pytest.raises(SystemExit, match=r"låst till en digest \(@sha256:…\): FROM python:3\.13-slim$"):
+        build_release.base_image()
+    path.write_text(
+        f"FROM --platform=$BUILDPLATFORM python:3.12-slim@sha256:{digest} AS build\n"
+        f"from python:3.12-slim@sha256:{digest}\n",
+        encoding="utf-8",
+    )
+    assert build_release.base_image() == (f"python:3.12-slim@sha256:{digest}", "3.12")
+
+
+def test_build_tools_live_under_the_output_directory(monkeypatch, tmp_path):
+    """Not in the system's temp directory, which hardened hosts mount noexec, so that the tools can run (#44)."""
+    seen: list[Path] = []
+
+    def tools(directory: Path) -> Path:
+        seen.append(directory)
+        return directory / "bin"
+
+    monkeypatch.setattr(sys, "argv", ["build_release.py", "--platform", "windows", "--out", str(tmp_path / "ut")])
+    monkeypatch.setattr(build_release.shutil, "which", lambda name: f"/usr/bin/{name}")
+    monkeypatch.setattr(build_release, "build_tools", tools)
+    monkeypatch.setattr(build_release, "build", lambda args, tools, image_base: 0)
+    assert build_release.main() == 0
+    assert seen[0].parent == tmp_path / "ut" and seen[0].name.startswith(".build-tools-")
+    assert not seen[0].exists()  # removed after the build
+
+
+def test_an_os_error_is_one_line(monkeypatch, tmp_path, capsys):
+    """An OSError (e.g. a tool that may not run) ends the build with one line, not a traceback (#44)."""
+    import runpy
+
+    fake = tmp_path / "bin"
+    fake.mkdir()
+    (fake / "uv").write_text("#!/bin/sh\nexit 1\n", encoding="utf-8")
+    (fake / "uv").chmod(0o755)
+    (tmp_path / "fil").write_text("", encoding="utf-8")
+    monkeypatch.setenv("PATH", f"{fake}{os.pathsep}{os.environ.get('PATH', '')}")
+    monkeypatch.setattr(sys, "argv", ["build_release.py", "--platform", "linux", "--out", str(tmp_path / "fil" / "ut")])
+    with pytest.raises(SystemExit) as caught:
+        runpy.run_path(str(SCRIPT), run_name="__main__")
+    assert caught.value.code == 1
+    err = capsys.readouterr().err
+    assert "Steget misslyckades:" in err and "Traceback" not in err and len(err.strip().splitlines()) == 1
 
 
 def test_image_needs_the_base_image_python(monkeypatch, capsys):

@@ -12,6 +12,9 @@ updates:
       default-days: 7
     # Eneo-klientens lås följer Eneos egen låsfil, så att Eneo-kontrollen provar samma klient som Eneo kör. Det
     # uppdateras för hand när Eneo byter version eller vid en säkerhetsfix (filens inledning och ENEO.md avsnitt 1).
+    # Byggverktygen (scripts/build_requirements.txt) grupperas inte: en grupp väljer paket efter namn, inte fil, och
+    # skulle då också ta med serverns beroenden i pyproject.toml, som ska få egna PR:er. Uppdateringarna av
+    # byggverktygen är få, och CI provar varje PR för Linux och Windows med Python 3.11–3.14 (#44).
     exclude-paths:
       - "scripts/eneo_client_requirements.txt"
   - package-ecosystem: github-actions
@@ -26,6 +29,9 @@ updates:
         patterns: ["*"]
   # Basimagen i Dockerfile (python:3.12-slim, låst till en digest). Dependabot föreslår nya digester för samma tagg;
   # en ny Python-version byts medvetet, samtidigt som Linux-paketets standard i scripts/build_release.py.
+  # Karenstiden räknas från taggens senaste push på Docker Hub, inte från när amd64-imagen ändrades: varje push
+  # nollställer den, även när bara en annan arkitektur byggs om. python:3.12-slim pushas ofta, så ett förslag kan dröja
+  # flera veckor. Jämför därför digesten för hand före varje release (DEVELOPMENT.md, Utgåvor steg 1) (#44).
   - package-ecosystem: docker
     directory: "/"
     schedule:
