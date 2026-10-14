@@ -445,6 +445,86 @@ def test_fit_to_limit_does_not_serialize_the_whole_answer_per_step(monkeypatch, 
     assert len(whole) <= 3, f"{len(whole)} serialiseringar av hela svaret"  # does it fit; first size of the copy
 
 
+def _groups(count):
+    return {
+        "groups": [
+            {"name": f"g{g}", "items": [{"id": r, "values": [f"v{v}" for v in range(10)]} for r in range(50)]}
+            for g in range(count)
+        ]
+    }
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        _groups(25),  # 1 276 lists at three paths
+        {f"l{i}": [f"varde-{j:05d}" for j in range(100)] for i in range(500)},  # 500 lists, a path each
+    ],
+    ids=["grupper", "syskon"],
+)
+def test_fit_to_limit_does_not_measure_every_list_per_pick(monkeypatch, data):
+    """A pick measured every trimmable list again: 4 million measurements for 3 625 picks, 2.6 s for 25 groups. Now
+    it measures the lists that changed, so the measurements per pick do not grow with the number of lists (#41).
+    Counted, not timed, so that slow CI runners do not matter."""
+    from fuzzy_mcp import core
+
+    calls = {"measure": 0, "pick": 0}
+    measure, pick = core._Sizes.measure, core._Shortening.pick
+
+    def counting_measure(self, node):
+        calls["measure"] += 1
+        return measure(self, node)
+
+    def counting_pick(self):
+        calls["pick"] += 1
+        return pick(self)
+
+    monkeypatch.setattr(core._Sizes, "measure", counting_measure)
+    monkeypatch.setattr(core._Shortening, "pick", counting_pick)
+    core.fit_to_limit(data, 30000)
+    assert calls["pick"] > 1000 and calls["measure"] < 25 * calls["pick"], calls
+
+
+@pytest.mark.parametrize("count", [70, 100])
+def test_fit_to_limit_has_rounds_for_every_list(count):
+    """10 000 picks at most made 70 and 100 groups (3 571 and 5 101 lists) "too large" although they fit; the limit
+    now follows the lists: a pick halves one or makes the answer fit (#41)."""
+    from fuzzy_mcp.core import client_size, compact_json, fit_to_limit
+
+    out, cut = fit_to_limit(_groups(count), 30000)
+    assert cut and out is not None and client_size(compact_json(out)) <= 30000
+
+
+def test_fit_to_limit_stops_when_cancelled(monkeypatch):
+    """A set ``cancel`` stops the shortening at its next step, so a call that gave up (FUZZY_MCP_TOOL_TIMEOUT) does not
+    leave it running in its thread (#41)."""
+    import threading
+
+    from fuzzy_mcp import core
+
+    cancel = threading.Event()
+    picks = []
+    pick = core._Shortening.pick
+
+    def cancelling_pick(self):
+        picks.append(cancel.is_set())
+        if len(picks) == 10:
+            cancel.set()
+        return pick(self)
+
+    monkeypatch.setattr(core._Shortening, "pick", cancelling_pick)
+    with pytest.raises(core.ShorteningCancelled):
+        core.fit_to_limit(_groups(25), 30000, cancel=cancel)
+    assert picks == [False] * 10  # no pick after the one that set it
+    picks.clear()
+    out, cut = core.fit_to_limit(_groups(25), 30000, cancel=threading.Event())
+    assert cut and out is not None and len(picks) > 10
+    # Set while the answer was measured: no copy of it, no list found or measured.
+    monkeypatch.setattr(core._Shortening, "__init__", lambda *args, **kwargs: pytest.fail("kortningen började"))
+    with pytest.raises(core.ShorteningCancelled):
+        core.fit_to_limit(_groups(25), 30000, cancel=cancel)
+
+
 def _varied_answers(rng):
     """Small answers with the shapes fit_to_limit treats differently: records with lists of records inside (flags,
     ``returned``, paging fields), values, numbers, rows, protected and positional lists, URLs, long strings that need
@@ -501,20 +581,31 @@ def _varied_answers(rng):
         cuts: tuple = ()
         if rng.random() < 0.5:
             data["page"] = {"items": records(rng.randint(2, 40), 1), "offset": 40, "page": 2, "page_size": 50}
-            data["page"].update(start_page=1, skip_matches=3, next_page=3, next_skip_matches=1, complete_scan=True)
+            data["page"].update(start_page=1, skip_matches=3)
+            if rng.random() < 0.7:  # else CursorCut adds them as it removes hint: as many fields as before (#41)
+                data["page"].update(next_page=3, next_skip_matches=1, complete_scan=True)
             data["page"].update(returned=len(data["page"]["items"]), truncated=False, other=[text()] * 5)
             data["page"]["hint"] = {"lista": [text() for _ in range(9)]} if rng.random() < 0.5 else "h"
             cuts = (rng.choice(contracts),)
         yield data, cuts
 
 
-def test_fit_to_limit_steps_match_measuring_the_whole_answer():
+def test_fit_to_limit_steps_match_measuring_the_whole_answer(monkeypatch):
     """The incremental sizes take exactly the steps that serializing the whole answer at every step takes (the
-    fallback, and fit_to_limit before #23): the same lists cut, flags, paging fields and note."""
+    fallback, and fit_to_limit before #23): the same lists cut, flags, paging fields and note. An incremental pick
+    never takes a list that has left the answer, also when a contract replaces the field that held it (#41)."""
     import random
 
     from fuzzy_mcp.core import _Shortening, client_size, compact_json
 
+    pick = _Shortening.pick
+
+    def attached_pick(self):
+        picked = pick(self)
+        assert self.exact or picked is None or self.sizes.attached(picked.items), picked.path
+        return picked
+
+    monkeypatch.setattr(_Shortening, "pick", attached_pick)
     checked = 0
     for data, cuts in _varied_answers(random.Random(23)):
         full = client_size(compact_json(data))

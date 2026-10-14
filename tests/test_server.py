@@ -204,10 +204,10 @@ def _slow_shortening(router, monkeypatch):
     fit_to_limit = server_module.fit_to_limit
     started, release = threading.Event(), threading.Event()
 
-    def slow(data, limit, cuts=()):
+    def slow(data, limit, cuts=(), *, cancel=None):
         started.set()
         assert release.wait(5), "händelseloopen stod still medan svaret kortades"
-        return fit_to_limit(data, limit, cuts)
+        return fit_to_limit(data, limit, cuts, cancel=cancel)
 
     monkeypatch.setattr(server_module, "fit_to_limit", slow)
     return started, release
@@ -244,6 +244,37 @@ async def test_tool_timeout_interrupts_a_slow_shortening(router, make_client, mo
         release.set()  # the abandoned thread ends
     assert started.is_set(), "tidsgränsen nåddes innan kortningen började"
     assert result.is_error and "hann inte svara inom 0.5 s" in result.content[0].text and elapsed < 3
+
+
+async def test_tool_timeout_stops_the_shortening(router, make_client, monkeypatch):
+    """A call that gives up also stops its shortening: the server sets ``cancel``, which the shortening checks at
+    every step, instead of leaving the work to go on in an abandoned thread (#41)."""
+    import threading
+
+    import anyio
+
+    from fuzzy_mcp import core
+    from fuzzy_mcp import server as server_module
+
+    from .conftest import load_fixture
+
+    tables = load_fixture("scb_tables.json")
+    tables["tables"] = tables["tables"] * 60
+    router.add("GET", r"/tables\?", tables)
+    started, stopped = threading.Event(), threading.Event()
+
+    def shortening(data, limit, cuts=(), *, cancel=None):
+        started.set()
+        if cancel is not None and cancel.wait(5):
+            stopped.set()
+            raise core.ShorteningCancelled
+        return core.fit_to_limit(data, limit, cuts)
+
+    monkeypatch.setattr(server_module, "fit_to_limit", shortening)
+    async with make_client("scb", max_output_chars=3000, tool_timeout_seconds=0.5) as client:
+        result = await client.call_tool("scb_search_tables", {"query": "x", "page_size": 100})
+        assert result.is_error and "hann inte svara inom 0.5 s" in result.content[0].text
+        assert started.is_set() and await anyio.to_thread.run_sync(stopped.wait, 2)
 
 
 @pytest.mark.parametrize("value", ["-1", "abc", "nan", "inf"])

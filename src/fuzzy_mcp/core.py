@@ -7,9 +7,11 @@ translation for MCP tools and small helpers."""
 
 import bisect
 import functools
+import heapq
 import inspect
 import json
 import logging
+import threading
 from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass, field
 from typing import Any, ParamSpec, TypeVar
@@ -423,6 +425,10 @@ class _Sizes:
         # node was measured; node's size is corrected by their difference instead of measuring all its parts again
         self.pending: dict[int, dict[Any, tuple[Any, int, int]]] = {}
         self.keys: dict[str, tuple[int, int]] = {}
+        # id() of every object and list whose size may have changed since the caller last cleared the set: the node a
+        # change is reported for and everything holding it (a change stops early only where an earlier one, not yet
+        # measured, already went on up)
+        self.changed: set[int] = set()
         self.adopt(root, None, None)
 
     def adopt(self, node: Any, parent: Any, key: Any) -> None:
@@ -441,6 +447,7 @@ class _Sizes:
 
     def touch(self, node: Any) -> None:
         """``node`` has changed: measure it again, and correct everything holding it by the difference."""
+        self.changed.add(id(node))
         known = self.memo.pop(id(node), None)
         if known is None and id(node) in self.split:
             return  # not measured since it last changed: everything holding it already knows
@@ -451,6 +458,7 @@ class _Sizes:
     def set(self, container: dict[str, Any] | list[Any], key: Any, value: Any) -> None:
         """``container[key] = value`` where both the old and the new value are strings or numbers: the size known for
         the container is corrected by their difference instead of measuring the container again."""
+        self.changed.add(id(container))
         known = self.memo.get(id(container))
         if known is None:
             container[key] = value
@@ -467,6 +475,7 @@ class _Sizes:
         """Tell everything holding ``node`` that it changed; ``known`` is its size before the change, if measured."""
         while (entry := self.parents.get(id(node))) is not None:
             _, parent, key = entry
+            self.changed.add(id(parent))
             if known is not None and id(parent) in self.memo:
                 waiting = self.pending.setdefault(id(parent), {})
                 if key in waiting:  # already changing, and so is everything above
@@ -545,18 +554,36 @@ class _Sizes:
         )
 
 
+class ShorteningCancelled(Exception):
+    """fit_to_limit stopped because its ``cancel`` event was set: the call it shortened for has given up."""
+
+
+def _check(cancel: threading.Event | None) -> None:
+    if cancel is not None and cancel.is_set():
+        raise ShorteningCancelled
+
+
 class _Shortening:
     """One run of fit_to_limit on a copy of the answer.
 
     Each probe ("does the answer fit with the lists cut like this?") is measured exactly, but only what changed since
     the previous probe is measured again (see _Sizes), and a probe updates the list it cut, not every list cut so far.
+    A pick compares the largest list of each path, not every list (see pick).
     With ``exact`` every probe and pick looks at the whole answer instead (serializes it, finds the trimmable lists),
     as fit_to_limit did before: the fallback should the incremental sizes ever disagree. Both take the same steps."""
 
-    def __init__(self, data: dict[str, Any], limit: int, cuts: tuple[Cut, ...], exact: bool) -> None:
+    def __init__(
+        self,
+        data: dict[str, Any],
+        limit: int,
+        cuts: tuple[Cut, ...],
+        exact: bool,
+        cancel: threading.Event | None = None,
+    ) -> None:
         self.data = data
         self.limit = limit
         self.exact = exact
+        self.cancel = cancel
         self.work: dict[str, Any] = json.loads(json.dumps(data))  # deep copy; never mutate the caller's data
         own = self.work.pop(TRUNCATION_KEY, None)  # a tool's own note (ref_get_code_list) is kept, not replaced
         self.own: dict[str, Any] = own if isinstance(own, dict) else {}
@@ -574,6 +601,26 @@ class _Shortening:
         self.live: list[_Candidate] = []
         self.floor: dict[int, int] = {}  # id(list) -> length at or below which it is no longer trimmable
         self.inside: dict[int, list[_Candidate]] = {}  # id(list) -> the trimmable lists inside it
+        # id(list) -> (index of the item holding it, list) for the trimmable lists inside it, by index: a list leaves
+        # the answer for good once the list it is inside is shorter than its index at the start of a pick
+        self.within: dict[int, list[tuple[int, _Candidate]]] = {}
+        # Without exact, pick() keeps per path a heap of (-size, order in _candidates, id) of its lists in live, and a
+        # heap of (-own weight, order, path) of the largest list of every path. Both heaps keep entries left behind by a
+        # change (a list that changed size or left, a path whose largest list or nested lists changed); a pick drops
+        # them when they come to the top.
+        self.by_id: dict[int, _Candidate] = {}
+        self.order: dict[int, int] = {}
+        self.alive: set[int] = set()  # id() of the lists in live
+        self.size: dict[int, int] = {}  # id(list) -> its length as compact JSON, as of the last pick
+        self.heaps: dict[str, list[tuple[int, int, int]]] = {}
+        self.totals: dict[str, int] = {}  # path -> the sum of the sizes of its lists in live
+        self.counts: dict[str, int] = {}  # path -> number of its lists in live
+        self.inner: dict[str, int] = {}  # path -> the sum of totals at the paths nested in it
+        self.outer: dict[str, list[str]] = {}  # path -> the paths it is nested in
+        self.ranking: list[tuple[int, int, str]] = []
+        self.weight: dict[str, tuple[int, int]] = {}  # path -> (own weight, order) of its largest list in live
+        self.stale: set[str] = set()  # paths whose weight may have changed since the last pick
+        self.rounds = 0  # picks at most: each pick halves a list or makes the answer fit
         self.emptied: set[int] = set()  # lists holding trimmable lists, cut since the last pick
         self.recheck = False  # whether any list in live may have been left out
         self.presence: dict[int, bool] = {}  # id(list) -> whether it is in the answer, as at the start of the probe
@@ -594,8 +641,10 @@ class _Shortening:
                 del self.work[key]
                 self.sizes.touch(self.work)
                 self.left_out.append(key)
+        self.check()  # before finding and measuring every list
         self.index()
-        for _ in range(10_000):
+        for _ in range(self.rounds):
+            self.check()
             if self.fits():
                 return self.finish()
             picked = self.last = self.pick()
@@ -625,6 +674,7 @@ class _Shortening:
                     high = mid - 1
             self.cut(lst, items[:low])
         for _ in range(1_000):
+            self.check()
             if self.fits():
                 return self.finish()
             found = _longest_string(self.work)
@@ -648,38 +698,127 @@ class _Shortening:
             while entry is not None:
                 if id(entry[1]) in ids:
                     self.inside.setdefault(id(entry[1]), []).append(c)
+                    self.within.setdefault(id(entry[1]), []).append((entry[2], c))
                 entry = self.sizes.parents.get(id(entry[1]))
+        for entries in self.within.values():
+            entries.sort(key=lambda entry: entry[0])
+        # A pick halves a list (its length loses a binary digit) or cuts it so that the answer fits.
+        self.rounds = sum(len(c.items).bit_length() for c in self.live) + 2
         paths = sorted({c.path for c in self.live})
         for path in paths:
             start = end = bisect.bisect_left(paths, path + "[")
             while end < len(paths) and paths[end].startswith(path + "["):
                 end += 1
             self.nested[path] = paths[start:end]
+        if not self.exact:
+            for order, c in enumerate(self.live):
+                key = id(c.items)
+                self.by_id[key], self.order[key] = c, order
+                self.alive.add(key)
+                self.size[key] = self.sizes.measure(c.items)[0]
+                self.heaps.setdefault(c.path, []).append((-self.size[key], order, key))
+                self.totals[c.path] = self.totals.get(c.path, 0) + self.size[key]
+                self.counts[c.path] = self.counts.get(c.path, 0) + 1
+            for heap in self.heaps.values():
+                heapq.heapify(heap)
+            for path, inner in self.nested.items():
+                self.inner[path] = sum(self.totals[p] for p in inner)
+                for p in inner:
+                    self.outer.setdefault(p, []).append(path)
+            self.stale = set(paths)
+            self.sizes.changed.clear()
         holders = [_resolve(self.work, cut.items)[0] for cut in self.active]
         self.beside = [c for c in self.live if c.path not in self.contracted and any(c.holder is h for h in holders)]
+
+    def check(self) -> None:
+        _check(self.cancel)
 
     def pick(self) -> _Candidate | None:
         """The trimmable list with the largest own weight (its size minus nested trimmable lists), so long inner value
         lists shrink before whole records are dropped. Lists a paging contract names go first: shortening them leaves
-        the answer resumable."""
+        the answer resumable. The first of equals in _candidates order.
+
+        The nested trimmable lists are those at the paths inside the list's path, in the whole answer, so their size is
+        the same for every list at a path: only the largest list of each path can have the largest own weight. Without
+        exact, a pick therefore measures only the lists that changed, and ranks the largest list of each path."""
         if self.exact:
-            self.live = _candidates(self.work)
-        elif self.recheck:
-            self.live = [c for c in self.live if self.sizes.attached(c.items)]
+            return self.pick_exact()
+        if self.recheck:
+            for key in [key for key in self.alive if not self.sizes.attached(self.by_id[key].items)]:
+                self.leave(key)
             self.recheck = False
-        elif self.emptied:
-            gone = {id(c.items) for i in self.emptied for c in self.inside[i] if not self.sizes.attached(c.items)}
-            self.live = [c for c in self.live if id(c.items) not in gone]
+        for key in self.emptied:
+            within, length = self.within[key], len(self.by_id[key].items)
+            while within and within[-1][0] >= length:
+                self.leave(id(within.pop()[1].items))
+        self.emptied.clear()
+        if self.last is not None and len(self.last.items) <= self.floor[id(self.last.items)]:
+            self.leave(id(self.last.items))
+        for key in self.sizes.changed & self.alive:
+            size = self.sizes.measure(self.by_id[key].items)[0]
+            if size != self.size[key]:
+                self.add(self.by_id[key].path, size - self.size[key])
+                self.size[key] = size
+                heapq.heappush(self.heaps[self.by_id[key].path], (-size, self.order[key], key))
+        self.sizes.changed.clear()
+        for path in self.stale:
+            if self.counts[path]:
+                size, order, _ = self.largest(path)
+                self.weight[path] = (size - self.inner[path], order)
+                heapq.heappush(self.ranking, (self.inner[path] - size, order, path))
+            else:
+                self.weight.pop(path, None)
+        self.stale.clear()
+        if any(self.counts.get(path) for path in self.contracted):
+            # Only the lists a contract names, and only their sizes in the nested lists (the contracts name few paths).
+            best: tuple[int, int, str] | None = None  # (own weight, -order, path)
+            for path in self.contracted:
+                if self.counts.get(path):
+                    size, order, _ = self.largest(path)
+                    inner = sum(self.totals[p] for p in self.nested[path] if p in self.contracted)
+                    if best is None or (size - inner, -order) > best[:2]:
+                        best = (size - inner, -order, path)
+            return self.by_id[self.largest(best[2])[2]] if best else None
+        while self.ranking:
+            weight, order, path = self.ranking[0]
+            if self.weight.get(path) == (-weight, order):
+                return self.by_id[self.largest(path)[2]]
+            heapq.heappop(self.ranking)  # left behind
+        return None
+
+    def largest(self, path: str) -> tuple[int, int, int]:
+        """(size, order, id) of the largest list in live at ``path``, the first of equals."""
+        heap = self.heaps[path]
+        while heap[0][2] not in self.alive or self.size[heap[0][2]] != -heap[0][0]:
+            heapq.heappop(heap)  # left behind
+        return -heap[0][0], heap[0][1], heap[0][2]
+
+    def add(self, path: str, change: int) -> None:
+        """The lists in live at ``path`` grew by ``change`` (negative: shrank) in all."""
+        self.totals[path] += change
+        self.stale.add(path)
+        for outer in self.outer.get(path, ()):
+            self.inner[outer] += change
+            self.stale.add(outer)
+
+    def leave(self, key: int) -> None:
+        """The list ``key`` is no longer trimmable (cut to its floor, or no longer in the answer)."""
+        if key in self.alive:
+            self.alive.remove(key)
+            path = self.by_id[key].path
+            self.counts[path] -= 1
+            self.add(path, -self.size[key])
+
+    def pick_exact(self) -> _Candidate | None:
+        """pick() looking at the whole answer: every list found and measured again."""
+        self.live = _candidates(self.work)
         self.emptied.clear()
         if self.last is not None and len(self.last.items) <= self.floor[id(self.last.items)]:
             self.live = [c for c in self.live if c.items is not self.last.items]
         pool = [c for c in self.live if c.path in self.contracted] or self.live
         if not pool:
             return None
-        if self.exact:
-            sizes = [len(compact_json(c.items)) for c in pool]
-        else:
-            sizes = [self.sizes.measure(c.items)[0] for c in pool]
+        sizes = [len(compact_json(c.items)) for c in pool]
         if any(self.nested.values()):
             totals: dict[str, int] = {}
             for c, size in zip(pool, sizes, strict=True):
@@ -782,10 +921,12 @@ class _Shortening:
                 if len(kept) < len(notes):
                     self.work["notes"] = kept
                     self.sizes.adopt(kept, self.work, "notes")
-            fields = len(holder)
+            # A field that holds objects or lists, removed or replaced, may have held trimmable lists (CursorCut removes
+            # hint and adds next_page and complete_scan, so the number of fields may stay the same).
+            fields = [(key, value) for key, value in holder.items() if isinstance(value, dict | list)]
             resumed = cut.resume(self.work, holder, len(items), original)
             self.sizes.touch(holder)
-            if len(holder) < fields:  # a removed field may have held trimmable lists
+            if any(holder.get(key) is not value for key, value in fields):
                 self.dropped()
             if resumed:
                 (self.resumes if "anrop" in resumed else self.named).append({"falt": cut.items, **resumed})
@@ -837,7 +978,9 @@ class _Shortening:
         return note
 
 
-def fit_to_limit(data: dict[str, Any], limit: int, cuts: tuple[Cut, ...] = ()) -> tuple[dict[str, Any] | None, bool]:
+def fit_to_limit(
+    data: dict[str, Any], limit: int, cuts: tuple[Cut, ...] = (), *, cancel: threading.Event | None = None
+) -> tuple[dict[str, Any] | None, bool]:
     """Shorten lists (and, if needed, long strings) until the answer fits ``limit`` as a client measures it.
 
     The answer stays truthful: the object holding a shortened list gets ``<list>_truncated=true`` and ``returned`` =
@@ -847,18 +990,27 @@ def fit_to_limit(data: dict[str, Any], limit: int, cuts: tuple[Cut, ...] = ()) -
     when it already fits, ``(shortened copy, True)`` with a ``_kortat`` note, or ``(None, True)`` when even that
     cannot fit.
 
-    Each step is measured incrementally (see _Shortening), so hundreds of long lists take well under a second. The
-    result is measured whole once more; should that ever disagree, every step is measured whole instead.
+    Each step is measured incrementally and a pick looks only at the lists that changed (see _Shortening), so picks
+    no longer grow with the number of lists, and answers of records with nested lists take about linear time
+    (measured in #41: 5 100 lists in about a second). The ``_kortat`` note has an entry per shortened path and is built
+    and measured at every probe once the answer fits without it, so an answer with many sibling lists, each a path of
+    its own, still takes longer than linear (measured in #41: 500 such lists at the limit 100 000 in 0.5 s, 1 000 in
+    3.4 s). The result is measured whole once more; should that ever disagree, every step is measured whole instead.
+
+    ``cancel`` stops the work between two steps with :class:`ShorteningCancelled` once it is set: the server sets it
+    when the call has given up (FUZZY_MCP_TOOL_TIMEOUT), so that an abandoned shortening does not go on in its thread.
     """
     if limit <= 0 or client_size(compact_json(data)) <= limit:
         return data, False
-    answer, size = _Shortening(data, limit, cuts, exact=False).run()
+    _check(cancel)  # before the copy of the answer, too
+    answer, size = _Shortening(data, limit, cuts, exact=False, cancel=cancel).run()
     measured = client_size(compact_json(answer))
     if size != measured:  # never expected: the incremental sizes are exact
         logger.warning(
             "Kortningen mätte svaret till %d tecken men det har %d; kortar om med full mätning", size, measured
         )
-        answer, size = _Shortening(data, limit, cuts, exact=True).run()
+        _check(cancel)
+        answer, size = _Shortening(data, limit, cuts, exact=True, cancel=cancel).run()
     return (answer, True) if size <= limit else (None, True)
 
 
