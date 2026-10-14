@@ -13,7 +13,7 @@ ENTITIES: list[dict[str, Any]] = [
     {
         "kalla": "scb",
         "entitet": "Tabell",
-        "nyckel": "table_id (TAB + siffror, t.ex. TAB638)",
+        "nyckel": "table_id (TAB + siffror, från scb_search_tables)",
         "verktyg": ["scb_search_tables", "scb_browse_subjects", "scb_get_table"],
         "beskrivning": "Statistiktabell i Statistikdatabasen med titel, period, tidsenhet och ämnessökväg.",
     },
