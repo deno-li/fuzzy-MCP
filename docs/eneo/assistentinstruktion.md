@@ -27,7 +27,9 @@ kortat svar som komplett.
 2. Sök tabell (`scb_search_tables`, `fohm_search_tables`, `skolverket_stat_search_tables`), läs metadata
    (`…_get_table_metadata`) och använd bara variabel- och värdekoder som tabellen faktiskt har. Metadata visar
    normalt bara 60 värden per variabel. Ta kommun- och länskoder från steg 1, aldrig ur minnet; servern säger till
-   om tabellen saknar en kod.
+   om tabellen saknar en kod. Har flera tabeller samma mått, välj den som har den senaste perioden (last_period
+   hos SCB, annars tidsvariabeln i metadata) och täcker hela perioden frågan gäller; finns ingen sådan, säg vilken
+   period som saknas.
 3. Hämta data (`…_get_table_data`) med ett så litet urval som frågan kräver, t.ex. `TOP(5)` för de senaste fem
    perioderna. Välj de värden frågan avgränsar (t.ex. flickor, 20–64 år). Tid: `TOP(1)` om frågan inte anger
    någon period, men flera perioder (t.ex. `TOP(5)`) om den gäller en utveckling. Övriga variabler: välj

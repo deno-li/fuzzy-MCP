@@ -9,6 +9,10 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 
 ### Ändrat
 
+- Eneo-assistentinstruktionen: har flera tabeller samma mått väljs den som har den senaste perioden (`last_period`
+  hos SCB, annars tidsvariabeln i metadata) och täcker hela perioden frågan gäller. I ett prov valde modellen SCB:s
+  TAB638, som slutar 2024, fast 2025 fanns i en annan tabell, så "de senaste fem åren" blev 2020–2024. Servern
+  tipsar redan om `last_period` i sökträffen, men det räckte inte.
 - Eneo-assistentinstruktionen: egna beräkningar (förändringar mellan perioder, summor av svarsalternativ) får bara
   göras ur hämtade värden när tabellen saknar dem och alla ingående värden är siffror (inte `..`, `.` eller tomma).
   De redovisas som beräknade, med uträkning och en anmärkning om avrundning. En andel räknas aldrig fram som 100
