@@ -137,6 +137,17 @@ def main(argv: list[str] | None = None) -> None:
     # argparse checks choices only for values given on the command line, not for defaults from the environment.
     if args.transport not in TRANSPORTS:
         config_error(f"FUZZY_MCP_TRANSPORT={args.transport!r} är ogiltigt – välj bland {', '.join(TRANSPORTS)}")
+    if args.transport == "stdio":
+        run(args, None)
+        return
+    # From here a stop signal (Ctrl+C, SIGTERM) ends the process with exit code 0, also while the tools are built:
+    # it used to kill the process without a log line, or end it with a KeyboardInterrupt traceback (#40).
+    with stop_on_signals() as stop:
+        run(args, stop)
+
+
+def run(args: argparse.Namespace, stop: "Stop | None") -> None:
+    """Start the server for parsed arguments; ``stop`` holds the stop signals for the HTTP transports."""
     if args.transport != "stdio":
         http_settings(args)
 
@@ -186,7 +197,7 @@ def main(argv: list[str] | None = None) -> None:
             )
             raise SystemExit(2)
         print(f"Varning: --host {args.host} utan token (uttryckligen tillåtet).", file=sys.stderr)
-    serve_http(server, args, security, tokens)
+    serve_http(server, args, security, tokens, stop)
 
 
 def build_http_app(server: Any, args: argparse.Namespace, security: Any, tokens: list[str]) -> Any:
@@ -194,7 +205,7 @@ def build_http_app(server: Any, args: argparse.Namespace, security: Any, tokens:
     if args.transport == "streamable-http":
         app = server.streamable_http_app(transport_security=security, host=args.host, stateless_http=args.stateless)
     elif args.transport == "sse":
-        app = server.sse_app(transport_security=security, host=args.host)
+        app = OneResponse(server.sse_app(transport_security=security, host=args.host))
     else:
         raise ValueError(f"Okänd HTTP-transport: {args.transport}")
     if tokens:
@@ -204,10 +215,55 @@ def build_http_app(server: Any, args: argparse.Namespace, security: Any, tokens:
     return app
 
 
-def serve_http(server: Any, args: argparse.Namespace, security: Any, tokens: list[str]) -> None:
+class OneResponse:
+    """ASGI wrapper that sends one response per request. The MCP SDK's SSE endpoint returns an empty response after
+    its event stream, and Starlette sends it; when a shutdown ends the stream mid-response, uvicorn then refuses the
+    second ``http.response.start`` and logs "Exception in ASGI application" with a traceback (#40). The second start
+    is dropped; its body, which is empty, ends the interrupted stream (or is dropped too if the stream had ended)."""
+
+    def __init__(self, app: Any) -> None:
+        self.app = app
+
+    async def __call__(self, scope: dict[str, Any], receive: Any, send: Any) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        started = ended = False
+
+        async def send_once(message: dict[str, Any]) -> None:
+            nonlocal started, ended
+            if message["type"] == "http.response.start":
+                if started:
+                    return
+                started = True
+            elif message["type"] == "http.response.body":
+                if ended:
+                    return
+                ended = not message.get("more_body", False)
+            await send(message)
+
+        await self.app(scope, receive, send_once)
+
+
+STOPPED_BEFORE_START = "Stoppsignal före start – servern startas inte."
+# How long the shared HTTP client may take to close after uvicorn has stopped; a stop signal then no longer stops
+# anything, so a hanging close would keep the process alive until SIGKILL (#40).
+RELEASE_SECONDS = 5.0
+
+
+def serve_http(
+    server: Any, args: argparse.Namespace, security: Any, tokens: list[str], stop: "Stop | None" = None
+) -> None:
     import anyio
     import uvicorn
 
+    if stop is None:
+        with stop_on_signals() as stop:
+            serve_http(server, args, security, tokens, stop)
+        return
+    if stop.requested:  # stopped while the tools were built: exit 0 without starting
+        print(STOPPED_BEFORE_START, file=sys.stderr)
+        return
     app = build_http_app(server, args, security, tokens)
     http_server = uvicorn.Server(
         uvicorn.Config(
@@ -229,15 +285,28 @@ def serve_http(server: Any, args: argparse.Namespace, security: Any, tokens: lis
         try:
             await http_server.serve()
         finally:
-            await services.release()
+            with anyio.move_on_after(RELEASE_SECONDS) as scope:
+                await services.release()
+            if scope.cancelled_caught:
+                logging.getLogger(__name__).warning(
+                    "HTTP-klienten mot myndigheterna stängdes inte inom %g s; avslutar ändå", RELEASE_SECONDS
+                )
 
-    with stop_on_signals(http_server):
-        try:
-            anyio.run(serve)
-        except SystemExit:
-            if http_server.started:
-                raise
+    stop.server = http_server  # from here a stop sets should_exit, which uvicorn reads once it has started
+    if stop.requested:  # a stop while the app was built, before the handler knew the server (#40)
+        print(STOPPED_BEFORE_START, file=sys.stderr)
+        return
+    try:
+        anyio.run(serve)
+    except SystemExit:
+        if http_server.started:
+            raise
     if not http_server.started:
+        if stop.requested:
+            # Stopped while uvicorn started (it raises the signals it caught again when it returns): exit 0, also if
+            # the start then failed, so that a service manager does not restart a service it was told to stop (#40).
+            print("Stoppsignal under starten – avslutar med kod 0.", file=sys.stderr)
+            return
         # Startup failed, e.g. the address cannot be used (port in use, unknown host). uvicorn exits with 1 or 3
         # depending on its version; always exit with 3, which service managers restart after a delay (docs/DRIFT.md).
         raise SystemExit(3)
@@ -247,24 +316,34 @@ def serve_http(server: Any, args: argparse.Namespace, security: Any, tokens: lis
 STOP_SIGNALS = tuple(getattr(signal, name) for name in ("SIGINT", "SIGTERM", "SIGBREAK") if hasattr(signal, name))
 
 
+class Stop:
+    """The stop signals' handler: records that a stop was asked for and asks the server to stop, if it is running."""
+
+    def __init__(self) -> None:
+        self.requested = False
+        self.server: Any = None
+
+    def __call__(self, signum: int, frame: object) -> None:
+        self.requested = True
+        if self.server is not None:
+            self.server.should_exit = True
+
+
 @contextlib.contextmanager
-def stop_on_signals(http_server: Any) -> Iterator[None]:
+def stop_on_signals() -> Iterator[Stop]:
     """Stop signals end the process normally: exit code 0, after the shared HTTP client is closed.
 
     uvicorn handles them while it serves, then restores the previous handlers and raises the signal again. Python's
     defaults would then kill the process (SIGTERM) or interrupt the cleanup with KeyboardInterrupt (Ctrl+C), and
-    service managers would see a failure. These handlers only ask the server to stop, also when a signal comes just
-    before uvicorn takes over."""
+    service managers would see a failure. These handlers only ask the server to stop, also when a signal comes before
+    uvicorn takes over (main installs them before it builds the tools)."""
+    stop = Stop()
     if threading.current_thread() is not threading.main_thread():  # signals are handled in the main thread only
-        yield
+        yield stop
         return
-
-    def stop(signum: int, frame: object) -> None:
-        http_server.should_exit = True
-
     previous = {sig: signal.signal(sig, stop) for sig in STOP_SIGNALS}
     try:
-        yield
+        yield stop
     finally:
         for sig, handler in previous.items():
             signal.signal(sig, handler)
