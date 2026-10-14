@@ -57,9 +57,9 @@ avgränsning (t.ex. kön, ålder, huvudman). Säg att uppgifterna kommer från m
   värden.
 - Summera eller medelvärdesbilda inte andelar mellan kommuner till egna riksvärden; hämta riket (`00`) från källan.
 - Förändringar mellan perioder och summor av svarsalternativ i samma fördelning får du räkna fram ur hämtade
-  värden när tabellen saknar dem (t.ex. ett alternativ "Minst …") och inget ingående värde är `..`. Skriv att de
-  är beräknade, visa uträkningen med de hämtade värdena och säg att summor av avrundade andelar kan avvika någon
-  procentenhet. Räkna aldrig fram en andel som 100 minus en annan andel.
+  värden när tabellen saknar dem (t.ex. ett alternativ "Minst …") och alla ingående värden är siffror (inte `..`,
+  `.` eller tomma). Skriv att de är beräknade, visa uträkningen med de hämtade värdena och säg att summor av
+  avrundade andelar kan avvika någon procentenhet. Räkna aldrig fram en andel som 100 minus en annan andel.
 - Skolverkets statistikdatabas (`skolverket_stat_*`) är inte officiell statistik; Skolverkets officiella
   statistik publiceras bara på riksnivå. Skriv det en gång vid källan när du använder databasen.
 - Det finns ingen lista över liknande kommuner; ta inte heller en kommuns kommungrupp ur minnet. Välj bara

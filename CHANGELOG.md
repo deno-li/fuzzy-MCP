@@ -10,12 +10,12 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
 ### Ändrat
 
 - Eneo-assistentinstruktionen: egna beräkningar (förändringar mellan perioder, summor av svarsalternativ) får bara
-  göras ur hämtade värden när tabellen saknar dem och inget ingående värde är prickat. De redovisas som beräknade,
-  med uträkning och en anmärkning om avrundning. En andel räknas aldrig fram som 100 minus en annan andel. I ett
-  prov summerade modellen avrundade svarsalternativ (Gävleborg: 24 % och 27 % mot 23 % och 26 % som komplement)
-  utan att säga det. Skolverkets statistikdatabas redovisas som inte officiell statistik (Skolverket klassar bara
-  riksnivån som officiell), en gång vid källan. "Samma period" gäller jämförelser mellan regioner, inte
-  förändringar över tid.
+  göras ur hämtade värden när tabellen saknar dem och alla ingående värden är siffror (inte `..`, `.` eller tomma).
+  De redovisas som beräknade, med uträkning och en anmärkning om avrundning. En andel räknas aldrig fram som 100
+  minus en annan andel. I ett prov summerade modellen avrundade svarsalternativ (Gävleborg: 24 % och 27 % mot 23 %
+  och 26 % som komplement) utan att säga det. Skolverkets statistikdatabas redovisas som inte officiell statistik
+  (Skolverket klassar bara riksnivån som officiell), en gång vid källan. "Samma period" gäller jämförelser mellan
+  regioner, inte förändringar över tid.
 - Eneo-assistentinstruktionen: steg 2 kräver att koderna finns i tabellen, inte i den del av metadata som visas
   (normalt 60 värden per variabel), och att kommun- och länskoder kommer från `ref_lookup_region`. I tabeller med
   alla 312 regioner syns inte alltid kommunkoden, och modellen kunde då tro att kommunen saknades. Steg 3 säger hur
