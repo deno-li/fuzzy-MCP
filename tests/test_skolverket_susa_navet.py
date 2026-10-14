@@ -733,6 +733,9 @@ def test_municipality_names_resolve_as_in_ref_list_deso():
     variants = "Lunds-kommun; Göteborgs-stad; Borås stad.; Falu kommun.; Gävles; Malmös"
     assert normalize_municipality_codes(variants) == ["1281", "1480", "1490", "2080", "2180", "1280"]
     assert normalize_municipality_codes(["Lunds kommuns", "Lunds kommun.", "Lunds"]) == ["1281"]
+    for misspelled in ("Boråss", "Höganäss kommun", "Bora"):
+        with pytest.raises(InvalidInputError, match=r"Förslag: (1490 Borås|1284 Höganäs)"):
+            normalize_municipality_codes(misspelled)
 
 
 def test_municipality_filter_is_bounded():

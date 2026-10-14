@@ -441,7 +441,9 @@ def test_resolve_municipality_takes_common_variants_of_the_official_name():
         "Jönköpings": "0680",
     }
     assert {name: deso.resolve_municipality(name)[0] for name in variants} == variants
-    for name in ("Upplands", "Lundss"):
+    # A name ending in s takes no genitive s, so a double s is a misspelling; nor is a name without its last s the
+    # municipality ("Bora" is not Borås). Both are errors with suggestions, never a guess.
+    for name in ("Upplands", "Lundss", "Boråss", "Höganäss", "Kramforss kommun", "Boråss stad", "Bora", "Västerå"):
         with pytest.raises(deso.InvalidInputError):
             deso.resolve_municipality(name)
 

@@ -165,6 +165,14 @@ def _spelling(text: str) -> str:
     return " ".join(_words(text))
 
 
+def _without_genitive_s(name: str) -> str | None:
+    """``name`` without a genitive s ("lunds" → "lund"), or None when it has none. A name that ends in s takes no
+    genitive s ("Borås stad"), so a double s ("boråss") is a misspelling, not a genitive."""
+    if len(name) > 2 and name.endswith("s") and not name.endswith("ss"):
+        return name[:-1]
+    return None
+
+
 def name_forms(text: str) -> list[str]:
     """``text`` as spelled (see :func:`_words`) and, when it ends in "kommun", "kommuns", "stad" or "stads", the
     name before that word as written and in base form: without a genitive s ("Lunds kommun" → "lund") or from
@@ -175,8 +183,8 @@ def name_forms(text: str) -> list[str]:
     if len(words) > 1 and words[-1] in _MUNICIPALITY_WORDS:
         name = " ".join(words[:-1])
         forms.append(name)
-        if len(name) > 2 and name.endswith("s"):
-            forms.append(name[:-1])
+        if base := _without_genitive_s(name):
+            forms.append(base)
         if name in _GENITIVES:
             forms.append(_GENITIVES[name])
     return forms
@@ -229,7 +237,9 @@ def lookup_region(query: str, *, kind: str = "alla", limit: int = 5, fuzzy: bool
     scored: list[tuple[float, dict[str, Any]]] = []
     for entry in entries:
         name = normalize(entry["namn"])
-        candidates = {name, name.removesuffix("s")}
+        # A county's name is in the genitive ("Stockholms län" → Stockholm); a municipality's is the name itself, so
+        # "Bora" is not Borås.
+        candidates = {name, name.removesuffix("s")} if entry["typ"] == "lan" else {name}
         if targets & candidates:
             score = 1.0
         elif not fuzzy:
@@ -255,8 +265,8 @@ def _bare_genitives(text: str) -> list[str]:
         return []
     name = " ".join(words)
     forms = [_GENITIVES[name]] if name in _GENITIVES else []
-    if len(name) > 2 and name.endswith("s"):
-        forms.append(name[:-1])
+    if base := _without_genitive_s(name):
+        forms.append(base)
     return forms
 
 
