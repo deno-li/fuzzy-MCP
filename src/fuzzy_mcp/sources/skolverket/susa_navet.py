@@ -940,9 +940,20 @@ def _municipality_items(value: str | list[str] | None) -> list[str]:
 
 
 def normalize_municipality_codes(value: str | list[str] | None) -> list[str]:
-    """Four-digit kommunkod, or a municipality name resolved through the bundled SCB region list."""
+    """Four-digit kommunkod, or a municipality name resolved through the bundled SCB region list. At most one value
+    per municipality, each at most :data:`region_codes.MAX_NAME_LENGTH` characters, so that the work is bounded
+    (#42)."""
+    items = _municipality_items(value)
+    most = len(region_codes.load("regioner")["kommuner"])
+    if len(items) > most:
+        raise InvalidInputError(f"För många kommuner ({len(items)}, högst {most}). Ange färre kommunkoder.")
     out: list[str] = []
-    for item in _municipality_items(value):
+    for item in items:
+        if len(item) > region_codes.MAX_NAME_LENGTH:
+            raise InvalidInputError(
+                f"Ett värde i kommunfiltret är för långt ({len(item)} tecken, högst {region_codes.MAX_NAME_LENGTH}). "
+                "Ange kommunkod (4 siffror) eller kommunnamn."
+            )
         if item.isdigit():
             if len(item) not in (3, 4):
                 raise InvalidInputError(f"Kommunkoden {item!r} ska ha fyra siffror, t.ex. 0180 (Stockholm)")

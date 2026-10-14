@@ -36,8 +36,14 @@ _DATA_PACKAGE = "fuzzy_mcp.reference.data"
 _STRIP_WORDS = ("kommun", "kommuns", "stad", "lan", "region", "regionen", "landsting")
 # Official municipality names put the name in the genitive before "kommun" or "stad" ("Lunds kommun", "Göteborgs
 # stad"); a name ending in s is unchanged ("Borås stad") and Falun keeps the old genitive "Falu" ("Falu kommun").
-_MUNICIPALITY_WORDS = ("kommun", "stad")
+# The words may themselves be in the genitive ("Lunds kommuns"), and a name in the genitive may also stand alone
+# ("Lunds", "Falu"), see match_municipality.
+_MUNICIPALITY_WORDS = ("kommun", "kommuns", "stad", "stads")
 _GENITIVES = {"falu": "falun"}
+_TRAILING_PUNCTUATION = ".,;:!?"
+# A municipality name is short (the longest, "Upplands Väsby kommun", has 21 characters); a longer text is refused
+# before any fuzzy comparison, whose cost grows with the length (#42). ref_list_deso has the same limit.
+MAX_NAME_LENGTH = 100
 
 
 @cache
@@ -147,11 +153,24 @@ def normalize(text: str) -> str:
     return " ".join(words)
 
 
+def _words(text: str) -> list[str]:
+    """``text`` casefolded and split into words as :func:`normalize` reads it (hyphens and underscores as spaces),
+    without punctuation at the end ("Lunds kommun." → ["lunds", "kommun"]). Diacritics are kept."""
+    plain = unicodedata.normalize("NFC", text).casefold().replace("-", " ").replace("_", " ")
+    return plain.strip().rstrip(_TRAILING_PUNCTUATION).split()
+
+
+def _spelling(text: str) -> str:
+    """``text`` as spelled, in the form :func:`name_forms` returns, so that names can be compared letter by letter."""
+    return " ".join(_words(text))
+
+
 def name_forms(text: str) -> list[str]:
-    """``text`` casefolded and, when it ends in "kommun" or "stad", the name before that word as written and in
-    base form: without a genitive s ("Lunds kommun" → "lund") or from :data:`_GENITIVES` ("Falu kommun" →
-    "falun"). Diacritics are kept, so a form can be compared with a name as spelled (Håbo or Habo)."""
-    words = unicodedata.normalize("NFC", text).casefold().split()
+    """``text`` as spelled (see :func:`_words`) and, when it ends in "kommun", "kommuns", "stad" or "stads", the
+    name before that word as written and in base form: without a genitive s ("Lunds kommun" → "lund") or from
+    :data:`_GENITIVES` ("Falu kommun" → "falun"). Diacritics are kept, so a form can be compared with a name as
+    spelled (Håbo or Habo)."""
+    words = _words(text)
     forms = [" ".join(words)]
     if len(words) > 1 and words[-1] in _MUNICIPALITY_WORDS:
         name = " ".join(words[:-1])
@@ -227,14 +246,42 @@ def lookup_region(query: str, *, kind: str = "alla", limit: int = 5, fuzzy: bool
     return [dict(entry, traff="namn", likhet=round(score, 3)) for score, entry in scored[:limit]]
 
 
+def _bare_genitives(text: str) -> list[str]:
+    """Base forms of a name in the genitive without "kommun" or "stad" ("Lunds" → "lund", "Falu" → "falun"), as
+    spelled. Empty when the text ends in such a word, which :func:`name_forms` already handles, or in another word
+    such as "län": a county in the genitive is not one of its municipalities."""
+    words = _words(text)
+    if not words or words[-1] in _MUNICIPALITY_WORDS or words[-1] in _STRIP_WORDS or words[-1] == "län":
+        return []
+    name = " ".join(words)
+    forms = [_GENITIVES[name]] if name in _GENITIVES else []
+    if len(name) > 2 and name.endswith("s"):
+        forms.append(name[:-1])
+    return forms
+
+
 def match_municipality(query: str, *, limit: int = 5) -> tuple[dict[str, Any] | None, list[dict[str, Any]]]:
     """(municipality, exact hits) for a code or a name that names one municipality, else (None, the ``limit``
     closest hits as suggestions). A name names a municipality only when it matches no other one exactly (see
-    :func:`lookup_region`), never as the best fuzzy hit."""
-    exact = lookup_region(query, kind="kommun", limit=len(load("regioner")["kommuner"]), fuzzy=False)
+    :func:`lookup_region`), never as the best fuzzy hit. A name with no exact hit is tried once more as a genitive
+    without "kommun" or "stad" ("Lunds" → Lund, "Falu" → Falun); no municipality name is another one plus or minus
+    an s, so this adds no ambiguity. A name longer than :data:`MAX_NAME_LENGTH` is refused."""
+    if len(query) > MAX_NAME_LENGTH:
+        raise InvalidInputError(
+            f"Kommunnamnet är för långt ({len(query)} tecken, högst {MAX_NAME_LENGTH}). Ange kommunkod (4 siffror)."
+        )
+    every = len(load("regioner")["kommuner"])
+    exact = lookup_region(query, kind="kommun", limit=every, fuzzy=False)
+    spelled_as = query
+    if not exact:
+        for form in _bare_genitives(query):
+            exact = lookup_region(form, kind="kommun", limit=every, fuzzy=False)
+            if exact:
+                spelled_as = form
+                break
     # The match strips diacritics (Håbo == Habo), so an exact spelling decides when it names one municipality.
-    forms = name_forms(query)
-    spelled = [hit for hit in exact if unicodedata.normalize("NFC", hit["namn"]).casefold() in forms]
+    forms = name_forms(spelled_as)
+    spelled = [hit for hit in exact if _spelling(hit["namn"]) in forms]
     named = spelled if len(spelled) == 1 else exact
     if len(named) == 1:
         return named[0], exact
