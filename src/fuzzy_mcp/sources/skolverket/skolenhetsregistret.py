@@ -31,9 +31,10 @@ import json
 import math
 import re
 import unicodedata
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, TypeVar
 
 import anyio
 from mcp.server.mcpserver import MCPServer
@@ -734,6 +735,7 @@ class ContractDetail(BaseModel):
     as_of_date: str | None = None
     meta: EntityMeta | None = None
     self_url: str | None = None
+    notes: list[str] | None = None
     raw: dict[str, Any] | None = None
 
 
@@ -1150,6 +1152,44 @@ def school_unit_row(item: dict[str, Any], municipalities: list[str], organizatio
     )
 
 
+def organizer_row(item: dict[str, Any]) -> OrganizerRow | None:
+    number = text_or_none(item.get("organizationNumber"))
+    if number is None:
+        return None
+    return OrganizerRow(
+        organization_number=number,
+        name=text_or_none(item.get("displayName")) or text_or_none(item.get("name")),
+        organizer_type=text_or_none(item.get("organizerType")),
+    )
+
+
+def education_provider_row(item: dict[str, Any]) -> EducationProviderRow | None:
+    code = text_or_none(item.get("educationProviderCode"))
+    if code is None:
+        return None
+    return EducationProviderRow(
+        education_provider_code=code,
+        organization_number=text_or_none(item.get("organizationNumber")),
+        name=text_or_none(item.get("displayName")),
+        folk_high_school_name=text_or_none(item.get("folkHighschoolName")),
+        # List key is `gradingRight` (singular); accept the detail spelling too.
+        grading_right=to_bool(item.get("gradingRight", item.get("gradingRights"))),
+    )
+
+
+def contract_row(item: dict[str, Any]) -> ContractRow:
+    """Contracts have no id of their own, so every record gets a row."""
+    return ContractRow(
+        organizer_organization_number=text_or_none(item.get("organizerOrganizationNumber")),
+        organizer_name=text_or_none(item.get("organizerName")),
+        education_provider_organization_number=text_or_none(item.get("educationProviderOrganizationNumber")),
+        education_provider_name=text_or_none(item.get("educationProviderName")),
+        education_provider_code=text_or_none(item.get("educationProviderCode")),
+        folk_high_school_name=text_or_none(item.get("folkHighschoolName")),
+        status=text_or_none(item.get("status")),
+    )
+
+
 def apply_detail(row: SchoolUnitRow, detail: SchoolUnitDetail) -> None:
     row.name = row.name or detail.name
     row.status = detail.status or row.status
@@ -1230,10 +1270,20 @@ def paginate(items: list[dict[str, Any]], limit: int, offset: int, max_limit: in
     return Page(window, len(items), start, lim, truncated, end if truncated else None)
 
 
-def row_positions(page: Page, key: str | None = None) -> list[int]:
-    """List position of each record on ``page`` that gets a row: the search helpers skip records without an id
-    (``key``, read like the row builders do); with no key every record gets one."""
-    return [p for p, item in enumerate(page.window, page.offset) if key is None or text_or_none(item.get(key))]
+Row = TypeVar("Row", bound=BaseModel)
+
+
+def page_rows(page: Page, build: Callable[[dict[str, Any]], Row | None]) -> tuple[list[Row], list[int]]:
+    """Rows for the records on ``page`` and the list position of each row's record. ``build`` returns None for a
+    record that gets no row (no id), so the positions follow the rows whatever the reason for skipping (#43)."""
+    rows: list[Row] = []
+    positions: list[int] = []
+    for position, item in enumerate(page.window, page.offset):
+        row = build(item)
+        if row is not None:
+            rows.append(row)
+            positions.append(position)
+    return rows, positions
 
 
 def json_size(model: BaseModel) -> int:
@@ -1258,8 +1308,8 @@ def fit_to_budget(result: ListResult, budget: int) -> bool:
     result.items = result.items[:kept]  # type: ignore[assignment]
     result.truncated = True
     # Continue at the first record not shown: records skipped for a missing id are consumed but have no row, so
-    # offset + kept would repeat rows on the next page.
-    result.next_offset = result._positions[kept]
+    # offset + kept would repeat rows on the next page. A result built without positions has a row per record.
+    result.next_offset = result._positions[kept] if result._positions else result.offset + kept
     return True
 
 
@@ -1372,7 +1422,14 @@ AsOfDate = Annotated[
     str | None,
     Field(description="Historik: uppgifterna som de var detta datum (ÅÅÅÅ-MM-DD), skickas som search_date"),
 ]
-IncludeRawPlain = Annotated[bool, Field(description="Ta med det obearbetade API-svaret i fältet raw")]
+# For tools without a personal-data opt-in: names always go, e-mail addresses follow the installation (#43).
+IncludeRawPlain = Annotated[
+    bool,
+    Field(
+        description="Ta med det obearbetade API-svaret i fältet raw (namn tas alltid bort; e-post tas bort när "
+        "personuppgifter är avstängda i installationen)"
+    ),
+]
 IncludeRaw = Annotated[
     bool,
     Field(
@@ -1444,7 +1501,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         listing = await api.get_list("school-units", filters)
         matched = matcher.filter(listing.items, "name", "displayName")
         page = paginate(matched, limit, offset, MAX_LIMIT_SCHOOL_UNITS)
-        rows = [r for r in (school_unit_row(i, municipalities, organizations) for i in page.window) if r]
+        rows, positions = page_rows(page, lambda i: school_unit_row(i, municipalities, organizations))
         echo = {k: v for k, v in filters.items() if v is not None}
         if matcher:
             echo["name"] = name
@@ -1459,7 +1516,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
             items=rows,
             request_url=listing.url,
         )
-        result._positions = row_positions(page, "schoolUnitCode")
+        result._positions = positions
         return result
 
     async def enrich(result: SchoolUnitSearchResult) -> None:
@@ -1491,15 +1548,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         matcher = NameMatcher(name)
         listing = await api.get_list("organizers", filters)
         page = paginate(matcher.filter(listing.items, "displayName", "name"), limit, offset, MAX_LIMIT_ORGANIZERS)
-        rows = [
-            OrganizerRow(
-                organization_number=number,
-                name=text_or_none(i.get("displayName")) or text_or_none(i.get("name")),
-                organizer_type=text_or_none(i.get("organizerType")),
-            )
-            for i in page.window
-            if (number := text_or_none(i.get("organizationNumber")))
-        ]
+        rows, positions = page_rows(page, organizer_row)
         echo = {k: v for k, v in filters.items() if v is not None}
         if matcher:
             echo["name"] = name
@@ -1514,7 +1563,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
             items=rows,
             request_url=listing.url,
         )
-        result._positions = row_positions(page, "organizationNumber")
+        result._positions = positions
         return result
 
     async def search_education_providers(
@@ -1532,18 +1581,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
             offset,
             MAX_LIMIT_EDUCATION_PROVIDERS,
         )
-        rows = [
-            EducationProviderRow(
-                education_provider_code=code,
-                organization_number=text_or_none(i.get("organizationNumber")),
-                name=text_or_none(i.get("displayName")),
-                folk_high_school_name=text_or_none(i.get("folkHighschoolName")),
-                # List key is `gradingRight` (singular); accept the detail spelling too.
-                grading_right=to_bool(i.get("gradingRight", i.get("gradingRights"))),
-            )
-            for i in page.window
-            if (code := text_or_none(i.get("educationProviderCode")))
-        ]
+        rows, positions = page_rows(page, education_provider_row)
         echo = {k: v for k, v in filters.items() if v is not None}
         if matcher:
             echo["name"] = name
@@ -1558,7 +1596,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
             items=rows,
             request_url=listing.url,
         )
-        result._positions = row_positions(page, "educationProviderCode")
+        result._positions = positions
         return result
 
     async def search_contracts(
@@ -1590,18 +1628,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
             items = [i for i in items if (text_or_none(i.get("status")) or "").casefold() in wanted_status]
         items = matcher.filter(items, "organizerName", "educationProviderName", "folkHighschoolName")
         page = paginate(items, limit, offset, MAX_LIMIT_CONTRACTS)
-        rows = [
-            ContractRow(
-                organizer_organization_number=text_or_none(i.get("organizerOrganizationNumber")),
-                organizer_name=text_or_none(i.get("organizerName")),
-                education_provider_organization_number=text_or_none(i.get("educationProviderOrganizationNumber")),
-                education_provider_name=text_or_none(i.get("educationProviderName")),
-                education_provider_code=text_or_none(i.get("educationProviderCode")),
-                folk_high_school_name=text_or_none(i.get("folkHighschoolName")),
-                status=text_or_none(i.get("status")),
-            )
-            for i in page.window
-        ]
+        rows, positions = page_rows(page, contract_row)
         echo = {k: v for k, v in filters.items() if v is not None}
         if wanted_status:
             echo["status"] = wanted_status
@@ -1618,7 +1645,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
             items=rows,
             request_url=listing.url,
         )
-        result._positions = row_positions(page)
+        result._positions = positions
         return result
 
     @server.tool(
@@ -1912,6 +1939,7 @@ def register(server: MCPServer[Any], services: Services) -> None:
         )
         detail = flatten_contract(payload, number, code)
         detail.as_of_date = as_of
+        detail.notes = email_notes(payload, services.settings.allow_personal_data)
         if include_raw:
             # The contract schema has no personal fields; redaction is defensive. Names always go (the tool has no
             # opt-in), e-mail addresses follow FUZZY_MCP_PERSONAL_DATA like the other raw outputs.

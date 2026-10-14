@@ -176,7 +176,8 @@ def build_server(
 
 def _deadline(tool: Any, seconds: float) -> None:
     """Per-call time limit (FUZZY_MCP_TOOL_TIMEOUT): answer with a clear error before the client gives up (Eneo waits
-    60 s), and cancel the remaining upstream calls so they do not use up the agencies' rate limits for later calls."""
+    60 s), and cancel the remaining upstream calls so they do not use up the agencies' rate limits for later calls.
+    The limit also covers the server's own work, such as the cut to FUZZY_MCP_MAX_OUTPUT_CHARS (#43)."""
     fn = tool.fn
     name = tool.name
 
@@ -189,9 +190,9 @@ def _deadline(tool: Any, seconds: float) -> None:
             content=[
                 TextContent(
                     type="text",
-                    text=f"{name} hann inte svara inom {seconds:g} s. Myndighetens API är långsamt eller anropsgränsen "
-                    "är nådd. Gör ett mindre urval (färre värden, perioder eller rader; with_details=false) eller "
-                    "försök igen om en stund.",
+                    text=f"{name} hann inte svara inom {seconds:g} s. Myndighetens API eller serverns bearbetning tog "
+                    "för lång tid, eller så är anropsgränsen nådd. Gör ett mindre urval (färre värden, perioder eller "
+                    "rader; with_details=false) eller försök igen om en stund.",
                 )
             ],
             is_error=True,

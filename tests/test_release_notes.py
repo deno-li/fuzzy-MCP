@@ -28,6 +28,10 @@ CHANGELOG = """# Changelog
 ## [0.1.0] - 2026-10-07
 
 - Första utgåvan.
+
+[Unreleased]: https://example.invalid/compare/v0.2.0...HEAD
+[0.2.0]: https://example.invalid/compare/v0.1.0...v0.2.0
+[0.1.0]: https://example.invalid/releases/tag/v0.1.0
 """
 
 
@@ -61,6 +65,12 @@ def test_notes_have_changelog_packages_checksums_and_traceability(tmp_path):
     assert f"{'c' * 64}  fuzzy-mcp-0.2.0-linux-py3.12.tar.gz" in text
     assert f"Commit: `{COMMIT}`" in text and "Container-image: fuzzy-mcp:0.2.0" in text
     assert "pip-audit – No known vulnerabilities found" in text and "https://example.invalid/run/1" in text
+
+
+def test_last_changelog_section_stops_at_the_link_definitions():
+    """The last section ends where the link definitions at the end of the file begin (#43)."""
+    assert release_notes.changelog_section(CHANGELOG, "0.1.0") == "- Första utgåvan."
+    assert release_notes.changelog_section(CHANGELOG, "0.2.0") == "### Tillagt\n\n- Något nytt."
 
 
 def test_missing_changelog_section_stops(tmp_path):

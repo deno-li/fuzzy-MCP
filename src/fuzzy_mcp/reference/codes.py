@@ -219,9 +219,21 @@ def _region_entries() -> list[dict[str, str]]:
     return entries
 
 
+def _named_kind(text: str) -> str | None:
+    """The kind of region a name ends in: "kommun" for "Uppsala kommun" or "Göteborgs stad", "lan" for "Uppsala
+    län", else None. "Region Uppsala" names neither, since Gotland's municipality is called Region Gotland."""
+    words = _words(text)
+    if len(words) > 1 and words[-1] in _MUNICIPALITY_WORDS:
+        return "kommun"
+    if len(words) > 1 and words[-1] in ("län", "lan"):
+        return "lan"
+    return None
+
+
 def lookup_region(query: str, *, kind: str = "alla", limit: int = 5, fuzzy: bool = True) -> list[dict[str, Any]]:
     """Find regions by code or (fuzzy) name. ``kind``: alla | kommun | lan. A name may be the official one with
-    the genitive ('Lunds kommun', 'Göteborgs stad', see :func:`name_forms`). ``fuzzy=False``: exact hits only."""
+    the genitive ('Lunds kommun', 'Göteborgs stad', see :func:`name_forms`). A name that ends in its kind
+    ('Uppsala kommun', 'Uppsala län') is an exact hit only for that kind (#43). ``fuzzy=False``: exact hits only."""
     query = query.strip()
     if not query:
         raise InvalidInputError("Ange ett namn eller en kod")
@@ -234,16 +246,20 @@ def lookup_region(query: str, *, kind: str = "alla", limit: int = 5, fuzzy: bool
         return [dict(e, traff="kod", likhet=1.0) for e in by_code[:limit]]
 
     targets = {normalize(form) for form in name_forms(query)}
+    named = _named_kind(query)
     scored: list[tuple[float, dict[str, Any]]] = []
     for entry in entries:
         name = normalize(entry["namn"])
         # A county's name is in the genitive ("Stockholms län" → Stockholm); a municipality's is the name itself, so
         # "Bora" is not Borås.
         candidates = {name, name.removesuffix("s")} if entry["typ"] == "lan" else {name}
-        if targets & candidates:
+        same_name = bool(targets & candidates)
+        if same_name and named in (None, entry["typ"]):
             score = 1.0
         elif not fuzzy:
             continue
+        elif same_name:
+            score = 0.9  # the name of a region of the other kind than the query names ("Uppsala kommun" → the county)
         elif any(c.startswith(t) for c in candidates for t in targets):
             score = 0.9
         else:

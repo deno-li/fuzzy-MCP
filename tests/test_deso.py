@@ -410,8 +410,8 @@ def test_resolve_municipality_takes_the_official_name():
     # A name ending in s is the name itself, not a genitive of another municipality.
     for name in ("Borås", "Höganäs", "Kramfors", "Mönsterås", "Bollnäs"):
         assert deso.resolve_municipality(name)[1] == name
-    # A county is not one of its municipalities, also when it is in the genitive.
-    for county in ("Stockholms län", "Jönköpings län"):
+    # A county is not one of its municipalities, also when it is in the genitive or has the same name (#43).
+    for county in ("Stockholms län", "Jönköpings län", "Uppsala län", "Kalmar län", "Örebro län"):
         with pytest.raises(deso.InvalidInputError, match="inte entydig"):
             deso.resolve_municipality(county)
 

@@ -53,6 +53,29 @@ och projektet använder [Semantic Versioning](https://semver.org/lang/sv/).
   Ett namn får ha högst 100 tecken och kommunfiltret högst 290 värden (en per kommun). Ett längre namn avvisas direkt,
   utan fuzzy-jämförelse, och felet upprepar inte texten; tidigare tog 5 000 tecken över en sekund och blockerade
   servern under tiden ([#42](https://github.com/deno-li/fuzzy-MCP/issues/42)).
+- Ett namn som slutar på sin typ ger exakt träff bara för den typen (`ref_lookup_region` och kommunnamn i
+  `ref_list_deso` och Susa-navets kommunfilter). "Uppsala kommun" och "Stockholms stad" ger kommunen med likhet 1,0
+  och länet med 0,9, och "Uppsala län", "Kalmar län" och "Örebro län" ger länet först. Tidigare fick båda likhet 1,0
+  och kommunen kom först, så "Uppsala län" tolkades som Uppsala kommun i kommunfiltren; nu ger det ett fel med
+  förslag. "Region Gotland" ger fortfarande både kommunen och länet, eftersom det är kommunens eget namn
+  ([#43](https://github.com/deno-li/fuzzy-MCP/issues/43)).
+- Felet när `FUZZY_MCP_TOOL_TIMEOUT` nås säger att myndighetens API eller serverns bearbetning tog för lång tid, eller
+  att anropsgränsen är nådd. Tidsgränsen räknar också serverns kortning till `FUZZY_MCP_MAX_OUTPUT_CHARS`, så felet
+  kunde skylla på myndigheten fast inget anrop hade gjorts. Felsökningsraderna i DRIFT.md och ENEO.md är ändrade på
+  samma sätt ([#43](https://github.com/deno-li/fuzzy-MCP/issues/43)).
+- `skolverket_get_contract`: beskrivningen av `include_raw` säger att namn alltid tas bort och e-post när
+  personuppgifter är avstängda, och svaret har `notes` med noteringen om utelämnad e-post, som de andra
+  detaljverktygen. Avtalsschemat har inga e-postfält i dag, så inga data ändras. Verktygsbeskrivningen ändras, så
+  synkronisera och godkänn verktygen i Eneo efter uppgraderingen om profilen har Skolenhetsregistret
+  ([#43](https://github.com/deno-li/fuzzy-MCP/issues/43)).
+- `ref_entity_catalog`: DeSO-noteringen säger att förändringsloggen har två rader från 2018-02-21, som gäller
+  1883A0030 (Karlskoga); övriga rader är daterade 2025-01-01 ([#43](https://github.com/deno-li/fuzzy-MCP/issues/43)).
+- Skolenhetsregistret: sökverktygen bygger rader och radpositioner i samma loop, så att fortsättningen efter en
+  kortning (`next_offset`) alltid följer raderna, och kortningen klarar ett resultat utan positioner (förut
+  `IndexError`). Svaren ändras inte. En kontroll i `expand_token` som inte kunde slå till är borttagen
+  ([#43](https://github.com/deno-li/fuzzy-MCP/issues/43)).
+- `release_notes.py`: releasetexten för det sista CHANGELOG-avsnittet slutar före länkdefinitionerna längst ner i
+  filen ([#43](https://github.com/deno-li/fuzzy-MCP/issues/43)).
 - ENEO.md avsnitt 6: acceptanstestets rad 5 ber om hela kodlistan regioner (`ref_get_code_list`), som kortas med
   `_kortat` vid `FUZZY_MCP_MAX_OUTPUT_CHARS=30000`. Sedan 0.3.0 ryms alla 290 kommuner i `ref_list_municipalities`
   (cirka 26 600 tecken som Eneo räknar dem), så "Visa alla kommuner i Sverige." gav inget kortat svar. Rad 2 godtar

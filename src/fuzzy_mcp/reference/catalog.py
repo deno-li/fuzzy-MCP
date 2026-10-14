@@ -240,8 +240,9 @@ JOIN_KEYS: list[dict[str, Any]] = [
             "ref_lookup_deso ger koden så som Statistikdatabasen skriver den per version",
         },
         "not": "Två versionspar: DeSO 2018 med RegSO 2020 och DeSO 2025 med RegSO 2025. 5 835 koder finns i båda, men "
-        "enligt SCB:s förändringslogg (förändringar daterade 2025-01-01; filen daterad 2025-09-19) har 603 av dem en "
-        "egen rad (samma kod före och efter) och ytterligare 85 förekommer bara som mottagare på andra koders rader. "
+        "enligt SCB:s förändringslogg (förändringar daterade 2025-01-01, utom två rader från 2018-02-21 som gäller "
+        "1883A0030; filen daterad 2025-09-19) har 603 av dem en egen rad (samma kod före och efter) och ytterligare 85 "
+        "förekommer bara som mottagare på andra koders rader. "
         "ref_lookup_deso ger 'ändrad gräns' för alla 603 och för 84 av de 85, totalt 687; den 85:e (1883A0030, "
         "Karlskoga) räknas som oförändrad eftersom dess rader avser koder som inte finns i någon av nyckelfilerna. "
         "Samma kod är alltså inte alltid samma yta. DeSO 2018/RegSO 2020 "

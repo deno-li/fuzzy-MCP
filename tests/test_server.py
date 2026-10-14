@@ -178,6 +178,7 @@ async def test_tool_timeout_answers_before_the_client_gives_up(caplog):
         elapsed = anyio.current_time() - start
     text = "".join(getattr(c, "text", "") for c in result.content)
     assert result.is_error and "scb_search_tables hann inte svara inom 0.2 s" in text
+    assert "Myndighetens API eller serverns bearbetning tog för lång tid" in text  # the cut counts too (#43)
     assert elapsed < 2 and not finished
     assert any("avbröts efter 0.2 s" in r.getMessage() for r in caplog.records)
 
